@@ -141,7 +141,7 @@ Slider,
 Popover,
 Skeleton,
 } from "vant";
-import store from "@/store";
+
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 import { toUsd } from "@/popup/utils/filters";

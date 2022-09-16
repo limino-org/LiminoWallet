@@ -37,7 +37,7 @@ import {
 } from "@/popup/utils/web3";
 import { eventHandler } from "@/popup/hooks/useEvent";
 import BigNumber from "bignumber.js";
-import store from "@/store";
+import store from "@/popup/store";
 import { getContractAddress } from "@/popup/http/modules/common";
 import Bignumber from 'bignumber.js'
 export interface State {

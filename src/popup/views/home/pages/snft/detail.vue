@@ -134,7 +134,7 @@ export default {
     const router = useRouter()
     const route = useRoute()
     const { state } = useStore()
-    const swipe: Ref = ref<SwipeInstance>(null)
+    const swipe: Ref = ref(null)
     const pageData = ref(JSON.parse(sessionStorage.getItem('compData')))
     console.warn('pagedata', pageData.value)
     const { query } = route

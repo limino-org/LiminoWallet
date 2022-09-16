@@ -134,7 +134,7 @@ import { ethers, utils } from "ethers";
 import { formatEther, toUsd, transactionStatus } from "@/popup/utils/filters";
 import { useI18n } from "vue-i18n";
 import { ElTooltip } from "element-plus";
-import store from "@/store";
+
 import { useStore } from "vuex";
 import { toHex } from "@/popup/utils/utils";
 import {
