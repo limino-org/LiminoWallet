@@ -1,0 +1,2 @@
+# -LiminoWallet
+Browser extension wallet
