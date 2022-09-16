@@ -1,0 +1,139 @@
+.page-container {
+    scrollbar-width: none;
+    position: relative;
+    box-sizing: border-box;
+    padding-bottom: 30px;
+    &::-webkit-scrollbar {
+      display: none;
+      /* Chrome Safari */
+    }
+  }
+  :deep(.van-popup) {
+    position: absolute;
+  }
+  .page-box {
+    min-height: 100vh;
+    transition: transform 0.35s, opacity 0.35s;
+    position: relative;
+    max-width: 750px;
+    margin: 0 auto;
+    background: #fff;
+    box-sizing: border-box;
+    &::-webkit-scrollbar {
+      width: 0 !important;
+      display: none;
+    }
+    :deep(.van-toast) {
+      word-break: keep-all !important;
+    }
+  }
+  
+  // Transaction popup style
+  .receipt-box {
+    .step-box {
+      padding: 0 50px;
+      div {
+        transition: ease 0.3s;
+      }
+      .num1 {
+        background: #037cd6;
+        border: 1PX solid #037cd6;
+        color: #fff;
+      }
+      &.receive {
+        .line1::after,
+        .line2::after {
+          border-color: #037cd6 !important;
+        }
+        .num3 {
+          background: #037cd6;
+          border: 1PX solid #037cd6;
+          color: #fff;
+        }
+      }
+      .num2 {
+        background: #037cd6;
+        border: 1PX solid #037cd6;
+        color: #fff;
+      }
+      &.pending {
+        .line1::after {
+          border-color: #68b1e6 !important;
+        }
+        .num2 {
+          background: #68b1e6;
+          border: 1PX solid #68b1e6;
+          color: #fff;
+        }
+      }
+    }
+    .label-box {
+      padding: 0 45px;
+      div {
+        line-height: 16px;
+        transition: ease 0.3s;
+        color: #979797;
+      }
+      &.pending {
+        .send {
+          color: #037cd6;
+        }
+        .con {
+          color: #68b1e6;
+        }
+      }
+      &.receive {
+        .send,
+        .done {
+          color: #037cd6;
+        }
+      }
+      .con {
+        color: #037cd6;
+      }
+    }
+    .num {
+      width: 18px;
+      line-height: 16px;
+      text-align: center;
+      font-size: 12px;
+      border-radius: 9px;
+      color: #979797;
+      border: 1PX solid #b3b3b3;
+    }
+    .line {
+      height: 1px;
+      flex: 1;
+      margin-left: 4px;
+      margin-right: 4px;
+      &::after {
+        border-color: #979797 !important;
+        border-style: dashed;
+      }
+    }
+  }
+  .receive-info {
+    * {
+      transition: ease all .3s;
+    }
+    div {
+      line-height: 20px;
+      color: #979797;
+    }
+    .status1 span {
+      display: inline-block;
+      line-height: 14px;
+      color: rgba(58, 174, 85, 1);
+      background: #e5ffeb;
+      padding: 0 5px;
+      border-radius: 7px;
+    }
+    .status0 span {
+      display: inline-block;
+      line-height: 14px;
+      color: rgb(214, 25, 25);
+      background: #ffe8e5;
+      padding: 0 5px;
+      border-radius: 7px;
+    }
+  }

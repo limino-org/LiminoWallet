@@ -1,0 +1,425 @@
+.nav-header-container {
+  height: 48PX;
+}
+.nav-header {
+  height: 48PX;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 999;
+}
+.nav-center {
+  max-width: 750px;
+  height: 48PX;
+  margin:  0 auto;
+
+}
+.nav-content {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(108, 173, 220, 0.1);
+  &.paddingTop {
+    padding-top: 12PX;
+  }
+  .netIcon {
+    color:  rgba(5, 126, 214, 1) !important;
+  }
+  &.hasExchange {
+    background: rgba(5, 126, 214, 1);
+    box-shadow: 0 1px 2px rgba(5, 126, 214, .1);
+    .netIcon {
+      color: #fff !important;
+    }
+  }
+}
+.nav-header.hasExchange {
+  & .nav-center::after{
+    display: none;
+  }
+
+  .title-big,.title-small {
+    color: #fff !important;
+  }
+  .title:hover {
+    background: #1d7ac1;
+  }
+}
+.nav-header-slider-box {
+    position: fixed;
+    background: #F8FCFF;
+}
+
+.pay-success {
+  text-align: center;
+  font-size: 20px;
+  color: rgba(5, 126, 214, 1);
+}
+.circle-loading {
+  width: 103px;
+  height: 103px;
+}
+.circle-success-text {
+  font-size: 16px;
+  color: rgba(5, 126, 214, 1);
+}
+.to-exchanges {
+  a {
+    color: rgba(5, 126, 214, 1);
+    font-size: 12px;
+    display: inline-block;
+    text-decoration: underline;
+  }
+  height: 20PX;
+}
+.nav-header {
+  height: 48PX;
+  box-sizing: border-box;
+  .nav-header-con {
+    max-width: 750px;
+    width: 100%;
+    width: -webkit-fill-available;
+  }
+  .active {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(5, 126, 214, 1);
+    margin-right: 4px;
+  }
+  .title-slot {
+    .title{
+      font-size: 16px;
+      line-height: 30PX;
+    }
+  }
+  .title {
+    padding: 0 10px;
+    &:hover {
+      background: #e9f5fe;
+    }
+    &-big {
+      line-height: 17PX;
+    }
+    &-small {
+      color: rgba(132, 140, 150, 1);
+      font-size: 12px;
+      transform: scale(.8);
+      transform-origin: center center;
+      i {
+        color: #037cd6;
+      }
+    }
+  }
+
+  .nav-icon {
+    padding: 0 14px;
+    width: 60px;
+    box-sizing: border-box;
+    .icon-box {
+      width: 25px;
+      height: 20PX;
+      i {
+        color: rgba(3, 125, 214, 1);
+        font-size: 22px;
+      }
+      i,span:hover {
+        color: rgb(6, 103, 173);
+        font-weight: bold;
+      }
+    }
+  }
+  .code {
+    color: rgba(3, 125, 214, 1);
+    width: 60px;
+    font-size: 12px;
+    .icon-box {
+      width: 30px;
+    }
+  }
+}
+.slider-con {
+  .slider-bg {
+    padding: 32px 0 14px 16px;
+    box-sizing: border-box;
+    background: #037CD6;
+    color: #fff;
+    .slider-top {
+      font-size: 12px;
+      line-height: 16px;
+      .circle-icon {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #ccc;
+        margin-right: 10px;
+      }
+    }
+    .user-img {
+      margin: 0 0 12px;
+      &-circle {
+        overflow: hidden;
+      }
+    }
+   
+    .account {
+      font-size: 12px;
+      margin-left: 7px;
+    }
+    .tag-list {
+      .tag-user {
+        width: 54px;
+        height: 12px;
+        .user {
+          width: 14px;
+          height: 14px;
+          display: block;
+          border-radius: 50%;
+          border: 1PX solid #108ae1;
+          position: absolute;
+          overflow: hidden;
+          left: -1px;
+          top: 0px;
+          img {
+            width: 11px;
+            height: 11px;
+            display: block;
+            vertical-align: top;
+
+          }
+        }
+        .tag-label {
+          line-height: 14px;
+          border-radius: 7px;
+          padding-left: 6px;
+          span {
+            font-size: 12px;
+          transform: scale(.6);
+          transform-origin:center center;
+          display: inline-block;
+          }
+        }
+        &.type1 {
+          // 绿色
+          .user,.tag-label {
+            background: linear-gradient(270deg, #93EBAD 0%, #52E374 100%);
+          }
+        }
+        &.type2 {
+          // 橙色
+          .user,.tag-label {
+            background: linear-gradient(90deg, #D9B560 0%, #D3E492 100%);
+          }
+        }
+        &.type3 {
+          // 交易所
+          .user,.tag-label {
+            background: linear-gradient(270deg, #21245F 0%, #1E275A 100%);
+          }
+        }
+  
+      }
+
+    }
+    .account-amount-box {
+      font-size: 10px;
+      line-height: 15px;
+      margin-top: 6px;
+    }
+    .account-address-box-1 {
+      line-height: 15px;
+      font-size: 10px;
+      margin-top: 5px;
+      transition: ease .3s;
+      color: #fff;
+    }
+
+    .account-import-btn {
+      .import-btn {
+        border-radius: 25px;
+        line-height: 20px;
+        border: 1PX solid rgba(149, 156, 165, 1);
+        width: 80px;
+        font-size: 9px;
+        margin-top: 10px;
+        color: rgba(121, 121, 121, 1);
+      }
+    }
+  }
+  .address-card  {
+    background: rgba(255,255,255,0.1);
+    height: 20px;
+    padding: 0 10px;
+    border-radius: 10px;
+    margin-top: 6px;
+    .add {
+      font-size: 12px;
+    }
+    .icon-copy {
+      padding-top: 2px;
+    }
+    i {
+      font-size: 14px;
+    }
+    .icon-QRcode {
+      font-size: 18px;
+    }
+    .shuxian {
+      height: 11px;
+      border-left: 1px solid #fff;
+      width: 0;
+    }
+  }
+  .slider-bottom {
+    .send-groups-box {
+      background: #037cd6;
+      &>div {
+        background-color: rgba($color: #ffffff, $alpha: .1);
+      }
+    }
+    .send-add-groups {
+      padding: 15px;
+      width: 208px;
+      margin: 0 auto;
+      .icon-btn {
+        color: #fff;
+        i {
+          color: #037CD6;
+        }
+        .icon-box {
+          width: 35px;
+          height: 35px;
+          border-radius: 50%;
+          background-color: #fff;
+        }
+      }
+    }
+    .setting-list {
+      .place-icon {
+        display: inline-block;
+        width: 15px;
+        margin-right: 14px;
+      }
+      .setting-btn {
+        padding: 0  10px 0 15px;
+       
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 44px;
+        transition: ease .3s;
+        display: flex;
+        align-items: center;
+        color: #3D3D3D;
+        &:hover {
+          color: #037cd6;
+          background: #ddeefb;
+          padding: 0  10px 0 20px;
+          .van-icon-arrow  {
+            color: #037CD6;
+          }
+        }
+        i {
+          margin-right: 9px;
+          font-size: 18px;
+          color: #037cd6;
+          font-weight: normal;
+        }
+        .van-icon-arrow {
+          color: #3D3D3D;
+          font-size: 15px;
+          margin-right: 0;
+        }
+        &.active {
+          // background: #e9f5fe;
+          // border-top-right-radius: 19px;
+          // border-bottom-right-radius: 19px;
+          // color: #037cd6;
+        }
+      }
+    }
+  }
+}
+
+.logout-box {
+  margin-top: 50px;
+}
+
+.sheet-bar {
+  height: 26px;
+  &-con {
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba($color: #000, $alpha: 0.3);
+  }
+}
+
+// 切换网络
+.toggle-network {
+  &-title {
+    font-size: 15px;
+    line-height: 21px;
+    padding: 14px 0;
+  }
+}
+.other-list {
+  &-tit {
+    padding: 0 18px;
+    font-size: 12px;
+    line-height: 16px;
+    margin-top: 12px;
+    color: #8F8F8F;
+  }
+  &-box {
+    max-height: 200px;
+    overflow-y: scroll;
+  }
+}
+.menu {
+  i{transition: ease .3s;}
+  i:hover {
+    font-weight: bolder;
+  }
+  color: #037cd6;
+  font-size: 12px;
+
+}
+.slider-bottom-box {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  .version {
+    color: #B3B3B3;
+  }
+}
+.close-icon-tip {
+  padding-top: 48px;
+  i {
+    color: rgba(246, 190, 39,1);
+    font-size: 40px;
+  }
+}
+.close-btns {
+  padding: 25px 48px;
+  button {
+    width: 100px;
+  }
+}
+.close-tip {
+  font-size: 15px;
+  width: 200px;
+  margin: 12px auto 0;
+  text-align: center;
+}
+
+@media screen and (min-width: 756px) {
+  .nav-header-slider-box {
+    width: 380px !important;
+  }
+}

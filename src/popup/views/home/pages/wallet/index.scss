@@ -1,0 +1,405 @@
+.create-box {
+  background: #f1f3f4;
+  height: 30px;
+  padding: 0 15px;
+  .label {
+    color: #848484;
+  }
+  .add {
+    width: 36px;
+height: 18px;
+background: #037CD6;
+border-radius: 9px;
+cursor: pointer;
+i {
+  color: #fff;
+  font-size: 14px;
+}
+  }
+}
+.icon-box.hasExchange {
+  i {
+    color: #fff !important;
+  }
+}
+.guide-tabs-box {
+  height: 0;
+}
+.tag-img-logo-box {
+  padding-top: 47px;
+  img {
+    width: 45px;
+  }
+}
+.tag-text-info {
+  color: #000;
+  margin-bottom: 30px;
+  margin-top: 8px;
+}
+// 账户详情模块
+.account-detail-box {
+  min-height: 200px;
+  color: #fff !important;
+  &.hasExchange {
+    background: #057ed6;
+    .account-card {
+      .card {
+        background: rgba($color: #fff, $alpha: 0.1);
+      }
+    }
+    .actions-btn {
+      .action-icon {
+        background: #fff;
+        i {
+          color: #037cd6;
+        }
+      }
+      .action-name {
+        color: #fff;
+      }
+    }
+  }
+  .account-card {
+    .card {
+      height: 120px;
+      border-radius: 7.5px;
+      background: #037cd6;
+      width: 100%;
+      .icon-circle {
+        width: 36px;
+        overflow: hidden;
+      }
+      .tag-list {
+        .tag-user {
+          width: 54px;
+          height: 12px;
+          .user {
+            width: 14px;
+            height: 14px;
+            display: block;
+            border-radius: 50%;
+            border: 1PX solid #108ae1;
+            // &::after {
+            //   border-color:#108ae1 ;
+            //   border-radius: 50%;
+            // }
+            position: absolute;
+            overflow: hidden;
+            left: -1px;
+            top: 0px;
+            img {
+              width: 100%;
+              height: 100%;
+              display: block;
+              vertical-align: top;
+  
+            }
+          }
+          .tag-label {
+            line-height: 14px;
+            border-radius: 7px;
+            padding-left: 6px;
+            span {
+              font-size: 12px;
+            transform: scale(.6);
+            transform-origin:center center;
+            display: inline-block;
+            }
+          }
+          &.type1 {
+            // 绿色
+            .user,.tag-label {
+              background: linear-gradient(270deg, #93EBAD 0%, #52E374 100%);
+            }
+          }
+          &.type2 {
+            // 橙色
+            .user,.tag-label {
+              background: linear-gradient(90deg, #D9B560 0%, #D3E492 100%);
+            }
+          }
+          &.type3 {
+            // 交易所
+            .user,.tag-label {
+              background: linear-gradient(270deg, #21245F 0%, #1E275A 100%);
+            }
+          }
+    
+        }
+  
+      }
+      .account-r {
+        width: calc(100% - 46px);
+        .address-card {
+          margin-top: 6px;
+          width: 160px;
+          padding: 0 10px;
+          height: 20px;
+          border-radius: 10px;
+          background: rgba($color: #fff, $alpha: 0.1);
+          .add {
+            font-size: 12px;
+            line-height: 20px;
+            height: 20px;
+          }
+          .icon-copy,
+          .icon-QRcode {
+            padding-top: 2px;
+          }
+
+          i {
+            font-size: 14px;
+          }
+          .icon-QRcode {
+            font-size: 18px;
+          }
+          .shuxian {
+            height: 11px;
+            border-left: 1px solid #fff;
+            width: 0;
+          }
+        }
+        .at {
+        }
+      }
+    }
+  }
+  .card-bottom {
+    line-height: 50px;
+    margin-bottom: 3px;
+    font-size: 30px;
+    .amount-box {
+      line-height: 50px;
+      box-sizing: border-box;
+      font-weight: bold;
+      max-width: 70vw;
+      display: block;
+
+      &.pt-6 {
+        height: 40px;
+        font-size: 44px;
+      }
+      &.f-36 {
+        font-size: 36px;
+      }
+    }
+    i {
+      font-size: 16px;
+    }
+    .dollar {
+      margin-top: 5px;
+      i {
+        height: 34px;
+        font-size: 12px;
+        &::before {
+          transform: scale(0.8);
+          transform-origin: center center;
+        }
+      }
+    }
+  }
+  .btn-group {
+    padding-left: 50px;
+    padding-right: 50px;
+    height: 75px;
+    background: rgba($color: #fff, $alpha: 0.1);
+  }
+}
+.wallet {
+  .icon-box {
+    width: 20px;
+    height: 20px;
+    i {
+      color: rgba(3, 125, 214, 1);
+      font-size: 22px;
+    }
+  }
+
+  .circle {
+    padding-top: 16px;
+    padding-bottom: 17px;
+  }
+  .listType {
+    position: absolute;
+    right: 0px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    top: 4px;
+    padding: 10px;
+    &:hover i {
+      color: rgba(3, 125, 214, 1);
+    }
+    i {
+      color: #9a9a9a;
+    }
+  }
+  .account-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1PX solid rgba(3, 125, 214, 1);
+    background: rgba(234, 234, 234, 1);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: ease 0.3s;
+    &:hover {
+      border: 1PX solid #fff;
+    }
+  }
+
+  .account-name {
+    font-size: 20px;
+    margin-bottom: 5px;
+    line-height: 28px;
+  }
+
+  .account-amount {
+    font-size: 10px;
+    line-height: 14px;
+    color: rgba(121, 121, 121, 1);
+  }
+
+  .account-address {
+    width: 102px;
+    line-height: 24px;
+    border-radius: 12px;
+    background-color: rgba(216, 216, 216, 0.88);
+    font-size: 10px;
+    color: rgba(121, 121, 121, 1);
+    padding: 0 10px;
+    margin: 20px auto 0;
+    transition: ease 0.3s;
+    &:hover {
+      background: rgb(65, 63, 63);
+      color: #fff;
+    }
+  }
+
+  .actions {
+    margin-top: 17px;
+    &-btn:hover {
+      .action-icon {
+        background: #057ed6;
+        i {
+          color: #fff;
+        }
+      }
+    }
+    &-btn {
+      transition: 0.3s ease;
+      .action-icon {
+        transition: 0.3s ease;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: #037cd6;
+        i {
+          font-size: 18px;
+          color: #fff;
+        }
+      }
+
+      .action-name {
+        line-height: 16px;
+        color: #037cd6;
+        font-size: 12px;
+        margin-top: 7px;
+      }
+    }
+  }
+
+  .noTokenBox {
+    margin-top: 20px;
+
+    .tip1 {
+      color: #b3b3b3;
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .tip2 {
+      color: rgba(3, 125, 214, 1);
+      font-size: 12px;
+      line-height: 15px;
+    }
+  }
+  .no-list {
+    i {
+      font-size: 40px;
+      color: #037cd6;
+    }
+  }
+  .van-tab {
+    position: inherit;
+  }
+  .van-tabs__nav--line {
+    height: 43PX;
+    padding-top: 16PX;
+    box-sizing: border-box;
+  }
+  .van-tabs__line {
+    height: 0.5px;
+    background: rgba(3, 125, 214, 1);
+    display: none;
+  }
+ 
+
+  .van-tab--active {
+    color: rgba(3, 125, 214, 1) !important;
+    .van-tab__text {
+      text-decoration: underline;
+    }
+  }
+  .van-tabs .van-sticky--fixed {
+    background: none;
+    border-bottom: 1px solid #cbe0f0;
+  }
+  .van-tab {
+    font-size: 12px;
+    height: 14px;
+    font-weight: bold;
+    line-height: 14px;
+    color: #000;
+  }
+}
+
+:deep(.page-container) {
+  min-height: calc(100vh - 48px);
+  scrollbar-width: none;
+  overflow-y: scroll;
+  position: relative;
+  box-sizing: border-box;
+  padding-bottom: 30px;
+  &::-webkit-scrollbar {
+    display: none;
+    /* Chrome Safari */
+  }
+}
+// .van-tabs__nav {
+//   background: rgba($color: #fff, $alpha: 0.2);
+//   backdrop-filter: saturate(180%) blur(10px);
+// }
+
+// @media screen and (max-width: 750px) {
+//   .van-tabs__nav {
+//     background: none;
+//     backdrop-filter: saturate(60%) blur(10px);
+//   }
+// }
+.account-pop {
+  top: 106px !important;
+  .van-popover__content {
+    background: rgba($color: #fff, $alpha: 0.8);
+    max-width: 175px;
+  }
+  .van-popover__arrow {
+    color: rgba($color: #fff, $alpha: 0.8);
+  }
+}
+
+
