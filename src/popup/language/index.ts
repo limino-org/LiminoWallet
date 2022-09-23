@@ -42,7 +42,6 @@ const i18n = createI18n({
 console.warn('i18n----------------', i18n.global.t('wallet.cancel'))
 console.warn('messages----------------', messages)
 localforage.getItem('vuex').then(store => {
-  // @ts-ignore
   const fallbackLocale = store ? store.system.language : 'en'
   sessionStorage.setItem('systemLang',fallbackLocale)
   storeObj.dispatch('system/setLanguage', fallbackLocale)

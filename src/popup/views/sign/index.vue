@@ -49,6 +49,7 @@ import useClipboard from 'vue-clipboard3'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import { handleType } from '@/scripts/background'
+import { sendBackground } from '@/popup/utils/sendBackground'
 
 export default {
   name: 'sign',
@@ -91,17 +92,21 @@ export default {
         Toast(t('sign.ready'))
         return
       }
+      
       // @ts-ignore
-      const bg = chrome.runtime.getBackgroundPage()
-      console.log('bg.params', bg.params)
-      bg.params[signType].sendResponse({ response: sign.value })
+      // const bg = chrome.runtime.getBackgroundPage()
+      // console.log('bg.params', bg.params)
+      // bg.params[signType].sendResponse({ response: sign.value })
+      sendBackground({method:signType,response:{code:'200',data: sign.value}})
     }
 
     const cancel = () => {
       // @ts-ignore
-      const bg = chrome.runtime.getBackgroundPage()
-      bg.handleReject(signType)
-      bg.closePopup(signType)
+      // const bg = chrome.runtime.getBackgroundPage()
+      // bg.handleReject(signType)
+      // bg.closePopup(signType)
+      sendBackground({method:signType,response:{code:'4001',data: null}})
+
     }
     onMounted(() => {
       toSign()

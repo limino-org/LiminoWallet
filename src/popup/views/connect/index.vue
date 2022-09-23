@@ -44,6 +44,7 @@ import { useStore } from 'vuex';
 import AccountIcon from '@/popup/components/accountIcon/index.vue'
 import { addressMask } from '@/popup/utils/filters';
 import { handleType, getSenderAccounts } from '@/scripts/background';
+import { sendBackground } from '@/popup/utils/sendBackground';
 
 export default {
   name: "pageConnect",
@@ -66,7 +67,7 @@ export default {
         return store.state.account.accountList
     })
     // @ts-ignore
-    const bg = chrome.runtime.getBackgroundPage();
+    // const bg = chrome.runtime.getBackgroundPage();
     const currentSender = bg.connectList.find(item => item.origin == bg.params[handleType.wallet_requestPermissions].sender.origin)
     const accounts = currentSender ? currentSender.accountList : []
     const { t } = useI18n();
@@ -79,13 +80,15 @@ export default {
        return checkedList.value.length
     })
     const next = () => {
-      //   @ts-ignore
-      bg.params[handleType.wallet_requestPermissions].sendResponse({response: [...checkedList.value]})
+      sendBackground({method:handleType.wallet_requestPermissions,response: {code:'200',data:[...checkedList.value]}})
+      // //   @ts-ignore
+      // bg.params[handleType.wallet_requestPermissions].sendResponse({response: [...checkedList.value]})
     }
     const cancel = () => {
         // @ts-ignore
-      const bg = chrome.runtime.getBackgroundPage();
-      bg.handleReject(handleType.wallet_requestPermissions)
+      // const bg = chrome.runtime.getBackgroundPage();
+      // bg.handleReject(handleType.wallet_requestPermissions)
+      sendBackground({method:handleType.wallet_requestPermissions,response:{code:"4001"}})
     }
     return {
       route,

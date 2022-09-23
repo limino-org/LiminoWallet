@@ -75,6 +75,7 @@ function injectScript() {
     // EInline scripts do not work in MV3 due to stricter security policies enforced in the current document  
 
     scriptTag.innerHTML = `
+    console.log("Hello Wormholes...")
     function provider() {
       this.enable = function () {
           console.log('request wallet connect')

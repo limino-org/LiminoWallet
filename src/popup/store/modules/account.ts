@@ -40,6 +40,7 @@ import BigNumber from "bignumber.js";
 import store from "@/popup/store";
 import { getContractAddress } from "@/popup/http/modules/common";
 import Bignumber from 'bignumber.js'
+import { sendBackground } from "@/popup/utils/sendBackground";
 export interface State {
   // Mnemonic words
   mnemonic: Mnemonic;
@@ -310,8 +311,10 @@ export default {
       wallet = value;
       if (wallet.provider) {
         // @ts-ignore
-        const bg = chrome.runtime.getBackgroundPage();
-        bg.initWallet()
+        // const bg = chrome.runtime.getBackgroundPage();
+        // bg.initWallet()
+        sendBackground({method:'update-wallet'})
+
       }
       localStorage.setItem("wallet", JSON.stringify({ ...value }));
     },
@@ -665,7 +668,9 @@ export default {
     // According to the current network status, the wallet status returns the wallet instance
     async getWallet({ commit, dispatch, state }: any) {
       // @ts-ignore
-      const bg = chrome.runtime.getBackgroundPage();
+      // const bg = chrome.runtime.getBackgroundPage();
+
+
       try {
         const { accountInfo } = state;
         const { keyStore } = accountInfo;
@@ -680,10 +685,8 @@ export default {
         await dispatch("createWalletByJson", { password, json: keyStore });
         // Link current network provider
         wallet = await dispatch("getProviderWallet");
-        // @ts-ignore
-        bg.wallet = wallet
         commit("UPDATE_WALLET", wallet);
-
+        sendBackground({method:'update-wallet'})
         return Promise.resolve(wallet);
       } catch (err) {
         // @ts-ignore

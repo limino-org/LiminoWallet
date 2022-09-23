@@ -49,6 +49,7 @@ import { computed, onMounted, ref, Ref } from "vue";
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex';
 import { handleType } from '@/scripts/background';
+import { sendBackground } from '@/popup/utils/sendBackground';
 
 export default {
   name: "sign",
@@ -83,16 +84,20 @@ export default {
         return;
       }
       // @ts-ignore
-     const bg = chrome.runtime.getBackgroundPage();
-      console.log("bg.params", bg.params)
-      bg.params['multiple_sign'].sendResponse({response: list.value})
+      
+    //  const bg = chrome.runtime.getBackgroundPage();
+    //   console.log("bg.params", bg.params)
+    //   bg.params['multiple_sign'].sendResponse({response: list.value})
+      sendBackground({method:handleType.multiple_sign,response:{code:'200',data: list.value}})
     }
 
     const cancel = () => {
       // @ts-ignore
-      const bg = chrome.runtime.getBackgroundPage();
-      bg.handleReject(handleType.multiple_sign)
-      bg.closePopup(handleType.multiple_sign)
+      // const bg = chrome.runtime.getBackgroundPage();
+      // bg.handleReject(handleType.multiple_sign)
+      // bg.closePopup(handleType.multiple_sign)
+      sendBackground({method:handleType.multiple_sign,response:{code:'4001',data: null}})
+
     }
     onMounted(async() => {
       loading.value = true

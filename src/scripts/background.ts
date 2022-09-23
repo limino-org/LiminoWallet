@@ -566,7 +566,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
   if (!target) {
     return false
   }
-  if (target != 'wormholes-inpage' && (!data || !data.method)) {
+  if ((target != 'wormholes-inpage' || target != 'wormholes-popup') && (!data || !data.method)) {
     const errMsg = errorCode['4100']
     console.warn('111---------------------------------------------------------')
     sendMessage(createMsg(errMsg, method || 'unknow'), {}, sender)
@@ -577,6 +577,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
   // Authentication to check whether the connection is established
   const isConnect = await isConnected(sender)
   console.warn('isConnect', isConnect, sender)
+  if(target == 'wormholes-inpage'){
   //  When not connected
   if ((target == 'wormholes-inpage' && !isConnect) && (method != handleType.wallet_requestPermissions && method != handleType.eth_requestAccounts)) {
     const errMsg = errorCode['4100']
@@ -614,6 +615,13 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
       console.error("method can't suppopt")
     }
     return true;
+  }
+  }
+
+  // Popup message
+  if(target == 'wormholes-popup') {
+    console.log('target',target)
+    console.log('data',data)
   }
 });
 

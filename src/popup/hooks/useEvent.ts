@@ -4,6 +4,7 @@ import { useStore } from 'vuex'
 import { useBroadCast } from '@/popup/utils/broadCost'
 import { eventsEmitter, getWallet } from '@/scripts/background';
 import  { web3 } from '@/popup/utils/web3'
+import { sendBackground } from '../utils/sendBackground';
 export enum eventHandler {
     changeNetwork = 'changeNetwork',
     changeAccount = 'changeAccount'
@@ -19,16 +20,20 @@ export const useEvent = () => {
         const net = await wallet.provider.getNetwork()
         const chainId = web3.utils.toHex(net.chainId)
         // @ts-ignore Send to page
-        const bg = chrome.runtime.getBackgroundPage();
-        bg.params[eventsEmitter.chainChanged].sendResponse({response: chainId})
+        // const bg = chrome.runtime.getBackgroundPage();
+        // bg.params[eventsEmitter.chainChanged].sendResponse({response: chainId})
+        sendBackground({method:eventsEmitter.chainChanged, response:{code:"200",data:chainId}})
+
         dispatch("system/getEthAccountInfo");
         handleUpdate()
     })
     // account Change
     eventBus.on(eventHandler.changeAccount, (address: string) => {
         // @ts-ignore Send to page
-        const bg = chrome.runtime.getBackgroundPage();
-        bg.params[eventsEmitter.accountsChanged].sendResponse({response:address})
+        // const bg = chrome.runtime.getBackgroundPage();
+        // bg.params[eventsEmitter.accountsChanged].sendResponse({response:address})
+        sendBackground({method:eventsEmitter.accountsChanged, response:{code:'200',data:address}})
+
         dispatch("system/getEthAccountInfo");
         handleUpdate()
     })
