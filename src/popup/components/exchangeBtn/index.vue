@@ -7,12 +7,22 @@
         <div class="flex right pl-20 pr-20">
           <div
             class="help-btn flex center hover"
-            @click="toHelp"
-            @mouseover.self="showHelp = true"
-            @mouseout.self="showHelp = false"
+   
           >
+          <div class="btn-mask"
+
+          >
+          <div class="btn-mask-box flex center"
+          @click="toHelp"
+            @mouseover="showHelp = true"
+            @mouseout="showHelp = false"
+          >
+
             <GuideModal13 />
             <i class="iconfont icon-bangzhuzhongxin3"></i>
+          </div>
+        </div>
+
           </div>
           <Transition name="slider2">
             <div class="hint pl-10 pr-10" v-if="showHelp">
@@ -206,6 +216,19 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
+  .btn-mask {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    &-box {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 1000000;
+    }
+  }
 .wallet-hint-h {
   span {
     font-size: 12px;

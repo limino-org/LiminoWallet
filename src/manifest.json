@@ -3,26 +3,29 @@
   "description": "A Vue Browser Extension",
   "default_locale": "en",
   "version": "0.0.1.2",
-  "manifest_version": 2,
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'", 
+  "manifest_version": 3,
+
   "permissions": [
     "contextMenus",
     "tabs",
     "cookies",
     "activeTab",
     "<all_urls>",
+
+    "nativeMessaging",
+    "notifications"
+  ],
+  "host_permissions":[
     "*://*/*",
     "http://*/*",
-    "https://*/*",
-    "nativeMessaging",
-    "notifications",
-    "storage"
+    "https://*/*"
   ],
   "content_scripts": [
 		{
-			"matches": ["*://*/*","*://developer.mozilla.org/*"],
-			"js": ["js/chunk-vendors.js", "js/content-script.js"],
-      "run_at": "document_start"
+      "matches": ["https://github.com/*"],
+      "run_at": "document_start",
+      "js": ["js/chunk-vendors.js","js/popup.js"]
+
 		}
 	],
   "icons": {
@@ -31,12 +34,9 @@
     "128": "icons/logo-128.png"
   },
   "background": {
-    "scripts": [
-      "js/background.js"
-    ],
-    "persistent": true
+    "service_worker": "js/background.js"
   },
-  "browser_action": {
+  "action": {
     "default_popup": "popup.html",
     "default_title": "__MSG_extName__",
     "browser_style": true,
@@ -44,5 +44,14 @@
       "16": "icons/logo-16.png",
       "48": "icons/logo-48.png"
     }
+  },
+
+  "web_accessible_resources": [{
+    "resources": ["page-script.js"],
+    "matches": [ "http://*/*",
+    "https://*/*"]
+  }],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' ; object-src 'self'"
   }
 }

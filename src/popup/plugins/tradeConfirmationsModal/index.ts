@@ -1,7 +1,4 @@
 import { getCurrentInstance, ComponentInternalInstance } from 'vue'
-import { TradeConfirmOpt } from './tradeConfirm'
-
-
 export type TradeConfirmType = {
     open: Function
     update: Function

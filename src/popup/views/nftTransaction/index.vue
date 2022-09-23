@@ -129,7 +129,7 @@ export default {
         const receipt = await dispatch("account/sendTransaction", {from,to: utils.getAddress(to),value,data});
         console.log('receipt',receipt)
         // @ts-ignore 
-          const bg = chrome.extension.getBackgroundPage();
+          const bg = chrome.runtime.getBackgroundPage();
           bg.params[handleType.eth_sendTransaction].sendResponse({ response: receipt });
       } catch (err: any) {
         Toast(err.reason);

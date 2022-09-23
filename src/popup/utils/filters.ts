@@ -255,19 +255,19 @@ export const snftToErb = (address) => {
   switch (address.length) {
     // snft 碎片
     case 42:
-      erbNumber = utils.formatEther("100000000000000000");
+      erbNumber = utils.formatEther("95000000000000000");
       break;
       // snft
     case 40:
-      erbNumber = utils.formatEther("150000000000000000");
+      erbNumber = utils.formatEther("143000000000000000");
       break;
       // 合集
     case 39:
-      erbNumber = utils.formatEther("225000000000000000");
+      erbNumber = utils.formatEther("271000000000000000");
       break;
       // 期
     case 38:
-      erbNumber = utils.formatEther("300000000000000000");
+      erbNumber = utils.formatEther("650000000000000000");
       break;
   }
   return erbNumber;

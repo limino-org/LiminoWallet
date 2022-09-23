@@ -92,14 +92,14 @@ export default {
         return
       }
       // @ts-ignore
-      const bg = chrome.extension.getBackgroundPage()
+      const bg = chrome.runtime.getBackgroundPage()
       console.log('bg.params', bg.params)
       bg.params[signType].sendResponse({ response: sign.value })
     }
 
     const cancel = () => {
       // @ts-ignore
-      const bg = chrome.extension.getBackgroundPage()
+      const bg = chrome.runtime.getBackgroundPage()
       bg.handleReject(signType)
       bg.closePopup(signType)
     }

@@ -12,16 +12,33 @@
         :key="item.address"
         @click="hancleClick(item, idx)"
       >
-        <img :src="`${metaDomain}${item.source_url}`" :class="`flex center ${item.select ? 'active' : ''}`" fit="cover" />
+        <img
+          :src="`${metaDomain}${item.source_url}`"
+          :class="`flex center ${item.select ? 'active' : ''}`"
+          fit="cover"
+        />
       </div>
     </div>
     <div class="swipe-box">
       <i class="iconfont icon-quanping hover" @click="showImg"></i>
       <van-icon name="arrow-left hover" @click="to('prev')" />
-      <van-swipe @change="onChange" ref="swipe" lazy-render :initial-swipe="swiperIdx">
-        <van-swipe-item class="flex center position relative swipe-slider" v-for="item in pageData.children" :key="item">
+      <van-swipe
+        @change="onChange"
+        ref="swipe"
+        lazy-render
+        :initial-swipe="swiperIdx"
+      >
+        <van-swipe-item
+          class="flex center position relative swipe-slider"
+          v-for="item in pageData.children"
+          :key="item"
+        >
           <div class="swipe-img mt-10 position relative">
-            <img :class="chooseSnftData.Chipcount == 0 ? 'gray' : ''" :src="`${metaDomain}${item.source_url}`" alt />
+            <img
+              :class="chooseSnftData.Chipcount == 0 ? 'gray' : ''"
+              :src="`${metaDomain}${item.source_url}`"
+              alt
+            />
             <div class="check-list flex" v-show="chooseSnftData.Chipcount">
               <div
                 :class="`fg van-hairline--right van-hairline--bottom ${disabled(
@@ -38,10 +55,17 @@
       <van-icon name="arrow hover" @click="to('next')" />
     </div>
     <!-- Selected -->
-    <div class="select-box">{{ t("sendSNFT.selected") }} {{ chooseNum }}/{{ hasChooseNum }}</div>
+    <div class="select-box">
+      {{ t("sendSNFT.selected") }} {{ chooseNum }}/{{ hasChooseNum }}
+    </div>
     <!-- 3.speed of progress -->
     <div class="progress-box pl-10 pr-10 mt-10">
-      <ProgressBar :value="chooseSnftData.Chipcount" :own="hasChooseNum" :total="256" :ratio="ratio" />
+      <ProgressBar
+        :value="chooseSnftData.Chipcount"
+        :own="hasChooseNum"
+        :total="256"
+        :ratio="ratio"
+      />
     </div>
     <!-- snft- info -->
     <div class="snft-form van-hairline--surround m-14">
@@ -58,7 +82,7 @@
       </div>
       <div class="card mt-8 card-last">
         <div class="name">{{ t("sendSNFT.address") }}</div>
-        <div class="value">{{ addressMask(chooseSnftData.address) }}</div>
+        <div class="value">{{ addressMask(chooseSnftData.nft_address) }}</div>
       </div>
     </div>
     <!-- Button group -->
@@ -91,34 +115,62 @@
       </div>
     </div>
   </div>
-  <!-- Exchange Erb -->
+  <!-- Transfer Erb -->
   <TransferNFTModal
     :selectNumber="chooseNum"
     :selectName="chooseName"
     :selectAddress="chooseAddress"
     :selectTotal="totalAmount"
     :selectList="selectList"
+    txtype="2"
+    type="1"
     v-model="showModal"
-    @nftConverSuccess="nftConverSuccess"
+    @success="reLoading"
+    @fail="reLoading"
   />
 </template>
 <script lang="ts">
-import { Image, Swipe, SwipeItem, Icon, SwipeInstance, Toast, ImagePreview, Sticky } from 'vant'
-import { computed, defineComponent, onActivated, onMounted, Ref, ref } from 'vue'
-import ProgressBar from '@/popup/views/account/components/snftList/progressBar.vue'
-import { useRouter, useRoute } from 'vue-router'
-import TransferNFTModal from '@/popup/views/home/components/transferNFTModal.vue'
-import { snftGroup, QuerySnftChip } from '@/popup/http/modules/nft'
-import { getWallet } from '@/popup/store/modules/account'
-import { useStore } from 'vuex'
-import { addressMask, snftToErb, toUsd } from '@/popup/utils/filters'
-import BigNumber from 'bignumber.js'
-import NavHeader from '@/popup/components/navHeader/index.vue'
-import { useI18n } from 'vue-i18n'
-import {VUE_APP_METAURL} from '@/popup/enum/env'
+import {
+  Image,
+  Swipe,
+  SwipeItem,
+  Icon,
+  SwipeInstance,
+  Toast,
+  ImagePreview,
+  Sticky,
+} from "vant";
+import {
+  computed,
+  defineComponent,
+  onActivated,
+  onMounted,
+  Ref,
+  ref,
+} from "vue";
+import ProgressBar from "@/popup/views/account/components/snftList/progressBar.vue";
+import { useRouter, useRoute } from "vue-router";
+import TransferNFTModal from "@/popup/views/home/components/transferNFTModal.vue";
+import { snftGroup, QuerySnftChip } from "@/popup/http/modules/nft";
+import { getWallet } from "@/popup/store/modules/account";
+import { useStore } from "vuex";
+import { addressMask, snftToErb, toUsd } from "@/popup/utils/filters";
+import BigNumber from "bignumber.js";
+import NavHeader from "@/popup/components/navHeader/index.vue";
+import { useI18n } from "vue-i18n";
+import { VUE_APP_METAURL } from "@/popup/enum/env";
+const disabledChip = {
+  address: null,
+  select: false,
+  index: null,
+  ownaddr: null,
+  Chipcount: 0,
+  MergeLevel: 0,
+  disabled: true,
+};
 
 export default {
-  name: 'snft-detail',
+  name: "snft-detail",
   components: {
     [Image.name]: Image,
     [Swipe.name]: Swipe,
@@ -127,192 +179,257 @@ export default {
     [Icon.name]: Icon,
     ProgressBar,
     TransferNFTModal,
-    NavHeader
+    NavHeader,
   },
   setup() {
-    const { t } = useI18n()
-    const router = useRouter()
-    const route = useRoute()
-    const { state } = useStore()
-    const swipe: Ref = ref(null)
-    const pageData = ref(JSON.parse(sessionStorage.getItem('compData')))
-    console.warn('pagedata', pageData.value)
-    const { query } = route
-    const { address } = query
+    const { t } = useI18n();
+    const router = useRouter();
+    const route = useRoute();
+    const { state } = useStore();
+    const swipe: Ref = ref(null);
+    const pageData = ref(JSON.parse(sessionStorage.getItem("compData")));
+    console.warn("pagedata", pageData.value);
+    const { query } = route;
+    const { nft_address } = query;
     //Query the subscript of the swiper according to the address
-    const idx = pageData.value.children.findIndex((item: any) => item.address.toUpperCase() == address?.toString().toUpperCase())
-    const swiperIdx = ref(idx || 0)
-    pageData.value.children.forEach(item => (item.select = false))
-    pageData.value.children[idx].select = true
-    const metaDomain = ref(`${VUE_APP_METAURL}`)
-    const accountInfo = computed(() => state.account.accountInfo)
+    const idx = pageData.value.children.findIndex(
+      (item: any) =>
+        item.nft_address.toUpperCase() == nft_address?.toString().toUpperCase()
+    );
+    debugger
+    const swiperIdx = ref(idx || 0);
+    pageData.value.children.forEach((item) => (item.select = false));
+    pageData.value.children[idx].select = true;
+    const metaDomain = ref(`${VUE_APP_METAURL}`);
+    const accountInfo = computed(() => state.account.accountInfo);
     // Currently selected snft fragments
     let selectList = computed(() => {
-      return mySnfts.value.filter(item => item.select)
-    })
-    const mySnfts = ref([])
+      return mySnfts.value.filter((item) => item.select);
+    });
+    const mySnfts = ref([]);
 
     // Query NFT fragment details
     const getNft256 = (params = {}) => {
-      Toast.loading({ message: t('sendSNFT.loading') })
+      Toast.loading({ message: t("sendSNFT.loading") });
+      const allList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
       return QuerySnftChip(params)
         .then(({ data }) => {
-          const address = accountInfo.value.address
+          const address = accountInfo.value.address;
+          const currentData = pageData.value.children[swiperIdx.value];
           data.forEach((item: any) => {
-            item.select = false
-            item.address = item.nft_address
-            if (item.ownaddr.toUpperCase() == address.toUpperCase()) {
-              item.disabled = false
+            const { nft_address } = item;
+            item.select = false;
+            item.address = nft_address;
+            item.index = parseInt(
+              nft_address.substr(nft_address.length - 1, 1),
+              16
+            );
+            if (
+              getDisabled(currentData) == "" &&
+              item.ownaddr.toUpperCase() == address.toUpperCase()
+            ) {
+              item.disabled = false;
             } else {
-              item.disabled = true
+              item.disabled = true;
             }
-          })
-          mySnfts.value = data
-          console.warn('mySnfts.value', mySnfts.value)
-        }).catch(err => {
-          mySnfts.value = []
-        }).finally(() => {
-          Toast.clear()
-        })
-    }
+            // if (item.ownaddr.toUpperCase() == address.toUpperCase()) {
+            //   item.disabled = false
+            // } else {
+            //   item.disabled = true
+            // }
+          });
+          let data3 = [];
+          if (!data.length) {
+            allList.forEach((sun: any) => {
+              data3.push(disabledChip);
+            });
+          }
 
-    const { nft_token_id, nft_contract_addr } = route.query
+          if (data.length < 16 && data.length > 0) {
+            const data2 = data.map((item: any) => item.index);
+            const filterList = allList.filter((sun2) => !data2.includes(sun2));
+            allList.forEach((sun: any, idx: number) => {
+              if (filterList.includes(idx)) {
+                data.splice(idx, 0, disabledChip);
+              }
+            });
+          }
+
+          debugger;
+          mySnfts.value = [...data, ...data3];
+          console.warn("mySnfts.value", mySnfts.value);
+        })
+        .catch((err) => {
+          mySnfts.value = [];
+        })
+        .finally(() => {
+          Toast.clear();
+        });
+    };
+
+    const { nft_token_id, nft_contract_addr } = route.query;
     // First query
     const params = {
       nft_contract_addr,
       nft_token_id,
-      start_index: '0',
-      count: '256'
-    }
-    getNft256(params)
+      start_index: "0",
+      count: "16",
+    };
+    getNft256(params);
 
     const hancleClick = (e, i) => {
-      console.log(e, i)
-      swipe.value?.swipeTo(i)
-    }
-    // change 
-    const onChange = e => {
-      console.log(e)
-      swiperIdx.value = e
-      pageData.value.children.forEach(item => (item.select = false))
-      pageData.value.children[e].select = true
+      console.log(e, i);
+      swipe.value?.swipeTo(i);
+    };
+    // change
+    const onChange = (e) => {
+      console.log(e);
+      swiperIdx.value = e;
+      pageData.value.children.forEach((item) => (item.select = false));
+      pageData.value.children[e].select = true;
       // Query 256nft fragment information according to the current ID
-      const { nft_contract_addr, nft_token_id } = pageData.value.children[e]
+      const { nft_contract_addr, nft_token_id } = pageData.value.children[e];
       const params = {
         nft_contract_addr,
         nft_token_id,
-        start_index: '0',
-        count: '256'
-      }
-      getNft256(params)
-    }
+        start_index: "0",
+        count: "16",
+      };
+      getNft256(params);
+    };
 
     const showImg = () => {
-      const idx = pageData.value.children.findIndex(item => item.select)
-      const arr2 = pageData.value.children.map(item => metaDomain.value + item.source_url)
-      ImagePreview({ images: [...arr2], startPosition: idx, closeable: true })
-    }
-
-    const disabled = v => {
-      return v.disabled ? 'disabled' : ''
-    }
+      const idx = pageData.value.children.findIndex((item) => item.select);
+      const arr2 = pageData.value.children.map(
+        (item) => metaDomain.value + item.source_url
+      );
+      ImagePreview({ images: [...arr2], startPosition: idx, closeable: true });
+    };
+    const getDisabled = (item: any) => {
+      const { pledgestate, Chipcount, disabled, actionType } = item;
+      const status = actionType;
+      if (status == "3") {
+        return disabled ? "disabled" : "";
+      }
+      if (status == "2") {
+        if (pledgestate == "Pledge" || !Chipcount) {
+          return "disabled";
+        }
+      }
+      if (status == "1") {
+        return "disabled";
+      }
+      return "";
+    };
+    const disabled = (v) => {
+      return v.disabled ? "disabled" : "";
+    };
 
     const toSend = () => {
       if (!chooseNum.value) {
-        Toast(t('sendSNFT.pleaseselect'))
-        return
+        Toast(t("sendSNFT.pleaseselect"));
+        return;
       }
-      if (selectList.value.length == 256) {
-        const address = selectList.value[0].address.substr(0, 40)
-        sessionStorage.setItem('sendSnftList', JSON.stringify([{ address }]))
+      if (selectList.value.length == 16) {
+        const address = selectList.value[0].address.substr(0, 40);
+        sessionStorage.setItem("sendSnftList", JSON.stringify([{ address }]));
       } else {
-        sessionStorage.setItem('sendSnftList', JSON.stringify(selectList.value))
+        sessionStorage.setItem(
+          "sendSnftList",
+          JSON.stringify(selectList.value)
+        );
       }
       // Determine whether there are selected snft fragments
-      router.push({ name: 'sendSnft-step2' })
-    }
+      router.push({ name: "sendSnft-step2" });
+    };
 
     // Select snft event
     const selectSnft = (v, idx) => {
-      console.log('start:', v, idx, mySnfts.value[idx].select)
-      console.log(v.select)
+      console.log("start:", v, idx, mySnfts.value[idx].select);
+      console.log(v.select);
       if (v.disabled) {
-        return
+        return;
       }
-      mySnfts.value[idx].select = !v.select
-      const end = Date.now()
-      console.log('end:', end)
-    }
+      mySnfts.value[idx].select = !v.select;
+    };
 
     // Exchange pop-up event
     const handleConvert = () => {
       if (!chooseNum.value) {
-        Toast(t('sendSNFT.notselected'))
-        return
+        Toast(t("sendSNFT.notselected"));
+        return;
       }
-      showModal.value = true
-    }
+      showModal.value = true;
+    };
 
     // Event of successful redemption
-    const nftConverSuccess = () => {
-      Toast(t('transferNFTModal.exchangesuccessfully'))
-      router.replace({ name: 'wallet' })
-    }
+    const reLoading = () => {
+
+      onChange(swiperIdx.value);
+    };
     // Optional quantity
     const hasChooseNum = computed(() => {
-      return mySnfts.value.filter(item => !item.disabled).length
-    })
+      return mySnfts.value.filter((item) => !item.disabled).length;
+    });
 
     // Amount of data currently selected
     const chooseNum = computed(() => {
-      return mySnfts.value.filter(item => item.select).length
-    })
+      return mySnfts.value.filter((item) => item.select).length;
+    });
     // Currently selected fragment name
     const chooseName = computed(() => {
-      return chooseSnftData.value.name
-    })
+      return chooseSnftData.value.name;
+    });
     // Currently selected fragment address
     const chooseAddress = computed(() => {
-      return chooseSnftData.value.address
-    })
+      return chooseSnftData.value.address;
+    });
     // Currently selected snft
-    const chooseSnftData = computed(() => pageData.value.children[swiperIdx.value])
-    const showModal = ref(false)
+    const chooseSnftData = computed(
+      () => pageData.value.children[swiperIdx.value]
+    );
+    const showModal = ref(false);
 
     // Total amount
     const totalAmount = computed(() => {
       if (!selectList.value.length) {
-        return 0
+        return 0;
       }
       // If 256 direct incoming aggregate addresses are selected
-      if (selectList.value.length == 256) {
-        const erb = snftToErb(selectList.value[0].nft_address.substr(0, 40))
-        return parseFloat(new BigNumber(chooseNum.value).multipliedBy(erb).toFixed(2))
+      if (selectList.value.length == 16) {
+        const erb = snftToErb(selectList.value[0].nft_address.substr(0, 40));
+        return parseFloat(
+          new BigNumber(chooseNum.value).multipliedBy(erb).toFixed(5)
+        );
       }
       // Fragment address
-      return parseFloat(new BigNumber(chooseNum.value).multipliedBy(snftToErb(selectList.value[0].nft_address)).toFixed(2))
-    })
+      return parseFloat(
+        new BigNumber(chooseNum.value)
+          .multipliedBy(snftToErb(selectList.value[0].nft_address))
+          .toFixed(5)
+      );
+    });
 
     const to = (type: string) => {
-      if (type == 'next') {
-        swipe.value?.next()
+      if (type == "next") {
+        swipe.value?.next();
       }
-      if (type == 'prev') {
-        swipe.value?.prev()
+      if (type == "prev") {
+        swipe.value?.prev();
       }
-    }
+    };
 
     // Exchange rate by selected quantity 256 by single snft
     const ratio = computed(() => {
-      return 0.15
-    })
+      return 0.095;
+    });
     return {
       t,
       to,
       hancleClick,
       selectSnft,
       totalAmount,
-      nftConverSuccess,
+      reLoading,
       onChange,
       addressMask,
       swipe,
@@ -332,13 +449,13 @@ export default {
       chooseSnftData,
       selectList,
       handleConvert,
-      ratio
-    }
-  }
-}
+      ratio,
+    };
+  },
+};
 </script>
 <style lang="scss" scoped>
-:deep(.progress-bar){
+:deep(.progress-bar) {
   background: none;
 }
 .snft-detail {
@@ -358,7 +475,7 @@ export default {
         display: none;
       }
       &.active {
-        border: 1PX solid #037cd6;
+        border: 1px solid #037cd6;
         border-radius: 7px;
 
         &::after {
@@ -481,7 +598,6 @@ export default {
         }
         .btn-txt {
           color: #bbbbbb;
-
         }
       }
       .icon-in {
@@ -500,7 +616,6 @@ export default {
         .icon-wendang {
           font-size: 20px;
         }
-
       }
       &-txt {
         font-size: 12px;
@@ -535,7 +650,7 @@ export default {
         cursor: no-drop;
       }
       &.select {
-        background: rgba($color: #037cd6, $alpha: 1);
+        background: rgba($color: #037cd6, $alpha: 0.6);
         &::after {
           border-bottom-width: 0;
           border-right-width: 0;

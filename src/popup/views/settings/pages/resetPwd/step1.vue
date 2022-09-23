@@ -77,6 +77,7 @@ import { useNetWork } from "@/popup/components/navHeader/hooks/netWork";
 import NavHeader from '@/popup/components/navHeader/index.vue'
 import { useToast } from '@/popup/plugins/toast';
 import WormTransition from '@/popup/components/wromTransition/index.vue'
+import { encrypt } from '@/popup/utils/cryptoJS';
 export default {
   components: {
     [Icon.name]: Icon,
@@ -133,6 +134,7 @@ export default {
     const onSubmit = async (value: object) => {
       accountLoading.value = true
       const accountInfo = store.state.account.accountInfo
+      debugger
       const { keyStore } = accountInfo
       // 通过密码解锁当前账户的keyStore文件
       const data: CreateWalletByJsonParams = {
@@ -142,10 +144,14 @@ export default {
       try {
         await createWalletByJson(data)
         isError.value = false
-        router.replace({ name: route.query.toName ? route.query.toName :'successpage',query:{clearCache: 'true'} })
+        const time = new Date().getTime()
+        //   Encrypt and store the time with a password according to the, transfer it to Step2, and then use PWD to restore the time at Step2
+        const tkstr = encrypt('reset-token' + time, time.toString())
+        localStorage.setItem('resetpwdtk', tkstr)
+        router.replace({ name: route.query.toName ? route.query.toName :'successpage', params:{time}})
       }catch(err){
+        console.error(err)
         isError.value = true
-        $toast.warn(err)
       } finally {
         password.value = ''
         accountLoading.value = false

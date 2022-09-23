@@ -1,6 +1,8 @@
-import en from './en-US/index'
-import zh from './zh_CN/index'
-import { createI18n } from 'vue-i18n' //引入vue-i18n组件
+
+//@ts-nocheck
+import en from './en-US/index.json5'
+import zh from './zh_CN/index.json5'
+import { createI18n } from 'vue-i18n'
 import { useStore } from 'vuex';
 import { Locale } from 'vant';
 import { ref } from 'vue'
@@ -31,13 +33,14 @@ export const vantLangs = {
 
 
 const i18n = createI18n({
-  silentFallbackWarn:true,
+  silentFallbackWarn: true,
   fallbackLocale,
-  globalInjection:true,
+  globalInjection: true,
   locale: fallbackLocale,
   messages,
 });
-
+console.warn('i18n----------------', i18n.global.t('wallet.cancel'))
+console.warn('messages----------------', messages)
 localforage.getItem('vuex').then(store => {
   // @ts-ignore
   const fallbackLocale = store ? store.system.language : 'en'

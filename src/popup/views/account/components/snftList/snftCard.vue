@@ -1,214 +1,366 @@
 <template>
-  <div :class="`new-nft-card pl-8 pr-8 ${data.total_hold == 16 ? 'blink' : ''}`">
+  <div
+    :class="`new-nft-card pl-8 pr-8 ${data.total_hold == 216 ? 'blink' : ''}`"
+  >
     <!-- 1.info -->
     <div class="coll-info">
       <div class="flex between">
         <span class="f-12 lh-14 text-bold">{{ data.name }}</span>
-        <span class="more f-12 lh-14 hover" @click.stop="toDetail">{{$t('sendSNFT.more')}}</span>
+        <span class="more f-12 lh-14 hover" @click.stop="toDetail">{{
+          $t("sendSNFT.more")
+        }}</span>
       </div>
-      <div class="info pl-10 pr-10 pt-6 pb-6 lh-14 f-12 mt-8" v-if="data.desc">{{ data.desc }}</div>
+      <div class="info pl-10 pr-10 pt-6 pb-6 lh-14 f-12 mt-8" v-if="data.desc">
+        {{ data.desc }}
+      </div>
     </div>
     <!-- 2.compilations -->
-    <div :class="`coll-list flex ${compData.total_hold == 16 ? 'active' : ''}`">
-      <div class="coll-card hover" v-for="(item,idx) in compData.children" :key="item.key" @click.stop="handleClick(item,idx)">
-        <i class="iconfont icon-duihao2 check-icon" v-show="item.select"></i>
-        <img loading="lazy" :src="`${metaDomain}${item.source_url}`" :class="`${item.disabled ? 'gray'  : ''} ${item.Chipcount == 0 ? 'disabled' : ''}`" />
+    <div
+      :class="`coll-list flex ${compData.total_hold == 256 ? 'active' : ''}`"
+    >
+      <div
+        class="coll-card hover"
+        v-for="(item, idx) in compData.children"
+        :key="item.key"
+        @click.stop="handleClick(item, idx)"
+      >
+        <i class="iconfont icon-duihao2 check-icon" v-show="item.select && showIcon"></i>
+        <img src="./select-white.svg" class=" check-icon-default no-select" alt="" v-show="!getDisabled(item) && showIcon">
+        <img
+          loading="lazy"
+          :src="`${metaDomain}${item.source_url}`"
+          :class="`${item.disabled ? 'gray' : ''} ${getDisabled(item)}`"
+        />
       </div>
     </div>
     <!-- 3.progress  -->
     <div class="progress-box">
-      <ProgressBar :value="data['total_hold']" :own="data['total_hold']" :ratio="ratio" />
+      <ProgressBar
+        :value="data['total_hold']"
+        :own="data['total_hold']"
+        :ratio="ratio"
+      />
     </div>
     <!-- 4.money -->
     <div class="total-amount flex center-v mt-10">
-      <div :class="`all-box flex center-v mr-8 hover ${
+      <div
+        v-if="showIcon"
+        :class="`all-box flex center-v mr-8 hover ${
           compData.select ? 'active' : ''
-        }`" @click.stop="chooseAll">
-        <i :class="`iconfont mr-4 ${compData.select ? 'icon-duihao2' : 'icon-check_line'}`"></i>
-        {{$t('sendSNFT.all')}}
+        }`"
+        @click.stop="chooseAll"
+      >
+        <i
+          :class="`iconfont mr-4 ${
+            compData.select ? 'icon-duihao2' : 'icon-check_line'
+          }`"
+        ></i>
+        {{ $t("sendSNFT.all") }}
       </div>
-      <div class="select-box lh-14 mr-4">{{ checkLen }}/{{data['total_hold']}} {{$t('transferNft.select')}},</div>
+      <div class="select-box lh-14 mr-4">
+        {{ checkLen }}/{{ getNumber }},
+      </div>
       <div class="am-box">
         {{ totalAmount }}ERB
-        <span>≈ ${{ toUsd(totalAmount, 2) }}</span>
+        <span>(≈ ${{ toUsd(totalAmount, 2) }})</span>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, SetupContext, toRaw, watch } from 'vue'
-import { addressMask, decimal, weiToNumber, toUsd, toUsdSymbol, snftToErb } from '@/popup/utils/filters'
-import { useStore } from 'vuex'
-import { computed } from 'vue'
-import { Image, Toast } from 'vant'
-import { useRoute, useRouter } from 'vue-router'
-import ProgressBar from '@/popup/views/account/components/snftList/progressBar.vue'
-import BigNumber from 'bignumber.js'
-import { useI18n } from 'vue-i18n'
-import {VUE_APP_METAURL} from '@/popup/enum/env'
+import { defineComponent, ref, SetupContext, toRaw, watch } from "vue";
+import {
+  addressMask,
+  decimal,
+  weiToNumber,
+  toUsd,
+  toUsdSymbol,
+  snftToErb,
+} from "@/popup/utils/filters";
+import { useStore } from "vuex";
+import { computed } from "vue";
+import { Image, Toast } from "vant";
+import { useRoute, useRouter } from "vue-router";
+import ProgressBar from "@/popup/views/account/components/snftList/progressBar.vue";
+import BigNumber from "bignumber.js";
+import { useI18n } from "vue-i18n";
+import { VUE_APP_METAURL } from "@/popup/enum/env";
 export default defineComponent({
-  name: 'nfts-card',
+  name: "nfts-card",
   components: {
     [Image.name]: Image,
-    ProgressBar
+    ProgressBar,
   },
-  emits: ['changeSelect'],
+  emits: ["changeSelect"],
   props: {
     data: {
       type: Object,
-      default: {}
+      default: {},
     },
     showIcon: {
       type: Boolean,
-      default: false
+      default: false,
     },
     type: {
       type: String,
-      default: ''
+      default: "",
     },
     toName: {
       type: String,
-      default: 'coll-detail'
+      default: "coll-detail",
     },
     selectAll: {
       type: Boolean,
-      default: false
+      default: false,
     },
     index: {
       type: Number,
-      default:0
-    }
+      default: 0,
+    },
+    status: {
+      type: String,
+      default: "3",
+    },
   },
   setup(props: any, context: SetupContext) {
-    const { t } = useI18n()
+    const { t } = useI18n();
 
-    const compData = ref({ select: false, children: [] })
+    const compData = ref({ select: false, children: [] });
     watch(
       () => props.selectAll,
       (n, o) => {
-        compData.value.select = n
-        compData.value.children.forEach(item => {
-          if(item.Chipcount > 0) {
-            item.select = n
+        compData.value.select = n;
+        compData.value.children.forEach((item) => {
+          if (getDisabled(item) == '') {
+            item.select = n;
           }
-        })
-        const { children } = compData.value
-        const clds = children.filter(item => item.select)
-        context.emit('changeSelect', { ...compData.value, children: clds })
+        });
+        const { children } = compData.value;
+        const clds = children.filter((item) => item.select);
+        context.emit("changeSelect", { ...compData.value, children: clds });
       },
       { deep: true, immediate: true }
-    )
+    );
 
-    const collIdStr = '0x80000000000000000000000000000000000'
-    const { id, FullNFTs, select } = props.data
-    // debugger
-    FullNFTs.forEach((item: any) => {
-      item.select = select ? true : false
-      item.address = item.nft_address.substr(0, 40)
-      // if (!item.Chipcount || item.Chipcount < 16) {
-        if (!item.Chipcount || item.Chipcount < 16) {
-        item.disabled = true
-      } else {
-        item.disabled = false
-      }
-    })
+    const collIdStr = "0x80000000000000000000000000000000000";
+    const { id, FullNFTs, select } = props.data;
+    if (props.status == "3") {
+      FullNFTs.forEach((item: any) => {
+        item.select = select ? true : false;
+        item.address = item.nft_address.substr(0, 40);
+        const { Chipcount, pledgestate } = item;
+        if (pledgestate == "NoPledge") {
+          if (!Chipcount || Chipcount < 16) {
+            item.disabled = true;
+          } else {
+            item.disabled = false;
+          }
+        } else {
+          item.disabled = true;
+        }
+      });
+    }
+    if (props.status == "2") {
+      FullNFTs.forEach((item: any) => {
+        item.select = select ? true : false;
+        item.address = item.nft_address.substr(0, 40);
+        const { Chipcount, pledgestate } = item;
+        if (pledgestate == "Pledge" || Chipcount < 16) {
+          item.disabled = true;
+        } else {
+          item.disabled = false;
+        }
+      });
+    }
+    if (props.status == "1") {
+      FullNFTs.forEach((item: any) => {
+        item.select = select ? true : false;
+        item.address = item.nft_address.substr(0, 40);
+        const { Chipcount, pledgestate } = item;
+
+        if (pledgestate == "Pledge") {
+          if (Chipcount != 16) {
+            item.disabled = true;
+          } else {
+            item.disabled = false;
+          }
+        }
+        if (pledgestate == "NoPledge") {
+          item.disabled = true;
+        }
+      });
+    }
+
     compData.value = {
       id,
       children: toRaw(FullNFTs),
       select: false,
       address: collIdStr + id,
-      ...props.data
-    }
+      ...props.data,
+    };
 
-    const store = useStore()
-    const currentNetwork = computed(() => store.state.account.currentNetwork)
+    const store = useStore();
+    const currentNetwork = computed(() => store.state.account.currentNetwork);
     const layoutType = computed(() => {
-      return props.type ? props.type : store.state.system.layoutType
-    })
+      return props.type ? props.type : store.state.system.layoutType;
+    });
     // Balance display type
-    const amountType = computed(() => store.state.system.amountType)
+    const amountType = computed(() => store.state.system.amountType);
     // all/none
-    const checkAll = ref(false)
-    const router = useRouter()
+    const checkAll = ref(false);
+    const router = useRouter();
     const toDetail = () => {
-      sessionStorage.setItem('compData', JSON.stringify({ ...compData.value, ...props.data }))
-      router.push({ name: props.toName })
-    }
+      sessionStorage.setItem(
+        "compData",
+        JSON.stringify({ ...compData.value, ...props.data })
+      );
+      router.push({ name: props.toName });
+    };
     const toggleSelect = () => {
-      context.emit('changeSelect', props.data)
-    }
+      context.emit("changeSelect", props.data);
+    };
     // The number of selected items
     const checkLen = computed(() => {
-      const arr = compData.value.children.filter(item => item.select).map(item => item.Chipcount)
-      if(arr.length){
-        return arr.reduce((total: number,num: number) => total + num)
+      const arr = compData.value.children
+        .filter((item) => item.select)
+        .map((item) => item.Chipcount);
+      if (arr.length) {
+        return arr.reduce((total: number, num: number) => total + num);
       }
-      return 0
-    })
+      return 0;
+    });
 
     //The total amount selected
     const totalAmount = computed(() => {
-      const arr = compData.value.children.filter(item => item.select).map(item => item.Chipcount)
-      let total = 0
-      arr.forEach((num:any) => {
-        if(num == 256){
-          total = new BigNumber(num).multipliedBy(0.15).plus(total).toNumber()
+      const arr = compData.value.children
+        .filter((item) => item.select)
+        .map((item) => item.Chipcount);
+      let total = 0;
+      arr.forEach((num: any) => {
+        if (num == 16) {
+          total = new BigNumber(num).multipliedBy(0.143).plus(total).toNumber();
         } else {
-          total = new BigNumber(num).multipliedBy(0.1).plus(total).toNumber()
+          total = new BigNumber(num).multipliedBy(0.095).plus(total).toNumber();
         }
-      })
-      return total
-    })
+      });
+      return total;
+    });
 
     const toMore = () => {
-      sessionStorage.setItem('compData', JSON.stringify(compData.value))
-      router.replace({ name: 'coll-list' })
-    }
+      sessionStorage.setItem("compData", JSON.stringify(compData.value));
+      router.replace({ name: "coll-list" });
+    };
+
     // sndt click
-    const handleClick = (item: any,idx: number) => {
-      if (item.Chipcount == 0) {
+    const handleClick = (item: any, idx: number) => {
+      if(!props.showIcon) {
         return
       }
-      if(!item.loaded) {
-        Toast(t('sendSNFT.loadchip'))
-        return
+      const { Chipcount, pledgestate, loaded, disabled } = item;
+      const {status} = props
+
+      if (!loaded) {
+        Toast(t("sendSNFT.loadchip"));
+        return;
       }
-      const { index } = props
-      item.select = !item.select
-      console.log('select', compData.value, item)
-      const { children } = compData.value
-      const clds = children.filter(item => item.select)
-      context.emit('changeSelect', { ...compData.value, children: clds, childIndex: idx,  index, item})
-    }
+      if (status == "3" || status == '1') {
+        if(disabled) {
+          return
+        }
+      }
+      if(status == '2') {
+        if(pledgestate == "Pledge" || !Chipcount) {
+          return
+        }
+      }
+      if (Chipcount == 0) {
+        return;
+      }
+      const { index } = props;
+      item.select = !item.select;
+      console.log("select", compData.value, item);
+      const { children } = compData.value;
+      const clds = children.filter((item) => item.select);
+      context.emit("changeSelect", {
+        ...compData.value,
+        children: clds,
+        childIndex: idx,
+        index,
+        item,
+      });
+    };
+    const getDisabled = (item: any) => {
+      const { pledgestate, Chipcount, disabled } = item;
+      const { status } = props;
+      if (status == "3") {
+        return disabled ? "disabled" : "";
+      }
+      if (status == "2") {
+        if (pledgestate == "Pledge" || !Chipcount) {
+          return "disabled";
+        }
+
+      }
+      if (status == "1") {
+        if (pledgestate == "Pledge" && Chipcount != 16) {
+          return "disabled";
+        }
+        if (pledgestate == "NoPledge") {
+          return 'disabled'
+        }
+
+      }
+      return "";
+    };
     // All/none
     const chooseAll = () => {
-      compData.value.select = !compData.value.select
-      if (compData.value) {
-        compData.value.children.forEach(item => {
-          if (!item.disabled) {
-            item.select = compData.value.select
-          }
-        })
-      }
+      compData.value.select = !compData.value.select;
       debugger
-      const { children } = compData.value
+      if (compData.value) {
+        compData.value.children.forEach((item) => {
+          if (getDisabled(item) == "") {
+            item.select = compData.value.select;
+          }
+        });
+      }
+      compData.value = compData.value
+      const { children } = compData.value;
       // Push selected data to superiors
-      context.emit('changeSelect', {
+      context.emit("changeSelect", {
         ...compData.value,
-        children: children.filter(item => item.select)
-      })
-    }
-    const metaDomain = ref(`${VUE_APP_METAURL}`)
+        children: children.filter((item) => item.select),
+      });
+    };
+    const metaDomain = ref(`${VUE_APP_METAURL}`);
 
     // The conversion rate is calculated according to the number of SNFT selected
     const ratio = computed(() => {
-       return 0.271
+      return 0.271;
+    });
+
+    const getNumber = computed(() => {
+      const res = {...props.data}
+      const {status} = props
+      if(status == '3' || status == '1') {
+        return res.children.map((item: any) => getDisabled(item) == '').length
+      }
+      if(status == '2') {
+        let total = 0
+        res.children.forEach(item => {
+          if(getDisabled(item) == '') {
+            total += item.snfts.length
+          }
+        })
+       return total
+      }
     })
     return {
+      getNumber,
       addressMask,
       metaDomain,
       currentNetwork,
+      getDisabled,
       layoutType,
       toDetail,
       toggleSelect,
@@ -223,30 +375,23 @@ export default defineComponent({
       handleClick,
       compData,
       ratio,
-      chooseAll
-    }
-  }
-})
+      chooseAll,
+    };
+  },
+});
 </script>
 <style lang="scss" scoped>
-@media screen and (min-width: 756px) {
-  .nft-card.card {
-    width: 49%;
-    margin-right: 0 !important;
-  }
-  .coll-card:nth-of-type(8n + 8) {
-    margin-right: 6.4px !important;
-  }
-  .coll-list {
-    justify-content: space-between;
-  }
-}
-
 .new-nft-card {
   border: 2px solid #fff;
   &.blink {
     border: 2px solid;
-    border-image: linear-gradient(180deg, rgba(255, 240, 197, 1), rgba(255, 255, 255, 1), rgba(251, 195, 50, 1)) 2 2;
+    border-image: linear-gradient(
+        180deg,
+        rgba(255, 240, 197, 1),
+        rgba(255, 255, 255, 1),
+        rgba(251, 195, 50, 1)
+      )
+      2 2;
   }
   background: #f1f3f4;
   border-radius: 5px;
@@ -277,7 +422,12 @@ export default defineComponent({
     &.active {
       margin-bottom: 10px;
       margin-top: 10px;
-      background-image: linear-gradient(90deg, rgba(251, 195, 50, 1), rgba(255, 255, 255, 1), rgb(253, 206, 78));
+      background-image: linear-gradient(
+        90deg,
+        rgba(251, 195, 50, 1),
+        rgba(255, 255, 255, 1),
+        rgb(253, 206, 78)
+      );
     }
     .coll-card {
       width: 35px;
@@ -288,6 +438,15 @@ export default defineComponent({
       margin-right: 6.2px;
       margin-bottom: 6.5px;
       position: relative;
+      .check-icon-default {
+        position: absolute;
+        width: 23px;
+        height: 23px;
+        object-fit: contain;
+        left: 6px;
+        top: 7px;
+        z-index: 1;
+      }
       .check-icon {
         color: #037cd6;
         font-size: 20px;
@@ -301,7 +460,7 @@ export default defineComponent({
         // height: 20px;
         z-index: 10;
         &::after {
-          content: '';
+          content: "";
           display: block;
           width: 14px;
           height: 14px;
@@ -327,7 +486,7 @@ export default defineComponent({
       }
     }
     .coll-card:nth-of-type(8n + 8) {
-      margin-right: 0px;
+      margin-right: 0px !important;
     }
   }
   .total-amount {
@@ -337,10 +496,11 @@ export default defineComponent({
     .am-box {
       color: #007cdd;
       font-weight: bold;
+      font-size: 15px;
       span {
         font-size: 12px;
         transform: scale(0.8);
-        position: absolute;
+        font-weight: normal;
       }
     }
   }
@@ -371,11 +531,6 @@ export default defineComponent({
     background: rgb(253, 245, 245);
     height: 150px;
     border-radius: 6px 6px 7.5px 7.5px;
-    .van-image {
-      // width: 150px;
-      // height: 150px;
-      // overflow: hidden;
-    }
   }
   .nft-info {
     .name {
@@ -389,6 +544,27 @@ export default defineComponent({
       line-height: 12px;
       margin-top: 4px;
     }
+  }
+}
+@media screen and (max-width: 750px) {
+  // .coll-card:nth-of-type(8n + 8) {
+  //     margin-right: 6.4px !important;
+  //   }
+}
+@media screen and (min-width: 750px) {
+  .nft-card.card {
+    width: 49%;
+    margin-right: 0 !important;
+  }
+  .new-nft-card .coll-list .coll-card {
+    // width: 52px;
+    // height: 52px;
+  }
+  .new-nft-card .coll-list .coll-card:nth-of-type(8n + 8) {
+    margin-right: 6.4px !important;
+  }
+  .coll-list {
+    justify-content: space-between;
   }
 }
 </style>

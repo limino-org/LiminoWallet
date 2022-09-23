@@ -384,6 +384,11 @@ export default {
 .block {
   display: block;
 }
+:deep(){
+  .van-field__error-message {
+    margin-top: 4px;
+  }
+}
 :deep(.van-icon-question) {
   color: #b3b3b3;
   font-size: 14px;

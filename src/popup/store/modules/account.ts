@@ -1,6 +1,6 @@
 import { Toast, Notify, GridItem } from "vant";
 import { ethers, utils } from "ethers";
-import {clone} from 'pouchdb-utils';
+import { clone } from 'pouchdb-utils';
 import storeObj from '@/popup/store/index'
 // @ts-ignore
 window.utils = utils;
@@ -24,7 +24,7 @@ import {
 } from "@/popup/enum/network";
 import { setCookies, getCookies } from "@/popup/utils/jsCookie";
 import router from "@/popup/router";
-import { getQuery, toHex ,getURLPath} from "@/popup/utils/utils";
+import { getQuery, toHex, getURLPath } from "@/popup/utils/utils";
 import i18n from "@/popup/language/index";
 const erc20Abi: any = require("@/popup/assets/json/erc20Abi.json");
 import {
@@ -63,6 +63,8 @@ export interface State {
   firstTime: Boolean,
   exchangeGuidance: boolean
   exchangeServer: boolean;
+  exchangeTotalProfit: number
+  minerTotalProfit: number
 
 }
 export type ContactInfo = {
@@ -199,7 +201,7 @@ export const getGasFee = async (tx: any) => {
     const gasPrice = await wall.provider.getGasPrice()
     const gasLimit = await wall.estimateGas(tx)
     const limitStr = ethers.utils.formatEther(gasLimit)
-    const priceStr = ethers.utils.formatUnits(gasPrice,'wei')
+    const priceStr = ethers.utils.formatUnits(gasPrice, 'wei')
     debugger
     const gasFee = new Bignumber(limitStr).multipliedBy(priceStr).toFixed(9)
     return gasFee
@@ -260,6 +262,10 @@ export default {
     firstTime: true,
     exchangeGuidance: false,
     exchangeServer: false,
+    // miner total profit
+    minerTotalProfit: 4856544,
+    // exchange total profit
+    exchangeTotalProfit: 2522880
   },
   getters: {
     // Token of current account
@@ -270,7 +276,7 @@ export default {
     },
     // Whether to open the exchange
     hasExchange(state: State) {
-      if(!state.exchangeStatus){
+      if (!state.exchangeStatus) {
         return false
       }
       return state.exchangeStatus.exchanger_flag == true ? true : false;
@@ -281,7 +287,7 @@ export default {
       return list.length ? list[0] : {};
     },
     // Current transaction pop-up status
-    tranactionModel(state: State){
+    tranactionModel(state: State) {
       return state.tranactionModel
     }
   },
@@ -300,12 +306,12 @@ export default {
     },
     // Update Wallet
     UPDATE_WALLET(state: State, value: any) {
-      console.log('wallet',value)
+      console.log('wallet', value)
       wallet = value;
-      if(wallet.provider) {
-      // @ts-ignore
-       const bg = chrome.extension.getBackgroundPage();
-       bg.initWallet()
+      if (wallet.provider) {
+        // @ts-ignore
+        const bg = chrome.runtime.getBackgroundPage();
+        bg.initWallet()
       }
       localStorage.setItem("wallet", JSON.stringify({ ...value }));
     },
@@ -314,48 +320,48 @@ export default {
       state.accountList = value;
     },
     // Update URL of wormholes network
-// Update wormholes URL
-UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
-  let flag = false
-  if (state.currentNetwork.isMain) {
-    if(state.currentNetwork.URL != URL || state.currentNetwork.browser != browser) {
-      flag = true
-    }
-    state.currentNetwork.URL = URL;
-    state.currentNetwork.browser = browser;
-    state.currentNetwork.id = 'wormholes-network-1'
-  }
-  state.netWorkList.forEach(item => {
-    if(item.isMain){
-      if(item.URL != URL || item.browser != browser) {
-        flag = true
+    // Update wormholes URL
+    UPDATE_WORMHOLES_URL(state: State, { URL, browser, chainId }: any) {
+      let flag = false
+      if (state.currentNetwork.isMain) {
+        if (state.currentNetwork.URL != URL || state.currentNetwork.browser != browser) {
+          flag = true
+        }
+        state.currentNetwork.URL = URL;
+        state.currentNetwork.browser = browser;
+        state.currentNetwork.id = 'wormholes-network-1'
       }
-      item.URL = URL;
-      item.browser = browser;
-      item.id = 'wormholes-network-1'
-    }
-  })
-  if(flag){
-    Toast.loading({
-      message: i18n.global.t('common.asyncData'),
-      duration: 0
-    })
-    setTimeout(() => {
-      if(flag) {
-        location.reload()
+      state.netWorkList.forEach(item => {
+        if (item.isMain) {
+          if (item.URL != URL || item.browser != browser) {
+            flag = true
+          }
+          item.URL = URL;
+          item.browser = browser;
+          item.id = 'wormholes-network-1'
+        }
+      })
+      if (flag) {
+        Toast.loading({
+          message: i18n.global.t('common.asyncData'),
+          duration: 0
+        })
+        setTimeout(() => {
+          if (flag) {
+            location.reload()
+          }
+        }, 1000)
       }
-    },1000)
-  }
 
 
-},
+    },
     // Update wormholes ChainId
-    UPDATE_WORMHOLES_CHAINID(state:State, chainId: number) {
+    UPDATE_WORMHOLES_CHAINID(state: State, chainId: number) {
       if (state.currentNetwork.isMain) {
         state.currentNetwork.chainId = chainId
       }
       state.netWorkList.forEach(item => {
-        if(item.isMain){
+        if (item.isMain) {
           item.chainId = chainId
         }
       })
@@ -427,7 +433,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
       const formAdd = from.toUpperCase();
       const len2 =
         typeof currentNetwork.transactionList[formAdd] != undefined &&
-        currentNetwork.transactionList[formAdd]
+          currentNetwork.transactionList[formAdd]
           ? currentNetwork.transactionList[formAdd].length
           : 0;
 
@@ -516,7 +522,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
       state.exchangeStatus = val;
     },
     // Add token for current account address
-    ADD_ADDRESS(state: State, VAL: Token) {},
+    ADD_ADDRESS(state: State, VAL: Token) { },
     // Update an account name
     UPDATE_ACCOUNTNAME(state: State, opt: SetAccountNameParams) {
       const add = opt.address.toUpperCase()
@@ -528,8 +534,8 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
           acc = item
         }
       });
-      if(state.accountInfo.address.toUpperCase() == add && acc){
-        state.accountInfo = {...acc}
+      if (state.accountInfo.address.toUpperCase() == add && acc) {
+        state.accountInfo = { ...acc }
       }
     },
     // Add address book
@@ -550,7 +556,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
       const f = state.tranactionList.find((item) => item.hash == hash);
       const list = state.tranactionList
       if (!f) {
-        list.unshift({...data, code: "pending" });
+        list.unshift({ ...data, code: "pending" });
         const len = list.length;
         if (len > 10) {
           // The length of the control queue is 10
@@ -628,9 +634,23 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
     UPDATE_CONTRACTADDRESS(state: State, ERBPay: string) {
       state.contractAddress = ERBPay
     },
-    UPDATE_FIRSTTIME(state: State, bool: Boolean){
+    UPDATE_FIRSTTIME(state: State, bool: Boolean) {
       state.firstTime = bool
-    }
+    },
+    // Delete data from a queue
+    DEL_TXQUEUE(state: State, tx: any) {
+      const list = localStorage.getItem('txQueue')
+      const txQueue = list ? JSON.parse(list) : []
+      const newList = txQueue.filter((item: any) => item.hash != tx.hash)
+      localStorage.setItem('txQueue', JSON.stringify(newList))
+    },
+    // new tx push to queue
+    PUSH_TXQUEUE(state: State, tx: any) {
+          const list = localStorage.getItem('txQueue')
+          const txQueue = list ? JSON.parse(list) : []
+          txQueue.push(tx)
+          localStorage.setItem('txQueue', JSON.stringify(txQueue))
+        },
   },
   actions: {
     // Judge whether there is an account with a certain address in the wallet
@@ -645,7 +665,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
     // According to the current network status, the wallet status returns the wallet instance
     async getWallet({ commit, dispatch, state }: any) {
       // @ts-ignore
-      const bg = chrome.extension.getBackgroundPage();
+      const bg = chrome.runtime.getBackgroundPage();
       try {
         const { accountInfo } = state;
         const { keyStore } = accountInfo;
@@ -653,7 +673,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
         if (!password) {
           const query = getQuery();
           // @ts-ignore
-          router.push({ name: "loginAccount-step1", query:{...query,backUrl: getURLPath()} });
+          router.push({ name: "loginAccount-step1", query: { ...query, backUrl: getURLPath() } });
           return Promise.reject(i18n.global.t("common.withpassword"));
         }
         // Load wallet via password and keystore
@@ -888,12 +908,12 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
       params: SendTransactionParams
     ) {
       const { to, value, call, gasPrice, gasLimit } = params;
-      const gasp = new BigNumber(gasPrice).dividedBy(1000000000).toFixed(12);
+      const gasp = gasPrice ?  new BigNumber(gasPrice).dividedBy(1000000000).toFixed(12) : '0.0000000012';
       let tx = {
         to,
         value: utils.parseEther(value),
         gasPrice: ethers.utils.parseEther(gasp),
-        gasLimit,
+        gasLimit: gasLimit || 21000,
       };
 
       // Update recent contacts
@@ -982,7 +1002,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
                         "token receipt",
                         JSON.stringify(receipt)
                       );
-   
+
                       const token = state.currentNetwork.tokens[wallet.address.toUpperCase()].find(item => item.tokenContractAddress.toUpperCase() == address.toUpperCase())
                       const symbol = token.symbol
                       const rep: TransactionReceipt =
@@ -997,7 +1017,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
                       // Update account balance
                       dispatch("updateTokensBalances");
                       // Add to transaction
-                      commit("PUSH_TRANSACTION", {...rep, tokenAddress:address});
+                      commit("PUSH_TRANSACTION", { ...rep, tokenAddress: address });
                     });
                 })
                 .catch((err: any) => {
@@ -1014,25 +1034,25 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
         }
       });
     },
-   // send data
-   async sendTransaction({ commit, dispatch, state }: any, tx: any) {
-    const wallet = await getWallet();
-    console.log('newtx',tx)
-    const {to} = tx
-    // Update recent contacts
-    commit("PUSH_RECENTLIST", to);
-    return new Promise((resolve, reject) => {
-      wallet
-        .sendTransaction(tx)
-        .then((data: any) => {
-          resolve(data);
-        })
-        .catch((err: any) => {
-          console.error(err)
-          reject(err);
-        });
-    });
-  },
+    // send data
+    async sendTransaction({ commit, dispatch, state }: any, tx: any) {
+      const wallet = await getWallet();
+      console.log('newtx', tx)
+      const { to } = tx
+      // Update recent contacts
+      commit("PUSH_RECENTLIST", to);
+      return new Promise((resolve, reject) => {
+        wallet
+          .sendTransaction(tx)
+          .then((data: any) => {
+            resolve(data);
+          })
+          .catch((err: any) => {
+            console.error(err)
+            reject(err);
+          });
+      });
+    },
 
     // Load wallet with address and password
     async connectWalletByPwdAddress(
@@ -1125,7 +1145,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
           commit("UPDATE_NETWORK", network);
           return Promise.resolve();
         }
-      }catch(err){
+      } catch (err) {
         return Promise.reject(i18n.global.t("currencyList.error"))
       }
     },
@@ -1149,7 +1169,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
       }
     },
     // Get the status of whether to open an exchange
-    async getExchangeStatus({ commit, state }: any, call: Function = () => {}) {
+    async getExchangeStatus({ commit, state }: any, call: Function = () => { }) {
       const wallet = await getWallet();
       const { address } = wallet;
       return checkAuth(address).then((res: any) => {
@@ -1285,12 +1305,40 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
       });
     },
     // Get the smart contract address
-    async getContractAddress({commit, state}: any) {
+    async getContractAddress({ commit, state }: any) {
       try {
         const { ERBPay } = await getContractAddress()
-        commit('UPDATE_CONTRACTADDRESS',ERBPay)
+        commit('UPDATE_CONTRACTADDRESS', ERBPay)
         return Promise.resolve(ERBPay)
-      }catch(err){
+      } catch (err) {
+        return Promise.reject(err)
+      }
+    },
+    // The result of polling the transaction queue
+    async waitTxQueueResponse({ commit, state }: any) {
+      const list = localStorage.getItem('txQueue')
+      const txQueue = list ? JSON.parse(list) : []
+      if (!txQueue.length) {
+        return Promise.resolve()
+      }
+      try {
+        for await (const iterator of txQueue) {
+          const data1 = await wallet.provider.waitForTransaction(
+            iterator.hash
+          );
+          const symbol = state.currentNetwork.currencySymbol;
+          const rep: TransactionReceipt = handleGetTranactionReceipt(
+            TransactionTypes.other,
+            data1,
+            iterator,
+            symbol
+          );
+          commit("DEL_TXQUEUE", { ...iterator });
+          commit("PUSH_TRANSACTION", { ...rep });
+        }
+        return Promise.resolve()
+      } catch (err) {
+        console.error(err)
         return Promise.reject(err)
       }
     }
@@ -1335,7 +1383,7 @@ export function handleGetTranactionReceipt(
   if (
     txType == TransactionTypes.contract &&
     to.toUpperCase() ==
-      "0xffffffffffffffffffffffffffffffffffffffff".toUpperCase()
+    "0xffffffffffffffffffffffffffffffffffffffff".toUpperCase()
   ) {
     newType = TransactionTypes.swap;
   }

@@ -5,7 +5,11 @@ import { addressMask, decimal } from "@/popup/utils/filters";
 import { erb_price } from '@/popup/http/modules/price'
 import { getWallet } from '@/popup/store/modules/account'
 import { guid } from '@/popup/utils/utils'
-
+type WalletToken = {
+  seconds: number
+  time: number
+  value: string | null
+}
 interface State {
   language: string;
   // List arrangement
@@ -38,6 +42,7 @@ interface State {
   transferUSDRate: number
   transferCNYRate: number
   conversationId: string
+  wallet_token: WalletToken;
 }
 export default {
   state: {
@@ -85,7 +90,12 @@ export default {
     transferCNYRate: 0.6,
     // Password encryption iv
     iv:'',
-    conversationId:''
+    conversationId:'',
+    wallet_token:{
+      seconds: 0,
+      time: 0,
+      value: null
+    },
   },
   mutations: {
     UPDATE_LANGUAGE(state: State, value: string) {
@@ -127,7 +137,15 @@ export default {
     UPDATA_CONVERSATIONID(state: State, id: string) {
       console.warn('UPDATA_CONVERSATIONID', id)
       state.conversationId = id
-    }
+    },
+    UPDATE_WALLET_TOKEN(state: State, token: WalletToken) {
+      const {seconds,time,value} = token
+      state.wallet_token = {
+        seconds,
+        time,
+        value:''
+      }
+    },
   },
   getters: {
     // Current account balance

@@ -33,7 +33,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx"
-, "src/utils/cryptoJS.ts"  ],
+, "src/utils/cryptoJS.ts", "src/popup/language/zh_CN/index.ts", "src/popup/language/en-US/index.ts"  ],
   "exclude": [
     "node_modules"
   ]

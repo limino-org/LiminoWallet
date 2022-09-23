@@ -1,9 +1,9 @@
 <template>
   <transition name="fade">
-  <div class="wormholes-mask flex center" v-if="isShow">
+  <div class="wormholes-mask flex center" v-show="isShow">
     <div class="wormholes-toast pl-14 pr-14 pt-26 pb-26 f-12 lh-16">
         <div :class="`icon flex center mt-12  ${type}`" v-if="type">
-            <i v-show="type == 'success'" class="iconfont icon-check_fill"></i>
+            <i v-show="type == 'success'" class="iconfont icon-duihao2"></i>
             <i  v-show="type == 'warn'"  class="iconfont icon-gantanhao"></i>
             <i  v-show="type == 'fail'" class="iconfont icon-gantanhao"></i>
         </div>
@@ -13,7 +13,7 @@
   </transition>
 </template>
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, onMounted, watch } from "vue";
 
  enum ToastType {
   success = "success",
@@ -31,9 +31,11 @@ const message = ref("");
 const type = ref(ToastType.none);
 const isShow = ref(false);
 const duration = ref(3000);
-let time = null
+let time: any = null
 const open = (_opt: ToastOpt) => {
-  isShow.value = false;
+  // if(isShow.value){
+  //   return
+  // }
   const defaultOpt: ToastOpt = {
     duration: duration.value,
     type: ToastType.none,
@@ -53,14 +55,20 @@ const open = (_opt: ToastOpt) => {
 };
 
 const show = () => {
+  if(isShow.value){
+    return
+  }
   isShow.value = true;
 };
 const hide = () => {
-  clearTimeout(time)
+  if(time){
+    clearTimeout(time)
+  }
   isShow.value = false;
-  type.value = ToastType.none
-  message.value = ''
+  let t = setTimeout(() => {
   duration.value = 3000
+  clearTimeout(t)
+  },300)
 };
 
 const success = (message: string) => {
@@ -81,6 +89,8 @@ const fail = (message: string) => {
     type: ToastType.fail,
   });
 };
+
+
 
 //export fun
 defineExpose({
@@ -107,6 +117,9 @@ defineExpose({
   background: rgba($color: #000000, $alpha: 0.8);
   color: #fff;
   border-radius: 10px;
+  .msg {
+    word-wrap:break-word;
+  }
 }
 .icon {
     height: 40px;

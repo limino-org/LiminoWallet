@@ -337,7 +337,7 @@
     padding: 14px 0;
   }
   .account-list {
-    max-height: 45vh;
+    max-height: 70vh;
     overflow-y: scroll;
     .bt.select {
       color: #037dd6;

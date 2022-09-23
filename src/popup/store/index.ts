@@ -50,7 +50,8 @@ const vuexLocal = new VuexPersistence({
       show13,
       show14,
       show15,
-      show16
+      show16,
+      wallet_token
     } = system
     return clone(({
       account,
@@ -83,7 +84,8 @@ const vuexLocal = new VuexPersistence({
         show13,
         show14,
         show15,
-        show16
+        show16,
+        wallet_token
       }
     }))
   },

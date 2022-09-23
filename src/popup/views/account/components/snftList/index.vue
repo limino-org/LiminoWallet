@@ -9,8 +9,20 @@
     <van-sticky :offset-top="91">
       <div>
         <div class="flex between nfttransfer-box center-v pl-14 pr-14">
-          <span class="tit lh-30 f-12 hover text-bold" @click="handleShowModal"> {{ t("createNft.converttoERB") }} {{chooseType.label}}  <i :class="`iconfont ${showModal ? 'icon-shangjiantou' : 'icon-xiajiantou'}`"></i></span>
-          <van-switch v-model="showConvert" size="17" @change="handleChangeSwitch" v-if="pageData.nftList.length" />
+          <span class="tit lh-30 f-12 hover text-bold" @click="handleShowModal">
+            {{ t("createNft.converttoERB") }} {{ chooseType.label }}
+            <i
+              :class="`iconfont ${
+                showModal ? 'icon-shangjiantou' : 'icon-xiajiantou'
+              }`"
+            ></i
+          ></span>
+          <van-switch
+            v-model="showConvert"
+            size="17"
+            @change="handleChangeSwitch"
+            v-if="pageData.nftList.length"
+          />
         </div>
       </div>
     </van-sticky>
@@ -24,6 +36,7 @@
         :key="idx"
         :data="item"
         :index="idx"
+        :status="chooseType.value"
         @changeSelect="changeSelect"
         :showIcon="showConvert"
         :selectAll="selectAll"
@@ -66,6 +79,7 @@
     :selectNumber="selectLength"
     :selectTotal="selectTotal"
     :type="chooseType.value"
+    :selectedText="selectedText"
   />
   <!-- nft snft Conversion of pop-ups -->
   <TransferNFTModal
@@ -75,7 +89,8 @@
     v-model="showNFTModal"
     :txtype="chooseType.value"
     type="2"
-    @nftConverSuccess="reLoading"
+    @success="reLoading"
+    @fail="reLoading"
   />
   <SnftModal v-model="showModal" @change="handleChoose" />
 </template>
@@ -89,11 +104,12 @@ import {
   QuerySnftChip,
   snft_com_page,
   queryArraySnft,
+  queryCollectionAllSnft
 } from "@/popup/http/modules/nft";
 
 import eventBus from "@/popup/utils/bus";
 import BigNumber from "bignumber.js";
-import SnftModal from './snftModal.vue'
+import SnftModal from "./snftModal.vue";
 import {
   computed,
   ref,
@@ -123,9 +139,9 @@ export default defineComponent({
     TransferNFTModal,
     [Button.name]: Button,
     [PullRefresh.name]: PullRefresh,
-    SnftModal
+    SnftModal,
   },
-  emits: ["onLoad",'changeSwitch'],
+  emits: ["onLoad", "changeSwitch"],
   setup(props: any, context: SetupContext) {
     const store = useStore();
     const { t } = useI18n();
@@ -138,63 +154,68 @@ export default defineComponent({
     const finished: Ref<boolean> = ref(false);
     const nftErr: Ref<boolean> = ref(false);
     let params = {
-      owner: accountInfo.value.address,
+      owner_addr: accountInfo.value.address,
+      categories: "*",
+      count: "3",
+      start_index: "0",
+      currentPage: 0,
       status: "3",
-      page_size: "3",
-      page: "1",
- 
     };
     // Classified data
     const categoryList = ref(new Map());
     // Gets a collection of specified accounts
-    const getcollectionListPage = async (params: any) => {
+    const getcollectionListPage = async (sendParams: any) => {
       try {
-        // STEP1 查合集
-        const { collections, total } = await collectionListPage(params);
-        console.warn("collections", collections);
-        console.warn("total", total);
+        const { data, total_count } = await queryOwnerSnftCollections(
+          sendParams
+        );
+        console.warn("collections", data);
+        console.warn("total", total_count);
         // Load the SNFT data of the collection
         const proList = [];
         const snftchipList = [];
-        if (collections && collections.length) {
-          collections.forEach((item: any) => {
-            const { creator, name, id } = item;
-            const num = parseInt(id.substr(3,36),16)
-            const newName = `${num}-${name}`
+        if (data && data.length) {
+          data.forEach((item: any) => {
+            const { collection_creator_addr, name, chipcount } = item;
+            if (chipcount == 256) {
+              item.isMerge = true;
+              item.mergeType = 2;
+            }
             proList.push(
               getSnfts({
-                name: newName,
-                createaddr: creator,
+                name,
+                createaddr: collection_creator_addr,
                 owner_addr: accountInfo.value.address,
               })
             );
+
           });
-          // STEP2 查SNFT
           const snftList = await Promise.all(proList);
-          console.warn('snftList', snftList)
-          collections.forEach((child: any, idx: number) => {
+          data.forEach((child: any, idx: number) => {
             const snfts = snftList[idx];
             snfts.forEach((item: any, index: number) => {
-              const { nft_contract_addr,nft_token_id } = item;
+              const { nft_contract_addr, nft_token_id,DeletedAt } = item;
               item.loaded = false;
-              snftchipList.push({
+              if(!DeletedAt) {
+                snftchipList.push({
                 nft_contract_addr,
                 nft_token_id,
                 index,
                 idx,
+                DeletedAt: DeletedAt || null
               });
+              }
             });
-            
             child.children = snfts;
             child.FullNFTs = snfts;
-            child.address = snfts[0].nft_address.substr(0, 39);
+            child.img_url = child.img;
+            child.total_hold = child.chipcount;
+            child.address = snfts[0].nft_address.substr(0, 40);
           });
-          console.warn('snftchipList', snftchipList)
-
-          // STEP3 查SNFT碎片
+          
           for await (const params of snftchipList) {
             try {
-              const { nft_contract_addr, nft_token_id, index, idx } = params;
+              const { nft_contract_addr, nft_token_id, index, idx,DeletedAt } = params;
               const res = await QuerySnftChip({
                 nft_contract_addr,
                 nft_token_id,
@@ -208,42 +229,59 @@ export default defineComponent({
                     accountInfo.value.address.toUpperCase()
                 )
                 .map((item: any) => item.nft_address);
-              console.log("idx", idx);
-              console.log("index", index);
-              
-              try {
-                debugger
-                collections[idx].children[index].snfts = addList;
-                collections[idx].children[index].loaded = true;
-              } catch (err) {
-                console.error(collections[idx].children)
-                console.error(index)
-                console.error(err);
-              }
+                data[idx].children[index].snfts = addList;
+              data[idx].children[index].loaded = true;
+
             } catch (err) {
               console.error(err);
-              Toast(JSON.stringify(err));
+              // Toast(JSON.stringify(err));
             }
           }
-          pageData.nftList.push(...collections);
+          pageData.nftList.push(...data);
           console.log("pageData.nftList", pageData.nftList);
         }
-        return collections;
+        return data;
       } catch (err) {
         console.error(err);
       }
     };
     // Check SNFT of collection according to name
     const getSnfts = async (params: any) => {
+      const {createaddr,name,owner_addr} = params
+      let delList = []
       try {
         const { data }: any = await querySnftByCollection(params);
+        if(data.length < 16) {
+          const {data: data2} = await queryCollectionAllSnft({
+            createaddr,
+            name
+          })
+          delList = data2.filter((item:any,index: number) => item.DeletedAt).filter((item:any,index: number) => {
+            item.Chipcount = 0
+            item.snfts = []
+            item.index = data.length + index
+            item.loaded = true
+            item.actionType = chooseType.value.value
+            if(item.DeletedAt){
+              return item
+            }
+          })
+        }
+
+        data.push(...delList)
         data.forEach((item: any) => {
           item.address = item.nft_address.substr(0, 40);
+          item.actionType = chooseType.value.value
           item.select = false;
           item.id = item.nft_address.substr(39);
           item.total_hold = item.Chipcount;
+          if (item.chipcount == 16) {
+            item.isMerge = true;
+            item.mergeType = 1;
+          }
           // item.children = item.snft;
         });
+        debugger
         return data;
       } catch (err) {
         console.error(err);
@@ -252,18 +290,28 @@ export default defineComponent({
 
     // List loading event
     const handleOnLoad = async () => {
+      loadNft.value = true
+      const p = {
+        "3": "NoPledge",
+        "2": "",
+        "1": "Pledge",
+      };
       try {
-        const { owner, page, page_size, status } = params;
+        const { currentPage, count, owner_addr, categories, status } = params;
+        const start_index = currentPage * Number(params.count) + "";
         const list = await getcollectionListPage({
-          page,
-          page_size,
-          status,
-          owner,
+          categories,
+          count,
+          start_index,
+          owner_addr,
+          status: p[status],
         });
+        
         if (!list || !list.length) {
+
           finished.value = true;
         }
-        params.page = Number(params.page) + 1 + '';
+        params.currentPage = params.currentPage + 1;
       } catch (err) {
         nftErr.value = true;
         Toast(JSON.stringify(err));
@@ -274,13 +322,12 @@ export default defineComponent({
 
     // The list load event updates the current Snft list each time the account is switched
     eventBus.on("changeAccount", (address) => {
-      params.owner = address;
+      params.owner_addr = address;
       reLoading();
     });
     // Selected data
     const checkObjs = reactive({ data: {} });
     const changeSelect = async (data: any) => {
-      debugger
       const { address, children } = data;
       checkObjs.data[address] = children;
     };
@@ -289,13 +336,18 @@ export default defineComponent({
       showConvert.value = false;
       checkObjs.data = {};
       nftErr.value = false;
-      params.page = "1";
+      params.start_index = "0";
+      params.currentPage = 0;
       finished.value = false;
       pageData.nftList = [];
       handleOnLoad();
     };
+
     // Selected length
     const selectLength = computed(() => {
+      if(!pageData.nftList.length){
+        return 0
+      }
       let len = 0;
       Object.keys(checkObjs.data).forEach((key) => {
         checkObjs.data[key]
@@ -328,12 +380,12 @@ export default defineComponent({
               // 是否集满单个snft
               if (item.Chipcount == 16) {
                 add = new BigNumber(item.Chipcount)
-                  .multipliedBy(0.15)
+                  .multipliedBy(0.143)
                   .plus(add)
                   .toNumber();
               } else {
                 add = new BigNumber(item.Chipcount)
-                  .multipliedBy(0.1)
+                  .multipliedBy(0.095)
                   .plus(add)
                   .toNumber();
               }
@@ -341,7 +393,7 @@ export default defineComponent({
           } else {
             // 如果集满一个合集
             add = new BigNumber(16 * 16)
-              .multipliedBy(0.225)
+              .multipliedBy(0.271)
               .plus(add)
               .toNumber();
           }
@@ -349,7 +401,64 @@ export default defineComponent({
       });
       return add;
     });
+    const getDisabled = (item: any) => {
+      const { pledgestate, Chipcount, disabled } = item;
+      const { status } = props;
+      if (status == "3") {
+        return disabled ? "disabled" : "";
+      }
+      if (status == "2") {
+        if (pledgestate == "Pledge" || !Chipcount) {
+          return "disabled";
+        }
 
+      }
+      if (status == "1") {
+        if (pledgestate == "Pledge" && Chipcount != 16) {
+          return "disabled";
+        }
+        if (pledgestate == "NoPledge") {
+          return 'disabled'
+        }
+      }
+      return "";
+    };
+    const selectedText = computed(() => {
+      const {value} = chooseType.value
+      let total = 0
+      if(value == '1' || value == '3') {
+        Object.keys(checkObjs.data).forEach(key => {
+        if(key && key != 'undefined') {
+          checkObjs.data[key].forEach(child => {
+            total += 1
+          })
+        }
+      })
+      return  `0(C)/${total}(N)/0(F)`;
+      }
+      if(value == '2') {
+        let totalChip = 0
+        let totalSnft = 0
+        Object.keys(checkObjs.data).forEach(key => {
+        if(key && key != 'undefined') {
+          checkObjs.data[key].forEach(child => {
+            if(getDisabled(child) == '') {
+              const {MergeLevel,Chipcount,pledgestate} = child
+              if(MergeLevel == 0 && Chipcount && pledgestate == "NoPledge") {
+                totalChip += child.snfts.length
+              }
+              if(MergeLevel == 1 && Chipcount && pledgestate == "NoPledge") {
+                totalSnft += 1
+              }
+            }
+
+          })
+        }
+      })
+      return  `0(C)/${totalSnft}(N)/${totalChip}(F)`;
+
+      }
+    });
     // List of selections
     const selectList = computed(() => {
       return checkObjs.data;
@@ -381,147 +490,55 @@ export default defineComponent({
       reLoading();
     };
 
-    const showModal = ref(false)
+    const showModal = ref(false);
     const handleShowModal = () => {
-      showModal.value = !showModal.value
-    }
-            /**
+      showModal.value = !showModal.value;
+    };
+    /**
      * status
-     * 2 兑换
-     * 3 质押
-     * 1 赎回transfer-nft-con
+     * 2 duihuan
+     * 3 zhiya
+     * 1 shuhui
      */
 
-     const params2 = {
+    const params2 = {
       owner: accountInfo.value.address,
       page: "1",
       page_size: "60",
       status: "3",
     };
-    const chooseType = ref({label:t('createminerspledge.stake'),value:'3',desc:t('createExchange.desc1'),select: true},)
+    const chooseType = ref({
+      label: t("createminerspledge.stake"),
+      value: "3",
+      desc: t("createExchange.desc1"),
+      select: true,
+    });
     const handleChoose = (e: any) => {
-      list.value = []
-      chooseType.value = e
-      params.page = '1'
-      params.status = e.value
-      params2.page = '1'
-      pageData.nftList = []
-      handleOnLoad()
-    }
-
-    const handleChangeSwitch = (v: boolean) => {
-      context.emit('changeSwitch', v)
-    }
-
-    const list = ref([])
-    const onLoad = async () => {
-      params2.status = chooseType.value.value;
-      loadNft.value = true
-      try {
-        const { nfts } = await snft_com_page(params2);
-        const nftAddList = nfts.map((item: any) => {
-          const len = item.address.length;
-          let str = item.address;
-          switch (len) {
-            case 39:
-              str = str + "000";
-              break;
-            case 40:
-              str = str + "00";
-              break;
-            case 41:
-              str = str + "0";
-              break;
-            case 42:
-              break;
-          }
-          return str;
-        });
-        if (!nfts || !nfts.length) {
-          finished.value = true;
-
-        }
-        const { data: nftInfoList } = await queryArraySnft({
-          array: `${JSON.stringify(nftAddList)}`,
-        });
-
-        nfts.forEach((item: any) => {
-          const reallen = item.address.length;
-          let str = item.address;
-          switch (reallen) {
-            case 39:
-              str = str + "000";
-              item.tag = "P";
-              break;
-            case 40:
-              str = str + "00";
-              item.tag = "C";
-              break;
-            case 41:
-              str = str + "0";
-              item.tag = "N";
-              break;
-            case 42:
-             item.tag = "F";
-              break;
-          }
-          item.realAddr = str;
-          item.flag = false;
-          item.nft_address = item.address;
-  
-          const str1 = item.nft_address.substr(item.nft_address.length - 2);
-          // snft中的位置 最后2位转十六进制+1
-          item.position = hex2int(str1) + 1;
-          // convert
-          const str2 = item.nft_address.substr(item.nft_address.length - 4);
-          // 期中的位置  最后四位转十六进制+1
-          item.number = hex2int(str2) + 1;
-          nftInfoList.forEach((child: any) => {
-            if (
-              item.realAddr.toUpperCase() == child.nft_address.toUpperCase()
-            ) {
-              item.metaData = { ...child };
-              item.source_url = child.source_url;
-              item.collections = child.name;
-            }
-          });
-        });
-        params2.page = (Number(params2.page) + 1).toString();
-        list.value.push(...nftInfoList)
-
-        if (!nfts.length) {
-          finished.value = true;
-        }
-      } catch (err) {
-        console.error(err);
-        finished.value = true;
-      } finally {
-        loadNft.value = false
-      }
+      finished.value = false
+      chooseType.value = e;
+      params.start_index = "0";
+      params.currentPage = 0;
+      params.status = e.value;
+      params2.page = "1";
+      pageData.nftList = [];
+      checkObjs.data = {}
+      handleOnLoad();
     };
 
-    /**
-     * 查询列表数据
-     * 1 可兑换
-     *    数据：snft碎片，snft， 合集
-     *    碎片  -> 通过地址查 snft -> 通过snft查合集
-     *    
-     * 2 可质押
-     * 3 可赎回
-     */
-
-
+    const handleChangeSwitch = (v: boolean) => {
+      context.emit("changeSwitch", v);
+    };
 
     return {
       handleChoose,
       chooseType,
-
+      selectedText,
       handleShowModal,
       showModal,
       onRefresh,
       layoutType,
       handleOnLoad,
-      onLoad,
+
       pageData,
       changeSelect,
       showConvert,
@@ -546,34 +563,34 @@ export default defineComponent({
 });
 
 const hex2int = (hex: any) => {
-      let len = hex.length,
-        a = new Array(len),
-        code;
-      for (let i = 0; i < len; i++) {
-        code = hex.charCodeAt(i);
-        if (48 <= code && code < 58) {
-          code -= 48;
-        } else {
-          code = (code & 0xdf) - 65 + 10;
-        }
-        a[i] = code;
-      }
+  let len = hex.length,
+    a = new Array(len),
+    code;
+  for (let i = 0; i < len; i++) {
+    code = hex.charCodeAt(i);
+    if (48 <= code && code < 58) {
+      code -= 48;
+    } else {
+      code = (code & 0xdf) - 65 + 10;
+    }
+    a[i] = code;
+  }
 
-      return a.reduce(function (acc, c) {
-        acc = 16 * acc + c;
-        return acc;
-      }, 0);
-    };
+  return a.reduce(function (acc, c) {
+    acc = 16 * acc + c;
+    return acc;
+  }, 0);
+};
 </script>
 <style lang="scss" scoped>
-  :deep(){
-    .van-switch {
-      background: #B3B3B3;
-    }
-    .van-switch--on {
-      background: #037CD6;
-    }
+:deep() {
+  .van-switch {
+    background: #b3b3b3;
   }
+  .van-switch--on {
+    background: #037cd6;
+  }
+}
 .nft-list {
   &.pb {
     padding-bottom: 35px;
@@ -590,17 +607,16 @@ const hex2int = (hex: any) => {
 }
 
 .nfttransfer-box {
-  background: #F1F3F4;
+  background: #f1f3f4;
   height: 30px;
   .tit {
-   
     i {
       font-size: 12px;
     }
     &:hover {
-      color: #037CD6;
+      color: #037cd6;
       i {
-        color: #037CD6;
+        color: #037cd6;
       }
     }
   }
@@ -614,7 +630,7 @@ const hex2int = (hex: any) => {
     border-radius: 9px;
     &.outline {
       background: #fff;
-      border: 1PX solid #037cd6;
+      border: 1px solid #037cd6;
       padding: 0 4px;
       display: inline-block;
       color: #037cd6;

@@ -213,11 +213,11 @@ export default {
   padding: 0 26px 0;
 }
 .ipt {
-  height: 44px;
+  min-height: 44px;
   background: #ffffff;
-  margin: 0 26px 10px;
+  margin: 0 15px 10px;
   border-radius: 5px;
-  padding: 10px;
+  padding: 10px 0;
   //border: 1px solid #bbc0c5;
   &.error {
     border-color: #d73a49;

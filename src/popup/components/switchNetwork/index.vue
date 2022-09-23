@@ -1,6 +1,6 @@
 <template>
   <van-dialog v-model:show="showModalNetwork" teleport="#page-box" closeOnClickOverlay :showConfirmButton="false">
-    <div class="title text-center text-bold van-hairline--bottom">{{ t("internet.title") }}</div>
+    <div class="title text-center text-bold">{{ t("internet.title") }}</div>
 
     <div class="activited-net">
       <div class="main-tit">{{t("common.mainNetwork")}}</div>
@@ -18,8 +18,8 @@
         />
       </div>
     </div>
-    <div class="van-hairline--bottom"></div>
-    <div class="flex center pt-24 pb-24">
+
+    <div class="flex center pt-24 pb-24 btn-box">
       <van-button plain @click="emitClose">{{t('network.close')}}</van-button>
     </div>
   </van-dialog>
@@ -82,6 +82,10 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+
+  .title {
+    border-bottom: 1px solid #E4E7E8;
+  }
 .title {
   color: #000;
   font-size: 15px;

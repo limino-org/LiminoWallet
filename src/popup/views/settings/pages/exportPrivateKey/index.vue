@@ -77,7 +77,7 @@
 
         </van-tab>
       </van-tabs>
-      <div :class="`pwd-ipt pl-26 pr-26 ${isError ? 'error' : ''}`" v-if="!check">
+      <div :class="`pwd-ipt pl-14 pr-14 ${isError ? 'error' : ''}`" v-if="!check">
         <div class="flex between pwd-tit">
           <span>{{t('exportprivatekey.password')}}</span>
           <span>
@@ -267,6 +267,9 @@ export default {
 
 
 <style lang="scss" scoped>
+  .error {
+
+  }
 .icon-yanjing1 {
   font-size: 14px !important;
 }

@@ -6,16 +6,26 @@
         <div class="left flex center">
           <van-icon name="warning" />
         </div>
-        <i18n-t keypath="addtokens.title" tag="div" class="right text-left f-12 lh-16">
+        <i18n-t
+          keypath="addtokens.title"
+          tag="div"
+          class="right text-left f-12 lh-16"
+        >
           <template v-slot:wormholesLink>
-            <a href="https://192.168.1.237:9012" class="ml-4 mr-4 wormholeslink" target="_blank" rel="noopener noreferrer"> WornHoles </a>
+            <a
+              href="https://192.168.1.237:9012"
+              class="ml-4 mr-4 wormholeslink"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ t("wallet.wormHoles") }}
+            </a>
           </template>
         </i18n-t>
         <!-- <div class="right text-left f-12 lh-16">{{ t("addtokens.title") }}</div> -->
       </div>
       <van-form @submit="onSubmit">
         <van-cell-group inset>
-          <!-- 代币合约添加 -->
           <div class="title-label pl-10">
             <span>*</span>
             {{ t("addtokens.contractAdd") }}
@@ -24,18 +34,21 @@
             submit-on-enter
             v-model="tokenContractAddress"
             name="contract"
+            :class="tokenError ? 'error' : ''"
             :placeholder="$t('addtokens.contractAddeg')"
-            :rules="[{ required: true, message: t('addtokens.message') }]"
+            :rules="[
+              { validator: asynToken },
+            ]"
           />
         </van-cell-group>
         <div class="btn-group">
-          <div class="container flex between  pl-28 pr-28">
-            <van-button block class="mr-10" @click="back">{{t('sign.cancel')}}</van-button>
+          <div class="container pl-28 pr-28 flex between">
+                        <van-button round block class="mr-10"  @click="cancel">
+              {{ t("common.cancel") }}
+            </van-button>
             <van-button round block type="primary" native-type="submit">
-            {{
-            t("addtokens.import")
-            }}
-          </van-button>
+              {{ t("addtokens.import") }}
+            </van-button>
           </div>
         </div>
       </van-form>
@@ -43,20 +56,42 @@
   </div>
 </template>
 <script lang="ts">
-import { ref, Ref, computed, toRaw, SetupContext, onMounted, reactive } from 'vue'
-import { Icon, NavBar, Form, Field, CellGroup, Button, Tab, Tabs, Dialog, IndexBar, IndexAnchor, Toast } from 'vant'
-import TokenCard from '@/popup/views/account/components/tokenCard/index.vue'
+import {
+  ref,
+  Ref,
+  computed,
+  toRaw,
+  SetupContext,
+  onMounted,
+  reactive,
+} from "vue";
+import {
+  Icon,
+  NavBar,
+  Form,
+  Field,
+  CellGroup,
+  Button,
+  Tab,
+  Tabs,
+  Dialog,
+  IndexBar,
+  IndexAnchor,
+  Toast,
+} from "vant";
+import TokenCard from "@/popup/views/account/components/tokenCard/index.vue";
+import { useToast } from "@/popup/plugins/toast/index";
+import { getWallet } from "@/popup/store/modules/account";
+import { useStore } from "vuex";
+import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
+import { getRandomIcon } from "@/popup/utils";
+import { ethers, utils } from "ethers";
+const erc20Abi: any = require("@/popup/assets/json/erc20Abi.json");
 
-import useClipboard from 'vue-clipboard3'
-import { getWallet } from '@/popup/store/modules/account'
-import NavHeader from '@/popup/components/navHeader/index.vue'
-import { useStore } from 'vuex'
-import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
-import { getRandomIcon } from '@/popup/utils'
-import { useToast } from '@/popup/plugins/toast'
+// import { useToast } from '@/plugins/toast'
 export default {
-  name: 'import-token',
+  name: "import-token",
   components: {
     [Icon.name]: Icon,
     [Form.name]: Form,
@@ -65,74 +100,244 @@ export default {
     [CellGroup.name]: CellGroup,
     [IndexBar.name]: IndexBar,
     [IndexAnchor.name]: IndexAnchor,
-    TokenCard
+    TokenCard,
   },
   setup() {
-    const { t } = useI18n()
-    const store = useStore()
-    
-    const {$toast} = useToast()
-    
-    const search = ref('')
-    
-    
+    const { t } = useI18n();
+    const { dispatch,state } = useStore();
+    const { $toast } = useToast();
+    // token
+    const tokens = ref([
+      { name: "ERB Token", value: 2, hasAdd: false },
+      { name: "ETH Token", value: 3, hasAdd: true },
+      { name: "ABR Token", value: 4, hasAdd: false },
+      { name: "DOG Token", value: 25, hasAdd: false },
+      { name: "JACK Token", value: 25, hasAdd: false },
+      { name: "PIG Token", value: 25, hasAdd: true },
+      { name: "PIG Token", value: 25, hasAdd: true },
+      { name: "PIG Token", value: 25, hasAdd: true },
+      { name: "PIG Token", value: 25, hasAdd: true },
+      { name: "PIG Token", value: 25, hasAdd: true },
+      { name: "PIG Token", value: 25, hasAdd: true },
+      { name: "PIG Token", value: 25, hasAdd: true },
+      { name: "PIG Token", value: 25, hasAdd: true },
+      { name: "PIG Token", value: 25, hasAdd: true },
+      { name: "PIG Token", value: 25, hasAdd: true },
+      { name: "PIG Token", value: 25, hasAdd: true },
+      { name: "PIG Token", value: 25, hasAdd: true },
+      { name: "PIG Token", value: 25, hasAdd: true },
+      { name: "PIG Token", value: 25, hasAdd: true },
+      { name: "ACB Token", value: 25, hasAdd: false },
+      { name: "EAC Token", value: 25, hasAdd: false },
+      { name: "EAC Token", value: 25, hasAdd: false },
+      { name: "EAC Token", value: 25, hasAdd: false },
+      { name: "EAC Token", value: 25, hasAdd: false },
+      { name: "EAC Token", value: 25, hasAdd: false },
+      { name: "EAC Token", value: 25, hasAdd: false },
+      { name: "EAC Token", value: 25, hasAdd: false },
+      { name: "EAC Token", value: 25, hasAdd: false },
+      { name: "EAC Token", value: 25, hasAdd: false },
+      { name: "EAC Token", value: 25, hasAdd: false },
+      { name: "EAC Token", value: 25, hasAdd: false },
+      { name: "EAC Token", value: 25, hasAdd: false },
+      { name: "MINI Token", value: 25, hasAdd: false },
+    ]);
+    const search = ref("");
+    // const alist = computed(() => {
+    //   // Split into two-dimensional arrays according to the first letter
+    //   const list = tokens.value.map((item: any) => item);
+    //   list.sort((a: any, b: any) => {
+    //     return (a.name + "").localeCompare(b.name + "");
+    //   });
+
+    //   const newl = list.filter((item: any) => {
+    //     if (search.value) {
+    //       if (item.name.indexOf(search.value) > -1) {
+    //         return item;
+    //       }
+    //     } else {
+    //       return item;
+    //     }
+    //   });
+
+    //   const arr: any = [];
+    //   newl.forEach((item: any) => {
+    //     const { name } = item;
+    //     const label = name.substr(0, 1);
+    //     const f = arr.find((child: any) => child.label == label);
+    //     if (f) {
+    //       arr.forEach((sun: any) => {
+    //         const icon = getRandomIcon();
+    //         sun.label == label ? sun.children.push({ ...item, icon }) : "";
+    //       });
+    //     } else {
+    //       const icon = getRandomIcon();
+    //       arr.push({ label, children: [{ ...item, icon }] });
+    //     }
+    //   });
+    //   return arr;
+    // });
+
+    // const indexList = computed(() => {
+    //   return alist.value.map((item: any) => item.label);
+    // });
+
+    // tabs Switch data
+    // const tabs = reactive({
+    //   list: [
+    //     { name: "Search", value: 1, select: true },
+    //     { name: "Custom", value: 2, select: false },
+    //   ],
+    // });
+    // const changeTab = (e: any) => {
+    //   const { value, select } = e;
+    //   if (select) {
+    //     return;
+    //   } else {
+    //     tabs.list.forEach((item, idx) => {
+    //       if (item.value == value) {
+    //         item.select = true;
+    //       } else {
+    //         item.select = false;
+    //       }
+    //     });
+    //   }
+    // };
     // Selected tab'
-    const router = useRouter()
-    const { dispatch } = useStore()
-    const precision: Ref<string> = ref('')
-    const name: Ref<string> = ref('')
-    const symbol: Ref<string> = ref('')
-    const tokenContractAddress: Ref<string> = ref('')
+    // const chooseTabdata = computed(() => tabs.list.find((item) => item.select));
+    const router = useRouter();
+    const currentNetwork = computed(() => state.account.currentNetwork)
+    const accountInfo = computed(() => state.account.accountInfo)
+    const precision: Ref<string> = ref("");
+    const name: Ref<string> = ref("");
+    const symbol: Ref<string> = ref("");
+    const tokenContractAddress: Ref<string> = ref("");
     const back = () => {
-      router.go(-1)
-    }
+      router.go(-1);
+    };
+    const tokenError = ref(false);
     // Click add connectconstraint
-    const onSubmit = (data: any) => {
-      console.log('submit', data)
+    const onSubmit = async (data: any) => {
+      console.log("submit", data);
+
       Dialog.confirm({
-        message: t('currencyList.sure')
+        message: t("currencyList.sure"),
       }).then(async () => {
-        const { address } = await getWallet()
+        const { address } = await getWallet();
         try {
           Toast.loading({
-            message: t('userexchange.loading'),
+            message: t("userexchange.loading"),
             forbidClick: true,
-            loadingType: 'spinner'
-          })
-          await dispatch('account/addToken', {
+            loadingType: "spinner",
+          });
+          await dispatch("account/addToken", {
             tokenContractAddress: tokenContractAddress.value,
-            address
-          })
-          Toast.clear()
-          $toast.success(t('currencyList.Importsuccessful'))
-          router.replace({ name: 'wallet' })
-        } catch (err) {
-          Toast(err.toString())
+            address,
+          });
+          $toast.success(t("currencyList.Importsuccessful"));
+          router.replace({ name: "wallet" });
+        } catch (err: any) {
+          $toast.fail(err.toString());
+        } finally {
+          Toast.clear();
         }
-      })
-    }
+      });
+    };
 
+    const asynToken = async (val: string) => {
+      tokenError.value = false
+      if(!val){
+         tokenError.value = true
+        return t('addtokens.message')
+      }
+            const key = accountInfo.value.address.toUpperCase();
+      const hasAddress = currentNetwork.value.tokens[key] ?  currentNetwork.value.tokens[key].length : 0;
+      if (hasAddress) {
+        // 寻址当前账户token列表是否已经存在改token
+        const newv = currentNetwork.value.tokens[key].find(
+          (item: any) =>
+            item.tokenContractAddress.toUpperCase() ==
+            tokenContractAddress.value.toUpperCase()
+        );
+        if (newv) {
+          tokenError.value = true
+          // 已存在、
+          return t("common.addressalreadyexists")
+        }
+      }
+      try {
+        
+        Toast.loading({
+          message: t("userexchange.loading"),
+          forbidClick: true,
+          loadingType: "spinner",
+        });
+
+        
+       try {
+         const wallet = await getWallet();
+        const contract = new ethers.Contract(
+          tokenContractAddress.value,
+          erc20Abi,
+          wallet.provider
+        );
+        const contractWithSigner = contract.connect(wallet);
+        const name = await contractWithSigner.name();
+        const decimal = await contractWithSigner.decimals();
+        const symbol = await contractWithSigner.symbol();
+       }catch(err){
+        tokenError.value = true
+        return t('addCurrency.errTip')
+       }
+        return true;
+      } catch (err: any) {
+        console.error(err)
+        tokenError.value = true
+        return err.toString();
+      }finally{
+        Toast.clear()
+      }
+    };
     // Import function
     const handleImport = () => {
-      console.log('import...')
+      console.log("import...");
+    };
+
+    const cancel = () => {
+      router.replace({name:"wallet"})
     }
     return {
+      tokenError,
+      cancel,
+      asynToken,
+      // tabs,
+      // changeTab,
       t,
+      // chooseTabdata,
       back,
       precision,
       name,
       symbol,
       tokenContractAddress,
       onSubmit,
+      // indexList,
       search,
-      handleImport
-    }
-  }
-}
+      // alist,
+      handleImport,
+    };
+  },
+};
 </script>
 <style lang="scss" scoped>
+
+.error {
+  :deep(.van-field__body) {
+    border: 1px solid #d73a49 !important;
+    background: #fbf2f3;
+  }
+}
 .wormholeslink {
-  color: #037CD6;
+  color: #037cd6;
 }
 .list {
   height: calc(100vh - 48px - 16px);
@@ -187,7 +392,6 @@ export default {
   text-align: center;
   background: #f4faff;
   margin-top: 25px;
-  border-radius: 7.5px;
   .left {
     width: 20px;
     i {
@@ -218,8 +422,8 @@ export default {
   }
 }
 .search-box {
-    border: 1PX solid #BBC0C5;
-    border-radius: 5px;
+  border: 1px solid #bbc0c5;
+  border-radius: 5px;
 }
 .ipt-box {
   width: 96%;
@@ -254,7 +458,8 @@ export default {
   .icon-minus {
   }
 }
-.btn-groups {
+
+.btn-group {
   position: fixed;
   left: 0;
   right: 0;
@@ -277,15 +482,10 @@ export default {
   padding: 0;
 }
 :deep(.van-field__body) {
-  height: 42px;
-  border: 1PX solid #adb8c5;
   margin-bottom: 10px;
-  padding: 0 10px;
-  border-radius: 5px;
-  transition: ease 0.3s;
-  font-size: 12px;
+  
   &:hover {
-    border: 1PX solid #1989fa;
+    border: 1px solid #1989fa;
   }
 }
 

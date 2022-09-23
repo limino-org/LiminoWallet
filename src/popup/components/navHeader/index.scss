@@ -52,6 +52,9 @@
 .nav-header-slider-box {
     position: fixed;
     background: #F8FCFF;
+    z-index: 10000;
+    top: 0;
+  
 }
 
 .pay-success {
@@ -104,7 +107,7 @@
       background: #e9f5fe;
     }
     &-big {
-      line-height: 17PX;
+      // line-height: 17PX;
     }
     &-small {
       color: rgba(132, 140, 150, 1);
@@ -307,7 +310,8 @@
       }
       .setting-btn {
         padding: 0  10px 0 15px;
-       
+        border-bottom: 1px solid #E4E7E8;
+        overflow: hidden;
         font-size: 12px;
         font-weight: 600;
         line-height: 44px;
@@ -315,6 +319,7 @@
         display: flex;
         align-items: center;
         color: #3D3D3D;
+
         &:hover {
           color: #037cd6;
           background: #ddeefb;
@@ -325,7 +330,7 @@
         }
         i {
           margin-right: 9px;
-          font-size: 18px;
+          font-size: 15px;
           color: #037cd6;
           font-weight: normal;
         }

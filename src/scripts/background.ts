@@ -324,7 +324,9 @@ window.handleReject = (type) => {
   sendMessage(sendMsg, {}, window.params[type].sender)
   closeTabs()
 }
+console.warn('chrome', chrome)
 
+const popupURL = chrome.runtime.getURL("popup.html");
 
 // call function
 const handlers = {
@@ -334,9 +336,8 @@ const handlers = {
     const { status } = window.params[method]
     console.warn('********************', 'wallet_requestPermissions', status)
     const local = await localforage.getItem("vuex") || null
-    const url = chrome.extension.getURL("popup.html");
     const accountList = getSenderAccounts(sender)
-    const newurl = `${url}#/connect?sender=${encodeURIComponent(JSON.stringify(sender))}&accountList=${encodeURIComponent(JSON.stringify(accountList))}`
+    const newurl = `${popupURL}#/connect?sender=${encodeURIComponent(JSON.stringify(sender))}&accountList=${encodeURIComponent(JSON.stringify(accountList))}`
     try {
       await openPopup(method, newurl, sendResponse, sender, 'popup')
     } catch (err) {
@@ -363,8 +364,7 @@ const handlers = {
   },
   // Connect website
   async [handleType.eth_requestAccounts](data: any, sendResponse: any, sender: any) {
-    const url = chrome.extension.getURL("popup.html");
-    const newurl = `${url}#/connect?sender=${JSON.stringify(sender)}`
+    const newurl = `${popupURL}#/connect?sender=${JSON.stringify(sender)}`
     try {
       await openPopup(handleType.eth_requestAccounts, newurl, sendResponse, sender)
     } catch (err) {
@@ -379,9 +379,8 @@ const handlers = {
     // 解析签名数据
     const recoverSig = utils.toUtf8String(sig)
     console.warn('recoverSig', recoverSig)
-    const url = chrome.extension.getURL("popup.html");
     let str = `sig=${recoverSig}&signType=personal_sign`;
-    const newurl = `${url}#/sign?${str}`;
+    const newurl = `${popupURL}#/sign?${str}`;
     try {
       await openPopup(handleType.personal_sign, newurl, sendResponse, sender)
     } catch (err) {
@@ -396,9 +395,8 @@ const handlers = {
     // Parsing signature data
     const recoverSig = utils.toUtf8String(sig)
     console.warn('recoverSig', recoverSig)
-    const url = chrome.extension.getURL("popup.html");
     let str = `sig=${recoverSig}&signType=eth_sign`;
-    const newurl = `${url}#/sign?${str}`;
+    const newurl = `${popupURL}#/sign?${str}`;
     try {
       await openPopup(handleType.eth_sign, newurl, sendResponse, sender)
     } catch (err) {
@@ -409,9 +407,8 @@ const handlers = {
   async [handleType.multiple_sign](data: any, sendResponse: any, sender: any) {
     console.warn("chrome.windows", chrome.windows, data);
     // Sign the hexadecimal data and sign the account address
-    const url = chrome.extension.getURL("popup.html");
     let str = `sig=${data}`;
-    const newurl = `${url}#/multipleSign?${str}`;
+    const newurl = `${popupURL}#/multipleSign?${str}`;
     try {
       await openPopup(handleType.multiple_sign, newurl, sendResponse, sender)
     } catch (err) {
@@ -451,9 +448,8 @@ const handlers = {
   },
   // tradable
   async [handleType.eth_sendTransaction](data: any, sendResponse: any, sender: any) {
-    const url = chrome.extension.getURL("popup.html");
     const [tx] = data
-    const newurl = `${url}#/nft-transaction?tx=${encodeURIComponent(JSON.stringify(tx))}`;
+    const newurl = `${popupURL}#/nft-transaction?tx=${encodeURIComponent(JSON.stringify(tx))}`;
     try {
       await openPopup(handleType.eth_sendTransaction, newurl, sendResponse, sender)
     } catch (err) {

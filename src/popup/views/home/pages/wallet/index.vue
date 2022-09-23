@@ -1,5 +1,5 @@
 <template>
-  <NavHeader :hasRight="false">
+  <NavHeader :hasRight="false" :hasNet="true">
     <template v-slot:left>
       <div :class="`flex center icon-box ${hasExchange ? 'hasExchange' : ''}`" @click="handleLeft">
         <GuideModal11 />
@@ -207,7 +207,7 @@
         <van-tab name="c">
           <template #title>{{ $t("wallet.SNFTs") }}</template>
           <template #default>
-            <SnftList @changeSwitch="handleChangeIsselect" v-if="active == 'c'" />
+            <SnftList @changeSwitch="handleChangeIsselect" />
           </template>
         </van-tab>
       </van-tabs>

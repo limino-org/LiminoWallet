@@ -1,6 +1,6 @@
 <template>
   <transition name="fade">
-    <div class="trade-dialog-mask flex center" v-if="isShow" @click.self="hide">
+    <div class="trade-dialog-mask flex center" v-if="isShow">
       <div class="wormholes-dialog">
         <div class="text-center tit van-hairline--bottom">
           {{i18n.global.t('transactiondetails.tradeTit')}}
@@ -15,7 +15,7 @@
                 />
                 <i
                   v-show="defaultData.status != 'pendding'"
-                  class="iconfont icon-check_fill success"
+                  class="iconfont icon-duihao2 success"
                 ></i>
                 <span class="lh-30 ml-10 approve">{{
                   i18n.global.t("bootstrapwindow.approve")
@@ -36,11 +36,11 @@
                   />
                   <i
                     v-show="defaultData.status == 'pendding'"
-                    class="iconfont icon-check_fill"
+                    class="iconfont icon-duihao2"
                   ></i>
                   <i
                     v-show="defaultData.status == 'success'"
-                    class="iconfont icon-check_fill success"
+                    class="iconfont icon-duihao2 success"
                   ></i>
                   <Icon v-show="defaultData.status == 'fail'" name="clear" class="fail" />
                 </div>
@@ -105,11 +105,22 @@
   </transition>
 </template>
 <script lang="ts" setup>
-import { computed, ref } from "vue";
+export type TradeOptions = {
+  approveMessage?: string
+  successMessage?: string
+  wattingMessage?: string
+  failMessage?: string
+  status: string
+  callBack?: Function
+  failBack?: Function
+  disabled: Array<string>
+}
+import { computed, Ref, ref } from "vue";
 import { Button, Icon, Loading } from "vant";
 import i18n from "@/popup/language";
 import { TradeConfirmOpt, TradeStatus } from "./tradeConfirm";
 console.warn("i18n-------", i18n);
+
 
 const getDefaultOpt = () => {
   return ref({
@@ -119,20 +130,22 @@ const getDefaultOpt = () => {
     failMessage: i18n.global.t('send.failMessage'),
     status: "pendding",
     callBack: () => {},
-    failBack: () => {}
+    failBack: () => {},
+    // 该状态下禁用按钮
+    disabled: [TradeStatus.pendding, TradeStatus.approve]
   });
 };
-const defaultData = getDefaultOpt();
+const defaultData: Ref<TradeOptions> = getDefaultOpt();
 
 const disabled = computed(() => {
-  if (defaultData.value.status == "pendding" || defaultData.value.status == "approve") {
+  if (defaultData.value.disabled.includes(defaultData.value.status)) {
     return true;
   }
   return false;
 });
 const isShow = ref(false);
 const show = (opt: TradeConfirmOpt) => {
-  defaultData.value = { ...getDefaultOpt().value, ...opt };
+  defaultData.value = { ...defaultData.value, ...opt };
   !isShow.value ? (isShow.value = true) : "";
 };
 const callBack = () => {
@@ -151,6 +164,7 @@ const hide = () => {
 
 const open = (_opt: TradeConfirmOpt = {status: TradeStatus.pendding}) => {
   const defaultOpt = {
+    ...getDefaultOpt().value,
     ..._opt,
   };
 
@@ -186,7 +200,7 @@ defineExpose({
   right: 0;
   top: 0;
   bottom: 0;
-  z-index: 3002;
+  z-index: 5002;
   background: rgba($color: #000000, $alpha: 0.5);
   .okbtn {
     min-width: 100px;

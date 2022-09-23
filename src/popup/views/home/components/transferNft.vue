@@ -20,11 +20,12 @@
                 </span>
               </div>
               <!-- amount -->
-              <div class="amount flex center ml-8">
-                <span class="sel">{{selectNumber}} 
+              <div class="amount ml-8 flex column between">
+                <div class="f-12">{{selectedText}}</div>
+                <!-- <span class="sel">{{selectNumber}} 
                   {{ t("transferNft.select") }}
-                </span>
-                <span class="sel2 text-bold ml-6 f-18">{{selectTotal}} ERB</span>
+                </span> -->
+                <div class="sel2 text-bold">{{selectTotal}} ERB (≈${{toUsd(selectTotal,2)}})</div>
               </div>
             </div>
             <!-- convert按钮 -->
@@ -49,6 +50,7 @@ import { regNum2 } from "@/popup/enum/regexp";
 import BigNumber from "bignumber.js";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
+import { toUsd } from "@/popup/utils/filters";
 export default defineComponent({
   name: "transfer-NFT",
   components: {
@@ -58,20 +60,24 @@ export default defineComponent({
   },
   emits:['handleAll','handleConfirm','update:modelValue'],
   props: {
-    // v-model 方式绑定打开关闭
     modelValue: {
       type: Boolean,
       default: false,
     },
-    // 选择的长度
+    // selected Number
     selectNumber: {
       type: Number,
       default: 0
     },
-    // 选择的总数量
+    // selected Total Amount
     selectTotal: {
       type: Number,
       default: 0
+    },
+    // selected text
+    selectedText:{
+      type: String,
+      default:'0(C)/0(N)/0(F)'
     },
     type: {
       type: String,
@@ -132,7 +138,8 @@ export default defineComponent({
       all,
       handleConfirm,
       handleAll,
-      submitText
+      submitText,
+      toUsd
     };
   },
 });
@@ -193,10 +200,12 @@ export default defineComponent({
     }
 }
 .amount {
+  padding: 14px 0;
   .sel {
   }
   .sel2 {
     color: #037cd6;
+    font-size: 15px;
   }
 }
 .convert {

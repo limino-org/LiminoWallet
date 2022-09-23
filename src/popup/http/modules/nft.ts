@@ -1,7 +1,7 @@
 
 
 import { httpGet,httpPost } from '../request'
-import { wormholesscanApi,wormholesApi,snftUrl,snftUrl2,contractApi } from '@/popup/http/httpUrl'
+import { wormholesscanApi,wormholesApi,snftUrl,snftUrl2,contractApi,snftUrl3,snftUrl4 } from '@/popup/http/httpUrl'
 const exchantest = 'c0x5051580802283c7b053d234d124b199045ead750'
 
 
@@ -69,7 +69,7 @@ export function snftGroup(id: string) {
  * According to the classification, the owner search set
  */
 export function queryOwnerSnftCollections(params ={}){
-    return httpPost(`${snftUrl}/v2/queryOwnerSnftCollections`, params)
+    return httpPost(`${snftUrl2}/${exchantest}/v2/queryOwnerSnftCollections`, params)
 }
 
 // /**
@@ -80,9 +80,9 @@ export function queryOwnerSnftCollections(params ={}){
 //  * @param params count
 //  * @returns 
 //  */
-// export function querySnftByCollection(params ={}){
-//     return httpPost(`${snftUrl}/v2/querySnftByCollection`, params)
-// }
+export function queryCollectionAllSnft(params ={}){
+    return httpPost(`${snftUrl4}/v2/queryCollectionAllSnft`, params)
+}
 
 /**
  * Search snft according to the collection
@@ -102,7 +102,7 @@ export function queryOwnerSnftCollections(params ={}){
  * @package params 
  */
 export function querySnftByCollection(params ={}){
-    return httpPost(`${snftUrl2}/${exchantest}/v2/querySnftByCollection`, params)
+    return httpPost(`${snftUrl4}/v2/querySnftByCollection`, params)
 }
 
 
@@ -115,7 +115,7 @@ export function querySnftByCollection(params ={}){
  * @returns 
  */
 export function QuerySnftChip(params = {}){
-    return httpPost(`${snftUrl2}/${exchantest}/v2/querySnftChip`, params)
+    return httpPost(`${snftUrl4}/v2/querySnftChip`, params)
 }
 
 
@@ -132,7 +132,7 @@ export const getSnftList = (params = {}) => {
   
 
 export const queryArraySnft = (params = {}) => {
-    return httpPost(`${snftUrl2}/${exchantest}/v2/queryArraySnft`,params)
+    return httpPost(`${snftUrl4}/v2/queryArraySnft`,params)
    
   }
   // 查询指定地址的账户信息

@@ -43,7 +43,7 @@
             ></van-image>
           </div>
           <div class="snft-name f-12">{{ item.name }}</div>
-          <div class="snft-address f-12">{{ addressMask(item.address) }}</div>
+          <div class="snft-address f-12">{{ addressMask(item.nft_address) }}</div>
         </div>
         <div class="snft" style="height:50px;opacity:0;"></div>
       </div>

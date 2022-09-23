@@ -66,7 +66,7 @@ export default {
         return store.state.account.accountList
     })
     // @ts-ignore
-    const bg = chrome.extension.getBackgroundPage();
+    const bg = chrome.runtime.getBackgroundPage();
     const currentSender = bg.connectList.find(item => item.origin == bg.params[handleType.wallet_requestPermissions].sender.origin)
     const accounts = currentSender ? currentSender.accountList : []
     const { t } = useI18n();
@@ -84,7 +84,7 @@ export default {
     }
     const cancel = () => {
         // @ts-ignore
-      const bg = chrome.extension.getBackgroundPage();
+      const bg = chrome.runtime.getBackgroundPage();
       bg.handleReject(handleType.wallet_requestPermissions)
     }
     return {

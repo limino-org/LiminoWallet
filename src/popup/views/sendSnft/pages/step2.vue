@@ -498,6 +498,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  :deep(){
+    .van-cell {
+      padding: 0;
+      .van-field__body {
+        border: none;
+      }
+    }
+    
+  }
 .error-tip {
   color: #d73a49;
 }

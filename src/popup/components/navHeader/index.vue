@@ -16,9 +16,9 @@
             </div>
             <div class="title-slot">
               <slot name="title">
-                <div class="title" v-if="hasTitle" @click="chooseNetWork">
-                  <div class="title-big text-center f-16">{{ title }}</div>
-                  <div class="title-small text-center flex center lh-14">
+                <div class="title" v-if="hasTitle" @click="handleNet">
+                  <div :class="`title-big text-center f-16 ${!hasNet ? 'lh-24' : 'lh-12'}`">{{ title }}</div>
+                  <div class="title-small text-center flex center lh-14" v-if="hasNet">
                     <span class="active" :style="{ background: currentNetwork.color }"></span>
                     {{ currentNetwork.label }}
                     <GuideModal12 />
@@ -109,6 +109,10 @@ export default defineComponent({
       type: Boolean,
       default: true
     },
+    hasNet: {
+      type: Boolean,
+      default: false
+    },
     title: {
       type: String,
       default: 'WormHoles'
@@ -135,7 +139,11 @@ export default defineComponent({
     const { state } = store
     const { t } = useI18n()
     const { netWorkList, currentNetwork, showModalNetwork, chooseNetWork, handleChoose, handleChooseComfirm } = useNetWork()
-
+    const handleNet = () => {
+      if(props.hasNet) {
+        chooseNetWork()
+      }
+    }
     const accountInfo = computed(() => store.state.account.accountInfo)
     // Whether open through the exchange open exchange discoloration
     const hasExchange = computed(() => {
@@ -201,6 +209,7 @@ export default defineComponent({
       show,
       showModalNetwork,
       chooseNetWork,
+      handleNet,
       // toImport,
       network,
       netWorkList,

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="netword-card flex van-hairline--bottom clickActive"
+    class="netword-card flex clickActive"
     @click.stop="handleClick"
   >
     <div class="net-status flex center mr-6" v-if="hasSelect">
@@ -94,6 +94,7 @@ export default defineComponent({
   padding: 0 15px;
   height: 52px;
   transition: ease 0.3s;
+  border-bottom: 1px solid #E4E7E8;
   .full {
     width: 100%;
   }

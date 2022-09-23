@@ -1,10 +1,10 @@
 <template>
-  <!-- <router-view v-slot="{ Component }" >
-    <keep-alive exclude="snft-detail,page-coll-list,create-exchange,modif-auto-exchange">
+  <router-view v-slot="{ Component }" >
+    <keep-alive exclude="snft-detail,page-coll-list">
       <component :is="Component" />
     </keep-alive>
-  </router-view> -->
-<router-view />
+  </router-view>
+<!-- <router-view /> -->
 </template>
 <script lang="ts">
 import { Icon, Toast, Button, Sticky, Field } from "vant";

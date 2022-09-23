@@ -83,14 +83,14 @@ export default {
         return;
       }
       // @ts-ignore
-     const bg = chrome.extension.getBackgroundPage();
+     const bg = chrome.runtime.getBackgroundPage();
       console.log("bg.params", bg.params)
       bg.params['multiple_sign'].sendResponse({response: list.value})
     }
 
     const cancel = () => {
       // @ts-ignore
-      const bg = chrome.extension.getBackgroundPage();
+      const bg = chrome.runtime.getBackgroundPage();
       bg.handleReject(handleType.multiple_sign)
       bg.closePopup(handleType.multiple_sign)
     }
