@@ -148,7 +148,13 @@ export default {
         //   Encrypt and store the time with a password according to the, transfer it to Step2, and then use PWD to restore the time at Step2
         const tkstr = encrypt('reset-token' + time, time.toString())
         localStorage.setItem('resetpwdtk', tkstr)
-        router.replace({ name: route.query.toName ? route.query.toName :'successpage', params:{time}})
+        const {toName} = route.query
+        if(toName == 'loginAccount-step1') {
+          router.replace({ name: toName, query:{time}})
+        } else {
+          router.replace({ name: route.query.toName ? route.query.toName :'successpage', params:{time}})
+
+        }
       }catch(err){
         console.error(err)
         isError.value = true

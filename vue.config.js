@@ -1,7 +1,7 @@
 const isProduct = process.env.NODE_ENV == 'production'
 const path = require('path')
 const webpack = require('webpack')
-
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
   productionSourceMap: false,
   pages: {
@@ -55,7 +55,13 @@ module.exports = {
     config.plugins.push(new webpack.DefinePlugin({
       global: "window"
     }))
-
+    config.plugins.push(new CopyWebpackPlugin([
+      {
+        from:path.resolve(__dirname,'src/scripts/inject-script.js') ,//想要复制的文件夹
+        to:path.resolve(__dirname,'dist/js/inject-script.js'), //复制在哪个文件夹//复制在哪个文件夹
+        toType: "file",
+     }
+    ]))
   },
   chainWebpack: config => {
     // config.resolve.alias.set("vue-i18n",'vue-i18n/dist/vue-i18n.runtime.esm-bundler.js')

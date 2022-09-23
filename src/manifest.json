@@ -24,7 +24,7 @@
 		{
 			"matches": ["*://*/*"],
       "run_at": "document_start",
-      "js": ["js/chunk-vendors.js","js/content_scripts.js"]
+      "js": ["js/chunk-vendors.js","js/content-script.js"]
 
 		}
 	],
