@@ -251,13 +251,14 @@ router.beforeEach(async(to, form, next) =>  {
  await store.restored; 
  const { name, meta } = to;
  const { auth } = meta;
+
  const { authentication, hasAccount } = useLogin();
  const hasAccountFlag = await hasAccount();
- 
+
  // Whether the password is valid
- const authFlag = authentication();
  const query = getQuery();
  const password = getCookies('password')
+ debugger
  
 // 钱包未创建  -> 引导页
 const filterNames1 = ['guide-step1','guide-step2','loginAccount-create-step1','loginAccount-create-step2','loginAccount-step1','loginAccount-step2','loginAccount-export-mnemonic','loginAccount-mnemonic-import','loginAccount-createing']

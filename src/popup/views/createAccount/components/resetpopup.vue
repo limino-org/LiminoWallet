@@ -43,7 +43,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, Ref, watch, SetupContext, reactive, computed } from 'vue'
+import { defineComponent, ref, Ref, watch, SetupContext, reactive, computed, nextTick } from 'vue'
 import { Dialog, Button, Field, NumberKeyboard, Toast, Icon } from 'vant'
 import { regNum2 } from '@/popup/enum/regexp'
 import { toUsd } from '@/popup/utils/filters'
@@ -117,9 +117,14 @@ export default defineComponent({
     }
     // Reset the wallet
     const handleComfirm = async () => {
-      await localforage.clear()
-      setCookies('password','')
-      location.reload()
+      try {
+        localforage.clear()
+        // setCookies('password','')
+        location.reload()
+      }catch(err) {
+        console.log(err)
+      }
+
     }
     return {
       showModal,

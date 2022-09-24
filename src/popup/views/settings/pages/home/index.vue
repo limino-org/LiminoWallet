@@ -46,13 +46,13 @@
       </template>
       <setting-card @handleClick="routerPush({name:'contacts-list'})" :label="t('setting.addEditRemove')" />
     </SettingClass>
-
+<!-- 
     <SettingClass :label="t('setting.aboutWormHoles')" @handleClick="towebsite">
       <template v-slot:icon>
         <i class="iconfont icon-zuanshi_o"></i>
       </template>
       <setting-card :label="t('setting.wormHolesIntroduction')" />
-    </SettingClass>
+    </SettingClass> -->
   </div>
 </template>
 <script lang="ts">

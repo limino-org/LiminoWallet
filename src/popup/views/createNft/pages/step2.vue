@@ -239,7 +239,7 @@ import { useI18n } from "vue-i18n";
 import Categoryform from "@/popup/components/categoryform/index.vue";
 import BigNumber from "bignumber.js";
 import { web3 } from "@/popup/utils/web3";
-import { collectibleRules } from "@/popup/enum/regexp";
+import { collectibleRules,regExchangeName } from "@/popup/enum/regexp";
 import { encode, decode } from 'js-base64';
 export default {
   name: "createNft-step2",
@@ -337,7 +337,7 @@ export default {
     };
     // Collection name
     const collcetionname = (val: string) => {
-      if (collectibleRules.test(name.value)) {
+      if (regExchangeName.test(name.value)) {
         return true;
       }
       return false;
