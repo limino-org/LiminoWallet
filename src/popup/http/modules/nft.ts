@@ -7,7 +7,7 @@ const exchantest = 'c0x5051580802283c7b053d234d124b199045ead750'
 
 // Get NFT according to owner
 export function getNftOwner(params = {}){
-    return httpGet(`${wormholesscanApi}/nft_meta/page`, params)
+    return httpGet(`${contractApi}/nft_meta/page`, params)
 }
 
 

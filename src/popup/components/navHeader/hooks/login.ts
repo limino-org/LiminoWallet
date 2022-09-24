@@ -28,12 +28,12 @@ export const useLogin = () => {
         try {
             // @ts-ignore
             if (vuex && vuex.account.accountList.length) {
-                return Promise.resolve(true)
+                return true
             } else {
-                return Promise.resolve(false)
+                return false
             }
         } catch (err) {
-            return Promise.resolve(false)
+            return false
         }
     }
     return {
