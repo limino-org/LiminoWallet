@@ -30,9 +30,16 @@ module.exports = {
       fullInstall: true
     },
     browserExtension: {
+      components: {
+        background: true,
+        contentScripts: true
+      },
       componentOptions: {
         background: {
-          entry: 'src/scripts/background.ts'
+          entry: 'src/scripts/background.ts',
+          output: {
+            filename: 'background.js', path: path.resolve(__dirname, 'dist')
+          }
         },
         contentScripts: {
           entries: {
@@ -49,6 +56,10 @@ module.exports = {
       config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
     }
     config.devtool = 'source-map'
+    // config.output = {
+    //   filename: "[name].js",
+    //   chunkFilename: "[name].js",
+    // },
     config.node = {
       global: false
     }
@@ -57,10 +68,11 @@ module.exports = {
     }))
     config.plugins.push(new CopyWebpackPlugin([
       {
-        from:path.resolve(__dirname,'src/scripts/inject-script.js') ,//想要复制的文件夹
-        to:path.resolve(__dirname,'dist/js/inject-script.js'), //复制在哪个文件夹//复制在哪个文件夹
+        from:path.resolve(__dirname,'src/scripts/inject-script.js') ,
+        to:path.resolve(__dirname,'dist/js/inject-script.js'), 
         toType: "file",
      }
+ 
     ]))
   },
   chainWebpack: config => {

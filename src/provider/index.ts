@@ -17,7 +17,7 @@ interface ProviderRpcError extends Error {
 }
 
 
-const errorCode = {
+export const errorCode = {
     "4001": {
         reason: "User Rejected Request",
         message: "The user rejected the request. "

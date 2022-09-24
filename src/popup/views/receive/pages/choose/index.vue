@@ -1,5 +1,4 @@
 <template>
-  <van-sticky>
     <NavHeader>
       <template v-slot:left>
        <span class="back hover f-12" @click="back">{{t('createAccountpage.back')}}</span>
@@ -8,7 +7,6 @@
         <div class="flex center title">{{t('bootstrapwindow.tOKENs')}}</div>
       </template>
     </NavHeader>
-  </van-sticky>
   <div class="choose-list">
     <div class="list pt-16">
       <div class="search-box ml-14 mr-14 flex center-v between">

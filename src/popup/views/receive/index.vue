@@ -1,11 +1,11 @@
 <template>
-  <van-sticky>
+  <!-- <van-sticky>
     <NavHeader title="Close" :hasRight="hasRight" :hasLeft="true" backUrl="backUrl" :backReplaceName="replaceBackUrl" cancelRouteName="wallet">
       <template v-slot:title>
         <div class="flex center title">{{t('receive.receive')}}</div>
       </template>
     </NavHeader>
-  </van-sticky>
+  </van-sticky> -->
   <div class="">
     <router-view v-slot="{ Component }">
       <keep-alive>
