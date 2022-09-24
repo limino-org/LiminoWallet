@@ -10,7 +10,7 @@
     </NavHeader>
     <div class="bourse-container" id="bourse-page" v-if="!loading">
       <div class="bourse-container-name">
-        <span>{{ t("bourse.name") }}({{ name.length }}/12)</span>
+        <span>{{ t("bourse.name") }}({{ name.length }}/20)</span>
         <el-tooltip
           popper-class="tooltip4"
           class="box-item"
@@ -28,7 +28,7 @@
           <div>
             <van-field
               :disabled="isExchanger_flag"
-              maxlength="12"
+              maxlength="20"
               validate-trigger="onSubmit"
               v-model="name"
               :class="`text ${nameError ? 'error' : ''}`"
@@ -666,7 +666,7 @@ export default defineComponent({
         nameError.value = true;
         return t("bourse.vainame");
       }
-      if (val.length < 4 || val.length > 12) {
+      if (val.length < 4 || val.length > 20) {
         nameError.value = true;
         return false;
       }
@@ -752,7 +752,7 @@ export default defineComponent({
       // 未开过
       if (!exchanger_flag && status != 2) {
         if (am.lt(281)) {
-          $toast.warn(t("createExchange.ispoor"));
+          $toast.warn(t("createExchange.isPoor"));
           return;
         }
       }

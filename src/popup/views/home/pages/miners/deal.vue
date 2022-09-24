@@ -171,43 +171,43 @@
         <!-- <AccountModal v-model:actionSheetShow="showAccountModal" :hasBtn="false" :showAmount="false" /> -->
       </div>
 
-      <div class="bourse-container-name pt-14 border-top" v-if="!isModif">
-        <span class="card-tit">{{ t("minerspledge.node") }} </span>
-        <el-tooltip
-          popper-class="tooltip4"
-          class="box-item"
-          effect="dark"
-          :content="t('minerspledge.nodeTip')"
-          placement="right"
-          trigger="hover"
-        >
-          <van-icon name="question" color="#9A9A9A" />
-        </el-tooltip>
-      </div>
-      <div class="create-new-password nodeIpt" v-if="!isModif">
-        <van-form @submit="onSubmit" ref="formDom">
-          <div
-            :class="
-              isError
-                ? 'error-field'
-                : isSuccess
-                ? 'success-field'
-                : ''
-            "
-          >
-            <van-field
-              :disabled="isOpen"
-              maxlength="100"
-              validate-trigger="onChange"
-              v-model="name"
-              class="text"
-              type="text"
-              :placeholder="t('bourse.placenode')"
-              :rules="[{ validator: asynPwd2, message: t('bourse.vainode') }]"
-            />
-          </div>
-        </van-form>
-      </div>
+<!--      <div class="bourse-container-name pt-14 border-top" v-if="!isModif">-->
+<!--        <span class="card-tit">{{ t("minerspledge.node") }} </span>-->
+<!--        <el-tooltip-->
+<!--          popper-class="tooltip4"-->
+<!--          class="box-item"-->
+<!--          effect="dark"-->
+<!--          :content="t('minerspledge.nodeTip')"-->
+<!--          placement="right"-->
+<!--          trigger="hover"-->
+<!--        >-->
+<!--          <van-icon name="question" color="#9A9A9A" />-->
+<!--        </el-tooltip>-->
+<!--      </div>-->
+<!--      <div class="create-new-password nodeIpt" v-if="!isModif">-->
+<!--&lt;!&ndash;        <van-form @submit="onSubmit" ref="formDom">&ndash;&gt;-->
+<!--&lt;!&ndash;          <div&ndash;&gt;-->
+<!--&lt;!&ndash;            :class="&ndash;&gt;-->
+<!--&lt;!&ndash;              isError&ndash;&gt;-->
+<!--&lt;!&ndash;                ? 'error-field'&ndash;&gt;-->
+<!--&lt;!&ndash;                : isSuccess&ndash;&gt;-->
+<!--&lt;!&ndash;                ? 'success-field'&ndash;&gt;-->
+<!--&lt;!&ndash;                : ''&ndash;&gt;-->
+<!--&lt;!&ndash;            "&ndash;&gt;-->
+<!--&lt;!&ndash;          >&ndash;&gt;-->
+<!--&lt;!&ndash;            <van-field&ndash;&gt;-->
+<!--&lt;!&ndash;              :disabled="isOpen"&ndash;&gt;-->
+<!--&lt;!&ndash;              maxlength="100"&ndash;&gt;-->
+<!--&lt;!&ndash;              validate-trigger="onChange"&ndash;&gt;-->
+<!--&lt;!&ndash;              v-model="name"&ndash;&gt;-->
+<!--&lt;!&ndash;              class="text"&ndash;&gt;-->
+<!--&lt;!&ndash;              type="text"&ndash;&gt;-->
+<!--&lt;!&ndash;              :placeholder="t('bourse.placenode')"&ndash;&gt;-->
+<!--&lt;!&ndash;              :rules="[{ validator: asynPwd2, message: t('bourse.vainode') }]"&ndash;&gt;-->
+<!--&lt;!&ndash;            />&ndash;&gt;-->
+<!--&lt;!&ndash;          </div>&ndash;&gt;-->
+<!--&lt;!&ndash;        </van-form>&ndash;&gt;-->
+<!--      </div>-->
       <div class="bourse-container-btns">
         <div class="container pl-28 pr-28">
 
@@ -1945,6 +1945,11 @@ export default defineComponent({
       margin-left: 10px;
       font-size: 12px;
     }
+  }
+ .popover-btn-tip {
+    z-index: 99!important;
+   width: 100px;
+   white-space: break-spaces;
   }
   .bourse-container-error-text-warning {
     width: 100%;

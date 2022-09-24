@@ -1,5 +1,5 @@
 <template>
-  <van-overlay :show="dislogShow" z-index="100" class="custom-overlay">
+  <van-overlay :show="dislogShow" z-index="1000" class="custom-overlay">
     <div class="miners">
       <div class="miners-header">
         <span>{{ t("bourse.dialogTitle") }}</span>

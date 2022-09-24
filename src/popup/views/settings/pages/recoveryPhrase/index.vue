@@ -60,8 +60,8 @@
       </div>
       <div class="btn-groups">
       <div class="container pl-28 pr-28">
-        <van-button   @click="toCopy" v-show="tabVal.value == 1"  block>{{t('transferNft.copy')}}</van-button>
-        <van-button style="border: 1px solid rgba(2, 135, 219, 1);color: rgba(2, 135, 219, 1)" icon="iconfont icon-xiazai1"  @click="download" v-show="tabVal.value == 2"  block>{{t('transferNft.downQR')}}</van-button>
+        <van-button   @click="toCopy" v-show="tabVal.value == 1" icon="iconfont icon-fuzhi2" block><i class="iconfont icon-fuzhi2 "></i> {{t('transferNft.copy')}}</van-button>
+        <van-button style="border: 1px solid rgba(2, 135, 219, 1);color: rgba(2, 135, 219, 1)" icon="iconfont xiazai"  @click="download" v-show="tabVal.value == 2"  block><i class="iconfont icon-xiazai "></i> {{t('transferNft.downQR')}}</van-button>
       </div>
         </div>
     </div>
@@ -161,7 +161,7 @@ export default {
     const toCopy = async () => {
       try {
         await toClipboard(mnemonic.value);
-        Toast.success(t("copy.titlekyc"));
+        Toast.success(t("copy.copySuccess"));
       } catch (e) {
         console.error(e);
       }

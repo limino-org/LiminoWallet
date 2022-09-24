@@ -5,7 +5,7 @@
     @click-overlay="beforeClose"
     :close-on-click-overlay="false"
     trigger="manual"
-    class="popover-dialog step6"
+    class="popover-dialog step6 "
     placement="bottom-start"
     teleport="#page-box"
     overlay
@@ -29,11 +29,11 @@
       <span class="tip2 f-12">
         {{ t("bootstrapwindow.displaymethod") }}
       </span>
-      <span class="circle"></span>
-      <span class="tip4"></span>
-      <span class="tip3">
-        <i class="iconfont icon-modular"></i>
-      </span>
+<!--      <span class="circle"></span>-->
+<!--      <span class="tip4"></span>-->
+<!--      <span class="tip3">-->
+<!--        <i class="iconfont icon-modular"></i>-->
+<!--      </span>-->
     </div>
   </van-popover>
 </template>
@@ -99,6 +99,9 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
+.step6 {
+  margin-top: 40px;
+}
 .dialog-box {
   // width: 340px;
   padding-bottom: 25px;

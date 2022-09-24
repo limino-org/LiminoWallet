@@ -10,7 +10,7 @@
         :before-close="beforeClose"
         :title="''"
       >
-        <div class="title text-center text-bold van-hairline--bottom">{{t('bootstrapwindow.techniqueAssistant')}}</div>
+        <div class="title text-center text-bold van-hairline--bottom">{{t('bootstrapwindow.welcome')}}</div>
         <div class="flex center">
           <WormTransition size="small">
             <template v-slot:t1>
@@ -46,7 +46,7 @@
         closeOnClickOverlay
         :title="''"
       >
-        <div class="title text-center  bold van-hairline--bottom">{{t('bootstrapwindow.techniqueAssistant')}}</div>
+        <div class="title text-center  bold van-hairline--bottom">{{t('bootstrapwindow.welcome')}}</div>
 
         <div class="flex center">
           <WormTransition size="small">
@@ -189,6 +189,7 @@ export default defineComponent({
 :deep(.icon-box) {
   margin-top: 20px;
 }
+
 .wromIcon {
   width: 18px;
 }

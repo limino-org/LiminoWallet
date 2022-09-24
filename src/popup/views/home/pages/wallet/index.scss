@@ -17,6 +17,9 @@ i {
 }
   }
 }
+:deep(.van-overlay) {
+  background: rgba(0, 0, 0, 0.5000);
+}
 .icon-box.hasExchange {
   i {
     color: #fff !important;
