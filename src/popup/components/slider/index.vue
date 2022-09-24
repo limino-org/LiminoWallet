@@ -287,6 +287,10 @@ import AcceptCode from "@/popup/views/account/components/acceptCode/index.vue";
 import { useNetWork } from "../navHeader/hooks/netWork";
 import useClipboard from "vue-clipboard3";
 import { useToast } from "@/popup/plugins/toast";
+import { useDialog } from "@/popup/plugins/dialog";
+import BigNumber from "bignumber.js";
+import { getWallet } from "@/popup/store/modules/account";
+
 
 export default defineComponent({
   name: "slider-menu",
@@ -440,9 +444,36 @@ export default defineComponent({
       showCode.value = true;
     };
 
-    const minerpledge = () => {
-      router.push({ name: "minersDeal" });
+    const { $dialog } = useDialog();
+    const minerpledge = async () => {
+      showSlider.value = false;
+      const wallet = await getWallet();
+      const ethAccountInfo = await wallet.provider.send("eth_getAccountInfo", [
+        wallet.address,
+        "latest",
+      ]);
+      if (ethAccountInfo.PledgedBalance) {
+        router.push({ name: "minersDeal" });
+        return;
+      }
+      let accountAmount = new BigNumber(accountInfo.value.amount);
+
+      if (accountAmount.gte(70001)) {
+        showSlider.value = false;
+        // router.push({ name: 'minersPledge' })
+        router.push({ name: "minersDeal" });
+      } else {
+        $dialog.open({
+          type: "warn",
+          theme: "dark",
+          hasCancelBtn: false,
+          message: t("send.sendMessage"),
+        });
+        // isWarnings.value = true;
+        return;
+      }
     };
+
     const toHelp = () => {
       // $toast.warn(t('common.commingsoon'))
       window.open("https://www.wormholes.com/docs/wallet/");

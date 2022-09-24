@@ -25,15 +25,14 @@
           t("bootstrapwindow.next")
         }}</van-button>
       </div>
-
+      <!--      <span class="tip3"></span>-->
+      <!--      <span class="tip2"></span>-->
+      <!--      <span class="tip4"></span>-->
+      <!--      <span class="tip5"></span>-->
 <!--      <span class="tip2 f-12">-->
 <!--        {{ t("bootstrapwindow.displaymethod") }}-->
 <!--      </span>-->
-      <span class="tip3"></span>
-      <span class="tip2"></span>
-<!--      <span class="circle"></span>-->
-      <span class="tip4"></span>
-      <span class="tip5"></span>
+
 <!--      <span class="tip3">-->
 <!--        <i class="iconfont icon-modular"></i>-->
 <!--      </span>-->
