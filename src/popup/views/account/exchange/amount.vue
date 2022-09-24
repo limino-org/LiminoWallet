@@ -90,7 +90,7 @@ export default {
       set: v => emit('update:minersMoney', v)
     })
     const submit = () => {
-      debugger
+      //debugger
       if (amount.value) {
           if (amount.value > Number(props.moneyMax)) {
             Toast(t('amountreminder.my'))

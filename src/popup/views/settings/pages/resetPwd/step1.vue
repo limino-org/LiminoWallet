@@ -134,7 +134,7 @@ export default {
     const onSubmit = async (value: object) => {
       accountLoading.value = true
       const accountInfo = store.state.account.accountInfo
-      debugger
+      //debugger
       const { keyStore } = accountInfo
       // 通过密码解锁当前账户的keyStore文件
       const data: CreateWalletByJsonParams = {

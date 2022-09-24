@@ -751,9 +751,10 @@
 	},
 	"bootstrapwindow": {
 		"help": "Help Center",
+		"helpMsg": "Product usage document",
 		techniqueAssistant: "Technique Assistant",
 		welcome: "Welcome",
-		wormHoles: "Wormholes Wallet 1.0",
+		wormHoles: "Wormholes Wallet 2.0",
 		wormHolesMessage: "Welcomed to Wormholes. We’ve prepared some tips to get you started quickly.",
 		wormHolesMessageEnd: "Congratulations on your start to a wonderful journey on Wormholes!",
 		accout: "Accout",
@@ -773,8 +774,8 @@
 		nFTsMessage: "View,Add,Transfer,Exchange NFTs",
 		sNFTs: "SNFTs",
 		sNFTsMessage: "View,Add,Transfer,Exchange SNFTs",
-		exchange: "EXCHANGE",
-		exchangeMessage: "Automatic opening of exchange",
+		exchange: "One-Click",
+		exchangeMessage: "One-Click NFT marketplace",
 		identifier: "Identifier",
 		identifierMessage:
 		"Identity display ID (Validator&Exchange)",

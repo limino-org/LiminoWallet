@@ -686,7 +686,7 @@ export default {
             item.tokenContractAddress &&
             item.tokenContractAddress == tokenContractAddress
         );
-        debugger;
+        //debugger;
         console.warn("token-----------", token);
         if (tokenContractAddress && tokenContractAddress != "null" && !token) {
           Dialog.confirm({

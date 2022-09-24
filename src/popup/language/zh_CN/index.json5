@@ -737,9 +737,11 @@
 		
 	},
 	"bootstrapwindow": {
+		"help": "帮助中心",
+		"helpMsg": "产品使用文档",
 		welcome: "Welcome",
 		techniqueAssistant: "技术助理",
-		wormHoles: "虫洞 1.0",
+		wormHoles: "虫洞 2.0",
 		wormHolesMessage: "欢迎来到虫洞我们准备了一些提示快速入门",
 		wormHolesMessageEnd: "恭喜您圆满完成开启精彩旅程",
 		accout: "帐户",
@@ -759,7 +761,7 @@
 		sNFTs: "SNFTs",
 		sNFTsMessage: "查看、添加、转移、交换 SNFT",
 		exchange: "交易所",
-		exchangeMessage: "自动开设交易所",
+		exchangeMessage: "一键开设交易所",
 		identifier: "标识符",
 		identifierMessage: "身份展示ID(验证者&交易所)",
 		setUp: "设置",

@@ -124,7 +124,7 @@ export default defineComponent({
     const showHelp = ref(false);
 
     const changeStatus = () => {
-      debugger;
+      //debugger;
       dispatch("system/toggleExchangeBtnStatus");
       slideFlag.value = eschangeBtnStatus.value;
     };

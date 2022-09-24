@@ -98,7 +98,7 @@ const handleSetPwd = (msg: string,time: number | string) => {
 export function getCookies(key: string = pwdKey):WalletToken | null {
   const val = store.state.system.wallet_token
   const value = Cookies.get(pwdKey)
-  debugger
+  //debugger
   if(value){
     const {time} = val
     return handleGetPwd(value, time)

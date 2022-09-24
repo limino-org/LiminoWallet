@@ -26,11 +26,14 @@
         }}</van-button>
       </div>
 
-      <span class="tip2 f-12">
-        {{ t("bootstrapwindow.displaymethod") }}
-      </span>
+<!--      <span class="tip2 f-12">-->
+<!--        {{ t("bootstrapwindow.displaymethod") }}-->
+<!--      </span>-->
+      <span class="tip3"></span>
+      <span class="tip2"></span>
 <!--      <span class="circle"></span>-->
-<!--      <span class="tip4"></span>-->
+      <span class="tip4"></span>
+      <span class="tip5"></span>
 <!--      <span class="tip3">-->
 <!--        <i class="iconfont icon-modular"></i>-->
 <!--      </span>-->
@@ -63,6 +66,7 @@ export default defineComponent({
     const { state, dispatch } = useStore();
     const show6 = computed(() => state.system.show6);
     const showModal = ref(false);
+    const boxWidth = ref("");
     watch(
       () => show6,
       (n) => (showModal.value = n.value),
@@ -120,29 +124,61 @@ export default defineComponent({
   }
   .tip2 {
     position: absolute;
-    top: -69px;
-    color: #fff;
-    right: 10px;
+    top: -57px;
+    height: 40px;
+    padding:0 20px;
+    // width: 320px;
+    border: 1px dashed #fff;
+    border-radius: 5px;
+    right: 0;
+    left: 0;
+    border-top: none;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
   }
   .tip4 {
     position: absolute;
-    top: -55px;
-    height: 12px;
-    right: 2px;
-    color: #fff;
-    border: 1px solid #fff;
-  }
-  .tip3 {
-    border: 1px dashed #fff;
-    width: 30px;
-    height: 30px;
-    position: absolute;
-    top: -35px;
-    color: #fff;
-    right: -10px;
+    top: -56px;
+    height: 1px;
+    padding:0 20px;
+     width: 60px;
+    border-bottom:  1px dashed #fff;
     border-radius: 5px;
-    line-height: 30px;
-    text-align: center;
+    right: 0;
+    left: 1px;
+    border-top: none;
+  }
+  .tip5 {
+    position: absolute;
+    top: -56px;
+    height: 1px;
+    padding:0 20px;
+     width: 550px;
+    border-bottom:  1px dashed #fff;
+    border-radius: 510px;
+    right: 1px;
+    left: 160px;
+    border-top: none;
+  }
+  @media screen and (max-width: 1000px) {
+    .tip5 {
+      //width: 44vw;
+    }
+  };
+  .tip3 {
+    position: absolute;
+    top: -93px;
+    width: 100px;
+    height: 40px;
+    padding:0 20px;
+    // width: 320px;
+    border: 1px dashed #fff;
+    border-radius: 5px;
+    right: 0;
+    left: 60px;
+    z-index: 100;
+    //background: RGBA(126, 126, 126, .5);
+    border-bottom: none;
   }
   .circle {
     position: absolute;

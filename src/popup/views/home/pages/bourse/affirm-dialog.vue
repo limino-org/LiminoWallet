@@ -204,7 +204,7 @@ export default {
           };
 
           gasFee.value = await getGasFee(tx1);
-          debugger
+          //debugger
           const gas2 = ref();
           // 第二笔gas
           if (props.serverIndex == 1) {
@@ -217,7 +217,7 @@ export default {
             gas2.value = new BigNumber(ethers.utils.formatEther(gasLimit))
               .dividedBy(ethers.utils.formatEther(gasPrice))
               .toFixed(9);
-              debugger
+              //debugger
           }
           totalGas.value = new BigNumber(gasFee.value)
             .plus(gas2.value || 0)

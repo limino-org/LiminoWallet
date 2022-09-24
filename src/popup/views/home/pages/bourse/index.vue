@@ -780,7 +780,7 @@ export default defineComponent({
       const diffAm = new Bignumber(maxBalance.value).minus(
         exchangerBalance.value
       );
-      debugger;
+      //debugger;
       if (am.lt(diffAm)) {
         $toast.warn(t("createExchange.ispoor"));
         return;

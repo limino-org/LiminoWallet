@@ -536,7 +536,7 @@ export default defineComponent({
           "eth_getAccountInfo",
           [address, "latest"]
         );
-        debugger;
+        //debugger;
         const blockn = web3.utils.toHex(blockNumber.value.toString());
         debugger
         // 第一次质押金额/总质押金额*36 (第二次取消质押计算开始时间)+第二次质押金额/总金额*72=54 = (第二次取消质押可以撤销的时间)
