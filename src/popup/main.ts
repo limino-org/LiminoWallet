@@ -10,6 +10,7 @@ import store from './store'
 import 'vant/lib/index.css'
 import './styles/index.scss'
 import '@/popup/utils/web3.ts'
+import CancelBtn from '@/popup/components/cancelBtn/index.vue'
 // import '@/popup/plugins/vconsole'
 import TradeConfirm from '@/popup/plugins/tradeConfirmationsModal/tradeConfirm'
 import Toast from '@/popup/plugins/toast/toast'
@@ -19,7 +20,9 @@ import 'element-plus/dist/index.css'
 // @ts-ignore
 window.BigNumber = BigNumber
 const app = createApp(App)
+
 app.component('no-data',NoData)
+app.component('cancel-btn',CancelBtn)
 app.use(store)
 app.use(router)
 app.use(i18n)

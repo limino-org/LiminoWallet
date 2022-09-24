@@ -82,13 +82,13 @@
       </div>
       <div class="card mt-8 card-last">
         <div class="name">{{ t("sendSNFT.address") }}</div>
-        <div class="value">{{ addressMask(chooseSnftData.nft_address) }}</div>
+        <div class="value">{{ addressMask(chooseSnftData.nft_address.substr(0,41)) }}</div>
       </div>
     </div>
     <!-- Button group -->
     <div class="flex center">
       <div class="btn-box flex between">
-        <div class="btn" @click="toSend">
+        <div class="btn" @click="toSend" v-if="actionType != '1'">
           <div class="flex center">
             <div class="icon-in flex center">
               <i class="iconfont icon-teshujiantouzuoxiantiao-copy"></i>
@@ -196,7 +196,8 @@ export default {
       (item: any) =>
         item.nft_address.toUpperCase() == nft_address?.toString().toUpperCase()
     );
-    debugger
+    
+    const actionType = computed(() => pageData.value.children[0].actionType || '1')
     const swiperIdx = ref(idx || 0);
     pageData.value.children.forEach((item) => (item.select = false));
     pageData.value.children[idx].select = true;
@@ -428,6 +429,7 @@ export default {
       to,
       hancleClick,
       selectSnft,
+      actionType,
       totalAmount,
       reLoading,
       onChange,
