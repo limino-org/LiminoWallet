@@ -8,7 +8,9 @@
 .active-d {
     border: 1px solid #B3B3B3;
 }
-
+:deep(.popover-btn-tip) {
+    z-index: 99!important;
+}
 :deep() {
     //.el-slider {
     //    width: 100%;

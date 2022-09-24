@@ -154,7 +154,7 @@ export default {
       loading.value = true;
       await dispatch('account/getExchangeStatus')
             const {exchanger_flag,status} = exchangeStatus.value
-            debugger
+            //debugger
       if (!state.account.exchangeGuidance && exchanger_flag) {
         showGuide.value = true;
         // commit("account/UPDATE_EXCHANGEGUIDANCE", true);

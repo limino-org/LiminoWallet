@@ -1,5 +1,5 @@
 <template>
-  <van-overlay :show="dislogShow" :z-index="9999" class="custom-overlay">
+  <van-overlay :show="dislogShow" :z-index="99" class="custom-overlay">
     <div class="miners">
         <div class="miners-header">
           <span style="color: #000">{{t('minerspledge.stackinglabel')}}</span>
@@ -265,6 +265,9 @@ export default {
       }
     }
   }
+}
+:deep(.popover-btn-tip) {
+  z-index: 99!important;
 }
 .miners-container-item {
   margin: 25px 12.5px 0 12.5px;

@@ -12,7 +12,7 @@
   >
     <div class="dialog-box">
       <div class="serial-number">
-        <span class="left">9</span><span>/</span> 13
+        <span class="left">12</span><span>/</span> 13
       </div>
       <div class="title">
         {{ t("bootstrapwindow.exchange") }}
@@ -21,7 +21,7 @@
         {{ t("bootstrapwindow.exchangeMessage") }}
       </div>
       <div class="flex center">
-        <van-button type="primary" @click="handleClick(9)">{{
+        <van-button type="primary" @click="handleClick(12)">{{
           t("bootstrapwindow.next")
         }}</van-button>
       </div>
@@ -46,19 +46,19 @@ export default defineComponent({
   props: {
     type: {
       type: Number,
-      default: 9,
+      default: 12,
     },
   },
   setup(props: any, context: SetupContext) {
     const { t } = useI18n();
     const { state, dispatch } = useStore();
-    const show9 = computed(() => state.system.show9);
+    const show12 = computed(() => state.system.show12);
     const handleClick = (v: number) => {
       dispatch("system/showDialog", v);
     };
     const showModal = ref(false);
     watch(
-      () => show9,
+      () => show12,
       (n) => (showModal.value = n.value),
       { immediate: true, deep: true }
     );
@@ -80,7 +80,7 @@ export default defineComponent({
     };
     return {
       t,
-      show9,
+      show12,
       beforeClose,
       handleClick,
       showModal,

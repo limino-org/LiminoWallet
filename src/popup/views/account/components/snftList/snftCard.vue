@@ -316,7 +316,7 @@ export default defineComponent({
     // All/none
     const chooseAll = () => {
       compData.value.select = !compData.value.select;
-      debugger
+      //debugger
       if (compData.value) {
         compData.value.children.forEach((item) => {
           if (getDisabled(item) == "") {

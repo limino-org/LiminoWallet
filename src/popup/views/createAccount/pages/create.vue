@@ -187,10 +187,10 @@ setup() {
           privateKey,
           password: password.value,
         };
-        debugger;
+        //debugger;
         // Encrypt the password and private key into a keystore/ JSON file for storage
         const keyStore = encryptPrivateKey(params);
-        debugger;
+        //debugger;
         await dispatch("account/addAccount", {
           keyStore,
           mnemonic: mnemonicParams,

@@ -122,6 +122,9 @@ export default {
 :deep(.van-popup) {
   position: absolute;
 }
+:deep(.van-overlay) {
+  background: rgba(0, 0, 0, 0.5000);
+}
 .page-box {
   min-height: 100vh;
   transition: transform 0.35s, opacity 0.35s;

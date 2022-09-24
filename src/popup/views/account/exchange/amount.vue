@@ -1,5 +1,5 @@
 <template>
-  <van-overlay :show="dislogShow" class="custom-overlay" z-index="100">
+  <van-overlay :show="dislogShow" class="custom-overlay" z-index="1000">
     <div class="miners">
         <div class="miners-header">
           <span>{{$t('minerspledge.setamount')}}</span>
@@ -90,7 +90,7 @@ export default {
       set: v => emit('update:minersMoney', v)
     })
     const submit = () => {
-      debugger
+      //debugger
       if (amount.value) {
           if (amount.value > Number(props.moneyMax)) {
             Toast(t('amountreminder.my'))

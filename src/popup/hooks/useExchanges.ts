@@ -298,14 +298,14 @@ const getContract = async () => {
     try {
       if (proxy_address) {
         const sigstr = `${proxy_address}${address}`
-        debugger
+        //debugger
         // 代理质押
         await toSign({
           address: proxy_address,
           sig: sigstr,
           isAdmin: false,
           call: (sign: string) => {
-            debugger
+            //debugger
             sendPledge(amount, proxy_address, sign)
           }
         })
@@ -590,7 +590,7 @@ const getContract = async () => {
   const addExchangeBalance = async (
     amount: number,
   ) => {
-    debugger
+    //debugger
     const wallet = await getWallet();
     const { address } = wallet;
     // 追加质押金额

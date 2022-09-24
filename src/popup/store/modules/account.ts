@@ -203,7 +203,7 @@ export const getGasFee = async (tx: any) => {
     const gasLimit = await wall.estimateGas(tx)
     const limitStr = ethers.utils.formatEther(gasLimit)
     const priceStr = ethers.utils.formatUnits(gasPrice, 'wei')
-    debugger
+    //debugger
     const gasFee = new Bignumber(limitStr).multipliedBy(priceStr).toFixed(9)
     return gasFee
   } catch (err) {

@@ -170,7 +170,7 @@
         <!-- <div class="listType" v-show="active == 'c'">
           <i class="iconfont icon-fenlei2" @click="handleSetListType"></i>
         </div> -->
-        <div class="flex between pl-20 pr-20 guide-tabs-box">
+        <div class="flex between pl-20 pr-20 mt-40 guide-tabs-box">
           <div class="flex1">
             <GuideModal6></GuideModal6>
           </div>

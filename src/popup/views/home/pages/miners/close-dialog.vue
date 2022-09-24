@@ -191,7 +191,7 @@ export default {
         address,
         "latest",
       ]);
-      debugger
+      //debugger
       select.value = ethAccountInfo.RewardFlag;
            }finally{
             Toast.clear()

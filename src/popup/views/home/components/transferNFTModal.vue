@@ -280,7 +280,7 @@ export default defineComponent({
             list.push(nft_address.substr(0, 41));
           });
         }
-        debugger;
+        //debugger;
         try {
           for await (const iterator of list) {
             let str = "";
@@ -361,7 +361,7 @@ export default defineComponent({
             });
           }
         }
-        debugger
+        //debugger
         try {
           for await (let nft_address of list) {
             if (nft_address) {

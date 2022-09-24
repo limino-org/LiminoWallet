@@ -68,13 +68,14 @@ export default defineComponent({
     
     const backUp = () => {
       dispatch("system/showDialog", props.type);
+      dispatch("system/closeGuide");
       router.push({name:'mnemonic'})
     };
     
     const remindLater = () => {
       dispatch("system/showDialog", props.type);
+      dispatch("system/closeGuide");
     }
-    
     return {
       t,
       showModal,

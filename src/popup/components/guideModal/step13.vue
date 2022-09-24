@@ -17,11 +17,11 @@
       <div class="title">
         {{ t("bootstrapwindow.help") }}
       </div>
-<!--      <div class="small-tit pl-30 pr-30 mt-20">-->
-<!--        {{ t("bootstrapwindow.exchangeMessage") }}-->
-<!--      </div>-->
+      <div class="small-tit pl-30 pr-30 mt-20">
+        {{ t("bootstrapwindow.helpMsg") }}
+      </div>
       <div class="flex center">
-        <van-button type="primary" @click="handleClick(15)">{{
+        <van-button type="primary" @click="handleClick(14)">{{
             t("bootstrapwindow.next")
           }}</van-button>
       </div>
@@ -55,7 +55,7 @@ export default defineComponent({
     const show13 = computed(() => state.system.show13);
     const handleClick = (v: number) => {
       dispatch("system/showDialog", v);
-      dispatch("system/closeGuide");
+      // dispatch("system/closeGuide");
     };
     const showModal = ref(false);
     watch(
