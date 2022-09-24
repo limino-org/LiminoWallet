@@ -2,16 +2,17 @@ import { NetWorkData } from '@/popup/enum/network'
 import eventBus from '@/popup/utils/bus'
 import { useStore } from 'vuex'
 import { useBroadCast } from '@/popup/utils/broadCost'
-import { eventsEmitter, getWallet } from '@/scripts/background';
+import { eventsEmitter } from '@/scripts/eventType';
 import  { web3 } from '@/popup/utils/web3'
 import { sendBackground } from '../utils/sendBackground';
 export enum eventHandler {
     changeNetwork = 'changeNetwork',
     changeAccount = 'changeAccount'
 }
-
+import {getWallet} from '@/popup/store/modules/account'
 // Global Event Management
 export const useEvent = () => {
+
     const { dispatch } = useStore()
     const { handleUpdate } = useBroadCast()
     // network Change

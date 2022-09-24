@@ -48,7 +48,7 @@ import { useSign } from "./hooks/sign";
 import { computed, onMounted, ref, Ref } from "vue";
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex';
-import { handleType } from '@/scripts/background';
+import { handleType } from '@/scripts/eventType';
 import { sendBackground } from '@/popup/utils/sendBackground';
 
 export default {

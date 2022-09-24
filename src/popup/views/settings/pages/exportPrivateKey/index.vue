@@ -9,7 +9,7 @@
     </NavHeader>
 
     <!-- 主体框 -->
-    <div class="content">
+    <div class="page-content">
       <div class="userwarning">
         <div class="warning-icon">
           <van-icon name="warning" style="color: #d63c4c" size="20" />
@@ -278,7 +278,7 @@ export default {
   color: #037cd6;
 }
 
-.content {
+.page-content {
 
       .pwd-ipt.error  {
     :deep(.van-field__body) {
@@ -621,5 +621,16 @@ export default {
 .right-img-copy {
   width: 15px;
   height: 15px;
+}
+
+@media screen and (max-width: 750px) {
+  .page-content {
+    width:375px;
+  }
+}
+@media screen and (min-width: 750px) {
+  .page-content {
+    width:100%;
+  }
 }
 </style>

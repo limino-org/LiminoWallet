@@ -37,9 +37,9 @@ module.exports = {
       componentOptions: {
         background: {
           entry: 'src/scripts/background.ts',
-          output: {
-            filename: 'background.js', path: path.resolve(__dirname, 'dist')
-          }
+          // output: {
+          //   filename: 'background.js', path: path.resolve(__dirname, 'dist')
+          // }
         },
         contentScripts: {
           entries: {
@@ -55,6 +55,10 @@ module.exports = {
     if (isProduct) {
       config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
     }
+    // config.outputDir = {
+    //   filename: "[name].js",
+    //   chunkFilename: "[name].js",
+    // }
     config.devtool = 'source-map'
     // config.output = {
     //   filename: "[name].js",

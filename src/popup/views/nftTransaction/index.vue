@@ -83,7 +83,7 @@ import { web3 } from "@/popup/utils/web3";
 import { getWallet } from "@/popup/store/modules/account";
 import { useI18n } from "vue-i18n";
 import { getRandomIcon } from '@/popup/utils/index'
-import { handleType } from '@/scripts/background';
+import { handleType } from '@/scripts/eventType';
 import { sendBackground } from '@/popup/utils/sendBackground';
 
 export default {

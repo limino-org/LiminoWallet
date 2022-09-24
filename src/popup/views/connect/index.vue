@@ -43,7 +43,7 @@ import { computed, ref } from "vue";
 import { useStore } from 'vuex';
 import AccountIcon from '@/popup/components/accountIcon/index.vue'
 import { addressMask } from '@/popup/utils/filters';
-import { handleType, getSenderAccounts } from '@/scripts/background';
+import { handleType } from '@/scripts/eventType';
 import { sendBackground } from '@/popup/utils/sendBackground';
 
 export default {

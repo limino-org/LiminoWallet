@@ -1,4 +1,24 @@
 
+
+import { ethers } from 'ethers';
+import localforage from 'localforage';
+import Cookies from 'js-cookie'
+
+
+
+import Web3 from "web3";
+export const web3 = new Web3(Web3.givenProvider);
+
+export function createWalletByJson(params){
+    const { password, json } = params
+    if(!password || !json){
+        return Promise.reject()
+    }
+    return ethers.Wallet.fromEncryptedJson(JSON.stringify(json), password)
+}
+
+
+
 // chrome.runtime.onInstalled.addListener(async() => {
 //   console.log('Background.js onInstalled.')
 // })

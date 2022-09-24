@@ -152,7 +152,7 @@ import BigNumber from "bignumber.js";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
 import { addressMask, snftToErb, toUsd } from "@/popup/utils/filters";
-import { getWallet } from '@/scripts/background'
+import {getWallet} from '@/popup/store/modules/account'
 import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
 import { TradeStatus } from "@/popup/plugins/tradeConfirmationsModal/tradeConfirm";
 import { ethers } from "ethers";
