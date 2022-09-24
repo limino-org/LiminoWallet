@@ -48,7 +48,7 @@ import { computed, onMounted, ref, Ref } from 'vue'
 import useClipboard from 'vue-clipboard3'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
-import { handleType } from '@/scripts/background'
+
 import { sendBackground } from '@/popup/utils/sendBackground'
 
 export default {

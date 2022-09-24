@@ -117,3 +117,4 @@ export default store
 export interface StoreReturns {
   [key: string]: any
 }
+

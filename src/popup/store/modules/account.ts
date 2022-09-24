@@ -690,7 +690,7 @@ export default {
         return Promise.resolve(wallet);
       } catch (err) {
         // @ts-ignore
-        bg.wallet = null
+        // bg.wallet = null
         return Promise.reject(err);
       }
     },
