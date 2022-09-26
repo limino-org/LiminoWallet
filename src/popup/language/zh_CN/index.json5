@@ -748,7 +748,7 @@
 		accountMessage: "点击切换账号，可以创建和导入新账号",
 		address: "地址",
 		addressMessage: "点击复制",
-		assets: "资产",
+		assets: "二维码",
 		assetsMessage: "点击显示地址二维码",
 		balance: "余额",
 		balanceMessage: "点击显示或隐藏总资产",

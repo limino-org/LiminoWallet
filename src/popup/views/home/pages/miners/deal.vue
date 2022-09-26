@@ -930,12 +930,12 @@ export default defineComponent({
         return;
       }
       // 质押金额
-      if(!name.value){
-        $dialog.open({title:t('minerspledge.beValidator'),message:t("minerspledge.warn"),type:'warn',callBack:() => {
-          openConfirmInfoModal()
-        }});
-        return
-      }
+      // if(!name.value){
+      //   $dialog.open({title:t('minerspledge.beValidator'),message:t("minerspledge.warn"),type:'warn',callBack:() => {
+      //     openConfirmInfoModal()
+      //   }});
+      //   return
+      // }
       openConfirmInfoModal()
     };
 
