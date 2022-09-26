@@ -6,10 +6,13 @@
   "manifest_version": 3,
 
   "permissions": [
+    "contextMenus",
     "tabs",
     "cookies",
+    "activeTab",
     "<all_urls>",
-    "nativeMessaging"
+    "nativeMessaging",
+    "cookies"
   ],
   "host_permissions":[
     "*://*/*"
