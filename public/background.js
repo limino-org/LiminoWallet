@@ -1,32 +1,18 @@
 
 
-import { ethers } from 'ethers';
-import localforage from 'localforage';
-import Cookies from 'js-cookie'
 
 
 
-import Web3 from "web3";
-export const web3 = new Web3(Web3.givenProvider);
+// import localforage from './modules/localforage.js'
+chrome.runtime.onInstalled.addListener(async() => {
+  console.log('Background.js onInstalled.')
+})
 
-export function createWalletByJson(params){
-    const { password, json } = params
-    if(!password || !json){
-        return Promise.reject()
-    }
-    return ethers.Wallet.fromEncryptedJson(JSON.stringify(json), password)
-}
+chrome.runtime.onMessage.addListener((async (request, sender, sendResponse)  => {
+  const { data, target } = request;
+  console.log('Message:',target, data)
 
-
-
-// chrome.runtime.onInstalled.addListener(async() => {
-//   console.log('Background.js onInstalled.')
-// })
-
-// chrome.runtime.onMessage.addListener((async (request, sender, sendResponse)  => {
-//   const { data, target } = request;
-//   console.log('Message:',target, data)
-// }));
+}));
 
 
 // import { ethers,localforage,createWalletByJson,web3,Cookies } from "../src/popup/utils/export";

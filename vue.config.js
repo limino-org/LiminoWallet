@@ -10,12 +10,11 @@ module.exports = {
       entry: './src/popup/main.ts',
       title: 'LiminoWallet'
     },
-    // standalone: {
-    //   template: 'public/browser-extension.html',
-    //   entry: './src/standalone/main.ts',
-    //   title: 'Standalone',
-    //   filename: 'index.html'
-    // }
+    background: {
+      template: 'public/background.html',
+      entry: './src/background/main.ts',
+      title: 'Background',
+    }
   },
   pluginOptions: {
     i18n: {
@@ -31,16 +30,13 @@ module.exports = {
     },
     browserExtension: {
       components: {
-        background: true,
+        // background: true,
         contentScripts: true
       },
       componentOptions: {
-        background: {
-          entry: 'src/scripts/background.ts',
-          // output: {
-          //   filename: 'background.js', path: path.resolve(__dirname, 'dist')
-          // }
-        },
+        // background: {
+        //   entry: 'src/scripts/background.ts',
+        // },
         contentScripts: {
           entries: {
             'content-script': [

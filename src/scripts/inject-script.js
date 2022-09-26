@@ -13,6 +13,15 @@ function provider() {
       }
       window.postMessage({ target, data }, '*');
   }
+  this.handlerPostMessage = function(data, callback = function(){}) {
+    const target = 'wormholes-inpage';
+    console.warn('data postmsg---', data)
+    const { method } = data
+    if (method) {
+      window['wormholes-' + method + '-callback'] = callback
+    }
+    window.postMessage({ target, data }, '*');
+}
     // issue a request
     this.request = function(params) {
       var _this = this
