@@ -16,7 +16,7 @@
           class="box-item"
           effect="dark"
           :content="t('bourse.tip5')"
-          placement="right"
+          placement="top"
           trigger="hover"
         >
           <van-icon name="question" class="ml-4" color="#9A9A9A" />
@@ -53,7 +53,7 @@
           class="box-item"
           effect="dark"
           :content="t('createExchange.commission')"
-          placement="right"
+          placement="top"
           trigger="hover"
         >
           <van-icon class="ml-6" name="question" color="#9A9A9A" />
@@ -70,7 +70,7 @@
           class="box-item"
           effect="dark"
           :content="t('bourse.tip3')"
-          placement="right"
+          placement="top"
           trigger="hover"
         >
           <van-icon class="ml-6" name="question" color="#9A9A9A" />
@@ -88,7 +88,7 @@
           class="box-item"
           effect="dark"
           :content="t('createExchange.commission')"
-          placement="right"
+          placement="top"
           trigger="hover"
         >
           <van-icon class="ml-4" name="question" color="#9A9A9A" />
@@ -124,7 +124,7 @@
           class="box-item"
           effect="dark"
           :content="t('bourse.tip3')"
-          placement="right"
+          placement="top"
           trigger="hover"
         >
           <van-icon name="question" class="ml-4" color="#9A9A9A" />
@@ -142,7 +142,7 @@
           class="box-item"
           effect="dark"
           :content="t('bourse.tip4')"
-          placement="right"
+          placement="top"
           trigger="hover"
         >
           <van-icon name="question" class="ml-4" color="#9A9A9A" />
@@ -169,7 +169,7 @@
           class="box-item"
           effect="dark"
           :content="t('bourse.tip4')"
-          placement="right"
+          placement="top"
           trigger="hover"
         >
           <van-icon name="question" class="ml-4" color="#9A9A9A" />
@@ -385,7 +385,6 @@
 </template>
 <script lang="ts">
 import NavHeader from "@/popup/components/navHeader/index.vue";
-
 import {
   defineComponent,
   Ref,
@@ -459,7 +458,7 @@ interface Mark {
   style: CSSProperties;
   label: string;
 }
-
+console.log("saaaaa")
 type Marks = Record<number, Mark | string>;
 export default defineComponent({
   name: "createExchange",
@@ -495,13 +494,23 @@ export default defineComponent({
     ModifPledgeModal,
 
   },
-
+  beforeRouteEnter:(to,form,next)=>{
+    //to 到哪里去
+    //form 从哪里来
+    next((vm:any )=> {
+      let arr1 = vm;
+      let arr = toRaw(arr1);
+      // console.log("vm",arr.serverIndex)
+      arr.serverIndex = 1
+      // vm.visible2 = false;
+      // vm.visible1 = false;
+    })
+  },
   setup(props: any, context: SetupContext) {
     const blockNumber = ref(0);
     const accountInfoBlockNumber = ref(0);
     const { $toast } = useToast();
     const appProvide = inject("appProvide");
-
     const marks = reactive<Marks>({
       10: "",
       20: "",
@@ -600,8 +609,8 @@ export default defineComponent({
     const exchangeStatus: ComputedRef<ExchangeStatus> = computed(
       () => store.state.account.exchangeStatus
     );
-    const visible1 = computed(() => serverIndex.value === 0);
-    const visible2 = computed(() => serverIndex.value === 1);
+    let visible1 = computed(() => serverIndex.value === 0);
+    let visible2 = computed(() => serverIndex.value === 1);
     const toCreate = async (name: string, amount: number) => {
       const fee_rate = money.value;
       try {
@@ -666,14 +675,17 @@ export default defineComponent({
         nameError.value = true;
         return t("bourse.vainame");
       }
+      console.log(val.length)
+
       if (val.length < 4 || val.length > 20) {
         nameError.value = true;
         return false;
       }
-      if (regExchangeName.test(val)) {
-        nameError.value = true;
-        return false;
-      }
+      // if (regExchangeName.test(val)) {
+      //   console.log(val)
+      //   nameError.value = true;
+      //   return false;
+      // }
       return true;
     };
     const { $tradeConfirm } = useTradeConfirm();
@@ -737,6 +749,7 @@ export default defineComponent({
     const formDom = ref();
     const router = useRouter();
     const back = () => {
+      serverIndex.value=  2;
       // 没有开交易所直接跳首页，否则上一页
       if (isExchangeStatusStatus.value) {
         router.replace({ name: "exchange-management" });
