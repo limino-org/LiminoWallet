@@ -1,14 +1,10 @@
 <template>
-  <van-sticky>
-  <NavHeader :hasRight="false">
+  <NavHeader :hasRight="false" :title="t('createAccountpage.mnemonicBtn')">
     <template v-slot:left>
      <span class="back hover f-12" @click="back">{{t('createAccountpage.back')}}</span>
     </template>
-    <template v-slot:title>
-      <div class="flex center title">{{t("createAccountpage.mnemonicBtn")}}</div>
-    </template>
   </NavHeader>
-</van-sticky>
+
 <div>
   <!-- <div class="title">
     <img class="iconele flex center" src="@/assets/token/logowallet.png" alt />

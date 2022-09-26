@@ -1,7 +1,6 @@
 <template>
-  <van-sticky>
     <NavHeader :hasRight="true" title="Collection" backUrl></NavHeader>
-  </van-sticky>
+
   <div class="snft-detail">
     <div class="flex between mt-14 snft-list pl-22 pr-22">
       <div

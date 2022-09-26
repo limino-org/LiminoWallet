@@ -16,7 +16,6 @@ const vuexLocal = new VuexPersistence({
   storage: localforage,
   asyncStorage: true,
   reducer: (store) => {
-    // console.warn('-----------------------',store)
     const {
       account,
       common,

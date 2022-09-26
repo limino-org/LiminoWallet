@@ -1,8 +1,6 @@
 <template>
   <van-sticky>
-    <NavHeader :hasRight="false" :hasLeft="false">
-        <template v-solt:title>{{t('common.connect')}}</template>
-    </NavHeader>
+    <NavHeader :hasRight="false" :hasLeft="false" :title="t('common.connect')"></NavHeader>
   </van-sticky>
   <div class="page-connect">
      <div>

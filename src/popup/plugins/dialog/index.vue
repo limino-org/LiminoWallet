@@ -11,16 +11,16 @@
               hasCancelBtn && hasConfirmBtn ? 'between' : 'center'
             }`"
           >
-            <Button @click="hide" v-if="hasCancelBtn">{{
-              i18n.global.t("createminerspledge.cancel")
+            <Button @click="cancelCall" v-if="hasCancelBtn"   :plain="theme == 'light' ? false : true">{{
+              cancelText
             }}</Button>
             <Button
               @click="confirmCall"
               v-if="hasConfirmBtn"
-              :type="theme == 'light' ? 'primary' : 'default'"
-              :plain="theme == 'light' ? false : true"
+              type="primary"
+
               class="okbtn"
-              >{{ i18n.global.t("common.confirm") }}</Button
+              >{{ confirmText }}</Button
             >
           </div>
         </div>
@@ -39,7 +39,7 @@ enum DialogType {
   success = "success",
   warn = "warn",
   fail = "fail",
-}
+};
 interface DialogOpt {
   type?: DialogType;
   title?: string;
@@ -47,14 +47,23 @@ interface DialogOpt {
   theme?: string;
   hasCancelBtn?: boolean;
   hasConfirmBtn?: boolean;
-  callBack?: Function
+  callBack?: Function;
+  confirmBtnText?:string;
+  cancelBtnText?:string
 }
+const confirmText = ref(i18n.global.t("sign.confirm"))
+const cancelText = ref(i18n.global.t("createminerspledge.cancel"))
 const hasCancelBtn: Ref<boolean> = ref(true);
 const hasConfirmBtn: Ref<boolean> = ref(true);
 let confirmCallBack: any = () => {}
+let cancelCallBack:any = () =>{} 
 let confirmCall = () => {
   hide()
   confirmCallBack ? confirmCallBack() : ''
+}
+let cancelCall = () => {
+  hide()
+  cancelCallBack ? cancelCallBack() :''
 }
 // const {t} = useI18n()
 const type = ref(DialogType.success);
@@ -70,6 +79,11 @@ const show = () => {
 };
 const hide = () => {
   isShow.value = false;
+  let time = setTimeout(() => {
+   confirmText.value = i18n.global.t("sign.confirm")
+   cancelText.value = i18n.global.t("createminerspledge.cancel")
+   clearTimeout(time)
+  },300)
   // message.value = "";
 };
 const open = (_opt: DialogOpt) => {
@@ -80,6 +94,7 @@ const open = (_opt: DialogOpt) => {
     hasCancelBtn: true,
     hasConfirmBtn: true,
     callBack: confirmCallBack,
+    cancelBack: cancelCallBack,
     title:"",
     ..._opt,
   };
@@ -91,9 +106,15 @@ const open = (_opt: DialogOpt) => {
     hasConfirmBtn: newConfirm,
     message: newMsg,
     title: newTit,
-    callBack
+    callBack,
+    cancelBack,
+    cancelBtnText,
+    confirmBtnText,
   } = opt;
   confirmCallBack = callBack
+  cancelCallBack = cancelBack
+  confirmText.value = confirmBtnText
+  cancelText.value = cancelBtnText
   type.value = newType;
   message.value = newMsg;
   theme.value = newTheme;
@@ -148,7 +169,7 @@ defineExpose({
     }
   }
   &.dark {
-    background: rgba($color: #fff, $alpha: 0.2);
+    // background: rgba($color: #fff, $alpha: 0.2);
     .wormholes-dialog {
       overflow: hidden;
       background: rgba($color: #000000, $alpha: 0.7);

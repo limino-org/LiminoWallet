@@ -134,6 +134,7 @@ export const useToggleAccount = () => {
           eventBus.emit("changeAccount", wallet.address);
           resolve(wallet)
         }catch(err){
+          reject(err)
           console.error(err)
         }
       });

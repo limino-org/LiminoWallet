@@ -1,11 +1,5 @@
 <template>
-  <van-sticky>
-    <NavHeader @clickRight="handleRight" backReplaceName="wallet">
-      <template v-slot:title>
-        <div class="flex center title">{{t('mnemonic.recoveryPhrase')}}</div>
-      </template>
-    </NavHeader>
-  </van-sticky>
+    <NavHeader @clickRight="handleRight" backReplaceName="wallet" :title="t('mnemonic.recoveryPhrase')"></NavHeader>
   <router-view v-slot="{ Component }">
     <keep-alive>
       <component :is="Component" />

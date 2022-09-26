@@ -1,14 +1,12 @@
 <template>
   <div>
-    <van-sticky>
-      <NavHeader
+    <NavHeader
         title="COLLECTION"
         backUrl="wallet"
         :hasRight="route.name == 'snftcollection-step1' ? false : true"
       >
 
       </NavHeader>
-    </van-sticky>
     <div class="snft-album flex">
       <div class="snft-collection" v-for="(item, i) in compData.children" :key="item.address">
         <van-image

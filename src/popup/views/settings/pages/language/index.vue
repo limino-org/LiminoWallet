@@ -1,10 +1,6 @@
 <template>
   <van-sticky>
-    <NavHeader title="Close" :hasRight="true" :backUrl="backUrl">
-      <template v-slot:title>
-        <div class="flex center title">{{t('sidebar.settings')}}</div>
-      </template>
-    </NavHeader>
+    <NavHeader :title="t('sidebar.settings')" :hasRight="true" :backUrl="backUrl"></NavHeader>
   </van-sticky>
   <div class="language">
     <div class="list flex between">

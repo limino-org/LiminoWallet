@@ -17,7 +17,7 @@
             <div class="title-slot">
               <slot name="title">
                 <div class="title" v-if="hasTitle" @click="handleNet">
-                  <div :class="`title-big text-center f-16 ${!hasNet ? 'lh-24' : 'lh-12'}`">{{ title }}</div>
+                  <div :class="`title-big text-center f-16 text-bold ${!hasNet ? 'lh-24' : 'lh-12'}`">{{ title }}</div>
                   <div class="title-small text-center flex center lh-14" v-if="hasNet">
                     <span class="active" :style="{ background: currentNetwork.color }"></span>
                     {{ currentNetwork.label }}

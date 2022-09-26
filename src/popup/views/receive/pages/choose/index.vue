@@ -1,10 +1,7 @@
 <template>
-    <NavHeader>
+    <NavHeader :title="t('bootstrapwindow.tOKENs')">
       <template v-slot:left>
        <span class="back hover f-12" @click="back">{{t('createAccountpage.back')}}</span>
-      </template>
-      <template v-slot:title>
-        <div class="flex center title">{{t('bootstrapwindow.tOKENs')}}</div>
       </template>
     </NavHeader>
   <div class="choose-list">

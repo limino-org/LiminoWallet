@@ -682,7 +682,8 @@
 		minerspledge: 'Become a Validator',
 		aboutAs: "Wormholes Official Website",
 		receiveAward: "receive award",
-		help: 'Help Center'
+		help: 'Help Center',
+		logoutTip:"Are you sure to cancel?"
 	},
 	"importByMnemonic": {
 		importfrommnemonic: 'Import from the mnemonic',
@@ -965,7 +966,8 @@
 		entername: "Enter Name",
 		enteraddress: "Enter Address",
 		entermemo: "Enter Memo",
-		newadd: "New Add",
+		newadd: "Add New",
+		confirmAdd:"Confirm Add",
 		tab_contacts: "My",
 		tab_recents: "Recent",
 		tab_rolodex: "Rolodex",

@@ -1,6 +1,6 @@
 <template>
   <van-sticky>
-    <NavHeader title="WormHoles" :hasRight="false" :hasLeft="hasLeft">
+    <NavHeader title="LiminoWallet" :hasRight="false" :hasLeft="hasLeft">
     </NavHeader>
   </van-sticky>
   <router-view v-slot="{ Component }">

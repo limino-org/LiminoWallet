@@ -1,10 +1,7 @@
 <template>
-  <NavHeader :hasRight="false">
+  <NavHeader :hasRight="false" :title="t('wallet.wormHoles')">
     <template v-slot:left>
      <span class="back hover" @click="back">{{t('createAccountpage.back')}}</span>
-    </template>
-    <template v-slot:title>
-      <div class="flex center title">{{t('wallet.wormHoles')}}</div>
     </template>
   </NavHeader>
 <div>

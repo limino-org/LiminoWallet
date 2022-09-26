@@ -1,10 +1,6 @@
 <template>
   <van-sticky>
-    <NavHeader title="Import Token" :hasRight="false">
-      <template v-slot:title>
-        <div class="flex center title">{{t('wallet.importToken')}}</div>
-      </template>
-    </NavHeader>
+    <NavHeader :title="t('wallet.importToken')" :hasRight="false"></NavHeader>
   </van-sticky>
   <router-view v-slot="{ Component }">
     <keep-alive>

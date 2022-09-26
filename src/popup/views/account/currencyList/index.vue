@@ -1,12 +1,10 @@
 <template>
   <div class="page-currency-list">
-    <van-sticky>
       <NavHeader :hasRight="false" :title="$t('wallet.addtoken')">
         <template v-slot:left>
           <van-icon name="arrow-left" class="back" @click="back" />
         </template>
       </NavHeader>
-    </van-sticky>
     <div class="page-container">
       <ChooseTokenCard
         v-for="item in tokens"

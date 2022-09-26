@@ -1,4 +1,9 @@
 <template>
+      <NavHeader :title="t('wallet.takeover')">
+      <template v-slot:left>
+       <span class="back hover f-12" @click="back">{{t('createAccountpage.back')}}</span>
+      </template>
+    </NavHeader>
   <div class="text-center lh-16 f-12 tit mt-30">{{t('receive.transfer')}}</div>
   <div class="text-center lh-24 flex center" v-show="amount > 0">
     <span class="f-18">{{amount}} {{chooseToken.name}}</span>
@@ -9,7 +14,9 @@
       <qrcode-vue :value="code" class="code" :size="300" level="L" ref="coderef"></qrcode-vue>
     </div>
   </div>
-  <div class="load-btn pl-8 pr-4 lh-30 hover f-12 van-ellipsis">{{ tokenContractAddress || address }}</div>
+  <div class="flex center">
+    <div class="load-btn pl-10 pr-10 lh-30 hover f-12">{{ tokenContractAddress || address }}</div>
+  </div>
 
   <div class="flex between btn-group">
     <div class="btn-box">
@@ -47,6 +54,7 @@ import { encrypt, decrypt } from '@/popup/utils/cryptoJS.js'
 import { useI18n } from 'vue-i18n'
 import { toUsd } from '@/popup/utils/filters'
 import { useToast } from '@/popup/plugins/toast'
+import NavHeader from '@/popup/components/navHeader/index.vue'
 
 export default {
   name: 'receive-code',
@@ -54,13 +62,17 @@ export default {
     [Icon.name]: Icon,
     [Button.name]: Button,
     CustomExchangeModal,
+    NavHeader,
     QrcodeVue
   },
   setup() {
     const { query } = useRoute()
     const { state } = useStore()
     const { tokenContractAddress } = query
+    const router = useRouter();
+    const route = useRoute();
     const { address } = state.account.accountInfo
+    const { backUrl,clickBackUrl } = query;
     const amount = ref(null)
     const { t } = useI18n()
     const code = ref('')
@@ -86,13 +98,15 @@ export default {
     const handleSetAmount = () => {
       setAmountModal.value = true
     }
-
+    const replaceBackUrl = ref(clickBackUrl || '')
     // Set Amount Acknowledge events
     const handleConfirm = (v: number) => {
       amount.value = v
       code.value = JSON.stringify({ data: { address, tokenContractAddress, value: amount.value }, type: 'receive' })
     }
-
+    const back = () => {
+      router.replace({name : replaceBackUrl.value?.toString() || 'wallet'})
+    }
     // Currently selected token
     const chooseToken = computed(() => {
       const token = state.transfer.chooseToken
@@ -104,6 +118,7 @@ export default {
           }
     })
     return {
+      back,
       code,
       t,
       toCopy,
@@ -137,7 +152,7 @@ export default {
   padding: 1px;
 }
 .load-btn {
-  width: 250px;
+  max-width: 350px;
   background: #f1f3f4;
   box-sizing: border-box;
   border-radius: 30px;

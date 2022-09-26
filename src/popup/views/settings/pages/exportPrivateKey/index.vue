@@ -10,24 +10,23 @@
 
     <!-- 主体框 -->
     <div class="page-content">
-      <div class="userwarning">
-        <div class="warning-icon">
-          <van-icon name="warning" style="color: #d63c4c" size="20" />
+      <Tip :message="t('exportprivatekey.warn')" />
+      <div class="flex tab-box" v-if="check">
+        <div class="flex-1 flex center border-right">
+          <div :class="`card hover ${selectKey == 'a' ? 'active' : ''}`" @click="choose('a')">
+            <div class="text-center icon"><i class="iconfont icon-fuzhi3"></i></div>
+            <div class="text mt-4">{{t('exportprivatekey.copytext')}}</div>
+          </div>
         </div>
-        <div class="user-title">
-          {{ t("exportprivatekey.warn") }}
+        <div class="flex-1 flex center">
+          <div :class="`card hover ${selectKey == 'b' ? 'active' : ''}` "  @click="choose('b')">
+            <div class="text-center icon"><i class="iconfont icon-erweima"></i></div>
+            <div class="text mt-4">{{$t("exportprivatekey.qrcode")}}</div>
+          </div>
         </div>
       </div>
-
-      <van-tabs
-        v-if="check"
-        title-active-color="#037dd6"
-        title-inactive-color
-        v-model:active="activeName"
-      >
-        <van-tab :title="$t('exportprivatekey.text')" name="a">
-          <div class="privatekey-content">
-            <div class="title">{{ $t("exportprivatekey.hint") }}</div>
+      <div class="tab-con mt-24" v-if="check">
+        <div class="privatekey-content" v-show="selectKey == 'a'">
             <div class="display-box">
               {{ privateKey }}
             </div>
@@ -45,10 +44,7 @@
               </div>
             </div>
           </div>
-        </van-tab>
-        <van-tab :title="$t('exportprivatekey.qrcode')" name="b">
-          <div class="qccode-content">
-            <div class="title">{{ $t("exportprivatekey.hint") }}</div>
+          <div v-show="selectKey == 'b'"><div class="qccode-content">
             <div class="flex center">
               <div class="qccode-display flex center">
                 <qrcode-vue
@@ -59,8 +55,7 @@
                 />
               </div>
             </div>
-          </div>
-          <div  class="btn-groups">
+          </div>          <div  class="btn-groups">
                   <div class="container pl-26 pr-26">
                   <van-button
           type="default"
@@ -73,10 +68,9 @@
           {{ $t("exportprivatekey.saveText") }}</van-button
         >
                   </div>
-          </div>
-
-        </van-tab>
-      </van-tabs>
+          </div></div>
+      </div>
+    
       <div :class="`pwd-ipt pl-14 pr-14 ${isError ? 'error' : ''}`" v-if="!check">
         <div class="flex between pwd-tit">
           <span>{{t('exportprivatekey.password')}}</span>
@@ -140,7 +134,7 @@ import { useToast } from "@/popup/plugins/toast";
 import { createWalletByJson } from '@/popup/utils/ether';
 import { decryptPrivateKey } from "@/popup/utils/web3";
 import { regPassword1 } from '@/popup/enum/regexp';
-
+import Tip from '@/popup/components/tip/index.vue'
 export default {
   components: {
     SwitchNetwork,
@@ -154,6 +148,7 @@ export default {
     [Tabs.name]: Tabs,
     QrcodeVue,
     NavHeader,
+    Tip
   },
   setup() {
     const { t } = useI18n();
@@ -236,8 +231,14 @@ export default {
         errMsg.value = t('loginwithpassword.wrong_password')
       }
     }
+    const selectKey = ref('a')
+    const choose = (v: string) => {
+      selectKey.value = v
+    }
     return {
       t,
+      selectKey,
+      choose,
       tocopy,
       activeName,
       handleConfirm,
@@ -267,6 +268,22 @@ export default {
 
 
 <style lang="scss" scoped>
+  .border-right {
+    border-right: 1px solid #B3B3B3;
+  }
+  .tab-box {
+    .card {
+      &.active {
+        color: #037cd6;
+      }
+      .icon i {
+        font-size: 30px;
+      }
+      .text {
+
+      }
+    }
+  }
   .error {
 
   }
@@ -305,30 +322,11 @@ export default {
     line-height: 21px;
     font-weight: bold;
   }
-  .userwarning {
-    margin: 15px;
-    border-radius: 5px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    padding-left: 15px;
-    padding-right: 15px;
-    background-color: #fbf2f3;
-    // padding: 0 22px;
-    font-size: 12px;
-    display: flex;
-    // justify-content: space-evenly;
-    align-items: center;
-
-
-    .user-title {
-      margin-left: 9px;
-      line-height: 16px;
-    }
-  }
   .display-box {
     margin: 0 15px;
     height: 90px;
     border: 1px solid #b3b3b3;
+    background: #F6F7FA;
     border-radius: 5px;
     word-wrap: break-word;
     padding: 16px;

@@ -1,9 +1,6 @@
 <template>
   <van-sticky>
-    <NavHeader title="Close" :hasRight="true">
-      <template v-slot:title>
-        <div class="flex center title">{{ t("setting.contacts") }}</div>
-      </template>
+    <NavHeader :title="t('receive.contants')" :hasRight="true">
     </NavHeader>
   </van-sticky>
   <div class="contacts-add">
@@ -44,7 +41,7 @@
         <div class="btn-groups" v-if="!query.address">
           <div class="container pl-28 pr-28">
             <van-button block type="primary" native-type="submit">
-              {{ t("addNetwork.add") }}
+              {{ t("contacts.confirmAdd") }}
             </van-button>
           </div>
         </div>
@@ -55,7 +52,7 @@
             <van-button block class="mr-10" type="danger" plain @click="handleDelete">{{
               t("contacts.delete")
             }}</van-button>
-            <van-button block type="primary" native-type="submit">{{
+            <van-button block type="primary"  native-type="submit">{{
               t("contacts.submit")
             }}</van-button>
           </div>

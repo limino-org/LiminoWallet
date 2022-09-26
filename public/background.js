@@ -1,11 +1,11 @@
 
 
-
+import {str,ethers} from './modules/index.js'
 
 
 // import localforage from './modules/localforage.js'
 chrome.runtime.onInstalled.addListener(async() => {
-  console.log('Background.js onInstalled.')
+  console.log('Background.js onInstalled.',str,ethers)
 })
 
 chrome.runtime.onMessage.addListener((async (request, sender, sendResponse)  => {

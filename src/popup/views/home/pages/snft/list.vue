@@ -1,7 +1,5 @@
 <template>
-  <van-sticky>
     <NavHeader backUrl="wallet" :title="t('sendSNFT.collTit')" :hasRight="false"></NavHeader>
-  </van-sticky>
   <div id="tabBox">
     <van-tabs v-model:active="active" sticky :offset-top="48" @change="changeTab">
       <van-tab v-for="(item, idx) in categoryList" :key="item.value" :title="item.text">

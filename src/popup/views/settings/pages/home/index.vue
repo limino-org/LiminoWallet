@@ -1,10 +1,6 @@
 <template>
   <van-sticky>
-    <NavHeader title="Close" :hasRight="false">
-      <template v-slot:title>
-        <div class="flex center title">{{t('sidebar.settings')}}</div>
-      </template>
-    </NavHeader>
+    <NavHeader :title="t('sidebar.settings')" :hasNet="false" :hasRight="false"></NavHeader>
   </van-sticky>
   <div class="settings settings-index">
     <SettingClass :label="t('setting.general')">

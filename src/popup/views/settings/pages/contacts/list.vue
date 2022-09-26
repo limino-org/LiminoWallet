@@ -1,10 +1,6 @@
 <template>
 <van-sticky>
-      <NavHeader title="Close" :hasRight="true">
-        <template v-slot:title>
-          <div class="flex center title">{{t('setting.contacts')}}</div>
-        </template>
-      </NavHeader>
+      <NavHeader :title="t('receive.contants')" :hasRight="true"></NavHeader>
     </van-sticky>
   <div class="contacts-list">
     <div class="list pt-16">

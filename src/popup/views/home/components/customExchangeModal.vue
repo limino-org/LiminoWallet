@@ -11,7 +11,7 @@
       <div class="title text-center text-bold van-hairline--bottom">
         {{ title ? title : t("exchange.setAmount") }}
       </div>
-      <div class="label-tit">
+      <!-- <div class="label-tit">
         {{ t("createExchange.formCharge") }}
 
         <van-popover
@@ -31,8 +31,8 @@
             />
           </template>
         </van-popover>
-      </div>
-      <div class="amount-box pl-14 pr-14 flex between ml-12 mr-12 mt-4 mb-20">
+      </div> -->
+      <div class="amount-box pl-14 pr-14 flex between ml-12 mr-12 mt-24 mb-20">
         <div class="flex-6">
           <div class="f-18 amount-ipt flex center-v">
             <van-field
@@ -153,6 +153,7 @@ export default defineComponent({
     const ipt = ref(null);
     const am = Number(props.defaultAmount);
     const amount: Ref<string | null> = ref(am ? am.toString() : null);
+      // TODO: Delete
     const showpop = ref(false);
     watch(
       () => props.modelValue,

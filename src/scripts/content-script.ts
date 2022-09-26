@@ -3,16 +3,21 @@ console.log("Hello from the content-script", window.origin);
 
 
 function injectScript(file) {
-  var th = document.head || document.documentElement;
-  var scriptTag = document.createElement('script');
-  scriptTag.setAttribute('async', 'false');
-  scriptTag.setAttribute('type', 'text/javascript');
-  scriptTag.setAttribute('src', file);
-  th.appendChild(scriptTag);
-  let time = setTimeout(() => {
-    th.removeChild(scriptTag)
-    clearTimeout(time)
-  })
+  try {
+    var th = document.head || document.documentElement;
+    var scriptTag = document.createElement('script');
+    scriptTag.setAttribute('async', 'false');
+    scriptTag.setAttribute('type', 'text/javascript');
+    scriptTag.setAttribute('src', file);
+    th.appendChild(scriptTag);
+    let time = setTimeout(() => {
+      th.removeChild(scriptTag)
+      clearTimeout(time)
+    })
+  }catch(err){
+    console.error('LiminoWallet:  Provider injection failed.', error)
+  }
+
 }
 injectScript(chrome.runtime.getURL('js/inject-script.js'), 'body');
 

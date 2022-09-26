@@ -1,9 +1,6 @@
 <template>
   <van-sticky>
-    <NavHeader title="Close" :hasLeft="false">
-      <template v-slot:title>
-        <div class="flex center title">{{ t("setting.contacts") }}</div>
-      </template>
+    <NavHeader :title="t('setting.contacts')" :hasLeft="false">
     </NavHeader>
   </van-sticky>
   <div class="contacts-list">

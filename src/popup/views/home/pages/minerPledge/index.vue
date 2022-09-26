@@ -1,12 +1,6 @@
 <template>
   <div class="miners">
-    <van-sticky>
-      <NavHeader :hasLeft="true" :hasRight="false" backUrl="wallet" cancelRouteName="autoExchange">
-        <template v-slot:title>
-          <div class="flex center title">{{t('wallet.autoNFTexchange')}}</div>
-        </template>
-      </NavHeader>
-    </van-sticky>
+    <NavHeader :hasLeft="true" :hasRight="false" backUrl="wallet" cancelRouteName="autoExchange" :title="t('wallet.autoNFTexchange')"></NavHeader>
     <div class="miners-container">
       <div>
         <span class="text">{{$t('minerspledge.please')}}</span>

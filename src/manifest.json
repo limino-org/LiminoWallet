@@ -12,7 +12,10 @@
     "activeTab",
     "<all_urls>",
     "nativeMessaging",
-    "notifications"
+    "notifications",
+    "background",
+    "scripting",
+    "storage"
   ],
   "host_permissions":[
     "*://*/*"
@@ -30,7 +33,11 @@
     "48": "icons/logo-48.png",
     "128": "icons/logo-128.png"
   },
-
+  "background":{
+    "service_worker": "background.js",
+    "pages":["background.html"],
+    "type":"module"
+  },
   "sandbox": {
     "pages": [
       "background.html"

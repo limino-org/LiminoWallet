@@ -1,12 +1,10 @@
 <template>
   <div class="page-addtokens">
-    <van-sticky>
       <NavHeader :hasRight="false" :title="$t('wallet.addtoken')">
         <template v-slot:left>
           <van-icon name="arrow-left" class="back" @click="back" />
         </template>
       </NavHeader>
-    </van-sticky>
     <div class="page-content">
       <!-- form -->
       <van-form @submit="onSubmit">

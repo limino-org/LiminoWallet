@@ -1,11 +1,5 @@
 <template>
-  <van-sticky>
-    <NavHeader :hasRight="false">
-      <template v-slot:title>
-        <div class="flex center title">{{t('setting.transitionHistory')}}</div>
-      </template>
-    </NavHeader>
-  </van-sticky>
+  <NavHeader :hasRight="false" :title="t('setting.transitionHistory')"></NavHeader>
   <div class="transaction-history">
     <van-sticky offset-top="48">
       <div class="flex center tabs-box pt-14">

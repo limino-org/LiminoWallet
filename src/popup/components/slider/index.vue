@@ -223,7 +223,7 @@
         <div class="slider-bottom-box">
           <!-- logout -->
           <div class="logout-box flex center pl-14 pr-14">
-            <van-button block @click="handleLogout">{{
+            <van-button block @click="handleLogout" class="logoutBtn">{{
               t("sidebar.logout")
             }}</van-button>
           </div>
@@ -241,8 +241,8 @@
       />
     </div>
   </transition>
-  <van-overlay :show="showSlider" :z-index="9999" @click="showSlider = false">
-  </van-overlay>
+  <van-overlay :show="showSlider" :z-index="999" @click="showSlider = false" />
+
 </template>
 <script lang="ts">
 import {
@@ -399,10 +399,23 @@ export default defineComponent({
         clearTimeout(time);
       }, 300);
     };
-
+    
     const handleLogout = () => {
-      showSlider.value = false;
-      logout();
+      $dialog.open({
+        message:t('sidebar.logoutTip'),
+        type: 'warn',
+        theme:"dark",
+        confirmBtnText:t("common.no"),
+        cancelBtnText:t("common.yes"),
+        callBack(){
+  
+        },
+        cancelBack(){
+          showSlider.value = false;
+          logout();
+        }
+      })
+
     };
 
     const toSend = () => {
@@ -530,7 +543,9 @@ export default defineComponent({
 .slider-left-leave-active {
   animation: slider-in 0.3s reverse linear;
 }
-
+.logoutBtn {
+  background: transparent;
+}
 @keyframes slider-in {
   0% {
     transform: translateX(-100%);

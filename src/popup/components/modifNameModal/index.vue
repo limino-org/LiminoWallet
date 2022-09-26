@@ -12,11 +12,11 @@
 
       <div class="ml-14 mr-14 mt-20">
         <van-form @submit="onSubmit">
-          <div class="label">{{t('account.accountname')}} ({{name.length}} / 12)</div>
+          <div class="label">{{t('account.accountname')}} ({{name.length}} / 25)</div>
           <div class="position relative">
             <van-field
             v-model="name"
-            maxlength="12"
+            maxlength="25"
             :placeholder="t('account.placeholder')"
             :rules="[{ required: true, message: t('account.message') }]"
             ref="ipt"

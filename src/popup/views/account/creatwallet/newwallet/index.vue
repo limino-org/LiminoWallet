@@ -1,15 +1,10 @@
 <template>
   <div>
-    <van-sticky>
-      <NavHeader :hasRight="false">
+      <NavHeader :hasRight="false" :title="t('createwallet.createwallet')">
         <template v-slot:left>
           <van-icon name="arrow-left" @click="onClickLeft" class="back-icon" />
         </template>
-        <template v-slot:title>
-          <div class="tit">{{t('createwallet.createwallet')}}</div>
-        </template>
       </NavHeader>
-    </van-sticky>
     <div class="content">
       <div class="notice">{{t('createwallet.title')}}</div>
       <!-- Create password form validation -->

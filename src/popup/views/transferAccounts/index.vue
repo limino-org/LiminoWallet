@@ -1,11 +1,4 @@
 <template>
-  <!-- <van-sticky>
-    <NavHeader title="Close" :hasRight="true" cancelRouteName="wallet">
-      <template v-slot:title>
-        <div class="flex center title">{{t('wallet.send')}}</div>
-      </template>
-    </NavHeader>
-  </van-sticky> -->
   <div class>
     <router-view v-slot="{ Component }">
       <keep-alive>

@@ -1,10 +1,6 @@
 <template>
   <van-sticky>
-    <NavHeader title="Close" :hasRight="true">
-      <template v-slot:title>
-        <div class="flex center title">{{ t("sidebar.recoveryPhrase") }}</div>
-      </template>
-    </NavHeader>
+    <NavHeader :title="t('sidebar.recoveryPhrase')" :hasRight="true"></NavHeader>
   </van-sticky>
   <div class="content">
     <div class="bg-box pt-22 pb-22 pl-20 pr-20">

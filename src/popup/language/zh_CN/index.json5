@@ -670,7 +670,9 @@
 		minerspledge: '成为验证者',
 		aboutAs: "虫洞官网",
 		receiveAward: "领取奖励",
-		help: '使用帮助'
+		help: '使用帮助',
+		logoutTip:"确定登出吗？"
+
 	},
 	"importByMnemonic": {
 		importfrommnemonic: '从助记词导入',
@@ -967,6 +969,7 @@
 	"contacts": {
 		name: "名字",
 		address: "地址",
+		confirmAdd:"确认新增",
 		memo: "备忘录",
 		delete: "删除",
 		submit: "确认",

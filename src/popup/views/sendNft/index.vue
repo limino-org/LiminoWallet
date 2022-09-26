@@ -1,11 +1,5 @@
 <template>
-  <van-sticky>
-    <NavHeader title="Close" :hasRight="route.name =='false' ? false : true">
-      <template v-slot:title>
-        <div class="flex center title">{{t('sendNFT.sendNFT')}}</div>
-      </template>
-    </NavHeader>
-  </van-sticky>
+  <NavHeader :title="t('sendNFT.sendNFT')" :hasRight="route.name =='false' ? false : true"></NavHeader>
   <router-view v-slot="{ Component }">
     <keep-alive>
       <component :is="Component" />

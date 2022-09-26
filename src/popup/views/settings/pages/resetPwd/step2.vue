@@ -1,10 +1,6 @@
 <template>
   <van-sticky>
-    <NavHeader title="Close" :hasRight="hasRight">
-      <template v-slot:title>
-        <div class="flex center title">{{t('setting.resetPwd')}}</div>
-      </template>
-    </NavHeader>
+    <NavHeader :title="t('setting.resetPwd')" :hasRight="hasRight"></NavHeader>
   </van-sticky>
   <WormTransition size="small">
     <template v-slot:icon>

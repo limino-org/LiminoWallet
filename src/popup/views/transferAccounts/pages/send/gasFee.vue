@@ -1,10 +1,7 @@
 <template>
-  <NavHeader>
+  <NavHeader :title="t('wallet.send')">
     <template v-slot:left>
      <span class="back hover" @click="back">{{t('createAccountpage.back')}}</span>
-    </template>
-    <template v-slot:title>
-      <div class="flex center title">{{t('wallet.send')}}</div>
     </template>
   </NavHeader>
 <div class="gas-fee-page">

@@ -1,11 +1,7 @@
 <template>
   <div class="page-sign1">
     <van-sticky>
-      <NavHeader :hasRight="false" :hasLeft="false">
-        <template v-slot:title>
-          <div class="flex center"><span class="f-16">WormHoles</span></div>
-        </template>
-
+      <NavHeader :hasRight="false" :hasLeft="false" title="LiminoWallt">
       </NavHeader>
     </van-sticky>
     <div class="page-container">

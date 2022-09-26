@@ -1,19 +1,14 @@
 <template>
   <van-sticky>
-    <NavHeader title="Close" :hasRight="false">
-      <template v-slot:title>
-        <div class="flex center title">
-          {{ t("setting.accountManagement") }}
-        </div>
-      </template>
+    <NavHeader :title="t('setting.accountManagement')" :hasRight="false">
     </NavHeader>
   </van-sticky>
   <div class="modif-name-modal pl-14 mt-24 pr-14">
     <van-form @submit="onSubmit">
-      <div class="label text-bold">Account Name ({{ name.length }} / 12)</div>
+      <div class="label text-bold">{{t('account.accountname')}} ({{ name.length }} / 25)</div>
       <van-field
         v-model="name"
-        maxlength="12"
+        maxlength="25"
         :placeholder="t('account.placeholder')"
         right-icon="cross"
         @click-right-icon="clickRight"
