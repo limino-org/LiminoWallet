@@ -523,7 +523,10 @@ export default defineComponent({
       90: "",
       100: "",
     });
-
+    // 开设交易所状态
+    const exchangeStatus: ComputedRef<ExchangeStatus> = computed(
+      () => store.state.account.exchangeStatus
+    );
     const loading: Ref<boolean> = ref(false);
     const account = ref({});
     const initPageData = async () => {
@@ -543,7 +546,7 @@ export default defineComponent({
         ethAccountInfo.value = accountInfo;
         accountInfoBlockNumber.value = accountInfo.BlockNumber;
         console.log(blockNumber.value - accountInfoBlockNumber.value);
-        dispatch("account/getExchangeStatus");
+        
         if (exchangeStatus.value.exchanger_flag) {
           console.log("获取质押调整的字段", accountInfo);
           // console.log("交易所检测节点是ExchangerURL从data中获取",data)
@@ -605,10 +608,7 @@ export default defineComponent({
     const { dispatch } = store;
     const amount = ref(280);
     const accountInfo = computed(() => store.state.account.accountInfo);
-    // 开设交易所状态
-    const exchangeStatus: ComputedRef<ExchangeStatus> = computed(
-      () => store.state.account.exchangeStatus
-    );
+
     let visible1 = computed(() => serverIndex.value === 0);
     let visible2 = computed(() => serverIndex.value === 1);
     const toCreate = async (name: string, amount: number) => {

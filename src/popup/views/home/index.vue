@@ -1,6 +1,6 @@
 <template>
   <router-view v-slot="{ Component }" >
-    <keep-alive exclude="snft-detail,page-coll-list">
+    <keep-alive include="wallet">
       <component :is="Component" />
     </keep-alive>
   </router-view>

@@ -75,7 +75,7 @@
         <div class="flex between pwd-tit">
           <span>{{t('exportprivatekey.password')}}</span>
           <span>
-            <i @click="mask = !mask" :class="`iconfont hover  ${mask ? 'icon-yanjing1' : 'icon-yanjing'} `"></i>
+            <i @click="mask = !mask" :class="`iconfont hover  ${mask ? 'icon-yanjing':'icon-yanjing1'} `"></i>
           </span>
         </div>
         <van-field
@@ -288,11 +288,12 @@ export default {
 
   }
 .icon-yanjing1 {
+  color: #037cd6;
   font-size: 14px !important;
 }
 .icon-yanjing {
   font-size: 18px !important;
-  color: #037cd6;
+
 }
 
 .page-content {
@@ -541,7 +542,7 @@ export default {
       color: #037cd6;
       text-decoration: underline;
     }
-    .icon-yanjing {
+    .icon-yanjing1 {
       color: #037dd6;
     }
     :deep(.van-field__label) {

@@ -3,50 +3,23 @@
   <transition name="slider-left">
     <div
       v-if="showSlider"
-      :style="{ width: '70%', height: '100%' }"
+      :style="{ width: '85%', height: '100%' }"
       class="nav-header-slider-box"
     >
       <div class="slider-con">
-        <div class="slider-bg">
+        <div :class="`slider-bg ${hasExchange ? 'blue' : ''}`">
           <div class="flex back-box">
             <van-icon name="arrow-left hover" @click="showSlider = false" />
+            
           </div>
 
-          <div class="user-img flex">
-            <div class="user-img-circle flex hover">
+          <div class="user-img ">
+            <div class="user-img-circle flex center-v hover">
               <AccountIcon
                 :data="accountInfo.icon"
                 @click="toAccountManagement"
               />
-            </div>
-            <!-- Switch account -->
-            <div class="account">
-              <div class="flex center-v" @click="toAccountManagement">
-                {{ accountInfo.name }}
-                <i
-                  :class="`iconfont ml-4 f-14 ${
-                    showAccount ? 'icon-shangjiantou' : 'icon-xiajiantou'
-                  }`"
-                ></i>
-              </div>
-              <!-- Address, copy, QR code-->
-              <div class="address-card flex center-v">
-                <div class="add">{{ addressMask(accountInfo.address) }}</div>
-                <i class="iconfont icon-fuzhi2 ml-6 hover" @click="toCopy"></i>
-                <div class="shuxian ml-10 mr-6"></div>
-                <i
-                  class="iconfont icon-erweima1 hover"
-                  @click="handleShowCode"
-                ></i>
-                <!-- qr code popover -->
-                <AddressQRModal
-                  v-model="showCode"
-                  :data="accountInfo.address"
-                />
-              </div>
-            </div>
-          </div>
-          <!-- Label set -->
+                        <!-- Label set -->
           <div class="tag-list flex">
             <van-popover
               v-model:show="showPopover"
@@ -105,6 +78,36 @@
               </template>
             </van-popover>
           </div>
+            </div>
+            <!-- Switch account -->
+            <div class="account mt-6">
+              <div class="flex center-v name" @click="toAccountManagement">
+                {{ accountInfo.name }}
+                <i
+                  :class="`iconfont ml-4 f-14 ${
+                    showAccount ? 'icon-shangjiantou' : 'icon-xiajiantou'
+                  }`"
+                ></i>
+              </div>
+              <!-- Address, copy, QR code-->
+              <div class="address-card flex">
+                <div class="add">{{ accountInfo.address }}</div>
+                <!-- <i class="iconfont icon-fuzhi2 ml-6 hover" @click="toCopy"></i>
+                <div class="shuxian ml-10 mr-6"></div>
+                <i
+                  class="iconfont icon-erweima1 hover"
+                  @click="handleShowCode"
+                ></i> -->
+                <!-- qr code popover -->
+                <!-- <AddressQRModal
+                  v-model="showCode"
+                  :data="accountInfo.address"
+                /> -->
+              </div>
+              <div class="amount mt-8">{{amount}} {{currentNetwork.currencySymbol}}</div>
+            </div>
+          </div>
+
           <!-- AccountModal -->
           <AccountModal v-model="showAccount" />
         </div>
@@ -362,6 +365,7 @@ export default defineComponent({
         }
       }
     );
+    const amount = computed(() => store.getters["system/getAmount"]);
     // Copy user address
     const { toClipboard } = useClipboard();
     const { $toast } = useToast();
@@ -494,6 +498,9 @@ export default defineComponent({
     // The account label pops up
     const showPopover = ref(false);
     const showPopover2 = ref(false);
+
+
+
     return {
       showPopover,
       showPopover2,
@@ -508,6 +515,7 @@ export default defineComponent({
       toAccountManagement,
       handleAccount,
       createAccount,
+      amount,
       createLoading,
       accountLoading,
       oneClick,

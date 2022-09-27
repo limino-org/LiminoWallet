@@ -1,4 +1,9 @@
 <template>
+    <NavHeader :hasRight="false" :title="t('createAccountpage.mnemonicBtn')">
+    <template v-slot:left>
+     <span class="back hover f-12" @click="back">{{t('createAccountpage.back')}}</span>
+    </template>
+  </NavHeader>
   <div class="mnemonic-page">
     <WormTransition size="small">
       <template v-slot:icon>

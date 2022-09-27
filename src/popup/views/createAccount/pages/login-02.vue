@@ -95,7 +95,7 @@ export default {
   .tit-small {
     color: #848484;
   }
-  .icon-yanjing {
+  .icon-yanjing1 {
     color: #037dd6;
   }
   :deep(.van-field__label) {

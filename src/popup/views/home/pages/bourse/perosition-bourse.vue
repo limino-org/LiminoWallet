@@ -324,7 +324,7 @@ export default defineComponent({
       color: #037cd6;
       text-decoration: underline;
     }
-    .icon-yanjing {
+    .icon-yanjing1 {
       color: #037dd6;
     }
     :deep(.van-field__label) {

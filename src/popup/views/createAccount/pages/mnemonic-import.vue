@@ -11,18 +11,28 @@
     <div class="tit-big text-center f-24">{{t('createAccountpage.createAccount')}}</div>
     <div class="tit-small text-center f-12 mt-14 mb-30 lh-16">{{t('createAccountpage.setup')}}</div>
   </div> -->
-  <WormTransition size="small" >
-      <template v-slot:icon>
-        <img class="iconele flex center" src="@/assets/token/logowallet.png" />
-      </template>
-    </WormTransition>
+<div class="title">
+ <!-- <img class="iconele flex center" src="@/assets/token/logowallet.png" /> -->
+<WromTransition size="small" >
+<template v-slot:icon>
+<img class="iconele flex center" src="@/assets/token/logowallet.png" />
+</template>
+</WromTransition>
+<div class="tit-big text-center f-24 mt-10">
+{{ t("createAccountpage.createAccount") }}
+</div>
+<div class="tit-small text-center f-12 mt-6  lh-16">
+{{ t("createAccountpage.setup") }}
+</div>
+</div>
+
   <div class="create-new-password">
     <van-form @submit="onSubmit">
       <van-cell-group inset>
         <div class="text-bold f-12 mt-10 mb-10 lh-16 flex between">
           <span>{{t('createAccountpage.password')}}</span>
           <span>
-            <i @click="toggleMask" :class="`iconfont hover ${choice ? 'icon-yanjing' : 'icon-yanjing1'}`"></i>
+            <i @click="toggleMask" :class="`iconfont hover ${choice ? 'icon-yanjing1' : 'icon-yanjing'}`"></i>
           </span>
         </div>
         <van-field
@@ -95,25 +105,26 @@ import { regPassword1 } from '@/popup/enum/regexp'
 import { getPath } from '@/popup/utils/ether'
 import { useBroadCast } from '@/popup/utils/broadCost'
 import NavHeader from '@/popup/components/navHeader/index.vue'
-import WormTransition from '@/popup/components/wromTransition/index.vue'
 import TermsService from '@/popup/components/termsservice/index.vue'
 import PrivacyPolicy from '@/popup/components/privacypolicy/index.vue'
 import localforage from 'localforage'
+import WromTransition from '@/popup/components/wromTransition/index.vue'
 export default {
 name: 'loginAccount-create-step1',
 components: {
-  [Button.name]: Button,
-  [Sticky.name]: Sticky,
-  [Form.name]: Form,
-  [Field.name]: Field,
-  [CellGroup.name]: CellGroup,
-  [Switch.name]: Switch,
-  [Checkbox.name]: Checkbox,
-  [CheckboxGroup.name]: CheckboxGroup,
-  PrivacyPolicy,
-  TermsService,
-  NavHeader,
-  WormTransition
+    [Button.name]: Button,
+    [Sticky.name]: Sticky,
+    [Form.name]: Form,
+    [Field.name]: Field,
+    [CellGroup.name]: CellGroup,
+    [Switch.name]: Switch,
+    [Checkbox.name]: Checkbox,
+    [CheckboxGroup.name]: CheckboxGroup,
+    PrivacyPolicy,
+    TermsService,
+    NavHeader,
+    WromTransition,
+ 
 },
 setup() {
   const { t } = useI18n()
@@ -294,7 +305,7 @@ font-size: 16px;
   color: #037cd6;
   text-decoration: underline;
 }
-.icon-yanjing {
+.icon-yanjing1 {
   color: #037dd6;
 }
 :deep(.van-field__label) {

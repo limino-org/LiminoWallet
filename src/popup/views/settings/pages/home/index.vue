@@ -5,7 +5,7 @@
   <div class="settings settings-index">
     <SettingClass :label="t('setting.general')">
       <template v-slot:icon>
-        <i class="iconfont icon-conditions"></i>
+        <i class="iconfont icon-filter2"></i>
       </template>
       <!-- <setting-card :label="t('setting.currencyConversion')" @handleClick="handleToggleCurrency" value="USD" /> -->
       <setting-card :label="t('setting.languageSelection')" @handleClick="handleToggleLanguage" :value="lang.label" />
@@ -31,14 +31,14 @@
 
     <SettingClass :label="t('setting.networks')">
       <template v-slot:icon>
-        <i class="iconfont icon-Earth_network"></i>
+        <i class="iconfont icon-wangluo1"></i>
       </template>
       <setting-card @handleClick="routerPush({name: 'networkList'})" :label="t('setting.addNetworks')" />
     </SettingClass>
 
     <SettingClass :label="t('setting.contacts')">
       <template v-slot:icon>
-        <i class="iconfont icon-mingpian"></i>
+        <i class="iconfont icon-tongxunlu1"></i>
       </template>
       <setting-card @handleClick="routerPush({name:'contacts-list'})" :label="t('setting.addEditRemove')" />
     </SettingClass>

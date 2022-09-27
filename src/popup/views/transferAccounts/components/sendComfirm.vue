@@ -152,6 +152,7 @@ export default defineComponent({
     const nextLoading = ref(false)
 
     const handleComfirm = () => {
+      showModal.value = false
        const params = {
         ...props.data,
         call(data: any){
@@ -173,7 +174,6 @@ export default defineComponent({
       store
         .dispatch(value ? 'account/transaction' : 'account/tokenTransaction', params)
         .then(() => {
-          router.replace({ name: 'wallet' })
           $tradeConfirm.update({status:"approve"})
         })
         .catch((err: any) => {

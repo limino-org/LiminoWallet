@@ -1,7 +1,7 @@
 <template>
-  <NavHeader :hasRight="false" :title="t('wallet.wormHoles')">
+    <NavHeader :hasRight="false" title="Wormholes">
     <template v-slot:left>
-     <span class="back hover" @click="back">{{t('createAccountpage.back')}}</span>
+     <span class="back hover f-12" @click="back">{{t('createAccountpage.back')}}</span>
     </template>
   </NavHeader>
 <div>
@@ -28,7 +28,7 @@
             <i
               @click="toggleMask"
               :class="`iconfont hover ${
-                choice ? 'icon-yanjing' : 'icon-yanjing1'
+                choice ? 'icon-yanjing1' : 'icon-yanjing'
               }`"
             ></i>
           </span>
@@ -334,7 +334,7 @@ margin-top: 30px;
   color: #037cd6;
   text-decoration: underline;
 }
-.icon-yanjing {
+.icon-yanjing1 {
   color: #037dd6;
 }
 :deep(.van-field__label) {

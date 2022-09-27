@@ -164,7 +164,7 @@
           </div>
         </div>
         <!-- Button group -->
-        <div class="btn-group mt-14 pl-10 pr-10 flex center pt-12">
+        <div class="btn-group mt-14 pl-10 pr-10 flex evenly pt-12">
           <div class="actions-btn" @click.stop="toReceive">
             <div class="action-icon flex center">
               <i class="iconfont icon-bottom icon-teshujiantouzuoxiantiao"></i>

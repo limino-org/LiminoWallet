@@ -1176,7 +1176,7 @@ export default {
       const wallet = await getWallet();
       const { address } = wallet;
       return checkAuth(address).then((res: any) => {
-        commit("UPDATE_EXCHANGERSTATUS", res.data);
+        commit("UPDATE_EXCHANGERSTATUS", clone(res.data));
         call(res.data);
         return res.data;
       });

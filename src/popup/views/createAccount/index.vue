@@ -1,8 +1,8 @@
 <template>
-  <van-sticky>
+  <!-- <van-sticky>
     <NavHeader title="LiminoWallet" :hasRight="false" :hasLeft="hasLeft">
     </NavHeader>
-  </van-sticky>
+  </van-sticky> -->
   <router-view v-slot="{ Component }">
     <keep-alive>
       <component :is="Component" />

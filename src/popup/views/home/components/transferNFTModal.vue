@@ -17,7 +17,7 @@
       <!-- <div class="text-center f-16 lh-20">
         {{ t("transferNft.confirmconversion") }}
       </div> -->
-      <div class="list pl-12 pr-12 mt-20 mb-20" v-if="txtype == '1'">
+      <div class="list pl-12 pr-12 mt-20 mb-20" v-if="txtype == '2'">
         <div class="card">
           <!-- <div class="tip">{{ t("transferNft.singleconversionlow") }}</div> -->
           <div class="card-form mt-20 pl-12 pr-12">
@@ -42,7 +42,7 @@
             <div class="van-hairline--bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.gasFee") }}</div>
-              <div class="m-value">0.000021</div>
+              <div class="m-value">≈{{gasFee}}</div>
             </div>
           </div>
         </div>
@@ -76,12 +76,12 @@
             <div class="van-hairline--bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.gasFee") }}</div>
-              <div class="m-value gasFee">0.0000210</div>
+              <div class="m-value gasFee">≈{{gasFee}}</div>
             </div>
           </div>
         </div>
       </div>
-      <div class="list pl-12 pr-12 mt-20 mb-20" v-if="txtype == '2'">
+      <div class="list pl-12 pr-12 mt-20 mb-20" v-if="txtype == '1'">
         <div class="card">
           <!-- <div class="tip">{{ t("transferNft.singleconversionlow") }}</div> -->
           <div class="card-form mt-20 pl-12 pr-12">
@@ -100,7 +100,9 @@
             <div class="van-hairline--bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.hsitoryReturn") }}</div>
-              <div class="m-value">{{historyProfit}}ERB(≈ ${{toUsd(historyProfit,6)}})</div>
+              <div class="m-value">
+                {{ historyProfit }}ERB(≈ ${{ toUsd(historyProfit, 6) }})
+              </div>
             </div>
             <div class="van-hairline--bottom"></div>
             <div class="m-card">
@@ -110,7 +112,7 @@
             <div class="van-hairline--bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.gasFee") }}</div>
-              <div class="m-value gasFee">0.0000210</div>
+              <div class="m-value gasFee">≈{{gasFee}}</div>
             </div>
           </div>
         </div>
@@ -152,7 +154,7 @@ import BigNumber from "bignumber.js";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
 import { addressMask, snftToErb, toUsd } from "@/popup/utils/filters";
-import {getWallet} from '@/popup/store/modules/account'
+import { getGasFee, getWallet } from "@/popup/store/modules/account";
 import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
 import { TradeStatus } from "@/popup/plugins/tradeConfirmationsModal/tradeConfirm";
 import { ethers } from "ethers";
@@ -215,11 +217,13 @@ export default defineComponent({
       () => props.modelValue,
       (n) => {
         console.log("selectList", props.selectList);
+        console.log("txtype", props.txtype);
         showModal.value = n;
-        if(n) {
-          if(props.txtype== '2'){
-        calcProfit()
-      }
+        if (n) {
+          if (props.txtype == "2") {
+            calcProfit();
+          }
+          calcGasFee()
         }
       },
       {
@@ -270,108 +274,39 @@ export default defineComponent({
       // coll transfer
       if (props.type == "2") {
         if (props.txtype == "1" || props.txtype == "3") {
-        const list = [];
-        const keys = Object.keys(props.selectList).filter(
-          (item) => item != "undefined"
-        );
-        for (let key of keys) {
-          props.selectList[key].forEach((child: any) => {
-            const { nft_address } = child;
-            list.push(nft_address.substr(0, 41));
-          });
-        }
-        //debugger;
-        try {
-          for await (const iterator of list) {
-            let str = "";
-            switch (props.txtype) {
-              // transfer
-              case "2":
-                str = `wormholes:{"type":6,"nft_address":"${iterator}","version":"v0.0.1"}`;
-                break;
-              // pledge
-              case "3":
-                str = `wormholes:{"type":7,"nft_address":"${iterator}","version":"0.0.1"}`;
-                break;
-              // redemption
-              case "1":
-                str = `wormholes:{"type":8,"nft_address":"${iterator}","version":"0.0.1"}`;
-                break;
-            }
-            const data3 = toHex(str);
-            const tx1 = {
-              from: address,
-              to: address,
-              data: `0x${data3}`,
-            };
-            const receipt: any = await wallet.sendTransaction(tx1);
-            txQueue.push(receipt);
-            const { from, gasLimit, gasPrice, hash, nonce, to, type, value } =
-              receipt;
-            commit("account/PUSH_TXQUEUE", {
-              hash,
-              from,
-              gasLimit,
-              gasPrice,
-              nonce,
-              to,
-              type,
-              value,
-            });
-          }
-          $tradeConfirm.update({
-            status: "approve",
-          });
-          await dispatch("account/waitTxQueueResponse");
-          $tradeConfirm.update({
-            status: "success",
-          });
-          emit("success");
-        } catch (err) {
-          console.error(err);
-          $tradeConfirm.update({
-            status: "fail",
-          });
-        }
-      }
-
-      if (props.txtype == "2") {
-        const keys = Object.keys(props.selectList).filter(
-          (item) => item != "undefined"
-        );
-        const list = [];
-        // 三种情况 1.合集集满 ，2.snft集满 ，3.碎片  暂不考虑合集情况
-
-        for (let key of keys) {
-          if (key) {
-            // 合成等级
+          const list = [];
+          const keys = Object.keys(props.selectList).filter(
+            (item) => item != "undefined"
+          );
+          for (let key of keys) {
             props.selectList[key].forEach((child: any) => {
-              const { MergeLevel, Chipcount, pledgestate, snfts, nft_address } =
-                child;
-              if (
-                MergeLevel == 0 &&
-                Chipcount > 0 &&
-                pledgestate == "NoPledge"
-              ) {
-                list.push(...snfts);
-              }
-              if (MergeLevel > 0 && Chipcount && pledgestate == "NoPledge") {
-                list.push(nft_address.substr(0, 41));
-              }
+              const { nft_address } = child;
+              list.push(nft_address.substr(0, 41));
             });
           }
-        }
-        //debugger
-        try {
-          for await (let nft_address of list) {
-            if (nft_address) {
-              const str = `wormholes:{"version": "0.0.1","type":6,"nft_address":"${nft_address}"}`;
+          //debugger;
+          try {
+            for await (const iterator of list) {
+              let str = "";
+              switch (props.txtype) {
+                // transfer
+                case "2":
+                  str = `wormholes:{"type":6,"nft_address":"${iterator}","version":"v0.0.1"}`;
+                  break;
+                // pledge
+                case "3":
+                  str = `wormholes:{"type":7,"nft_address":"${iterator}","version":"0.0.1"}`;
+                  break;
+                // redemption
+                case "1":
+                  str = `wormholes:{"type":8,"nft_address":"${iterator}","version":"0.0.1"}`;
+                  break;
+              }
               const data3 = toHex(str);
               const tx1 = {
                 from: address,
                 to: address,
                 data: `0x${data3}`,
-                value: ethers.utils.parseEther("0"),
               };
               const receipt: any = await wallet.sendTransaction(tx1);
               txQueue.push(receipt);
@@ -387,22 +322,103 @@ export default defineComponent({
                 type,
                 value,
               });
+            }
+            $tradeConfirm.update({
+              status: "approve",
+            });
+            await dispatch("account/waitTxQueueResponse");
+            $tradeConfirm.update({
+              status: "success",
+            });
+            emit("success");
+          } catch (err) {
+            console.error(err);
+            $tradeConfirm.update({
+              status: "fail",
+            });
+          }
+        }
 
+        if (props.txtype == "2") {
+          const keys = Object.keys(props.selectList).filter(
+            (item) => item != "undefined"
+          );
+          const list = [];
+          // 三种情况 1.合集集满 ，2.snft集满 ，3.碎片  暂不考虑合集情况
+
+          for (let key of keys) {
+            if (key) {
+              // 合成等级
+              props.selectList[key].forEach((child: any) => {
+                const {
+                  MergeLevel,
+                  Chipcount,
+                  pledgestate,
+                  snfts,
+                  nft_address,
+                } = child;
+                if (
+                  MergeLevel == 0 &&
+                  Chipcount > 0 &&
+                  pledgestate == "NoPledge"
+                ) {
+                  list.push(...snfts);
+                }
+                if (MergeLevel > 0 && Chipcount && pledgestate == "NoPledge") {
+                  list.push(nft_address.substr(0, 41));
+                }
+              });
             }
           }
-          $tradeConfirm.update({status: "approve",});
-              await dispatch("account/waitTxQueueResponse");
-              $tradeConfirm.update({status: "success",});
-              emit("success");
-        } catch (err) {
-          $tradeConfirm.update({status: "fail",});
-          console.error(err);
+          //debugger
+          try {
+            for await (let nft_address of list) {
+              if (nft_address) {
+                const str = `wormholes:{"version": "0.0.1","type":6,"nft_address":"${nft_address}"}`;
+                const data3 = toHex(str);
+                const tx1 = {
+                  from: address,
+                  to: address,
+                  data: `0x${data3}`,
+                  value: ethers.utils.parseEther("0"),
+                };
+                const receipt: any = await wallet.sendTransaction(tx1);
+                txQueue.push(receipt);
+                const {
+                  from,
+                  gasLimit,
+                  gasPrice,
+                  hash,
+                  nonce,
+                  to,
+                  type,
+                  value,
+                } = receipt;
+                commit("account/PUSH_TXQUEUE", {
+                  hash,
+                  from,
+                  gasLimit,
+                  gasPrice,
+                  nonce,
+                  to,
+                  type,
+                  value,
+                });
+              }
+            }
+            $tradeConfirm.update({ status: "approve" });
+            await dispatch("account/waitTxQueueResponse");
+            $tradeConfirm.update({ status: "success" });
+            emit("success");
+          } catch (err) {
+            $tradeConfirm.update({ status: "fail" });
+            console.error(err);
+          }
         }
-      }
       }
       // chip transfer
-      if(props.type == '1') {
-        const list = props.selectList.map((item: any) => item.nft_address)
+      if (props.type == "1") {
+        const list = props.selectList.map((item: any) => item.nft_address);
         try {
           for await (let nft_address of list) {
             if (nft_address) {
@@ -428,20 +444,17 @@ export default defineComponent({
                 type,
                 value,
               });
-
             }
           }
-          $tradeConfirm.update({status: "approve",});
-              await dispatch("account/waitTxQueueResponse");
-              $tradeConfirm.update({status: "success",});
-              
+          $tradeConfirm.update({ status: "approve" });
+          await dispatch("account/waitTxQueueResponse");
+          $tradeConfirm.update({ status: "success" });
         } catch (err) {
-          $tradeConfirm.update({status: "fail",});
+          $tradeConfirm.update({ status: "fail" });
           console.error(err);
         }
       }
     };
-
 
     // High and low yield copy
     const incomeText = computed(() => {
@@ -500,7 +513,7 @@ export default defineComponent({
       }
       return str;
     });
-    
+
     const myprofit = ref("");
     const historyProfit = ref("");
     const calcProfit = async () => {
@@ -531,13 +544,99 @@ export default defineComponent({
           )
         )
         .toFixed(6);
-        console.warn('historyProfit',historyProfit.value)
-        console.warn('myprofit',myprofit.value)
+      console.warn("historyProfit", historyProfit.value);
+      console.warn("myprofit", myprofit.value);
     };
+
+    const gasFee = ref('')
+    const calcGasFee = async () => {
+
+      const {address} = state.account.accountInfo
+      let list = []
+      if (props.type == "2") {
+        if (props.txtype == "1" || props.txtype == "3") {
+          const keys = Object.keys(props.selectList).filter(
+            (item) => item != "undefined"
+          );
+          for (let key of keys) {
+            props.selectList[key].forEach((child: any) => {
+              const { nft_address } = child;
+              list.push(nft_address.substr(0, 41));
+            });
+          }
+        }
+
+        if (props.txtype == "2") {
+          const keys = Object.keys(props.selectList).filter(
+            (item) => item != "undefined"
+          );
+          // 三种情况 1.合集集满 ，2.snft集满 ，3.碎片  暂不考虑合集情况
+
+          for (let key of keys) {
+            if (key) {
+              // 合成等级
+              props.selectList[key].forEach((child: any) => {
+                const {
+                  MergeLevel,
+                  Chipcount,
+                  pledgestate,
+                  snfts,
+                  nft_address,
+                } = child;
+                if (
+                  MergeLevel == 0 &&
+                  Chipcount > 0 &&
+                  pledgestate == "NoPledge"
+                ) {
+                  list.push(...snfts);
+                }
+                if (MergeLevel > 0 && Chipcount && pledgestate == "NoPledge") {
+                  list.push(nft_address.substr(0, 41));
+                }
+              });
+            }
+          }
+        }
+      }
+      // chip transfer
+      if (props.type == "1") {
+        list = props.selectList.map((item: any) => item.nft_address);
+      }
+
+      const len = list.length
+      const [nft_address] = list
+      console.log('list---------------', list)
+      let str = ''
+      switch (props.txtype) {
+              // 兑换
+              case "2":
+                str = `wormholes:{"type":6,"nft_address":"${nft_address}","version":"v0.0.1"}`;
+                break;
+              // 可质押
+              case "3":
+                str = `wormholes:{"type":7,"nft_address":"${nft_address}","version":"0.0.1"}`;
+                break;
+              // 可赎回
+              case "1":
+                str = `wormholes:{"type":8,"nft_address":"${nft_address}","version":"0.0.1"}`;
+                break;
+            }
+            console.log('str-------------------',str)
+            const data3 = toHex(str);
+            const tx1 = {
+              from: address,
+              to: address,
+              data: `0x${data3}`,
+            };
+            const gas = await getGasFee(tx1)
+            gasFee.value = new BigNumber(gas).multipliedBy(len).toFixed(6)
+    };
+
     return {
       t,
       submitText,
       showModal,
+      gasFee,
       historyProfit,
       cencel,
       handleComfirm,

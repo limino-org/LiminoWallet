@@ -1,13 +1,15 @@
 .transaction-detail {
+    .btn-box {
+        padding: 0 57px 25px;
+    }
     .card-border {
-                border-bottom: 1PX solid rgba($color: #E4E7E8, $alpha: .7);
+                border-bottom: 1px solid rgba(228, 231, 232, 0.6);
     }
     .title {
-        color: #b3b3b3;
         line-height: 62px;
         background: #f8fcff;
+        font-size: 15px;
         font-weight: bold;
-
       }
     .link {
         color: #037dd6;
@@ -46,20 +48,39 @@
     .tran-form {
         border: 1PX solid rgba($color: #E4E7E8, $alpha: .7);
         border-radius: 10px;
+        margin: 25px 15px 0;
     }
     .form-box {
-        
+
         .card {
-            padding: 12px 0;
-            // &::after {
-            //     border-color: #E4E7E8;
-            // }
+            padding: 9px 0;
+            &.smallpad {
+                padding-top: 11px;
+                line-height: 16px;
+                padding-bottom: 0;
+                margin-bottom: 10px;
+            }
+            &.smallpad2 {
+                padding-bottom: 11px;
+                padding-top: 0;
+            }
+            &.card-sml {
+                line-height: 16px;
+                margin-bottom: 6px;
+                padding: 0;
+            }
+            &.card-sml.pt-10 {
+                padding-top: 10px;
+            }
+            &.card-sml.pb-10 {
+                padding-bottom: 10px;
+            }
             .label,.value {
-                line-height: 18px;
+                line-height: 16px;
                 font-size: 12px;
             }
             .label {
-                color: #8F8F8F;
+                color: #848484;
             }
             .value.status1 span {
                 display: inline-block;
@@ -78,6 +99,7 @@
                 border-radius: 7px;
             }
         }
+
     }
     .btn-group {
         padding-left: 44px;

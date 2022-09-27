@@ -126,7 +126,7 @@
 		suspensionText: 'AUTO EXCHANFGE',
 		wormHoles: "Wormholes",
 		account: "Account",
-		recive: "Recive",
+		recive: "Receive",
 		tokens: "Tokens",
 		NFTs: "NFTs",
 		SNFTs: "SNFTs",
@@ -485,7 +485,7 @@
 		"warn": "The current network does not support the token"
 	},
 	"transactionDetails": {
-		recive: "Recive",
+		recive: "Receive",
 		send: "Send",
 		swap: "Swap",
 		transationHistoryDetails: "Transation History Details",
@@ -654,7 +654,7 @@
 		checkthenetwork: 'Check your internet connection and try again'
 	},
 	"sidebar": {
-		"recive": "Recive",
+		"recive": "Receive",
 		"shareMyPublicAddress": "Share My Public Address",
 		"transationHistory": "Transation History",
 		"settings": "Settings",
@@ -814,7 +814,7 @@
 		maxfee: 'Max Fee Per Gas',
 		total: 'Total Gas fee',
 		actionlog: 'activity log',
-		recive: "Recive",
+		recive: "Receive",
 		swap: "Swap",
 		transationHistoryDetails: "Transation History Details",
 		date: "Date",

@@ -51,14 +51,6 @@
     >
       <i class="iconfont icon-inbox"></i>
     </div>
-    <div class="flex center noTokenBox" v-show="finished && !loadNft">
-      <div>
-        <div class="text-center tip1">
-          {{ t("wallet.notoken", { type: "SNFTs" }) }}
-          <span class="tip2 hover">{{ t("createNft.findMore") }}</span>
-        </div>
-      </div>
-    </div>
 
     <!-- error -->
     <div class="err-nft p-20" v-if="nftErr">

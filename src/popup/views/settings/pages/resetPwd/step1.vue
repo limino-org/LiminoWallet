@@ -24,7 +24,7 @@
               <i
                 @click="toggleMask"
                 :class="`iconfont hover ${
-                  switchPassType ? 'icon-yanjing' : 'icon-yanjing1'
+                  switchPassType ?  'icon-yanjing1' :'icon-yanjing'
                 }`"
               ></i>
             </span>
@@ -278,7 +278,7 @@ export default {
     text-decoration: underline;
   }
 
-  .icon-yanjing {
+  .icon-yanjing1 {
     color: #037dd6;
   }
   :deep(.van-field__label) {
@@ -487,7 +487,7 @@ export default {
       color: #037cd6;
       text-decoration: underline;
     }
-    .icon-yanjing {
+    .icon-yanjing1 {
       color: #037dd6;
     }
     :deep(.van-field__label) {
