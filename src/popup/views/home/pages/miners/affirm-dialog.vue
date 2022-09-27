@@ -13,7 +13,7 @@
                 class="box-item"
                 effect="dark"
                 :content="t('minerspledge.nodeTip')"
-                placement="right"
+                placement="top"
                 trigger="hover"
               >
                 <van-icon name="question" color="#9A9A9A" />
@@ -27,7 +27,7 @@
                 class="box-item"
                 effect="dark"
                 :content="t('minerspledge.proxyAddr')"
-                placement="right"
+                placement="top"
                 trigger="hover"
               >
                 <van-icon name="question" color="#9A9A9A" />
@@ -37,14 +37,15 @@
             <div class="bourse-container-meaning bt">
               <span class="c1">{{t('minerspledge.stackTit')}}  </span>
               <el-tooltip
-                popper-class="tooltip2"
+                popper-class="tooltip3"
                 class="box-item"
                 effect="dark"
-                :content="t('minerspledge.stackTip')"
-                placement="right"
+                placement="top"
                 trigger="hover"
+                :content="t('minerspledge.stackTip')"
               >
                 <van-icon name="question" color="#9A9A9A" />
+<!--                <span slot="content" style="width: 300px;">{{t('minerspledge.stackTip')}}</span>-->
               </el-tooltip>
               <div class="exchange">{{amount}} ERB(≈${{toUsd(amount,2)}})</div>
             </div>
@@ -55,8 +56,9 @@
                 class="box-item"
                 effect="dark"
                 :content="t('common.gasFee')"
-                placement="right"
+                placement="top"
                 trigger="hover"
+                style="width: 300px;"
               >
                 <van-icon name="question" color="#9A9A9A" />
               </el-tooltip>
@@ -145,7 +147,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+:deep(.el-popper)  {
+  width: 300px;
+}
 .add-box {
   letter-spacing: -0.8px;
 }

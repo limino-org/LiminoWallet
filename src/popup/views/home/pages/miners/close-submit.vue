@@ -13,7 +13,7 @@
               class="box-item"
               effect="dark"
               :content="t('minerspledge.proxyAddr')"
-              placement="right"
+              placement="top"
               trigger="hover"
             >
               <van-icon name="question" color="#9A9A9A" />
@@ -28,7 +28,7 @@
               class="box-item"
               effect="dark"
               :content="t('minerspledge.stackTip')"
-              placement="right"
+              placement="top"
               trigger="hover"
             >
               <van-icon name="question" color="#9A9A9A" />
@@ -42,7 +42,7 @@
               class="box-item"
               effect="dark"
               :content="t('bourse.tip6')"
-              placement="right"
+              placement="top"
               trigger="hover"
             >
               <van-icon name="question" color="#9A9A9A" />
@@ -56,7 +56,7 @@
               class="box-item"
               effect="dark"
               :content="t('bourse.tip7')"
-              placement="right"
+              placement="top"
               trigger="hover"
             >
               <van-icon name="question" color="#9A9A9A" />
@@ -70,7 +70,7 @@
               class="box-item"
               effect="dark"
               :content="t('common.gasFee')"
-              placement="right"
+              placement="top"
               trigger="hover"
             >
               <van-icon name="question" color="#9A9A9A" />

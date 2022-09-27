@@ -25,7 +25,7 @@
           class="box-item"
           effect="dark"
           :content="t('minerspledge.stackTip')"
-          placement="right"
+          placement="top"
           trigger="hover"
         >
           <van-icon name="question" color="#9A9A9A" />
@@ -43,7 +43,7 @@
             class="box-item"
             effect="dark"
             :content="t('minerspledge.proxyAccountTip')"
-            placement="right"
+            placement="top"
             trigger="hover"
           >
             <van-icon name="question" color="#9A9A9A" />
@@ -77,7 +77,7 @@
           class="box-item"
           effect="dark"
           :content="t('minerspledge.addTip')"
-          placement="right"
+          placement="top"
           trigger="hover"
         >
           <van-icon name="question" color="#9A9A9A" />
@@ -137,7 +137,7 @@
           class="box-item"
           effect="dark"
           :content="t('minerspledge.proxyAccountTip')"
-          placement="right"
+          placement="top"
           trigger="hover"
         >
           <van-icon name="question" color="#9A9A9A" />
@@ -219,7 +219,7 @@
             v-if="!showCloseBtn && isModif"
             theme="dark"
             :close-on-click-outside="false"
-            placement="top-end"
+            placement="top"
             trigger="manual"
             class="popover-btn-tip"
           >
@@ -1951,6 +1951,7 @@ export default defineComponent({
     z-index: 99!important;
    width: 100px;
    white-space: break-spaces;
+   background: #9A9A9A;
   }
   .bourse-container-error-text-warning {
     width: 100%;

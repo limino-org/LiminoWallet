@@ -11,7 +11,7 @@
           {{t('backup.safetyTips')}}
         </div>
         <div class="flex center icon-box m-20">
-          <i class="iconfont icon-hourglass"></i>
+          <i class="iconfont icon-yk_gantanhao_fill" style="color: #eccb1d"></i>
         </div>
         <div class="small-tit text-center text-bold f-24">{{t('backup.warn')}}</div>
         <div class="tip f-12 lh-16 text-center pl-24 pr-24 mt-12 mb-12">
