@@ -25,10 +25,10 @@
           t("bootstrapwindow.next")
         }}</van-button>
       </div>
-      <!--      <span class="tip3"></span>-->
-      <!--      <span class="tip2"></span>-->
-      <!--      <span class="tip4"></span>-->
-      <!--      <span class="tip5"></span>-->
+            <span class="tip3"></span>
+            <span class="tip2"></span>
+            <span class="tip4"></span>
+            <span class="tip5"></span>
 <!--      <span class="tip2 f-12">-->
 <!--        {{ t("bootstrapwindow.displaymethod") }}-->
 <!--      </span>-->
@@ -124,27 +124,26 @@ export default defineComponent({
   .tip2 {
     position: absolute;
     top: -57px;
-    height: 40px;
-    padding:0 20px;
-    // width: 320px;
+    height: 45px;
+    padding:0 30px;
+    width: 105%;
     border: 1px dashed #fff;
     border-radius: 5px;
     right: 0;
-    left: 0;
+    left: -10px;
     border-top: none;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+
   }
   .tip4 {
     position: absolute;
     top: -56px;
     height: 1px;
-    padding:0 20px;
-     width: 60px;
+    //padding:0 20px;
+    width: 27px;
     border-bottom:  1px dashed #fff;
     border-radius: 5px;
     right: 0;
-    left: 1px;
+    left: -10px;
     border-top: none;
   }
   .tip5 {
@@ -152,33 +151,57 @@ export default defineComponent({
     top: -56px;
     height: 1px;
     padding:0 20px;
-     width: 550px;
+     width: 270px;
     border-bottom:  1px dashed #fff;
     border-radius: 510px;
     right: 1px;
-    left: 160px;
+    left: 75px;
     border-top: none;
   }
-  @media screen and (max-width: 1000px) {
-    .tip5 {
-      //width: 44vw;
-    }
-  };
   .tip3 {
     position: absolute;
-    top: -93px;
-    width: 100px;
-    height: 40px;
+    top: -86px;
+    width: 60px;
+    height: 30px;
     padding:0 20px;
     // width: 320px;
     border: 1px dashed #fff;
     border-radius: 5px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
     right: 0;
-    left: 60px;
+    left: 15px;
     z-index: 100;
     //background: RGBA(126, 126, 126, .5);
     border-bottom: none;
   }
+  @media screen and (min-width: 1000px) {
+    .tip5 {
+      top:-66px;
+      width: 590px;
+      left: 135px;
+
+    }
+    .tip2 {
+      top:-67px;
+      width: 740px;
+      left: -15px;
+      //right: -15px;
+      //left: 0;
+    }
+    .tip3 {
+      top: -96px;
+      left: 75px;
+
+    }
+    .tip4 {
+      width: 90px;
+      top:-66px;
+      //right: -12px;
+      left: -15px;
+    }
+  };
+
   .circle {
     position: absolute;
     top: -58px;

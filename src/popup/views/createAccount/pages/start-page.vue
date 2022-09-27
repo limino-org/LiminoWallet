@@ -16,7 +16,7 @@ const router = useRouter();
 const { t } = useI18n();
 onMounted(() => {
   let time = setTimeout(() => {
-    router.replace({ name: "mnemonic-step1" });
+    router.replace({ name: "wallet" });
     clearTimeout(time);
   }, 8010);
 });

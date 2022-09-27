@@ -123,6 +123,7 @@ export default {
     const router = useRouter();
     const store = useStore();
     const route = useRoute();
+    const { $toast } = useToast()
     const btnList = ref([
       {
         name: t("exportprivatekey.copytext"),
@@ -157,7 +158,7 @@ export default {
     const toCopy = async () => {
       try {
         await toClipboard(mnemonic.value);
-        Toast.success(t("copy.copySuccess"));
+        $toast.success(t("copy.copySuccess"));
       } catch (e) {
         console.error(e);
       }
@@ -170,7 +171,6 @@ export default {
     // Selected tab
     const tabVal = computed(() => btnList.value.find((item) => item.select));
     const pwdErr = ref(false)
-    const { $toast } = useToast();
     const  unlock = async () => {
       pwdErr.value = false
       try {

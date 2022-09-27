@@ -69,6 +69,7 @@ export default defineComponent({
     const backUp = () => {
       dispatch("system/showDialog", props.type);
       dispatch("system/closeGuide");
+      // showModal.value = false
       router.push({name:'mnemonic'})
     };
     

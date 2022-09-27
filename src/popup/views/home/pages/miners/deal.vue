@@ -219,7 +219,7 @@
             v-if="!showCloseBtn && isModif"
             theme="dark"
             :close-on-click-outside="false"
-            placement="top"
+            placement="top-end"
             trigger="manual"
             class="popover-btn-tip"
           >
