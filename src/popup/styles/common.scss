@@ -393,7 +393,6 @@ img {
       left: inherit !important;
       bottom: 150px;
       position: fixed !important;
-
       .van-popover__arrow {
         //left: 321px;
       }
@@ -508,12 +507,11 @@ img {
     }
 
     &.step13 {
-      bottom: 200px !important;
+      bottom: 150px !important;
       right: 14px !important;
       left: 14px !important;
       position: fixed;
       top: inherit !important;
-
       .van-popover__arrow {
         right: 25px;
       }

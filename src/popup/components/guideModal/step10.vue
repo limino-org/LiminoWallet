@@ -112,7 +112,7 @@ export default defineComponent({
     font-size: 24px;
     font-weight: bold;
     line-height: 30px;
-    margin-top: 44px;
+    margin-top: 22px;
   }
   .tip4 {
     position: absolute;
@@ -126,7 +126,7 @@ export default defineComponent({
   }
   .small-tit {
     text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
     font-size: 12px;
     color: #848484;
   }

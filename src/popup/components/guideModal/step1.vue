@@ -112,7 +112,7 @@ export default defineComponent({
   }
   .small-tit {
     text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
     font-size: 12px;
     color: #848484;
   }
