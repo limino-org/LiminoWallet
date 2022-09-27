@@ -107,14 +107,14 @@
             <div class="card-bottom flex right center-v pr-14 pl-14">
               <div class="flex right">
                 <i
-                  :class="`iconfont  ${
+                  :class="`iconfont  mr-6 ${
                     amountType == 'mask' ? 'icon-yanjing' : 'icon-yanjing1'
                   } hover`"
                   @click="changeType"
                 ></i>
-                <div class="flex column bottom dollar ml-6">
+                <!-- <div class="flex column bottom dollar ml-6">
                   <i class="iconfont icon-meiyuan"></i>
-                </div>
+                </div> -->
                 <GuideModal4></GuideModal4>
                 <div
                   :class="`flex amount-box van-ellipsis ${amountClass} ${

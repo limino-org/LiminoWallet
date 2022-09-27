@@ -11,11 +11,15 @@
     <div class="token-card-right flex center">
       <!-- <van-icon name="arrow" /> -->
       <slot name="right">
-        <div v-show="amountType != 'mask' ">
+        <div>
+          <div v-show="amountType != 'mask' ">
           <div class="name text-right">{{ decimal(data.balance) }} {{ data.symbol }}</div>
           <div class="amount text-right">{{ toUsdSymbol(data.balance) }}</div>
         </div>
-        <div class="flex center-v right f12" v-show="amountType == 'mask'">********</div>
+        <div class="flex center-v right f12" v-show="amountType == 'mask'">******</div>
+        <div class="usd-amount text-right" v-show="amountType != 'mask' ">≈ ${{toUsd(data.balance,4)}}</div>
+        <div class="usd-amount text-right" v-show="amountType == 'mask'">******</div>
+        </div>
       </slot>
     </div>
   </div>
@@ -81,6 +85,9 @@ export default defineComponent({
 .token-card {
   height: 62px;
   padding-right: 14px;
+  .usd-amount {
+    color: #848484;
+  }
   &:hover {
     transition: ease 0.3s;
     cursor: pointer;

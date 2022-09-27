@@ -941,7 +941,7 @@ export default defineComponent({
 
     const openConfirmInfoModal = async() => {
       try {
-        await formDom.value.validate();
+        // await formDom.value.validate();
         isError.value = false;
         isAffirmDialog.value = true;
       } catch (error) {

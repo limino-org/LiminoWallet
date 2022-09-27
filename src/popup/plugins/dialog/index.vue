@@ -18,7 +18,7 @@
               @click="confirmCall"
               v-if="hasConfirmBtn"
               type="primary"
-
+              :plain="theme == 'light' ? false : true"
               class="okbtn"
               >{{ confirmText }}</Button
             >
@@ -95,6 +95,8 @@ const open = (_opt: DialogOpt) => {
     hasConfirmBtn: true,
     callBack: confirmCallBack,
     cancelBack: cancelCallBack,
+    confirmBtnText: confirmText.value,
+    cancelBtnText: cancelText.value,
     title:"",
     ..._opt,
   };
