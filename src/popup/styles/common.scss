@@ -258,9 +258,12 @@ img {
   z-index: 1 !important;
 }
 
-@media screen and (min-width: 750px) {
+@media screen and (min-width: 750px) {                                                                                                                                 
   html {
     font-size: 50PX !important; // ignored
+  }
+  .popover-btn-tip,.van-popover {
+    max-width: 220px;
   }
 
   .popover-dialog {
@@ -400,6 +403,9 @@ img {
 
 // When the width is less than 750, control the pop-up window width to guide the user to operate
 @media screen and (max-width: 750px) {
+  .popover-btn-tip,.van-popover {
+    max-width: 160px;
+  }
   .popover-dialog {
     // max-width: 340px;
     left: 18px !important;
