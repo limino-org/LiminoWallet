@@ -54,93 +54,58 @@
               />
             </div>
           </div>
-        <!-- <div class="flex account-card">
-          <div class="account-icon flex center">
-            <div class="account-icon-box">
-              <AccountIcon :data="item.icon" />
-            </div>
-          </div>
-          <div class="account-info flex center-v">
-            <div class="account-info-box">
-              <div class="account-name flex center-v">
-                {{ item.name }}
-                <div class="pl-4 pr-4" @click.stop="openModifModal(item)">
-                  <i class="iconfont icon-bianji"></i>
-                </div>
-              </div>
-              <div class="account-value" v-show="amountType != 'mask'">{{ decimal(item.amount) }} {{ currentNetwork.currencySymbol }}</div>
-              <div class="account-value" v-show="amountType == 'mask'">********</div>
-            </div>
-          </div>
-
-          <div class="flex right center-v add-choose-icon">
-            <i
-              class="iconfont icon-duihao"
-              v-show="
-                  item.address.toUpperCase() ==
-                    accountInfo.address.toUpperCase() && !accountLoading
-                "
-            ></i>
-            <van-loading
-              v-show="
-                  accountLoading &&
-                  clickAccountIdx != null &&
-                  clickAccountIdx == index
-                "
-              color="#1989fa"
-            />
-          </div>
-        </div> -->
+      
       </div>
       <!-- Imported account -->
       <div v-if="importList.length" class="f-12 lh-16 accountList-tit">{{ t("network.importAccounts") }}</div>
-
+  
       <div
         v-for="(item, index) in importList"
         :key="item.value"
         :class="` clickActive ${
-            index < defaultlist.length - 1 ? 'van-hairline--bottom' : ''
+            index < importList.length - 1 ? 'van-hairline--bottom' : ''
           }`"
-        @click="handleAccountFun2(item, index)"
+        @click="handleAccountFun(item, index)"
       >
-        <div class="flex account-card">
-          <div class="account-icon flex center">
-            <div class="account-icon-box">
-              <AccountIcon :data="item.icon" />
+      <div class="flex account-card">
+            <div class="flex center select-box">
+              <i :class="`iconfont ${item.address.toUpperCase() == accountInfo.address.toUpperCase()
+ ? 'icon-danxuan' : 'icon-danxuan1'} `"></i>
             </div>
-          </div>
-          <div class="account-info flex center-v">
-            <div class="account-info-box">
-              <div class="account-name flex center-v">
-                {{ item.name }}
-                <div class="pl-4 pr-4" @click.stop="openModifModal(item)">
-                  <i class="iconfont icon-bianji"></i>
+            <div class="account-icon flex center">
+              <div class="account-icon-box">
+                <AccountIcon :data="item.icon" />
+              </div>
+            </div>
+            <div class="account-info flex center-v">
+              <div class="account-info-box">
+                <div class="account-name flex center-v">
+                  {{ item.name }}
+                  <div class="pl-4 pr-4" @click.stop="openModifModal(item)">
+                    <i class="iconfont icon-bianji"></i>
+                  </div>
+                </div>
+                <div class="account-value" v-show="amountType != 'mask'">
+                  {{ decimal(item.amount) }} {{ currentNetwork.currencySymbol }}
+                </div>
+                <div class="account-value" v-show="amountType == 'mask'">
+                  ********
                 </div>
               </div>
-              <div class="account-value" v-show="amountType != 'mask'">{{ decimal(item.amount) }} {{ currentNetwork.currencySymbol }}</div>
-              <div class="account-value" v-show="amountType == 'mask'">********</div>
+            </div>
+
+            <div class="flex right center-v add-choose-icon">
+              <van-loading
+                v-show="
+                  accountLoading &&
+                  clickAccountIdx != null &&
+                  clickAccountIdx == index
+                "
+                color="#1989fa"
+              />
             </div>
           </div>
-
-          <div class="flex right center-v add-choose-icon">
-            <!-- <van-icon name="cross" @click.self="del(index)" /> -->
-            <i
-              class="iconfont icon-duihao"
-              v-show="
-                  item.address.toUpperCase() ==
-                    accountInfo.address.toUpperCase() && !accountLoading
-                "
-            ></i>
-            <van-loading
-              v-show="
-                  accountLoading &&
-                  clickAccountIdx2 != null &&
-                  clickAccountIdx2 == index
-                "
-              color="#1989fa"
-            />
-          </div>
-        </div>
+      
       </div>
     </div>
     <!-- Button group -->

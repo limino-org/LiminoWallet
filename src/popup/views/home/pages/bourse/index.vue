@@ -1,6 +1,5 @@
 <template>
-  <div class="bourse">
-    <NavHeader :title="!isExchanger_flag ? t('createExchange.headerTitle') : t('sidebar.exchangemanagement')">
+      <NavHeader :title="!isExchanger_flag ? t('createExchange.headerTitle') : t('sidebar.exchangemanagement')">
       <template v-slot:left>
         <span class="back" @click="back">{{ t("wallet.back") }}</span>
       </template>
@@ -8,6 +7,7 @@
         <cancel-btn />
       </template>
     </NavHeader>
+  <div class="bourse">
     <div class="bourse-container" id="bourse-page" v-if="!loading">
       <div class="bourse-container-name">
         <span>{{ t("bourse.name") }}({{ name.length }}/20)</span>

@@ -18,7 +18,7 @@
               @click="confirmCall"
               v-if="hasConfirmBtn"
               type="primary"
-              :plain="theme == 'light' ? false : true"
+              :plain="hasCancelBtn == false ? true : false"
               class="okbtn"
               >{{ confirmText }}</Button
             >

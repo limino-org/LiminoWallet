@@ -1,5 +1,5 @@
 <template>
-  <div :class="`bourse ${isModif ? 'modif' : ''}`">
+  <div :class="`miner-page ${isModif ? 'modif' : ''}`">
     <NavHeader
       :title="
         isModif
@@ -1632,7 +1632,7 @@ export default defineComponent({
   width: calc(100% - 60px);
 }
 </style>
-<style>
+<style scoped>
 .dialog-c {
   top: 50% !important;
 }
@@ -1803,8 +1803,9 @@ export default defineComponent({
 }
 </style>
 <style  lang="scss" scoped>
-.bourse {
+.miner-page {
   height: 100%;
+  padding: 23px 15px 25px 15px;
   &.modif {
     .nodeIpt {
       :deep(.van-field__body) {
@@ -1840,7 +1841,7 @@ export default defineComponent({
   .bourse-container {
     min-height: 100vh;
     overflow-y: auto;
-    padding: 23px 15px 25px 15px;
+
     font-size: 14px;
   }
   .bourse-container-meaning {
@@ -2064,7 +2065,7 @@ export default defineComponent({
   color: #037cd6 !important;
 }
 </style>
-<style>
+<style scoped>
 .appendto1,
 .appendto2 {
   background-color: #1989fa !important;
