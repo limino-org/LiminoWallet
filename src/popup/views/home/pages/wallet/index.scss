@@ -51,6 +51,8 @@ i {
       }
     }
     .actions-btn {
+  
+
       .action-icon {
         background: #fff;
         i {
@@ -295,6 +297,7 @@ i {
     }
     &-btn {
       transition: 0.3s ease;
+      margin: 0 20px;
       .action-icon {
         transition: 0.3s ease;
         width: 35px;

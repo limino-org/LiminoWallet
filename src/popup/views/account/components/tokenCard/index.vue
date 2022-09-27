@@ -17,8 +17,6 @@
           <div class="amount text-right">{{ toUsdSymbol(data.balance) }}</div>
         </div>
         <div class="flex center-v right f12" v-show="amountType == 'mask'">******</div>
-        <div class="usd-amount text-right" v-show="amountType != 'mask' ">≈ ${{toUsd(data.balance,4)}}</div>
-        <div class="usd-amount text-right" v-show="amountType == 'mask'">******</div>
         </div>
       </slot>
     </div>

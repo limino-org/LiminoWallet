@@ -11,6 +11,7 @@
     <div class="activited-net pb-10">
       <NetWorkCard
         :data="mainNetwork"
+        :hasDot="true"
         select
         :hasSelect="false"
         @click="handleModif(mainNetwork)"
@@ -20,13 +21,13 @@
     <div class="other-list mt-22">
       <div class="other-list-tit flex between center-v">
         <span class="f-12">{{ t("internet.othertitle") }}</span>
-        <van-icon
+        <!-- <van-icon
           name="add"
           class="hover"
           @click="toAdd"
           color="#037CD6"
           size="20"
-        />
+        /> -->
       </div>
 
       <div class="other-list-box" v-if="netWorkList.length">
@@ -34,6 +35,7 @@
           v-for="item in netWorkList"
           :select="item.select"
           :key="item.value"
+          :hasDot="true"
           :data="item"
           :isShowSelect="false"
           :hasModif="true"
@@ -45,6 +47,12 @@
       <div v-else>
         <NoData></NoData>
       </div>
+    </div>
+  </div>
+
+  <div class="btn-groups">
+    <div class="container pl-26 pr-26 flex center mt-20">
+      <van-button type="default" plain block @click="toAdd">{{t('internet.addnetwork')}}</van-button>
     </div>
   </div>
 </template>

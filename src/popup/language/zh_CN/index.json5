@@ -549,7 +549,7 @@
 		input: '搜索公共地址(0X)或ENS',
 		nomoney: '您的账户有{amount}{symbol}可用支付交易费。购买一些{symbol}或从其他账户存入。',
 		erroraddress: '地址格式有误',
-		buy: '购买ETH',
+		buy: '购买ERB',
 		next: '下一步',
 		from: '从',
 		to: '至',

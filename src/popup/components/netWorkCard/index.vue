@@ -3,6 +3,8 @@
     class="netword-card flex clickActive"
     @click.stop="handleClick"
   >
+    <div class="dot flex center" v-if="hasDot">
+    <div class="circle"></div></div>
     <div class="net-status flex center mr-6" v-if="hasSelect">
       <i
         :class="`iconfont f-14 ${
@@ -60,6 +62,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    hasDot:{
+      type: Boolean,
+      default: false
+    }
   },
   setup(props, context: SetupContext) {
     const { t } = useI18n();
@@ -95,6 +101,15 @@ export default defineComponent({
   height: 52px;
   transition: ease 0.3s;
   border-bottom: 1px solid #E4E7E8;
+  .dot {
+    margin-right: 6px;
+    .circle {
+      width: 4px;
+      height: 4px;
+      border-radius: 2px;
+      background:#037CD6;
+    }
+  }
   .full {
     width: 100%;
   }

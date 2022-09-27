@@ -279,6 +279,7 @@ export default {
         chainId: Number(chainId.value),
         tokens: {},
         id: id || guid(),
+        isMain: false
       };
       console.log("netWork", netWork, qicon);
       store.commit(
@@ -363,7 +364,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .addNetwork {
-  padding: 0 13px 25px;
+  padding: 0 13px 70px;
   .error {
     :deep(.van-field__body) {
       border-color: #d73a49;
