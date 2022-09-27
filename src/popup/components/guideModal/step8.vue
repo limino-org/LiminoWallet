@@ -25,14 +25,18 @@
           t("bootstrapwindow.next")
         }}</van-button>
       </div>
-      <span class="tip2 f-12">
-        {{ t("bootstrapwindow.displaymethod") }}
-      </span>
-      <span class="circle"></span>
+<!--      <span class="tip2 f-12">-->
+<!--        {{ t("bootstrapwindow.displaymethod") }}-->
+<!--      </span>-->
+<!--      <span class="circle"></span>-->
+<!--      <span class="tip4"></span>-->
+<!--      <span class="tip3">-->
+<!--        <i class="iconfont icon-modular"></i>-->
+<!--      </span>-->
+      <span class="tip3"></span>
+      <span class="tip2"></span>
       <span class="tip4"></span>
-      <span class="tip3">
-        <i class="iconfont icon-modular"></i>
-      </span>
+      <span class="tip5"></span>
     </div>
   </van-popover>
 </template>
@@ -115,30 +119,85 @@ export default defineComponent({
   }
   .tip2 {
     position: absolute;
-    top: -69px;
-    color: #fff;
-    right: 10px;
-  }
-  .tip3 {
+    top: -57px;
+    height: 45px;
+    padding:0 30px;
+    width: 105%;
     border: 1px dashed #fff;
-    width: 35px;
-    height: 35px;
-    position: absolute;
-    top: -45px;
-    color: #fff;
-    right: -10px;
     border-radius: 5px;
-    line-height: 30px;
-    text-align: center;
+    right:-8px;
+    //left: -10px;
+    border-top: none;
+
   }
   .tip4 {
     position: absolute;
-    top: -55px;
-    height: 12px;
-    right: 2px;
-    color: #fff;
-    border: 1px solid #fff;
+    top: -56px;
+    height: 1px;
+    //padding:0 20px;
+    width: 23px;
+    border-bottom:  1px dashed #fff;
+    border-radius: 5px;
+    right: -7px;
+    //left: 75px;
+
+    border-top: none;
   }
+  .tip5 {
+    position: absolute;
+    top: -56px;
+    height: 1px;
+    padding:0 20px;
+    width: 275px;
+    border-bottom:  1px dashed #fff;
+    border-radius: 510px;
+    //right: -10px;
+    left: -10px;
+    border-top: none;
+  }
+  .tip3 {
+    position: absolute;
+    top: -86px;
+    width: 60px;
+    height: 30px;
+    padding:0 20px;
+    // width: 320px;
+    border: 1px dashed #fff;
+    border-radius: 5px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    right: 15px;
+    //left: 0;
+    z-index: 100;
+    //background: RGBA(126, 126, 126, .5);
+    border-bottom: none;
+  }
+  @media screen and (min-width: 1000px) {
+    .tip5 {
+      top:-66px;
+      width: 590px;
+      left: -475px;
+
+    }
+    .tip2 {
+      top:-67px;
+      width: 740px;
+      right: -15px;
+      //left: 0;
+    }
+    .tip3 {
+      top: -96px;
+      right: 75px;
+
+    }
+    .tip4 {
+      width: 88px;
+      top:-66px;
+      right: -12px;
+
+    }
+  };
+
   .circle {
     position: absolute;
     top: -58px;
