@@ -86,16 +86,14 @@
     <div class="pwd-tip">
       <i18n-t keypath="createAccountpage.pwdTip" tag="div" class="text-center mt-20 lh-16">
         <template v-slot:br><br></template>
-        <template v-slot:link1><span class="hover" @click="modal1 = true">{{t('createAccountpage.link1')}}</span></template>
-        <template v-slot:link2><span class="hover" @click="modal2 = true">{{t('createAccountpage.link2')}}</span></template>
+        <template v-slot:link1><a class="hover" 
+          :href="VUE_APP_TERMSOFUSE" target="__blank">{{t('createAccountpage.link1')}}</a></template>
+        <template v-slot:link2><a class="hover"  :href="VUE_APP_PRIVACYNOTICE" target="__blank">{{t('createAccountpage.link2')}}</a></template>
       </i18n-t>
     </div>
   </div>
 </div>
-  <!-- Terms of service -->
-<TermsService  v-model:show="modal1" :hasSelect="false" />
-<!-- Privacy policy -->
-<PrivacyPolicy  v-model:show="modal2" :hasSelect="false" />
+
 
 
 </template>
@@ -128,7 +126,7 @@ import TermsService from '@/popup/components/termsservice/index.vue'
 import PrivacyPolicy from '@/popup/components/privacypolicy/index.vue'
 import WormholesTransition from '@/popup/components/wromTransition/index.vue'
 import localforage from 'localforage';
-
+import {VUE_APP_TERMSOFUSE,VUE_APP_PRIVACYNOTICE} from '@/popup/enum/env'
 export default {
 name: "newwallet",
 components: {
@@ -282,6 +280,8 @@ setup() {
     loading,
     modal1,
     modal2,
+    VUE_APP_TERMSOFUSE,
+    VUE_APP_PRIVACYNOTICE
   };
 },
 };
@@ -297,7 +297,7 @@ font-size: 16px;
 font-weight: bold;
 }
 .pwd-tip {
-span {
+a {
   color: #037CD6;
 }
 }

@@ -34,10 +34,10 @@
         <div class="flex between">
           <div class="label">
             {{t('transactionDetails.gasfee')}}
-            <van-popover v-model:show="showPopover" theme="dark" placement="top">
-              <div class="f-12 pl-10 pr-10 pt-10 pb-10" @click="showPopover = false">1111111111111</div>
+            <van-popover v-model:show="showPopover" theme="dark" placement="top" class="popover-btn-tip">
+              <div class="f-12 pl-10 pr-10 pt-10 pb-10">{{t('common.gasFee')}}</div>
               <template #reference>
-                <van-icon name="question hover" />
+                <van-icon @mouseover="showPopover = true" @mouseleave="showPopover = false" name="question hover" />
               </template>
             </van-popover>
           </div>

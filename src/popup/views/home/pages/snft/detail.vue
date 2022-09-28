@@ -81,7 +81,7 @@
       </div>
       <div class="card mt-8 card-last">
         <div class="name">{{ t("sendSNFT.address") }}</div>
-        <div class="value">{{ addressMask(chooseSnftData.nft_address.substr(0,41)) }}</div>
+        <div class="value">{{ chooseSnftData.nft_address.substr(0,41) }}</div>
       </div>
     </div>
     <!-- Button group -->

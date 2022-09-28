@@ -91,9 +91,10 @@
       );
   
       const list = ref([
-        {label:t('createminerspledge.stake'),value:'3',desc:t('createExchange.desc1'),select: true},
+      {label:t('createExchange.convert'),value:'2',desc:t('createExchange.desc3'),select: true},
+        {label:t('createminerspledge.stake'),value:'3',desc:t('createExchange.desc1'),select: false},
         {label:t('createExchange.redemption'),value:'1',desc:t('createExchange.desc2'),select: false},
-        {label:t('createExchange.convert'),value:'2',desc:t('createExchange.desc3'),select: false},
+
       ])
       // context.emit('change', {...list.value[0]})
       const handleChange = (idx: number) => {

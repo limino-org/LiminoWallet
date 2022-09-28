@@ -257,12 +257,30 @@ img {
 
   z-index: 1 !important;
 }
-
+.popover-btn-tip-disabled {
+  .van-popover__content {
+    background: #9A9A9A;
+  }
+  .van-popover__arrow {
+    color: #9A9A9A;
+  }
+}
+.van-popover__wrapper {
+  .van-icon-question {
+    margin-left: 0 !important;
+  }
+}
+.van-icon-question {
+  cursor: pointer;
+  margin-left: 5px !important;
+  color: #848484;
+  font-size: 12px;
+}
 @media screen and (min-width: 750px) {                                                                                                                                 
   html {
     font-size: 50PX !important; // ignored
   }
-  .popover-btn-tip {
+  .popover-btn-tip,.el-popper {
     max-width: 220px;
   }
 
@@ -402,7 +420,7 @@ img {
 
 // When the width is less than 750, control the pop-up window width to guide the user to operate
 @media screen and (max-width: 750px) {
-  .popover-btn-tip {
+  .popover-btn-tip,.el-popper {
     max-width: 160px;
   }
   .popover-dialog {

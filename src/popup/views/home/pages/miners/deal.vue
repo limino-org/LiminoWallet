@@ -221,7 +221,7 @@
             :close-on-click-outside="false"
             placement="top"
             trigger="manual"
-            class="popover-btn-tip"
+            class="popover-btn-tip popover-btn-tip-disabled"
           >
             <div class="f-12 pl-10 pr-10 pt-10 pb-10 ">
               {{ t("bourse.closeTip") }}
@@ -1805,7 +1805,7 @@ export default defineComponent({
 <style  lang="scss" scoped>
 .miner-page {
   height: 100%;
-  padding: 23px 15px 25px 15px;
+
   &.modif {
     .nodeIpt {
       :deep(.van-field__body) {
@@ -1841,7 +1841,7 @@ export default defineComponent({
   .bourse-container {
     min-height: 100vh;
     overflow-y: auto;
-
+    padding: 23px 15px 25px 15px;
     font-size: 14px;
   }
   .bourse-container-meaning {

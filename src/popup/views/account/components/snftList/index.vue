@@ -499,12 +499,7 @@ export default defineComponent({
       page_size: "60",
       status: "3",
     };
-    const chooseType = ref({
-      label: t("createminerspledge.stake"),
-      value: "3",
-      desc: t("createExchange.desc1"),
-      select: true,
-    });
+    const chooseType = ref(        {label:t('createExchange.convert'),value:'2',desc:t('createExchange.desc3'),select: true},);
     const handleChoose = (e: any) => {
       finished.value = false
       chooseType.value = e;
@@ -588,7 +583,7 @@ const hex2int = (hex: any) => {
     padding-bottom: 35px;
   }
   &.card {
-    padding: 15px;
+    padding: 15px 15px 50px;
   }
   &.list {
     display: flex;

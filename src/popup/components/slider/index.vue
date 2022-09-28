@@ -3,7 +3,7 @@
   <transition name="slider-left">
     <div
       v-if="showSlider"
-      :style="{ width: '85%', height: '100%' }"
+      :style="{ width: '90%', height: '100%' }"
       class="nav-header-slider-box"
     >
       <div class="slider-con">
@@ -92,17 +92,6 @@
               <!-- Address, copy, QR code-->
               <div class="address-card flex">
                 <div class="add">{{ accountInfo.address }}</div>
-                <!-- <i class="iconfont icon-fuzhi2 ml-6 hover" @click="toCopy"></i>
-                <div class="shuxian ml-10 mr-6"></div>
-                <i
-                  class="iconfont icon-erweima1 hover"
-                  @click="handleShowCode"
-                ></i> -->
-                <!-- qr code popover -->
-                <!-- <AddressQRModal
-                  v-model="showCode"
-                  :data="accountInfo.address"
-                /> -->
               </div>
               <div class="amount mt-8">{{amount}} {{currentNetwork.currencySymbol}}</div>
             </div>
@@ -113,27 +102,6 @@
         </div>
         <!-- Bottom button group -->
         <div class="slider-bottom">
-          <!-- Send Add Account -->
-          <!-- <div class="send-groups-box">
-          <div>
-            <div class="send-add-groups flex between van-hairline--bottom">
-              <div class="icon-btn hover" @click="toReceive">
-                <div class="icon-box flex center">
-                  <i class="iconfont icon-teshujiantouzuoxiantiao"></i>
-                </div>
-                <div class="text-center f-12 lh-18">{{ t("sidebar.recive") }}</div>
-              </div>
-
-              <div class="icon-btn hover" @click="toSend">
-                <div class="icon-box flex center">
-         
-                  <i class="iconfont icon-teshujiantouzuoxiantiao-copy"></i>
-                </div>
-                <div class="text-center f-12 lh-18">{{ t("sidebar.send") }}</div>
-              </div>
-            </div>
-          </div>
-        </div> -->
           <!-- Group of transaction information buttons -->
           <div class="setting-list">
             <!-- websize -->
@@ -231,8 +199,8 @@
             }}</van-button>
           </div>
           <!-- version number -->
-          <div class="text-center f-12 lh-16 mt-16 mb-20 version">
-            WormHoles V{{ version }} ({{ new Date().getFullYear() }})
+          <div class="text-center f-12 lh-16 mt-12 mb-12 version">
+            LiminoWallet V{{ version }} ({{ new Date().getFullYear() }})
           </div>
         </div>
       </div>

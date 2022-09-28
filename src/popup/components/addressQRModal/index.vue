@@ -14,16 +14,19 @@
           <qrcode-vue :value="codeData" class="code" :size="size" :level="level" ref="coderef"></qrcode-vue>
         </div>
       </div>
-      <div class="flex center pb-30">
+      <div class="flex center pb-24">
         <div class="pl-8 pr-8 clickActive savebtn lh-30 text-center van-ellipsis">{{ data }}</div>
       </div>
       <!-- Copy share button -->
-      <div class="flex between mt-20 btn-group">
+      <div class="flex center mt-20 btn-group">
         <div class="btn-box">
-          <div class="btn flex center" @click="toCopy">
+          <div class="flex center">
+            <div class="btn flex center" @click="toCopy">
             <i class="iconfont icon-fuzhi2"></i>
           </div>
-          <div class="text-center text text-bold">{{t('send.copy')}}</div>
+        </div>
+          <div class="text-center text text-bold mt-4">{{t('send.copy')}}</div>
+     
         </div>
       </div>
     </van-dialog>
@@ -162,7 +165,7 @@ export default defineComponent({
   padding: 1px;
 }
 .btn-group {
-  width: 45px;
+  width: 300px;
   margin: 0 auto 20px;
 }
 .btn-box {

@@ -6,8 +6,19 @@
           <div class="notices pl-14 pr-14 pt-4 pb-4 flex center-v">
             <i class="iconfont icon-warn"></i>
             <span class="lh-14"
+            v-show="type == '2'"
               >
               {{ t("transferNft.conversionconfirmation") }}</span
+            >
+            <span class="lh-14"
+            v-show="type == '3'"
+              >
+              {{ t("transferNft.stakingconfirmation") }}</span
+            >
+            <span class="lh-14"
+            v-show="type == '1'"
+              >
+              {{ t("transferNft.reStakingconfirmation") }}</span
             >
           </div>
           <div class="flex between t-bottom pl-14 pr-14">

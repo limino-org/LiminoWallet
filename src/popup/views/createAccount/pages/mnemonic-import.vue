@@ -77,15 +77,13 @@
     <div class="pwd-tip">
       <i18n-t keypath="createAccountpage.pwdTip" tag="div" class="text-center mt-20 lh-16">
         <template v-slot:br><br></template>
-        <template v-slot:link1><span class="hover" @click="modal1 = true">{{t('createAccountpage.link1')}}</span></template>
-        <template v-slot:link2><span class="hover" @click="modal2 = true">{{t('createAccountpage.link2')}}</span></template>
+        <template v-slot:link1><a class="hover" 
+          :href="VUE_APP_TERMSOFUSE" target="__blank">{{t('createAccountpage.link1')}}</a></template>
+        <template v-slot:link2><a class="hover"  :href="VUE_APP_PRIVACYNOTICE" target="__blank">{{t('createAccountpage.link2')}}</a></template>
       </i18n-t>
     </div>
   </div>
-      <!-- Terms of service -->
-<TermsService  v-model:show="modal1" :hasSelect="false" />
-<!-- Privacy policy -->
-<PrivacyPolicy  v-model:show="modal2" :hasSelect="false" />
+
 </div>
 
 
@@ -109,6 +107,8 @@ import TermsService from '@/popup/components/termsservice/index.vue'
 import PrivacyPolicy from '@/popup/components/privacypolicy/index.vue'
 import localforage from 'localforage'
 import WromTransition from '@/popup/components/wromTransition/index.vue'
+import {VUE_APP_TERMSOFUSE,VUE_APP_PRIVACYNOTICE} from '@/popup/enum/env'
+
 export default {
 name: 'loginAccount-create-step1',
 components: {
@@ -270,7 +270,9 @@ setup() {
     pwd2Err,
     toggleMask,
     loading,
-    back
+    back,
+    VUE_APP_TERMSOFUSE,
+    VUE_APP_PRIVACYNOTICE
   }
 }
 }
@@ -285,7 +287,7 @@ setup() {
 }
 }
 .pwd-tip {
-span {
+a {
   color: #037CD6;
 }
 }

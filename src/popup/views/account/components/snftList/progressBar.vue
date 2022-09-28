@@ -2,8 +2,8 @@
   <div class="progress-bar" ref="barref">
     <div class="lh-14 f-12 ratio">
       {{ $t("sendSNFT.ratio") }}: 1:{{ ratio }}
-      <van-popover v-model:show="showPopover" theme="dark" placement="top">
-        <p class="f-12 p-10" style="margin: 0">hello world</p>
+      <van-popover v-model:show="showPopover" theme="dark" placement="top" class="popover-btn-tip">
+        <p class="f-12 p-10" style="margin: 0">{{t('transferNft.radioTip')}}</p>
         <template #reference>
           <van-icon
             name="question"
@@ -41,6 +41,7 @@
 import { BigNumber } from "bignumber.js";
 import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import { Icon, Popover } from "vant";
+import { useI18n } from "vue-i18n";
 export default defineComponent({
   name: "progress-bar",
   components: {
@@ -103,8 +104,10 @@ export default defineComponent({
       });
       intersectionObserver.observe(barref.value);
     });
+    const {t} = useI18n()
     return {
       width,
+      t,
       barref,
       showPopover,
       showPopover2,

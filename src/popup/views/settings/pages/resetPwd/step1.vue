@@ -36,7 +36,7 @@
               :class="isError ? 'error' : ''"
               :type="`${switchPassType ? 'text' : 'password'}`"
               @click-right-icon="switchPassType = !switchPassType"
-              :placeholder=" isError ? t('loginwithpassword.wrong_password') :  $t('exportprivatekey.password')"
+              :placeholder="$t('resetPwd.input')"
               :rules="[{ validator: asyncPwd },]"
             />
           </div>
@@ -49,7 +49,7 @@
             block
             type="primary"
             native-type="submit"
-          >{{t('wallet.next')}}</van-button>
+          >{{t('common.confirm')}}</van-button>
         </div>
           </div>
 

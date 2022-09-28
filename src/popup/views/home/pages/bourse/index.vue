@@ -276,7 +276,7 @@
                 :close-on-click-outside="false"
                 placement="top-end"
                 trigger="manual"
-                class="popover-btn-tip"
+                class="popover-btn-tip popover-btn-tip-disabled"
               >
                 <div class="f-12 pl-10 pr-10 pt-10 pb-10">
                   {{ t("bourse.closeTip") }}

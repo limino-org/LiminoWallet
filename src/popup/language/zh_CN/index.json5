@@ -999,8 +999,11 @@
 		"cancel": "取消"
 	},
 	"transferNft": {
+				"radioTip":"这是您的 S-NFT 的转换率，您可以为每个 S-NFT 转换多少 ERB。",
 		"converttoERB": "转换为 ERB",
 		"conversionconfirmation": "一经转换不可逆，请确认是否转换",
+		"stakingconfirmation": "S-NFT 质押：一旦您质押您的 S-NFT，至少一年内您将不能赎回您的 S-NFT。请确保您要质押 S-NFT",
+		"reStakingconfirmation": "S-NFT 赎回：一旦您赎回了您的 S-NFT，您获得奖励的机会就会减少。请确保您知道这一点。",
 		"all": "所有",
 		"select": "选择",
 		"convert": "转变",

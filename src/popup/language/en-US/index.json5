@@ -996,7 +996,10 @@
 	},
 	"transferNft": {
 		"converttoERB": "S-NFTs",
+		"radioTip":"This is the convert rate of your S-NFT which how much ERB you can convert for each S-NFT.",
 		"conversionconfirmation": "Once converted, it is irreversible,please confirm whether toconvert it",
+		"stakingconfirmation": "S-NFT Staking：Once you stake your S-NFT，you will not be allowed redeeming your S-NFT for at least one year.Make sure you want to stake the S-NFT",
+		"reStakingconfirmation": "S-NFT Redemption:Once you reddem your S-NFT,your chance to get rewards will decrease.Make sure you know this.",
 		"all": "All",
 		"select": "Select",
 		"convert": "Convert",

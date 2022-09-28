@@ -16,3 +16,7 @@ export const VUE_APP_NODE_WORM_URL = decode(process.env.VUE_APP_NODE_WORM_URL ||
 export const VUE_APP_METAURL = decode(process.env.VUE_APP_METAURL ||'')
 
 export const VUE_APP_SCAN_URL = decode(process.env.VUE_APP_SCAN_URL || '')
+
+export const VUE_APP_TERMSOFUSE = decode(process.env.VUE_APP_TERMSOFUSE || '')
+export const VUE_APP_PRIVACYNOTICE = decode(process.env.VUE_APP_PRIVACYNOTICE || '')
+

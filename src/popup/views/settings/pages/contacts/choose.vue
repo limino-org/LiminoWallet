@@ -1,6 +1,9 @@
 <template>
   <van-sticky>
-    <NavHeader :title="t('setting.contacts')" :hasLeft="false">
+    <NavHeader :title="t('setting.contacts')">
+      <template v-slot:left>
+     <span class="back hover f-12" @click="back">{{t('createAccountpage.back')}}</span>
+    </template>
     </NavHeader>
   </van-sticky>
   <div class="contacts-list">
@@ -389,6 +392,14 @@ export default {
         router.replace({ name: backUrl.toString() });
       }
     };
+    const back = () => {
+      const { backUrl } = route.query;
+      if (backUrl) {
+        router.replace({ name: backUrl.toString() });
+        return
+      }
+      router.back()
+    }
 
     // sort
     const toggleSort = (type: number) => {
@@ -430,6 +441,7 @@ export default {
       contacts3,
       contacts2,
       handlerClick,
+      back,
       toggleSort,
       t,
     };

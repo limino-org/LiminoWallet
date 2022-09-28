@@ -24,8 +24,16 @@
         :key="item.key"
         @click.stop="handleClick(item, idx)"
       >
-        <i class="iconfont icon-duihao2 check-icon" v-show="item.select && showIcon"></i>
-        <img src="./select-white.svg" class=" check-icon-default no-select" alt="" v-show="!getDisabled(item) && showIcon">
+        <i
+          class="iconfont icon-duihao2 check-icon"
+          v-show="item.select && showIcon"
+        ></i>
+        <img
+          src="./select-white.svg"
+          class="check-icon-default no-select"
+          alt=""
+          v-show="!getDisabled(item) && showIcon"
+        />
         <img
           loading="lazy"
           :src="`${metaDomain}${item.source_url}`"
@@ -37,7 +45,7 @@
     <div class="progress-box">
       <ProgressBar
         :value="data['total_hold']"
-        :own="data['total_hold']"
+        :own="selectSnftsLen"
         :ratio="ratio"
       />
     </div>
@@ -57,9 +65,7 @@
         ></i>
         {{ $t("sendSNFT.all") }}
       </div>
-      <div class="select-box lh-14 mr-4">
-        {{ checkLen }}/{{ getNumber }},
-      </div>
+      <div class="select-box lh-14 mr-4">{{ checkLen }}/{{ getNumber }},</div>
       <div class="am-box">
         {{ totalAmount }}ERB
         <span>(≈ ${{ toUsd(totalAmount, 2) }})</span>
@@ -132,7 +138,7 @@ export default defineComponent({
       (n, o) => {
         compData.value.select = n;
         compData.value.children.forEach((item) => {
-          if (getDisabled(item) == '') {
+          if (getDisabled(item) == "") {
             item.select = n;
           }
         });
@@ -222,15 +228,30 @@ export default defineComponent({
     };
     // The number of selected items
     const checkLen = computed(() => {
-      const arr = compData.value.children
+      const list = compData.value.children
         .filter((item) => item.select)
-        .map((item) => item.Chipcount);
+        
+      const { status } = props;
+      if (status == "2") {
+        const arr = list.map((item) => item.Chipcount);
+        if (arr.length) {
+          return arr.reduce((total: number, num: number) => total + num);
+        }
+        return 0
+      }
+      if (status == "1" || status == "3") {
+          return list.length;
+        }
+
+      return 0;
+    });
+    const totalLen = computed(() => {
+      const arr = compData.value.children.map((item) => item.Chipcount);
       if (arr.length) {
         return arr.reduce((total: number, num: number) => total + num);
       }
       return 0;
     });
-
     //The total amount selected
     const totalAmount = computed(() => {
       const arr = compData.value.children
@@ -254,24 +275,24 @@ export default defineComponent({
 
     // sndt click
     const handleClick = (item: any, idx: number) => {
-      if(!props.showIcon) {
-        return
+      if (!props.showIcon) {
+        return;
       }
       const { Chipcount, pledgestate, loaded, disabled } = item;
-      const {status} = props
+      const { status } = props;
 
       if (!loaded) {
         Toast(t("sendSNFT.loadchip"));
         return;
       }
-      if (status == "3" || status == '1') {
-        if(disabled) {
-          return
+      if (status == "3" || status == "1") {
+        if (disabled) {
+          return;
         }
       }
-      if(status == '2') {
-        if(pledgestate == "Pledge" || !Chipcount) {
-          return
+      if (status == "2") {
+        if (pledgestate == "Pledge" || !Chipcount) {
+          return;
         }
       }
       if (Chipcount == 0) {
@@ -300,16 +321,14 @@ export default defineComponent({
         if (pledgestate == "Pledge" || !Chipcount) {
           return "disabled";
         }
-
       }
       if (status == "1") {
         if (pledgestate == "Pledge" && Chipcount != 16) {
           return "disabled";
         }
         if (pledgestate == "NoPledge") {
-          return 'disabled'
+          return "disabled";
         }
-
       }
       return "";
     };
@@ -324,7 +343,7 @@ export default defineComponent({
           }
         });
       }
-      compData.value = compData.value
+      compData.value = compData.value;
       const { children } = compData.value;
       // Push selected data to superiors
       context.emit("changeSelect", {
@@ -340,22 +359,35 @@ export default defineComponent({
     });
 
     const getNumber = computed(() => {
-      const res = {...props.data}
+      const res = { ...props.data };
+      const { status } = props;
+      if (status == "3" || status == "1") {
+        const list = compData.value.children
+        .filter((item) => !item.disabled)
+        return list.length;
+      }
+      if (status == "2") {
+        let total = 0;
+        res.children.forEach((item) => {
+          if (getDisabled(item) == "") {
+            total += item.snfts.length;
+          }
+        });
+        return total;
+      }
+    });
+
+    const selectSnftsLen = computed(() => {
       const {status} = props
-      if(status == '3' || status == '1') {
-        return res.children.map((item: any) => getDisabled(item) == '').length
+      if(status == '1' || status == '3') {
+        return getNumber.value * 16
       }
       if(status == '2') {
-        let total = 0
-        res.children.forEach(item => {
-          if(getDisabled(item) == '') {
-            total += item.snfts.length
-          }
-        })
-       return total
+        return getNumber.value
       }
     })
     return {
+      selectSnftsLen,
       getNumber,
       addressMask,
       metaDomain,
@@ -370,6 +402,7 @@ export default defineComponent({
       amountType,
       checkAll,
       checkLen,
+      totalLen,
       totalAmount,
       toMore,
       handleClick,
