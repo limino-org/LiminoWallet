@@ -12,7 +12,7 @@
   >
     <div class="dialog-box">
       <div class="serial-number">
-        <span class="left">6</span> <span>/</span> 13
+        <span class="left">6</span> <span>/</span> 12
       </div>
       <div class="title">
         {{ t("bootstrapwindow.tOKENs") }}
@@ -139,7 +139,7 @@ export default defineComponent({
     top: -56px;
     height: 1px;
     //padding:0 20px;
-    width: 27px;
+    width: 58px;
     border-bottom:  1px dashed #fff;
     border-radius: 5px;
     right: 0;
@@ -151,11 +151,11 @@ export default defineComponent({
     top: -56px;
     height: 1px;
     padding:0 20px;
-     width: 270px;
+     width: 241px;
     border-bottom:  1px dashed #fff;
     border-radius: 510px;
     right: 1px;
-    left: 75px;
+    left: 104px;
     border-top: none;
   }
   .tip3 {
@@ -170,7 +170,7 @@ export default defineComponent({
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     right: 0;
-    left: 15px;
+    left: 46px;
     z-index: 100;
     //background: RGBA(126, 126, 126, .5);
     border-bottom: none;

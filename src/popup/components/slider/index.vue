@@ -156,7 +156,7 @@
             >
               <div class="flex center">
                 <i class="iconfont icon-chuiziicon"></i>
-                {{ $t("sidebar.minerpledge") }}
+                {{ $t("sidebar.minerspledge") }}
               </div>
               <van-icon name="arrow" />
             </div>
@@ -232,7 +232,7 @@
           </div>
           <!-- version number -->
           <div class="text-center f-12 lh-16 mt-16 mb-20 version">
-            WormHoles V{{ version }} ({{ new Date().getFullYear() }})
+            Wormholes V{{ version }} ({{ new Date().getFullYear() }})
           </div>
         </div>
       </div>

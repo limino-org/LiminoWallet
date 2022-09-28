@@ -200,7 +200,11 @@ export default {
     // Open pop-up window
     showDialog({ commit, state }: any, idx: number) {
       commit("UPDATA_HIDE", idx);
-      commit("UPDATA_SHOW", idx+1);
+      if(idx === 6) {
+        commit("UPDATA_SHOW", idx+2);
+      }else {
+        commit("UPDATA_SHOW", idx+1);
+      }
     },
     // Turn off boot
     closeGuide({commit,state}:any){

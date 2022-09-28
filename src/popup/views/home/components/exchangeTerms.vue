@@ -15,7 +15,7 @@
             <template v-slot:icon>W</template>
           </WormTransition>
         </div>
-        <div class="f-24 tit-big">WormHoles Wallet</div>
+        <div class="f-24 tit-big">Wormholes Wallet</div>
         <div class="terms-content">
           <div class="f-16 mt-20">Terms of Service</div>
           <div class="f-12 lh-16">Last Updated: 20/02/2022</div>

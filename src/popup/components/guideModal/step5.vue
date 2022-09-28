@@ -12,7 +12,7 @@
   >
     <div class="dialog-box">
       <div class="serial-number">
-        <span class="left">5</span> <span>/</span> 13
+        <span class="left">5</span> <span>/</span> 12
       </div>
       <div class="title">
         {{ t("bootstrapwindow.transaction") }}
