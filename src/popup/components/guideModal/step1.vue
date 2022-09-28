@@ -12,7 +12,7 @@
     <div class="dialog-box" v-if="show1">
       <div class="serial-number">
         <span class="left">1</span>
-        <span>/</span> 13
+        <span>/</span> 12
       </div>
       <div class="title">{{t('bootstrapwindow.accout')}}</div>
       <div class="small-tit pl-30 pr-30 mt-20">{{t('bootstrapwindow.accountMessage')}}</div>

@@ -6,7 +6,7 @@
         {{ t("createAccountpage.welcome") }}
       </div>
       <div class="tit-small text-center f-12 mt-14 mb-30 lh-16">
-        ERB / ETH / BTC / COSMOS...
+        {{ t("loginwithpassword.smallTit") }}
       </div>
     </div>
     <div class="create-new-password">

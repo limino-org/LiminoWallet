@@ -217,7 +217,7 @@
 		loginIn: "Log in",
 		welcome: "Welcome Back",
 		welcomeTitle: "Welcome Back",
-		cantLogin: "Can't log in? {reset}",
+		cantLogin: "Can't log in? ",
 		resentWallet: "Reset Wallet",
 		rememberMe: "Remember Me",
 		creating: "Creating",

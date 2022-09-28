@@ -115,7 +115,7 @@ export default defineComponent({
     },
     title: {
       type: String,
-      default: 'WormHoles'
+      default: 'Wormholes'
     },
     cancelRouteName: {
       type: String,

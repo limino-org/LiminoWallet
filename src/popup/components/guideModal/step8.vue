@@ -12,7 +12,7 @@
   >
     <div class="dialog-box">
       <div class="serial-number">
-        <span class="left">8</span> <span>/</span> 13
+        <span class="left">7</span> <span>/</span> 12
       </div>
       <div class="title">
         {{ t("bootstrapwindow.sNFTs") }}
@@ -135,7 +135,7 @@ export default defineComponent({
     top: -56px;
     height: 1px;
     //padding:0 20px;
-    width: 23px;
+    width: 53px;
     border-bottom:  1px dashed #fff;
     border-radius: 5px;
     right: -7px;
@@ -148,7 +148,7 @@ export default defineComponent({
     top: -56px;
     height: 1px;
     padding:0 20px;
-    width: 275px;
+    width: 245px;
     border-bottom:  1px dashed #fff;
     border-radius: 510px;
     //right: -10px;
@@ -166,7 +166,7 @@ export default defineComponent({
     border-radius: 5px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    right: 15px;
+    right: 45px;
     //left: 0;
     z-index: 100;
     //background: RGBA(126, 126, 126, .5);
@@ -175,7 +175,7 @@ export default defineComponent({
   @media screen and (min-width: 1000px) {
     .tip5 {
       top:-66px;
-      width: 590px;
+      width: 530px;
       left: -475px;
 
     }
@@ -187,11 +187,11 @@ export default defineComponent({
     }
     .tip3 {
       top: -96px;
-      right: 75px;
+      right: 135px;
 
     }
     .tip4 {
-      width: 88px;
+      width: 148px;
       top:-66px;
       right: -12px;
 

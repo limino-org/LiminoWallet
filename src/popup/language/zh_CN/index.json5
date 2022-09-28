@@ -240,7 +240,7 @@
 		loginIn: "登录",
 		welcome: "欢迎回来",
 		welcomeTitle: "欢迎回来",
-		cantLogin: "无法登录？ {reset}",
+		cantLogin: "无法登录？ ",
 		resentWallet: "重置钱包",
 		rememberMe: "记住账号",
 		creating: "创建中",

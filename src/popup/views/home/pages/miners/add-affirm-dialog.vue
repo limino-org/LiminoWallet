@@ -462,4 +462,13 @@ export default {
 .c2 {
   color: #3aae55;
 }
+@media screen and (max-width: 750px){
+  .exchange {
+    padding-bottom: 8px;
+  }
+  .miners {
+    padding-bottom: 15px;
+    margin-top: 50px!important;
+  }
+}
 </style>

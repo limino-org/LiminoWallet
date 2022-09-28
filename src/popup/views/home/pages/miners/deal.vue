@@ -223,7 +223,7 @@
             trigger="manual"
             class="popover-btn-tip popover-btn-tip-disabled"
           >
-            <div class="f-12 pl-10 pr-10 pt-10 pb-10 ">
+            <div class="f-12 pl-10 pr-10 pt-10 pb-10 " style="background: #9A9A9A;z-index: 10" >
               {{ t("bourse.closeTip") }}
             </div>
             <template #reference>

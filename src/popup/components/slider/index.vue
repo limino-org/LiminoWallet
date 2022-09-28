@@ -124,7 +124,7 @@
             >
               <div class="flex center">
                 <i class="iconfont icon-chuiziicon"></i>
-                {{ $t("sidebar.minerpledge") }}
+                {{ $t("sidebar.minerspledge") }}
               </div>
               <van-icon name="arrow" />
             </div>
