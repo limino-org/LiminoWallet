@@ -10,74 +10,75 @@
         <div :class="`slider-bg ${hasExchange ? 'blue' : ''}`">
           <div class="flex back-box">
             <van-icon name="arrow-left hover" @click="showSlider = false" />
-            
           </div>
 
-          <div class="user-img ">
+          <div class="user-img">
             <div class="user-img-circle flex center-v hover">
               <AccountIcon
                 :data="accountInfo.icon"
                 @click="toAccountManagement"
               />
-                        <!-- Label set -->
-          <div class="tag-list flex">
-            <van-popover
-              v-model:show="showPopover"
-              trigger="manual"
-              class="account-pop MR-10"
-              placement="bottom-start"
-            >
-              <div class="lh-14 pt-8 pb-8 pl-16 pr-16 f-12">
-                {{ t("common.right_and_interests") }}
-              </div>
-              <template #reference>
-                <div
-                  class="tag-user type2 position relative hover mr-8"
-                  @mouseover="showPopover = true"
-                  @mouseleave="showPopover = false"
-                  v-show="
-                    ethAccountInfo
-                      ? ethAccountInfo.PledgedBalance > 0
-                        ? true
-                        : false
-                      : false
-                  "
+              <!-- Label set -->
+              <div class="tag-list flex">
+                <van-popover
+                  v-model:show="showPopover"
+                  trigger="manual"
+                  class="account-pop MR-10"
+                  placement="bottom-start"
                 >
-                  <span class="user">
-                    <img src="@/popup/views/home/imgs/wakuang.png" alt />
-                  </span>
-                  <div class="tag-label flex center-v">
-                    <span>Validator</span>
+                  <div class="lh-14 pt-8 pb-8 pl-16 pr-16 f-12">
+                    {{ t("common.right_and_interests") }}
                   </div>
-                </div>
-              </template>
-            </van-popover>
-            <van-popover
-              v-model:show="showPopover2"
-              trigger="manual"
-              class="account-pop"
-              placement="bottom-start"
-            >
-              <div class="lh-14 pt-8 pb-8 pl-16 pr-16 f-12">
-                {{ t("common.exchange_pledge") }}
-              </div>
-              <template #reference>
-                <div
-                  class="tag-user type3 position relative mr-8 hover"
-                  @mouseover="showPopover2 = true"
-                  @mouseleave="showPopover2 = false"
-                  v-show="ethAccountInfo ? ethAccountInfo.ExchangerFlag : false"
+                  <template #reference>
+                    <div
+                      class="tag-user type2 position relative hover mr-8"
+                      @mouseover="showPopover = true"
+                      @mouseleave="showPopover = false"
+                      v-show="
+                        ethAccountInfo
+                          ? ethAccountInfo.PledgedBalance > 0
+                            ? true
+                            : false
+                          : false
+                      "
+                    >
+                      <span class="user">
+                        <img src="@/popup/views/home/imgs/wakuang.png" alt />
+                      </span>
+                      <div class="tag-label flex center-v">
+                        <span>Validator</span>
+                      </div>
+                    </div>
+                  </template>
+                </van-popover>
+                <van-popover
+                  v-model:show="showPopover2"
+                  trigger="manual"
+                  class="account-pop"
+                  placement="bottom-start"
                 >
-                  <span class="user">
-                    <img src="@/popup/views/home/imgs/smallhome.png" alt />
-                  </span>
-                  <div class="tag-label flex center-v">
-                    <span>Exchange</span>
+                  <div class="lh-14 pt-8 pb-8 pl-16 pr-16 f-12">
+                    {{ t("common.exchange_pledge") }}
                   </div>
-                </div>
-              </template>
-            </van-popover>
-          </div>
+                  <template #reference>
+                    <div
+                      class="tag-user type3 position relative mr-8 hover"
+                      @mouseover="showPopover2 = true"
+                      @mouseleave="showPopover2 = false"
+                      v-show="
+                        ethAccountInfo ? ethAccountInfo.ExchangerFlag : false
+                      "
+                    >
+                      <span class="user">
+                        <img src="@/popup/views/home/imgs/smallhome.png" alt />
+                      </span>
+                      <div class="tag-label flex center-v">
+                        <span>Exchange</span>
+                      </div>
+                    </div>
+                  </template>
+                </van-popover>
+              </div>
             </div>
             <!-- Switch account -->
             <div class="account mt-6">
@@ -93,7 +94,9 @@
               <div class="address-card flex">
                 <div class="add">{{ accountInfo.address }}</div>
               </div>
-              <div class="amount mt-8">{{amount}} {{currentNetwork.currencySymbol}}</div>
+              <div class="amount mt-8">
+                {{ amount }} {{ currentNetwork.currencySymbol }}
+              </div>
             </div>
           </div>
 
@@ -213,7 +216,6 @@
     </div>
   </transition>
   <van-overlay :show="showSlider" :z-index="999" @click="showSlider = false" />
-
 </template>
 <script lang="ts">
 import {
@@ -261,7 +263,6 @@ import { useToast } from "@/popup/plugins/toast";
 import { useDialog } from "@/popup/plugins/dialog";
 import BigNumber from "bignumber.js";
 import { getWallet } from "@/popup/store/modules/account";
-
 
 export default defineComponent({
   name: "slider-menu",
@@ -371,23 +372,20 @@ export default defineComponent({
         clearTimeout(time);
       }, 300);
     };
-    
+
     const handleLogout = () => {
       $dialog.open({
-        message:t('sidebar.logoutTip'),
-        type: 'warn',
-        theme:"dark",
-        confirmBtnText:t("common.no"),
-        cancelBtnText:t("common.yes"),
-        callBack(){
-  
-        },
-        cancelBack(){
+        message: t("sidebar.logoutTip"),
+        type: "warn",
+        theme: "dark",
+        confirmBtnText: t("common.no"),
+        cancelBtnText: t("common.yes"),
+        callBack() {},
+        cancelBack() {
           showSlider.value = false;
           logout();
-        }
-      })
-
+        },
+      });
     };
 
     const toSend = () => {
@@ -466,8 +464,6 @@ export default defineComponent({
     // The account label pops up
     const showPopover = ref(false);
     const showPopover2 = ref(false);
-
-
 
     return {
       showPopover,
