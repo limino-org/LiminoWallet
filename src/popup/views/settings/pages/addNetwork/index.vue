@@ -36,7 +36,7 @@
           :class="urlError ? 'error' : ''"
           v-model="URL"
           :placeholder="$t('addNetwork.newRpcPlaceholder')"
-          maxlength="50"
+          maxlength="200"
           :disabled="isMain ? true : false"
 
           validate-trigger="onChange"

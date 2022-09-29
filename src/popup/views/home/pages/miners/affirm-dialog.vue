@@ -97,6 +97,7 @@ export default {
     ElTooltip,
     [Icon.name]: Icon
   },
+  emits:['open'],
   props: ['show', 'name', 'address', 'money','amount'],
   setup(props: any, context: SetupContext) {
     const { t } = useI18n()

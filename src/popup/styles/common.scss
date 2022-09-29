@@ -205,8 +205,8 @@ img {
 
 // Guidance prompt box
 .van-popover__content {
-  overflow: inherit;
-
+  overflow: hidden;
+  border-radius: 4px;
   .dialog-box {
     padding-top: 13px;
   }

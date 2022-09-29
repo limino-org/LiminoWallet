@@ -129,7 +129,7 @@
 		recive: "Receive",
 		tokens: "Tokens",
 		NFTs: "NFTs",
-		SNFTs: "SNFTs",
+		SNFTs: "S-NFTs",
 		importToken: "Tokens",
 		createAnExchange: "AUTO EXCHANFGE",
 		autoexchange: "Auto NFT Marketplace",
@@ -140,7 +140,7 @@
 		access: 'Access',
 		cmsandExchange: 'CMS & Exchange',
 		back: 'Back',
-		toBrowser: "View full history on {link}",
+		toBrowser: "View full history on Wormholesscan.",
 		scanLink: "Wormholesscan",
 		convertComplete: "For complete",
 		selectSNFT: "You have not selected any S-NFTs",
@@ -421,7 +421,8 @@
 		name: 'Name',
 		address: 'Address',
 		amount: 'Amount',
-		send: 'Send'
+		send: 'Send',
+		title:"S-NFT Details"
 
 	},
 	// sendNft1
@@ -461,7 +462,7 @@
 		"moreInfo": "More Info",
 		"loading": "Loading...",
 		"loadchip": "Data is being prepared, please wait",
-		"collTit": "COLLECTION"
+		"collTit": "Collection"
 	},
 	"importToken": {
 		"search": "Search",
@@ -715,7 +716,7 @@
 		walletSecretRecoveryPhrase: "Wallet Secret Recovery Phrase",
 		addNetworks: "Add & Edit Custom RPC Networks",
 		contacts: "Contacts",
-		addEditRemove: "Add.EditRemove",
+		addEditRemove: "Add & Edit & Remove",
 		aboutWormHoles: "About Wormholes",
 		wormHolesIntroduction: "Wormholes Introduction",
 		resetPwd: "Reset Passwords",
@@ -773,8 +774,8 @@
 		tOKENsMessage: "View and add and transfer tokens",
 		nFTs: "NFTs",
 		nFTsMessage: "View,Add,Transfer,Exchange NFTs",
-		sNFTs: "SNFTs",
-		sNFTsMessage: "View,Add,Transfer,Exchange SNFTs",
+		sNFTs: "S-NFTs",
+		sNFTsMessage: "View,Add,Transfer,Exchange S-NFTs",
 		exchange: "One-Click",
 		exchangeMessage: "One-Click NFT marketplace",
 		identifier: "Identifier",
@@ -1342,6 +1343,10 @@
 		close_wrong: "I'm very sorry, because of some accident, the operation failed, you can go to the transaction history to check the specific information of the transaction",
 		toggleSuccess: "Switch success",
 		node: "Node (Not mandatory)",
+				transfer_approve: "We are approving your request.You can also go to transaction history to see details.",
+		transfer_waiting: "We are processing your S-NFT converting.This will take seconds.",
+		transfer_success: "The converting has been done.You can also go ro transaction history to see more details.",
+		transfer_wrong: "Something happened ,the converting failed.Please check transaction history for more details. ",
 		nodeTip: "This is the address of the staking node",
 		stackTit: "Staking fee",
 		stackTip: "Tips: The pledge period is one year. Please check the terms and regulations for details.",

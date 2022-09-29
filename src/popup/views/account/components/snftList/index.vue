@@ -151,7 +151,7 @@ export default defineComponent({
       count: "3",
       start_index: "0",
       currentPage: 0,
-      status: "3",
+      status: "2",
     };
     // Classified data
     const categoryList = ref(new Map());
@@ -509,6 +509,7 @@ export default defineComponent({
       params2.page = "1";
       pageData.nftList = [];
       checkObjs.data = {}
+      showConvert.value = false
       handleOnLoad();
     };
 
@@ -549,25 +550,7 @@ export default defineComponent({
   },
 });
 
-const hex2int = (hex: any) => {
-  let len = hex.length,
-    a = new Array(len),
-    code;
-  for (let i = 0; i < len; i++) {
-    code = hex.charCodeAt(i);
-    if (48 <= code && code < 58) {
-      code -= 48;
-    } else {
-      code = (code & 0xdf) - 65 + 10;
-    }
-    a[i] = code;
-  }
 
-  return a.reduce(function (acc, c) {
-    acc = 16 * acc + c;
-    return acc;
-  }, 0);
-};
 </script>
 <style lang="scss" scoped>
 :deep() {
@@ -583,7 +566,7 @@ const hex2int = (hex: any) => {
     padding-bottom: 35px;
   }
   &.card {
-    padding: 15px 15px 50px;
+    padding: 15px 15px 0px;
   }
   &.list {
     display: flex;

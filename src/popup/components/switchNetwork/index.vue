@@ -6,7 +6,7 @@
       <div class="main-tit">{{t("common.mainNetwork")}}</div>
       <NetWorkCard :data="mainNetwork" @handleClick="handleChooseComfirm(mainNetwork)" />
     </div>
-    <div class="other-list">
+    <div class="other-list" v-if="netWorkList.length">
       <div class="other-list-tit">{{ t("internet.othertitle") }}</div>
       <div class="other-list-box">
         <NetWorkCard

@@ -1,5 +1,11 @@
 <template>
-  <van-overlay :show="dislogShow" class="custom-overlay">
+  <van-dialog v-model:show="dislogShow"     show-cancel-button
+    teleport="#page-box"
+    :lockScroll="false"
+    :showConfirmButton="false"
+    :showCancelButton="false"
+    closeOnClickOverlay>
+    <div class="custom-overlay">
     <div class="miners">
       <div class="miners-header">
         <span>{{ t("minerspledge.addzhiya") }}</span>
@@ -124,11 +130,13 @@
         </div>
       </div>
     </div>
-  </van-overlay>
+  </div>
+  </van-dialog>
+
 </template>
 
 <script lang="ts">
-import { Button, Overlay, Field, Toast, Icon } from "vant";
+import { Button, Overlay, Field, Toast, Icon,Dialog } from "vant";
 import { ref, SetupContext, computed, nextTick, watch } from "vue";
 import { ethers, utils } from "ethers";
 import { formatEther, toUsd } from "@/popup/utils/filters";
@@ -149,7 +157,9 @@ export default {
     [Field.name]: Field,
     ElTooltip,
     [Icon.name]: Icon,
+    [Dialog.Component.name]:Dialog.Component
   },
+  emits:['open'],
   props: ["show", "name", "address", "addNumber", "amount"],
   setup(props: any, context: SetupContext) {
     const { t } = useI18n();

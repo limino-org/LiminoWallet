@@ -30,7 +30,7 @@
               <div class="m-label">{{ t("transferNft.amount") }}</div>
               <div class="m-value">
                 {{ selectTotal }} ERB
-                <span class="usd">≈$ {{ toUsd(selectTotal, 2) }}</span>
+                <span class="usd">≈ $ {{ toUsd(selectTotal, 2) }}</span>
               </div>
             </div>
             <div class="van-hairline--bottom"></div>
@@ -41,8 +41,8 @@
             </div>
             <div class="van-hairline--bottom"></div>
             <div class="m-card">
-              <div class="m-label">{{ t("bourse.gasFee") }}</div>
-              <div class="m-value">≈{{gasFee}}</div>
+              <div class="m-label ">{{ t("bourse.gasFee") }}</div>
+              <div class="m-value gasFee">≈ {{ gasFee }} ERB</div>
             </div>
           </div>
         </div>
@@ -60,7 +60,7 @@
               <div class="m-label">{{ t("transferNft.amount") }}</div>
               <div class="m-value">
                 {{ selectTotal }} ERB
-                <span class="usd">≈$ {{ toUsd(selectTotal, 2) }}</span>
+                <span class="usd">≈ $ {{ toUsd(selectTotal, 2) }}</span>
               </div>
             </div>
             <div class="van-hairline--bottom"></div>
@@ -76,7 +76,7 @@
             <div class="van-hairline--bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.gasFee") }}</div>
-              <div class="m-value gasFee">≈{{gasFee}}</div>
+              <div class="m-value gasFee">≈{{ gasFee }} ERB</div>
             </div>
           </div>
         </div>
@@ -112,7 +112,7 @@
             <div class="van-hairline--bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.gasFee") }}</div>
-              <div class="m-value gasFee">≈{{gasFee}}</div>
+              <div class="m-value gasFee">≈{{ gasFee }} ERB</div>
             </div>
           </div>
         </div>
@@ -120,10 +120,10 @@
       <div class="protocol f-12 lh-16 pl-14 pr-14 mb-14 text-center">
         {{ t("transferNft.buyatexchange") }}
       </div>
-      <div class="flex between pb-30 pl-16 pr-16">
+      <div class="flex evenly pb-30 pl-16 pr-16">
         <van-button @click="cencel">{{ t("transferNft.cancel") }}</van-button>
-        <van-button :loading="loading" type="primary" @click="handleComfirm">
-          {{ t("transferNft.confirm") }}
+        <van-button :loading="loading" :disabled="time < 1 ? false : true" type="primary" @click="handleComfirm">
+          {{ t("transferNft.confirm") }} <span v-if="time > 0">({{time}}S)</span>
         </van-button>
       </div>
     </van-dialog>
@@ -209,10 +209,11 @@ export default defineComponent({
     const { t } = useI18n();
     const { emit }: any = context;
     // 倒计时
-    const time = ref(10 * 1000);
+    const time = ref(3);
     const { $tradeConfirm } = useTradeConfirm();
     const showModal: Ref<boolean> = ref(false);
     const { dispatch, commit, state } = useStore();
+
     watch(
       () => props.modelValue,
       (n) => {
@@ -220,10 +221,16 @@ export default defineComponent({
         console.log("txtype", props.txtype);
         showModal.value = n;
         if (n) {
+          let t = setInterval(() => {
+            if(time.value == 0) {
+              clearInterval(t)
+            }
+            time.value = time.value -1
+          },1000)
           if (props.txtype == "2") {
             calcProfit();
           }
-          calcGasFee()
+          calcGasFee();
         }
       },
       {
@@ -235,6 +242,7 @@ export default defineComponent({
       () => showModal.value,
       (n) => {
         if (!n) {
+          time.value = 3
           emit("update:modelValue", false);
           loading.value = false;
         }
@@ -257,12 +265,35 @@ export default defineComponent({
       const { address } = wallet;
       // loading.value = true;
       let txQueue: Array<any> = [];
-
+      let approveMessage = "";
+      let successMessage = "";
+      let wattingMessage = "";
+      let failMessage = "";
+      switch (props.txtype) {
+        case "1":
+          approveMessage = t("minerspledge.close_approve");
+          wattingMessage = t("minerspledge.close_waiting");
+          successMessage = t("minerspledge.close_success");
+          failMessage = t("minerspledge.close_wrong");
+          break;
+        case "3":
+          approveMessage = t("minerspledge.create_approve");
+          wattingMessage = t("minerspledge.create_waiting");
+          successMessage = t("minerspledge.create_success");
+          failMessage = t("minerspledge.create_wrong");
+          break;
+        case "2":
+          approveMessage = t("minerspledge.transfer_approve");
+          wattingMessage = t("minerspledge.transfer_waiting");
+          successMessage = t("minerspledge.transfer_success");
+          failMessage = t("minerspledge.transfer_wrong");
+          break;
+      }
       $tradeConfirm.open({
-        approveMessage: t("minerspledge.create_approve"),
-        successMessage: t("minerspledge.create_waiting"),
-        wattingMessage: t("minerspledge.create_success"),
-        failMessage: t("minerspledge.create_wrong"),
+        approveMessage,
+        successMessage,
+        wattingMessage,
+        failMessage,
         disabled: [TradeStatus.pendding],
         callBack: () => {
           emit("success");
@@ -548,11 +579,10 @@ export default defineComponent({
       console.warn("myprofit", myprofit.value);
     };
 
-    const gasFee = ref('')
+    const gasFee = ref("");
     const calcGasFee = async () => {
-
-      const {address} = state.account.accountInfo
-      let list = []
+      const { address } = state.account.accountInfo;
+      let list = [];
       if (props.type == "2") {
         if (props.txtype == "1" || props.txtype == "3") {
           const keys = Object.keys(props.selectList).filter(
@@ -603,33 +633,33 @@ export default defineComponent({
         list = props.selectList.map((item: any) => item.nft_address);
       }
 
-      const len = list.length
-      const [nft_address] = list
-      console.log('list---------------', list)
-      let str = ''
+      const len = list.length;
+      const [nft_address] = list;
+      console.log("list---------------", list);
+      let str = "";
       switch (props.txtype) {
-              // 兑换
-              case "2":
-                str = `wormholes:{"type":6,"nft_address":"${nft_address}","version":"v0.0.1"}`;
-                break;
-              // 可质押
-              case "3":
-                str = `wormholes:{"type":7,"nft_address":"${nft_address}","version":"0.0.1"}`;
-                break;
-              // 可赎回
-              case "1":
-                str = `wormholes:{"type":8,"nft_address":"${nft_address}","version":"0.0.1"}`;
-                break;
-            }
-            console.log('str-------------------',str)
-            const data3 = toHex(str);
-            const tx1 = {
-              from: address,
-              to: address,
-              data: `0x${data3}`,
-            };
-            const gas = await getGasFee(tx1)
-            gasFee.value = new BigNumber(gas).multipliedBy(len).toFixed(6)
+        // 兑换
+        case "2":
+          str = `wormholes:{"type":6,"nft_address":"${nft_address}","version":"v0.0.1"}`;
+          break;
+        // 可质押
+        case "3":
+          str = `wormholes:{"type":7,"nft_address":"${nft_address}","version":"0.0.1"}`;
+          break;
+        // 可赎回
+        case "1":
+          str = `wormholes:{"type":8,"nft_address":"${nft_address}","version":"0.0.1"}`;
+          break;
+      }
+      console.log("str-------------------", str);
+      const data3 = toHex(str);
+      const tx1 = {
+        from: address,
+        to: address,
+        data: `0x${data3}`,
+      };
+      const gas = await getGasFee(tx1);
+      gasFee.value = new BigNumber(gas).multipliedBy(len).toFixed(6);
     };
 
     return {
@@ -709,6 +739,7 @@ function toHex(str: string) {
   }
   .m-value {
     line-height: 20px;
+    font-size: 12px;
   }
 }
 .custom-exchange-modal {

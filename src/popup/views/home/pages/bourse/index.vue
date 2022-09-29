@@ -274,7 +274,7 @@
                 v-if="!isTimeQualified"
                 theme="dark"
                 :close-on-click-outside="false"
-                placement="top-end"
+                placement="top"
                 trigger="manual"
                 class="popover-btn-tip popover-btn-tip-disabled"
               >

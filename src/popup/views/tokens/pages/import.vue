@@ -13,7 +13,7 @@
         >
           <template v-slot:wormholesLink>
             <a
-              href="https://192.168.1.237:9012"
+              href="https://www.wormholes.com"
               class="ml-4 mr-4 wormholeslink"
               target="_blank"
               rel="noopener noreferrer"
@@ -87,6 +87,7 @@ import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { getRandomIcon } from "@/popup/utils";
 import { ethers, utils } from "ethers";
+import { VUE_APP_NODE_WORM_URL } from '@/popup/enum/env';
 const erc20Abi: any = require("@/popup/assets/json/erc20Abi.json");
 
 // import { useToast } from '@/plugins/toast'
@@ -106,6 +107,7 @@ export default {
     const { t } = useI18n();
     const { dispatch,state } = useStore();
     const { $toast } = useToast();
+    
     // token
     const tokens = ref([
       { name: "ERB Token", value: 2, hasAdd: false },
@@ -323,6 +325,7 @@ export default {
       // indexList,
       search,
       // alist,
+      VUE_APP_NODE_WORM_URL,
       handleImport,
     };
   },

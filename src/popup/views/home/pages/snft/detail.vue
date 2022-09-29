@@ -1,5 +1,5 @@
 <template>
-    <NavHeader :hasRight="true" title="Collection" backUrl></NavHeader>
+  <NavHeader :hasRight="true" :title="t('nftDetail.title')"></NavHeader>
 
   <div class="snft-detail">
     <div class="flex between mt-14 snft-list pl-22 pr-22">
@@ -19,7 +19,7 @@
       </div>
     </div>
     <div class="swipe-box">
-      <i class="iconfont icon-quanping hover" @click="showImg"></i>
+      <i class="iconfont icon-fangda hover" @click="showImg"></i>
       <van-icon name="arrow-left hover" @click="to('prev')" />
       <van-swipe
         @change="onChange"
@@ -34,11 +34,18 @@
         >
           <div class="swipe-img mt-10 position relative">
             <img
-              :class="chooseSnftData.Chipcount == 0 ? 'gray' : ''"
+              :class=" imgGary
+                  ? 'gray'
+                  : ''
+              "
               :src="`${metaDomain}${item.source_url}`"
               alt
             />
-            <div class="check-list flex" v-show="chooseSnftData.Chipcount">
+            <!-- Transfer -->
+            <div
+              class="check-list flex"
+              v-show="chooseSnftData.Chipcount && actionType == '2'"
+            >
               <div
                 :class="`fg van-hairline--right van-hairline--bottom ${disabled(
                   item
@@ -48,6 +55,12 @@
                 @click.stop="selectSnft(item, idx)"
               ></div>
             </div>
+            <!-- Staking -->
+            <div
+              :class="`staking-mask ${chooseSnftData.selectFlag ? 'selected' : ''}`"
+              @click.stop="selectSingleSnft"
+              v-show="actionType == '1' || actionType == '3'"
+            ></div>
           </div>
         </van-swipe-item>
       </van-swipe>
@@ -62,7 +75,7 @@
       <ProgressBar
         :value="chooseSnftData.Chipcount"
         :own="hasChooseNum"
-        :total="256"
+        :total="16"
         :ratio="ratio"
       />
     </div>
@@ -81,13 +94,17 @@
       </div>
       <div class="card mt-8 card-last">
         <div class="name">{{ t("sendSNFT.address") }}</div>
-        <div class="value">{{ chooseSnftData.nft_address.substr(0,41) }}</div>
+        <div class="value">{{ chooseSnftData.nft_address.substr(0, 41) }}</div>
       </div>
     </div>
     <!-- Button group -->
     <div class="flex center">
-      <div class="btn-box flex between">
-        <div class="btn" @click="toSend" v-if="actionType != '1'">
+      <div class="btn-box flex evenly">
+        <div
+          class="btn"
+          @click="toSend"
+          v-if="showSendBtn"
+        >
           <div class="flex center">
             <div class="icon-in flex center">
               <i class="iconfont icon-teshujiantouzuoxiantiao-copy"></i>
@@ -95,7 +112,11 @@
           </div>
           <div class="btn-txt text-center">{{ t("sendSNFT.send") }}</div>
         </div>
-        <div class="btn" @click="handleConvert">
+        <div
+          class="btn"
+          @click="handleConvert"
+          v-if="showConvertBtn"
+        >
           <div class="flex center">
             <div class="icon-in flex center">
               <i class="iconfont icon-icon-"></i>
@@ -103,6 +124,33 @@
           </div>
           <div class="btn-txt text-center">{{ t("sendSNFT.convert") }}</div>
         </div>
+        <div
+          class="btn"
+          @click="handleStaking"
+          v-if="showStakingBtn"
+        >
+          <div class="flex center">
+            <div class="icon-in flex center">
+              <i class="iconfont icon-044chuizi"></i>
+            </div>
+          </div>
+          <div class="btn-txt text-center">{{ t("createExchange.stake") }}</div>
+        </div>
+        <div
+          class="btn"
+          @click="handleReStaking"
+          v-if="showReStakingBtn"
+        >
+          <div class="flex center">
+            <div class="icon-in flex center">
+              <i class="iconfont icon-044chuizi"></i>
+            </div>
+          </div>
+          <div class="btn-txt text-center">
+            {{ t("createExchange.redemption") }}
+          </div>
+        </div>
+
         <div class="btn disabled">
           <div class="flex center">
             <div class="icon-in flex center">
@@ -126,6 +174,14 @@
     v-model="showModal"
     @success="reLoading"
     @fail="reLoading"
+  />
+  <TransferSingleSNFTModal
+    :txtype="actionType"
+    :selectNumber="1"
+    :selectTotal="stakingTotalAmount"
+    :selectList="selectStakingList"
+    v-model="showStakingModal"
+    @success="handleSuccess"
   />
 </template>
 <script lang="ts">
@@ -158,6 +214,9 @@ import BigNumber from "bignumber.js";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useI18n } from "vue-i18n";
 import { VUE_APP_METAURL } from "@/popup/enum/env";
+import TransferSingleSNFTModal from "@/popup/views/home/components/transferSingleSNFTModal.vue";
+import { fa } from 'element-plus/es/locale';
+import { show } from "@/popup/components/navHeader/hooks/slider";
 const disabledChip = {
   address: null,
   select: false,
@@ -179,6 +238,7 @@ export default {
     ProgressBar,
     TransferNFTModal,
     NavHeader,
+    TransferSingleSNFTModal,
   },
   setup() {
     const { t } = useI18n();
@@ -195,8 +255,10 @@ export default {
       (item: any) =>
         item.nft_address.toUpperCase() == nft_address?.toString().toUpperCase()
     );
-    
-    const actionType = computed(() => pageData.value.children[0].actionType || '1')
+
+    const actionType = computed(
+      () => pageData.value.children[0].actionType || "1"
+    );
     const swiperIdx = ref(idx || 0);
     pageData.value.children.forEach((item) => (item.select = false));
     pageData.value.children[idx].select = true;
@@ -284,6 +346,7 @@ export default {
     // change
     const onChange = (e) => {
       console.log(e);
+      pageData.value.children.forEach((item:any) => item.selectFlag = false)
       swiperIdx.value = e;
       pageData.value.children.forEach((item) => (item.select = false));
       pageData.value.children[e].select = true;
@@ -303,11 +366,17 @@ export default {
       const arr2 = pageData.value.children.map(
         (item) => metaDomain.value + item.source_url
       );
-      ImagePreview({ images: [...arr2], startPosition: idx, closeable: true });
+      ImagePreview({
+        images: [...arr2],
+        startPosition: idx,
+        closeable: true,
+        showIndicators: true,
+      });
     };
+
     const getDisabled = (item: any) => {
-      const { pledgestate, Chipcount, disabled, actionType } = item;
-      const status = actionType;
+      const { pledgestate, Chipcount, disabled } = item;
+      const status = actionType.value;
       if (status == "3") {
         return disabled ? "disabled" : "";
       }
@@ -317,7 +386,12 @@ export default {
         }
       }
       if (status == "1") {
-        return "disabled";
+        if (pledgestate == "Pledge" && Chipcount != 16) {
+          return "disabled";
+        }
+        if (pledgestate == "NoPledge") {
+          return "disabled";
+        }
       }
       return "";
     };
@@ -326,21 +400,45 @@ export default {
     };
 
     const toSend = () => {
-      if (!chooseNum.value) {
-        Toast(t("sendSNFT.pleaseselect"));
-        return;
-      }
-      if (selectList.value.length == 16) {
-        const address = selectList.value[0].address.substr(0, 40);
-        sessionStorage.setItem("sendSnftList", JSON.stringify([{ address }]));
-      } else {
-        sessionStorage.setItem(
-          "sendSnftList",
-          JSON.stringify(selectList.value)
-        );
-      }
-      // Determine whether there are selected snft fragments
+      if (actionType.value == "2") {
+        if (!chooseNum.value) {
+          Toast(t("sendSNFT.pleaseselect"));
+          return;
+        }
+        if (selectList.value.length == 16) {
+          const address = selectList.value[0].address.substr(0, 40);
+          sessionStorage.setItem("sendSnftList", JSON.stringify([{ address }]));
+                // Determine whether there are selected snft fragments
       router.push({ name: "sendSnft-step2" });
+        } else {
+          sessionStorage.setItem(
+            "sendSnftList",
+            JSON.stringify(selectList.value)
+          );
+                // Determine whether there are selected snft fragments
+      router.push({ name: "sendSnft-step2" });
+        }
+      } else {
+        
+        const data = chooseSnftData.value; 
+        console.log("data-----------------", data);
+        const { MergeLevel, snfts, pledgestate, nft_address,selectFlag } = data;
+        if(selectFlag) {
+          sessionStorage.setItem(
+          "sendSnftList",
+          JSON.stringify([{ address: nft_address.substr(0, 41) }])
+
+        );
+              // Determine whether there are selected snft fragments
+      router.push({ name: "sendSnft-step2" });
+        } else {
+          Toast(t("sendSNFT.notselected"));
+          return
+        }
+
+      }
+
+
     };
 
     // Select snft event
@@ -364,7 +462,6 @@ export default {
 
     // Event of successful redemption
     const reLoading = () => {
-
       onChange(swiperIdx.value);
     };
     // Optional quantity
@@ -423,7 +520,146 @@ export default {
     const ratio = computed(() => {
       return 0.095;
     });
+
+    const selectStakingList = ref([]);
+    const showStakingModal = ref(false);
+    const stakingTotalAmount = ref(0);
+    const handleStaking = () => {
+      // Check whether the SNFT is in the pledgeable state
+      const data = chooseSnftData.value;
+      console.log("data-----------------", data);
+      const { MergeLevel, snfts, pledgestate,selectFlag } = data;
+      if (selectFlag) {
+        selectStakingList.value.push(data);
+        stakingTotalAmount.value = parseFloat(
+          new BigNumber(snfts.length).multipliedBy(0.143).toFixed(6)
+        );
+        showStakingModal.value = true;
+      } else {
+        Toast(t("sendSNFT.notselected"));
+        return;
+      }
+    };
+
+    const handleReStaking = () => {
+      // Check whether the current SNFT is callable
+      const { MergeLevel, snfts, pledgestate ,selectFlag} = chooseSnftData.value
+      if (selectFlag) {
+        selectStakingList.value.push(chooseSnftData.value);
+        stakingTotalAmount.value = parseFloat(
+          new BigNumber(snfts.length).multipliedBy(0.143).toFixed(6)
+        );
+        // stakingTotalAmount.value = new BigNumber(snfts.length).multipliedBy(0.143).toFixed(6)
+        showStakingModal.value = true;
+      } else {
+        Toast(t("sendSNFT.notselected"));
+      }
+    };
+
+    const handleSuccess = () => {
+      router.replace({ name: "wallet" });
+    };
+    // select single SNFT
+    const selectSingleSnft = () => {
+      if(!chooseSnftData.value.disabled) {
+        chooseSnftData.value.selectFlag = !chooseSnftData.value.selectFlag
+      }
+    }
+    const hasDisabled = computed(() => {
+      return chooseSnftData.value.disabled ? true : false;
+    });
+
+    const showConvertBtn =  computed(() => {
+      let flag = false
+      switch(actionType.value){
+        case '1':
+        flag = false
+          break;
+        case '2':
+        flag = chooseSnftData.value.snfts.length ? true : false
+          break;
+        case '3':
+        flag = false
+          break;
+      }
+      return flag
+    })
+    const showSendBtn =  computed(() => {
+      let flag = false
+      switch(actionType.value){
+        case '1':
+        flag = !hasDisabled.value
+          break;
+        case '2':
+        flag = chooseSnftData.value.snfts.length ? true : false
+          break;
+        case '3':
+        flag = !hasDisabled.value
+          break;
+      }
+      return flag 
+    })
+    const showStakingBtn =  computed(() => {
+      let flag = false
+      switch(actionType.value){
+        case '1':
+        flag = false
+          break;
+        case '2':
+        flag = false
+          break;
+        case '3':
+        flag = !hasDisabled.value
+          break;
+      }
+      return flag
+    })
+    const showReStakingBtn = computed(() => {
+      let flag = false
+      switch(actionType.value){
+        case '1':
+        flag = !hasDisabled.value
+          break;
+        case '2':
+        flag = false
+          break;
+        case '3':
+        flag = false
+          break;
+      }
+      return flag
+    })
+    
+    const imgGary =  computed(() => {
+      let flag = ''
+
+      switch(actionType.value){
+        case '1':
+          !showReStakingBtn.value ? flag = 'gary' : ''
+          break;
+        case '2':
+         !chooseSnftData.value.snfts.length ? flag = 'gary' : ''
+          break;
+        case '3':
+         !showStakingBtn.value ? flag = 'gary' : ''
+          break;
+      }
+      return flag
+    })
     return {
+      handleReStaking,
+      selectSingleSnft,
+      imgGary,
+      showConvertBtn,
+      showStakingBtn,
+      showReStakingBtn,
+      showSendBtn,
+      hasDisabled,
+      handleStaking,
+      handleSuccess,
+      showStakingModal,
+      selectStakingList,
+      stakingTotalAmount,
       t,
       to,
       hancleClick,
@@ -523,7 +759,7 @@ export default {
     .van-icon-arrow-left {
       left: 21px;
     }
-    .icon-quanping {
+    .icon-fangda {
       top: 10px;
       right: 22px;
       font-size: 16px;
@@ -659,5 +895,16 @@ export default {
       }
     }
   }
+  
+  .staking-mask {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      &.selected {
+        background: rgba($color: #037cd6, $alpha: 0.6);
+      }
+    }
 }
 </style>

@@ -2,7 +2,6 @@
 
 import { httpGet,httpPost } from '../request'
 import { wormholesscanApi,wormholesApi,snftUrl,snftUrl2,contractApi,snftUrl3,snftUrl4 } from '@/popup/http/httpUrl'
-const exchantest = 'c0x5051580802283c7b053d234d124b199045ead750'
 
 
 // Get NFT according to owner
@@ -69,7 +68,7 @@ export function snftGroup(id: string) {
  * According to the classification, the owner search set
  */
 export function queryOwnerSnftCollections(params ={}){
-    return httpPost(`${snftUrl2}/${exchantest}/v2/queryOwnerSnftCollections`, params)
+    return httpPost(`${snftUrl4}/v2/queryOwnerSnftCollections`, params)
 }
 
 // /**

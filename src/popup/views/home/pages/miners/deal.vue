@@ -25,7 +25,7 @@
           class="box-item"
           effect="dark"
           :content="t('minerspledge.stackTip')"
-          placement="top"
+          placement="bottom"
           trigger="hover"
         >
           <van-icon name="question" color="#9A9A9A" />

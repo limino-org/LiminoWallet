@@ -28,11 +28,11 @@
       <!-- bubble -->
 
       <div class="bubble">
-        <div class="num">{{ ratio }}</div>
+        <div class="num">0.143</div>
       </div>
     </div>
     <div class="flex between scale">
-      <span>{{ start }}</span>
+      <span></span>
       <span class="scale-r">{{ own }}/{{ total }}</span>
     </div>
   </div>
@@ -51,11 +51,6 @@ export default defineComponent({
   props: {
     //current value
     value: {
-      type: Number,
-      default: 0,
-    },
-    // initial value
-    start: {
       type: Number,
       default: 0,
     },
@@ -127,9 +122,9 @@ export default defineComponent({
     height: 0;
     border: 5px solid;
     position: absolute;
-    bottom: -9px;
+    bottom: -7px;
     left: 50%;
-    margin-left: -5px;
+    transform: translateX(-50%);
     border-color: #fff transparent transparent;
   }
   &::before {
@@ -138,9 +133,9 @@ export default defineComponent({
     height: 0;
     border: 5px solid;
     position: absolute;
-    bottom: -10px;
+    bottom: -8px;
     left: 50%;
-    margin-left: -5px;
+    transform: translateX(-50%);
     border-color: #aef0bf transparent transparent;
   }
 }

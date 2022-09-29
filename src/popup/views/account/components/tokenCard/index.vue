@@ -97,11 +97,8 @@ export default defineComponent({
       height: 100%;
       .icon-box {
         border-radius: 50%;
-        width: 30px;
-
+        width: 36px;
         box-sizing: border-box;
-        padding: 4px;
-        height: 30px;
         img {
           width: 100%;
         }

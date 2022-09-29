@@ -155,7 +155,7 @@
 		access: '使用权',
 		cmsandExchange: '内容管理系统&交易所',
 		back: '返回',
-		toBrowser: "在{link}上查看完整历史记录",
+		toBrowser: "在Wormholesscan上查看完整历史记录",
 		scanLink: "区块浏览器",
 		convertComplete: "转换完成",
 		selectSNFT: "您还未选择任何SNFT",
@@ -410,7 +410,8 @@
 		name: '名称',
 		address: '地址',
 		amount: '数额',
-		send: '发送'
+		send: '发送',
+		title:"S-NFT 详情"
 	},
 
 	// sendNft1
@@ -450,7 +451,7 @@
 		"moreInfo": "更多信息",
 		"loading": "加载中...",
 		"loadchip": "数据正在准备中，请稍后",
-		"collTit": "收藏品"
+		"collTit": "合集"
 	},
 	"importToken": {
 		"search": "搜索",
@@ -703,7 +704,7 @@
 		walletSecretRecoveryPhrase: "钱包秘密恢复短语",
 		addNetworks: "添加和编辑自定义 RPC 网络",
 		contacts: "联系人",
-		addEditRemove: "添加.编辑删除",
+		addEditRemove: "添加 & 编辑 & 删除",
 		aboutWormHoles: "关于虫洞",
 		wormHolesIntroduction: "虫洞介绍",
 		resetPwd: "重置密码",
@@ -1347,6 +1348,10 @@
 		close_waiting: "正在为您解冻质押，此过程将可能花费十几秒",
 		close_success: "已成功为您解冻质押，质押金额已经退回您的账户中，您也可以通过交易历史查看交易的详情",
 		close_wrong: "非常抱歉，因为某些意外，操作失败，您可以去交易历史里查看交易的具体信息",
+		transfer_approve: "我们正在批准您的请求。您也可以前往交易记录查看详情。",
+		transfer_waiting: "我们正在处理您的 S-NFT 转换。这将需要几秒钟。",
+		transfer_success: "转换已完成。您还可以查看交易历史记录以查看更多详细信息。",
+		transfer_wrong: "发生了一些事情，转换失败。请查看交易记录了解更多详情。",
 		toggleSuccess: "切换成功",
 		node: "节点(非必填)",
 		nodeTip: "这是关联节点的地址",

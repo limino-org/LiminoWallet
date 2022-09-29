@@ -1,5 +1,5 @@
 <template>
-  <NavHeader :hasRight="false" :hasNet="true">
+  <NavHeader :hasNet="true">
     <template v-slot:left>
       <div
         :class="`flex center icon-box ${hasExchange ? 'hasExchange' : ''}`"
@@ -8,6 +8,9 @@
         <GuideModal11 />
         <i class="iconfont icon-gengduo2"></i>
       </div>
+    </template>
+    <template v-slot:right>
+      <i class="iconfont icon-zhankai" @click="extendView" :style="{color:hasExchange ? '#fff' : '#037cd6'}"></i>
     </template>
   </NavHeader>
 
@@ -611,7 +614,13 @@ export default {
     const handleChangeIsselect = (v: boolean) => {
       isSelect.value = v;
     };
+
+    const extendView = () => {
+      // @ts-ignore
+      window.open(`chrome-extension://${chrome.runtime.id}/popup.html#/home/wallet`)
+    }
     return {
+      extendView,
       t,
       toCreate,
       handleChangeIsselect,

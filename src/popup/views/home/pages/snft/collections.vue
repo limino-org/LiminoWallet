@@ -1,7 +1,7 @@
 <template>
   <div>
     <NavHeader
-        title="COLLECTION"
+        :title="t('sendSNFT.collTit')"
         backUrl="wallet"
         :hasRight="route.name == 'snftcollection-step1' ? false : true"
       >
@@ -56,6 +56,7 @@ import { useRoute, useRouter } from "vue-router";
 import { Sticky } from "vant";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { VUE_APP_METAURL } from '@/popup/enum/env';
+import { useI18n } from 'vue-i18n';
 export default {
   name: " snftcollcetion",
   components: {
@@ -68,14 +69,13 @@ export default {
     const route = useRoute();
     const pageData = ref(JSON.parse(sessionStorage.getItem("compData")));
     const compData = ref(pageData || {});
+    const {t} = useI18n()
     
     const metaDomain = ref(`${VUE_APP_METAURL}`);
     const toDetail = (data) => {
       router.push({ name: "coll-detail", query: data });
     };
 
-
-   
     onActivated(() => {
         pageData.value = JSON.parse(sessionStorage.getItem("compData"))
 
@@ -85,6 +85,7 @@ export default {
       addressMask,
       metaDomain,
       route,
+      t,
       toDetail,
     };
   },
