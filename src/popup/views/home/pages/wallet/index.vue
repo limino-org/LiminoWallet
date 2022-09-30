@@ -9,8 +9,10 @@
         <i class="iconfont icon-gengduo2"></i>
       </div>
     </template>
-    <template v-slot:right>
-      <i class="iconfont icon-zhankai" @click="extendView" :style="{color:hasExchange ? '#fff' : '#037cd6'}"></i>
+    <template v-slot:right >
+      <div>
+        <i v-if="pageType == 'Popup'" class="iconfont icon-zhankai" @click="extendView" :style="{color:hasExchange ? '#fff' : '#037cd6'}"></i>
+      </div>
     </template>
   </NavHeader>
 
@@ -427,6 +429,8 @@ export default {
     const layoutList = computed(() => store.state.system.layoutList);
     const layoutType = computed(() => store.state.system.layoutType);
     const ethAccountInfo = computed(() => store.state.system.ethAccountInfo);
+    // @ts-ignore
+    const pageType = ref(window.pageType)
     const isSelect = ref(false);
     // Display the default token of the current network
     const myToken = computed(() => {
@@ -617,7 +621,7 @@ export default {
 
     const extendView = () => {
       // @ts-ignore
-      window.open(`chrome-extension://${chrome.runtime.id}/popup.html#/home/wallet`)
+      window.open(`chrome-extension://${chrome.runtime.id}/home.html#/home/wallet`)
     }
     return {
       extendView,
@@ -642,6 +646,7 @@ export default {
       addressMask,
       showaccount,
       showModal,
+      pageType,
       toCopy,
       transactionData,
       decimal,

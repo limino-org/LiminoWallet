@@ -9,7 +9,7 @@
       :title="''"
     >
       <div class="title text-center text-bold van-hairline--bottom">
-        {{ $t("transferNft.converttoERB") }} {{ submitText }}
+         {{ submitText }}
       </div>
       <!-- <div class="flex center pintu mt-20">
         <i class="iconfont icon-pintu"></i>
@@ -37,7 +37,7 @@
 
             <div class="m-card">
               <div class="m-label">{{ t("transferNft.ratio") }}</div>
-              <div class="m-value">{{ incomeText }}</div>
+              <div class="m-value">{{ ratio }}</div>
             </div>
             <div class="van-hairline--bottom"></div>
             <div class="m-card">
@@ -582,7 +582,12 @@ export default defineComponent({
     const gasFee = ref("");
     const calcGasFee = async () => {
       const { address } = state.account.accountInfo;
+      console.warn('calc gasfee -----------------------------------:',props.selectList)
+      console.warn('props.txtype -----------------------------------:',props.txtype)
+      console.warn('props.type -----------------------------------:',props.type)
+
       let list = [];
+      let allsnftList = []
       if (props.type == "2") {
         if (props.txtype == "1" || props.txtype == "3") {
           const keys = Object.keys(props.selectList).filter(
@@ -590,9 +595,11 @@ export default defineComponent({
           );
           for (let key of keys) {
             props.selectList[key].forEach((child: any) => {
-              const { nft_address } = child;
-              list.push(nft_address.substr(0, 41));
+              const { nft_address,snfts } = child;
+              list.push(nft_address);
+              allsnftList.push(child.nft_address.substr(0,41))
             });
+        
           }
         }
 
@@ -619,9 +626,11 @@ export default defineComponent({
                   pledgestate == "NoPledge"
                 ) {
                   list.push(...snfts);
+                  allsnftList.push(...snfts)
                 }
                 if (MergeLevel > 0 && Chipcount && pledgestate == "NoPledge") {
-                  list.push(nft_address.substr(0, 41));
+                  list.push(nft_address);
+                  allsnftList.push(...child.snfts)
                 }
               });
             }
@@ -631,24 +640,34 @@ export default defineComponent({
       // chip transfer
       if (props.type == "1") {
         list = props.selectList.map((item: any) => item.nft_address);
+        allsnftList = [...list]
       }
+      console.warn('allsnftList -----------------------------------:',allsnftList)
 
       const len = list.length;
-      const [nft_address] = list;
+      const [nft_address] = allsnftList;
       console.log("list---------------", list);
       let str = "";
+
+      let nftAddr = nft_address
+      // if(addlen < 42) {
+      //   const diff = 42 - addlen
+      //   diff == 1 ? nftAddr + '0' : ''
+      //   diff == 2 ? nftAddr + '00' : ''
+      //   diff == 3 ? nftAddr + '000' : ''
+      // }
       switch (props.txtype) {
         // 兑换
         case "2":
-          str = `wormholes:{"type":6,"nft_address":"${nft_address}","version":"v0.0.1"}`;
+          str = `wormholes:{"type":6,"nft_address":"${nftAddr}","version":"v0.0.1"}`;
           break;
         // 可质押
         case "3":
-          str = `wormholes:{"type":7,"nft_address":"${nft_address}","version":"0.0.1"}`;
+          str = `wormholes:{"type":7,"nft_address":"${nftAddr.substr(0,41)}","version":"0.0.1"}`;
           break;
         // 可赎回
         case "1":
-          str = `wormholes:{"type":8,"nft_address":"${nft_address}","version":"0.0.1"}`;
+          str = `wormholes:{"type":8,"nft_address":"${nftAddr.substr(0,41)}","version":"0.0.1"}`;
           break;
       }
       console.log("str-------------------", str);
@@ -662,8 +681,77 @@ export default defineComponent({
       gasFee.value = new BigNumber(gas).multipliedBy(len).toFixed(6);
     };
 
+    // cacl ratio
+    const ratio = computed(() => {
+      if (props.type == "2") {
+        if (props.txtype == "1" || props.txtype == "3") {
+          return 0.143
+        }
+        if (props.txtype == "2") {
+          const keys = Object.keys(props.selectList).filter(
+            (item) => item != "undefined"
+          );
+          const list = [];
+          // 三种情况 1.合集集满 ，2.snft集满 ，3.碎片  暂不考虑合集情况
+
+          for (let key of keys) {
+            if (key) {
+              // 合成等级
+              props.selectList[key].forEach((child: any) => {
+                const {
+                  MergeLevel,
+                  Chipcount,
+                  pledgestate,
+                  snfts,
+                  nft_address,
+                } = child;
+                if (
+                  MergeLevel == 0 &&
+                  Chipcount > 0 &&
+                  pledgestate == "NoPledge"
+                ) {
+                  list.push(...snfts);
+                }
+                if (MergeLevel > 0 && Chipcount && pledgestate == "NoPledge") {
+                  list.push(nft_address.substr(0, 41));
+                }
+              });
+            }
+          }
+          let count = 0
+          let countNum = 0
+          list.forEach(add => {
+            const len = add.length
+            if(len == 42) {
+              countNum += 1
+              count = parseFloat(new BigNumber(count).plus(0.095).toFixed(8))
+            }
+            if(len == 41) {
+              countNum += 16
+              count = parseFloat(new BigNumber(count).plus(new BigNumber(16).multipliedBy(0.143)).toFixed(8))
+            }
+            if(len == 40) {
+              countNum += 256
+              count = parseFloat(new BigNumber(count).plus(new BigNumber(256).multipliedBy(0.271)).toFixed(8))
+            }
+          })
+          return new BigNumber(count).div(countNum).toFixed(6)
+        }
+      }
+      if (props.type == "1") {
+        if (props.txtype == "1" || props.txtype == "3") {
+          return 0.143
+        }
+
+        if(props.txtype == '2') {
+          return 0.095
+        }
+      }
+
+    })
     return {
       t,
+      ratio,
       submitText,
       showModal,
       gasFee,

@@ -157,6 +157,7 @@ export default defineComponent({
     const categoryList = ref(new Map());
     // Gets a collection of specified accounts
     const getcollectionListPage = async (sendParams: any) => {
+      showConvert.value = false
       try {
         const { data, total_count } = await queryOwnerSnftCollections(
           sendParams

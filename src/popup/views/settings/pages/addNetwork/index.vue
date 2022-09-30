@@ -151,16 +151,23 @@ export default {
       id,
       icon: qicon,
     }: any = data;
+
+    
     const { state, commit } = store;
     const label: Ref<string> = ref(qlabel);
     const URL: Ref<string> = ref(qurl);
-    const chainId: Ref<number> = ref(qid);
+    const chainId: Ref<number> = ref(qid || null);
+
     const ID: Ref<string> = ref("");
     const currencySymbol: Ref<string> = ref(qsymbol);
     const browser: Ref<string> = ref(qbrowser);
     // Listen to the broadcast of the same source window
     const { handleUpdate } = useBroadCast();
-
+    // watch(() => chainId.value, (n) => {
+    //   console.error('watch chainid', n)
+    // },{
+    //   immediate: true,
+    // })
     // Edit operation
     const isModif = computed(() => {
       return qid ? true : false;
@@ -242,13 +249,6 @@ export default {
 
     const onSubmit = () => {
       console.warn("netWorkList", netWorkList);
-      // if (hasChainId.value) {
-      //   let time = setTimeout(() => {
-      //     saveData();
-      //     clearTimeout(time);
-      //   }, 1000);
-      //   return;
-      // }
       loading.value = true;
       let time = setTimeout(()=>{
         saveData();
@@ -320,6 +320,7 @@ export default {
         const newwallet = wallet.connect(provider);
         const network = await newwallet.provider.getNetwork();
         urlError.value = false;
+        debugger
         chainId.value = network.chainId;
       } catch (err: any) {
         urlError.value = true;
@@ -328,11 +329,14 @@ export default {
     };
 
     const isMain = computed(() => data ? data.isMain : false )
-    watch(()=>isMain.value,async() => {
+    watch(()=>isMain.value,async(n) => {
+      if(n) {
       const provider = ethers.getDefaultProvider(URL.value)
       const net = await provider.getNetwork()
+      console.error('net.chainId', net.chainId)
       chainId.value = net.chainId
       store.commit('account/UPDATE_WORMHOLES_CHAINID',net.chainId)
+      }
     },{
       immediate: true
     })

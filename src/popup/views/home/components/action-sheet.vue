@@ -57,7 +57,7 @@
                 <span v-show="item.imported" class="imported">{{
                   t("sidebar.imported")
                 }}</span>
-                <van-loading
+                <!-- <van-loading
                   class="ml-14"
                   size="22px"
                   v-show="
@@ -66,7 +66,7 @@
                     clickAccountIdx == index
                   "
                   color="#1989fa"
-                />
+                /> -->
               </div>
             </div>
           </div>

@@ -478,7 +478,6 @@ export default {
   }
   .miners {
     padding-bottom: 15px;
-    margin-top: 50px!important;
   }
 }
 </style>

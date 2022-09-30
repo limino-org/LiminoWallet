@@ -21,7 +21,7 @@
               @click="handleShowAccountModal(0)"
               placeholder="Form"
               right-icon="arrow"
-              :rules="[{ validator, message: 'Form 地址' }]"
+              :rules="[{ validator, message: 'Form ' }]"
             />
           </van-cell>
           <!-- to -->

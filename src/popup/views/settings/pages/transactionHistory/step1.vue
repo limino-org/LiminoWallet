@@ -115,14 +115,18 @@ export default {
     const { address } = accountInfo
     let tlist: any = []
     try {
-      tlist = store.state.account.currentNetwork.transactionList[address.toUpperCase()] || []
+      Object.keys(store.state.account.currentNetwork.transactionList).forEach(key => {
+        store.state.account.currentNetwork.transactionList[key].forEach((item: any) => {
+          tlist.push(item)
+        })
+      })
     } catch (err) {
       tlist = []
     }
 
     // All transactions
     const transactionList = computed(() => {
-      return tlist
+      return tlist.sort((a: any,b:any) =>  new Date(b.date).getTime() - new Date(a.date).getTime())
     })
 
     // Send record

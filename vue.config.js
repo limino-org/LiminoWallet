@@ -10,6 +10,11 @@ module.exports = {
       entry: './src/popup/main.ts',
       title: 'LiminoWallet'
     },
+    home: {
+      template: 'public/home.html',
+      entry: './src/popup/home.ts',
+      title: 'LiminoWallet'
+    },
     background: {
       template: 'public/background.html',
       entry: './src/background/main.ts',

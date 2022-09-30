@@ -1,5 +1,11 @@
 <template>
-  <van-overlay :show="dislogShow" class="custom-overlay">
+    <van-dialog v-model:show="dislogShow"     show-cancel-button
+    teleport="#page-box"
+    :lockScroll="false"
+    :showConfirmButton="false"
+    :showCancelButton="false"
+    closeOnClickOverlay>
+  <div class="custom-overlay">
     <div class="miners">
       <div class="miners-header">
         <span>{{ t("createExchange.pledgeRed") }}</span>
@@ -124,11 +130,12 @@
         </div>
       </div>
     </div>
-  </van-overlay>
+  </div>
+    </van-dialog>
 </template>
 
 <script lang="ts">
-import { Button, Overlay, Field, Toast, Icon } from "vant";
+import { Button, Overlay, Field, Toast, Icon,Dialog } from "vant";
 import { ref, SetupContext, computed, nextTick, watch } from "vue";
 import { ethers, utils } from "ethers";
 import { formatEther, toUsd, transactionStatus } from "@/popup/utils/filters";
@@ -155,6 +162,7 @@ export default {
     [Field.name]: Field,
     ElTooltip,
     [Icon.name]: Icon,
+    [Dialog.Component.name]:Dialog.Component
   },
   props: ["show", "minusNumber", "amount"],
   setup(props: any, context: SetupContext) {

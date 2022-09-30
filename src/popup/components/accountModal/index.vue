@@ -56,7 +56,7 @@
               </div>
             </div>
 
-            <div class="flex right center-v add-choose-icon">
+            <!-- <div class="flex right center-v add-choose-icon">
               <van-loading
                 v-show="
                   accountLoading &&
@@ -65,7 +65,7 @@
                 "
                 color="#1989fa"
               />
-            </div>
+            </div> -->
           </div>
         </div>
         <!-- Non-imported accounts -->
@@ -112,7 +112,7 @@
               </div>
             </div>
 
-            <div class="flex right center-v add-choose-icon">
+            <!-- <div class="flex right center-v add-choose-icon">
               <van-loading
                 v-show="
                   accountLoading &&
@@ -121,7 +121,7 @@
                 "
                 color="#1989fa"
               />
-            </div>
+            </div> -->
           </div>
         </div>
       </div>

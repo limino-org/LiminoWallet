@@ -16,8 +16,8 @@ export const useSign = () => {
     const sign: Ref<string> = ref('')
     /**
      * address string
-     * sig  Hex 字符串
-     * backUrl  返回地址
+     * sig  Hex 
+     * backUrl  
      */
     let { address, sig, backUrl: back } = query
     let isAdmin:Boolean = true

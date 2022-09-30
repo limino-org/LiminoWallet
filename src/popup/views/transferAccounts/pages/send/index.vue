@@ -709,7 +709,6 @@ export default {
             }
           });
         } else {
-          // 持有该代币，直接给选择的币种赋值
           commit("transfer/UPDATE_CHOOSETOKEN", token);
         }
         toAddress.value = address;
@@ -935,7 +934,6 @@ export default {
       right: 8px;
       top: -17px;
     }
-    // 速度标签
     .speed-label {
       font-size: 12px;
       color: #9a9a9a;
@@ -1166,7 +1164,6 @@ export default {
     height: 30px;
     background-color: green;
   }
-  // 最近交易用户
   .recent {
     .text {
       width: 100%;
