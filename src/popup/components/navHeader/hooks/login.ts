@@ -3,6 +3,8 @@ import { clearWallet } from '@/popup/store/modules/account'
 import { useStore } from "vuex"
 import { setCookies, getCookies, loginOut, hasLogin } from '@/popup/utils/jsCookie'
 import { getQuery } from "@/popup/utils/utils"
+import { sendBackground } from '@/popup/utils/sendBackground';
+
 import Vrouter from "@/popup/router";
 import localforage from 'localforage'
 export const useLogin = () => {
@@ -14,6 +16,7 @@ export const useLogin = () => {
         loginOut()
         const query = getQuery()
         console.log('tologin', '0', query)
+        sendBackground({method:"logout"})
         router.replace({ name: "loginAccount-step1", query: query || {} })
     }
     // authentication

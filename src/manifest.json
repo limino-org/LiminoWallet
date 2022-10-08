@@ -10,15 +10,19 @@
     "tabs",
     "cookies",
     "activeTab",
-    "<all_urls>",
     "nativeMessaging",
     "notifications",
     "background",
     "scripting",
-    "storage"
+    "storage",
+    "alarms",
+    "<all_urls>",
+    "*://*/*"
   ],
   "host_permissions":[
-    "*://*/*"
+    "*://*/*",
+    "*://*/popup.html",
+    "*://*/home.html"
   ],
   "content_scripts": [
 		{
@@ -35,7 +39,6 @@
   },
   "background":{
     "service_worker": "background.js",
-    "pages":["background.html"],
     "type":"module"
   },
   "sandbox": {

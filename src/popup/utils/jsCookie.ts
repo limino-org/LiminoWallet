@@ -78,6 +78,7 @@
 // }
 //@ts-nocheck
 import Cookies from 'js-cookie'
+import { sendBackground } from './sendBackground';
 
 import { encrypt,decrypt } from '@/popup/utils/cryptoJS.js'
 import { passwordExpires } from '@/popup/enum/time'
@@ -119,6 +120,7 @@ export function setCookies(key: string = pwdKey, value: any, expiresTime?: numbe
   }
   let expires = new Date(new Date() * 1 + seconds * 1000)
   Cookies.set(key, pwd, { expires: expires });
+  sendBackground({method:"login", data:{ password: pwd}})
   store.commit('system/UPDATE_WALLET_TOKEN',pwdObj)
   return value
  

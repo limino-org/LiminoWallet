@@ -91,7 +91,6 @@ import { regPassword1 } from "@/popup/enum/regexp";
 import { CreateWalletByJsonParams } from "@/popup/utils/ether";
 import { getWallet } from "@/popup/store/modules/account";
 import { encrypt, decrypt } from "@/popup/utils/cryptoJS.js";
-import localforage from "localforage";
 
 export default {
   name: "loginAccount-step1",

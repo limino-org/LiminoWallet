@@ -1,17 +1,44 @@
 
 
-import {str,ethers} from './modules/index.js'
+
+import { ethers } from './modules/ethers.js';
+import { localforage } from './modules/localforage.js'
+import { encrypt, decrypt } from './modules/cryptojs.js'
+
+console.log('ethers', ethers)
+console.log('localforage', localforage)
+console.log('encrypt', encrypt)
+console.log('decrypt', decrypt)
 
 
-// import localforage from './modules/localforage.js'
-chrome.runtime.onInstalled.addListener(async() => {
-  console.log('Background.js onInstalled.',str,ethers)
+const handleGetPwd = (str, time) => {
+  return decrypt(str, time)
+}
+
+const handleSetPwd = (msg, time) => {
+  return encrypt(msg, time)
+}
+
+
+chrome.runtime.onInstalled.addListener(async () => {
+  console.log('Background.js onInstalled.')
 })
 
-chrome.runtime.onMessage.addListener((async (request, sender, sendResponse)  => {
+chrome.runtime.onMessage.addListener((async (request, sender, sendResponse) => {
   const { data, target } = request;
-  console.log('Message:',target, data)
-
+  console.log('Message:', target, data)
+  if (target == 'wormholes-popup') {
+    const { method, data: res } = data
+    if (method == 'update-wallet') {
+      initWallet()
+    }
+    if (method == 'login') {
+      login(res.password)
+    }
+    if (method == 'logout') {
+      logout()
+    }
+  }
 }));
 
 
@@ -21,59 +48,37 @@ chrome.runtime.onMessage.addListener((async (request, sender, sendResponse)  => 
 // import Web3 from "web3";
 // const web3 = new Web3(Web3.givenProvider);
 // import localforage from 'localforage';
-// const pwdKey = 'password'
-// console.log('1------------------------------------------1')
-// const getToken = async() =>{
-//   const local = await localforage.getItem("vuex") || null
-//   if(local) {
-//     return local.system.wallet_token
-//   }
-//   return {}
-// }
 
-// async function  getCookies(key = pwdKey) {
-//   const val = await getToken()
-//   const value = Cookies.get(pwdKey)
-//   if(value){
-//     const {time} = val
-//     const pwd = handleGetPwd(value, time)
-//     walletPwd = pwd
-//     return pwd
-//   }
-//   return ''
-// }
-// const handleGetPwd = (str,time) => {
-//   return decrypt(str,time)
-// }
-// export function createWalletByJson(params){
-//   const { password, json } = params
-//   if(!password || !json){
-//       return Promise.reject()
-//   }
-//   return ethers.Wallet.fromEncryptedJson(JSON.stringify(json), password)
-// }
-// export const errorCode = {
-//   "4001": {
-//       reason: "User Rejected Request",
-//       message: "The user rejected the request. "
-//   },
-//   "4100": {
-//       reason: "Unauthorized",
-//       message: "The requested method and/or account has not been authorized by the user. "
-//   },
-//   "4200": {
-//       reason: "Unsupported Method",
-//       message: "The Provider does not support the requested method. "
-//   },
-//   "4900": {
-//       reason: "Disconnected",
-//       message: "The Provider is disconnected from all chains."
-//   },
-//   "4901": {
-//       reason: "Chain Disconnected",
-//       message: "The Provider is not connected to the requested chain."
-//   }
-// }
+
+export function createWalletByJson(params) {
+  const { password, json } = params
+  if (!password || !json) {
+    return Promise.reject()
+  }
+  return ethers.Wallet.fromEncryptedJson(JSON.stringify(json), password)
+}
+export const errorCode = {
+  "4001": {
+    reason: "User Rejected Request",
+    message: "The user rejected the request. "
+  },
+  "4100": {
+    reason: "Unauthorized",
+    message: "The requested method and/or account has not been authorized by the user. "
+  },
+  "4200": {
+    reason: "Unsupported Method",
+    message: "The Provider does not support the requested method. "
+  },
+  "4900": {
+    reason: "Disconnected",
+    message: "The Provider is disconnected from all chains."
+  },
+  "4901": {
+    reason: "Chain Disconnected",
+    message: "The Provider is not connected to the requested chain."
+  }
+}
 
 
 // const globalPath = `chrome-extension://${chrome.runtime.id}/popup.html`
@@ -120,32 +125,86 @@ chrome.runtime.onMessage.addListener((async (request, sender, sendResponse)  => 
 //   }
 //   return true
 // }
+let connectList = []
 
-export const initWallet = async () => {
+function logout() {
+  chrome.storage.local.set({ password: "" })
+}
+
+async function getPwd(time) {
+  let localPwd = await chrome.storage.local.get(['password'])
+  if (localPwd.password) {
+    return handleGetPwd(localPwd.password, time)
+  }
+  return ''
+}
+
+const eventTypes = {
+  pwdExpired:"password-expired-event"
+}
+
+// save password 
+async function login(pwd) {
+  let localPwd = await chrome.storage.local.get(['password'])
+  if (!localPwd.password && pwd) {
+    console.warn('set pwd', pwd)
+    chrome.storage.local.set({ password: pwd })
+    chrome.alarms.create(eventTypes.pwdExpired, { delayInMinutes: 60 });
+    chrome.alarms.onAlarm.addListener((e) => {
+      console.warn('-------------', e)
+      const { name } = e
+      if (name == eventTypes.pwdExpired) {
+        chrome.storage.local.set({ password: "" })
+        console.log('clear pwd')
+      }
+    })
+  }
+
+}
+
+async function initWallet() {
   const local = await localforage.getItem("vuex") || null
-  if (!local && !walletPwd) {
+  if (!local) {
     console.error("The wallet instance has not been initialized");
     const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The wallet has not been initialized. Please initialize the wallet first" }
     throw errMsg
   }
-  walletPwd = await getCookies()
+  const pwdVal = await getPwd(local.system.wallet_token.time)
+  console.warn('pwdVal', pwdVal)
+  if (!pwdVal) {
+    console.error("The wallet instance has not been initialized");
+    const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The wallet has not been initialized. Please initialize the wallet first" }
+    throw errMsg
+  }
   try {
     const { accountInfo, currentNetwork } = local.account;
     const { keyStore } = accountInfo;
     const { URL } = currentNetwork;
-    const params = { json: keyStore, password: walletPwd };
+    const params = { json: keyStore, password: pwdVal };
     let wallet = null;
     wallet = await createWalletByJson(params);
-    let provider = ethers.getDefaultProvider(URL);
-    const newwallet = wallet.connect(provider);
-    wallet = newwallet
-    return newwallet
+    return wallet
   } catch (err) {
     connectList = []
     return Promise.reject(err);
   }
 }
 
+// The wallet is connect to the node
+async function connectWallet() {
+  try {
+    const local = await localforage.getItem("vuex") || {}
+    const { accountInfo, currentNetwork } = local.account;
+    const {URL} = currentNetwork
+    const wallet = await getWallet()
+    let provider = ethers.getDefaultProvider(URL);
+    const newwallet = wallet.connect(provider);
+    return newwallet
+  } catch {
+    const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The wallet connection node failed" }
+    throw errMsg
+  }
+}
 
 // // Getting a wallet instance
 export const getWallet = async () => {
@@ -162,49 +221,49 @@ export const getWallet = async () => {
 // // Activity event
 export const eventsEmitter = {
   // Account switching
-  accountsChanged:'accountsChanged',
+  accountsChanged: 'accountsChanged',
   // Chain switch
-  chainChanged:'chainChanged',
+  chainChanged: 'chainChanged',
   // connected
-  connect:'connect',
+  connect: 'connect',
   // disconnect
-  disconnect:'disconnect'
+  disconnect: 'disconnect'
 }
 
 
 // // The type of API that is open to the public
 export const handleType = {
   // Signature 
-  eth_sign : "eth_sign",
+  eth_sign: "eth_sign",
   // Get block height
-  eth_blockNumber : "eth_blockNumber",
+  eth_blockNumber: "eth_blockNumber",
   // trade
-  eth_sendTransaction : "eth_sendTransaction",
+  eth_sendTransaction: "eth_sendTransaction",
   // Signature Single signature data
-  personal_sign : "personal_sign",
+  personal_sign: "personal_sign",
   // Signing multiple signature data
-  multiple_sign : "multiple_sign",
+  multiple_sign: "multiple_sign",
   // Obtaining the network ID
-  eth_getNetWork : "eth_getNetWork",
+  eth_getNetWork: "eth_getNetWork",
   // Connect to wallet
-  wallet_requestPermissions : 'wallet_requestPermissions',
+  wallet_requestPermissions: 'wallet_requestPermissions',
   // Connect to wallet
-  eth_requestAccounts : 'eth_requestAccounts',
+  eth_requestAccounts: 'eth_requestAccounts',
   // For chain id 
-  eth_chainId : 'eth_cha:nId',
+  eth_chainId: 'eth_cha:nId',
   // Gets the current wallet address
-  eth_accounts : 'eth_accounts',
+  eth_accounts: 'eth_accounts',
   // TODO Subscribe to news
-  eth_subscription : 'eth_subscription',
+  eth_subscription: 'eth_subscription',
   // Estimated gas cost
-  eth_estimateGas : 'eth_estimateGas',
+  eth_estimateGas: 'eth_estimateGas',
   // Obtain transaction information through transaction hash
-  eth_getTransactionByHash : 'eth_getTransactionByHash',
+  eth_getTransactionByHash: 'eth_getTransactionByHash',
   // Remove listening events
-  removeAllListeners : 'removeAllListeners',
+  removeAllListeners: 'removeAllListeners',
   // Get account balance
-  eth_getBalance : 'eth_getBalance',
-  net_version : 'net_version'
+  eth_getBalance: 'eth_getBalance',
+  net_version: 'net_version'
 }
 // //  Distributed event
 // const params = {
@@ -237,7 +296,7 @@ export const handleType = {
 //     handleResponse: null,
 //     // Three states  close/open/pendding
 //     status: 'close',
-//     // Signature callback function - sent to Content-script 
+//     // Signature callback function - sent to Content-script
 //     sendResponse: (v) => {
 //       const { response } = v;
 //       console.warn("签名数据", v);
@@ -256,7 +315,7 @@ export const handleType = {
 //     handleResponse: null,
 //     // Three states  close/open/pendding
 //     status: 'close',
-//     // Signature callback function - sent to Content-script 
+//     // Signature callback function - sent to Content-script
 //     sendResponse: (v) => {
 //       const { response } = v;
 //       const errMsg = { ...errorCode['200'], data: response }
@@ -276,7 +335,7 @@ export const handleType = {
 
 //     // Three states  close/open/pendding
 //     status: 'close',
-//     // Signature callback function - sent to Content-script 
+//     // Signature callback function - sent to Content-script
 //     sendResponse: (v) => {
 //       const { response } = v;
 //       const errMsg = { ...errorCode['200'], data: response }
@@ -540,7 +599,7 @@ export const handleType = {
 //       console.error(err)
 //     }
 //   },
-//   // For chain id 
+//   // For chain id
 //   async [handleType.eth_chainId](data, sendResponse, sender) {
 //     try {
 //       const wallet = await getWallet();
@@ -576,11 +635,11 @@ export const handleType = {
 //     const sendMsg = createMsg(errMsg, handleType.eth_accounts)
 //     sendMessage(sendMsg, {}, sender)
 //   },
-//   // TODO Subscribe to news 
+//   // TODO Subscribe to news
 //   [handleType.eth_subscription](data, sendResponse, sender) {
-//     // Subscribe message, first store the Origin, send a message to determine whether it is the subscriber 
+//     // Subscribe message, first store the Origin, send a message to determine whether it is the subscriber
 //   },
-//   // Estimated gas cost 
+//   // Estimated gas cost
 //   async [handleType.eth_estimateGas](data, sendResponse, sender) {
 //     const [tx] = data
 //     const wallet = await getWallet()
@@ -697,14 +756,14 @@ export const handleType = {
 //   return `${protocol}://${host}`;
 // }
 
-// // Send data to Content-script  
+// // Send data to Content-script
 // /**
-//  * 
-//  * @param msg 
-//  * @param opt 
+//  *
+//  * @param msg
+//  * @param opt
 //  * TODO Note The OPT configuration is important
 // // currentWindow  Whether the TAB is in the current window.
-// // active  Whether the TAB is in the current window.  TAB Indicates whether the TAB is active in the window 
+// // active  Whether the TAB is in the current window.  TAB Indicates whether the TAB is active in the window
 //  */
 // function sendMessage(msg = {}, opt = {}, sender) {
 //   chrome.tabs.query(
