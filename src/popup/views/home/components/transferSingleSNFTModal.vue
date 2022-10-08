@@ -204,7 +204,7 @@
     setup(props: any, context: SetupContext) {
       const { t } = useI18n();
       const { emit }: any = context;
-      // 倒计时
+      // count down
       const time = ref(3);
       const { $tradeConfirm } = useTradeConfirm();
       const showModal: Ref<boolean> = ref(false);
@@ -421,11 +421,11 @@
         diff == 3 ? nftAddr + '000' : ''
       }
         switch (props.txtype) {
-          // 可质押
+          // To pledge
           case "3":
             str = `wormholes:{"type":7,"nft_address":"${nftAddr}","version":"0.0.1"}`;
             break;
-          // 可赎回
+          // redeemable
           case "1":
             str = `wormholes:{"type":8,"nft_address":"${nftAddr}","version":"0.0.1"}`;
             break;
@@ -449,9 +449,8 @@
         }
         if (props.txtype == "2") {
           const list = [];
-          // 三种情况 1.合集集满 ，2.snft集满 ，3.碎片  暂不考虑合集情况
+          // Three cases: 1. Collection set is full, 2. SNFT set is full, 3. Fragment does not consider collection case for the time being
 
-              // 合成等级
               props.selectList.forEach((child: any) => {
                 const {
                   MergeLevel,

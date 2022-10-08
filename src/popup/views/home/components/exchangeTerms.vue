@@ -274,27 +274,6 @@
           <div class="f-12 paragraph lh-16 mt-10">"Clause" means a clause in these Terms.</div>
           <div class="f-12 paragraph lh-16 mt-10">"Content" has the meanina aiven to it in Clause.</div>
         </div>
-        <!-- <div class="h-20 nullele" ref="nullEle"></div> -->
-        <!-- <div :class="`argee-box show`"> -->
-        <!-- 勾选 -->
-        <!-- <div class="flex left mt-10">
-            <van-checkbox shape="square" icon-size="12px" v-model="checked1" />
-            <div class="tit-small f-12 ml-10 lh-16">
-              I have read and accepted the user's agreement
-            </div>
-        </div>-->
-        <!-- 按钮 -->
-        <!-- <div class="mt-16">
-            <van-button
-              round
-              block
-              type="primary"
-              :disabled="btnDisabled"
-              @click="toback"
-              >I Agree</van-button
-            >
-        </div>-->
-        <!-- </div> -->
       </div>
     </div>
   </van-dialog>
@@ -372,7 +351,7 @@ export default defineComponent({
         }
         if (n) {
           nextTick(() => {
-            // 懒加载动画封装
+            // Jump to select currency lazy loading animation package
             const intersectionObserver = new IntersectionObserver(entries => {
               if (entries[0].intersectionRatio <= 0) return
               console.log('Loaded new items')

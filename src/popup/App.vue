@@ -143,7 +143,7 @@ export default {
   }
 }
 
-// 交易弹窗样式
+//Trade popover style
 .receipt-box {
   .step-box {
     padding: 0 50px;

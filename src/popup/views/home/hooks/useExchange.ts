@@ -30,31 +30,31 @@ import i18n from "@/popup/language/index";
 import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
 import router from "@/popup/router";
 
-// 一键交易所
+// One click exchange
 export const useExchanges = () => {
   const {$tradeConfirm} = useTradeConfirm()
-  // 是否展示一键交易所的弹层
+  // Whether to display the shell layer of one-click exchange
   const showCreateExchange: Ref<boolean> = ref(false);
-  // 展示第二页的弹层
+  // Show the layer on the second page
   const showExchange: Ref<boolean> = ref(false);
-  // 展示第三页的弹层
+  // Show the layer on the third page
   const showExchange1: Ref<boolean> = ref(false);
-  // 实际进度
+  // actual progress
   const currentRate: Ref<number> = ref(0);
-  // 目标进度
+  // The target schedule
   const rate: Ref<number> = ref(0);
-  // 交易所链接
+  // Link to Exchange
   const exchangeUrl: Ref<string> = ref("");
-  // 后台链接
+  // The background link
   const adminUrl: Ref<string> = ref("");
-  // 创建交易所成功的状态
+  // Create a successful exchange status
   const ready: Ref<boolean> = ref(false);
-  // 进度条速度
+  // Progress bar speed
   const speed: Ref<number> = ref(2);
   const { dispatch, state, commit } = useStore();
   const { toSign, sign } = useSign();
 
-  // 第二笔交易
+  // The second deal
   const send2 = async (
     amount: number = 200,
     exchange_name: string,
@@ -72,7 +72,6 @@ export const useExchanges = () => {
     localStorage.setItem("tx2", JSON.stringify(data));
 
     rate.value = 70;
-    console.log("一键交易所", data);
     const receipt = await wallet.provider.waitForTransaction(data.hash);
     if(receipt.status != 1) {
       $tradeConfirm.update({
@@ -97,7 +96,7 @@ export const useExchanges = () => {
     }
     rate.value = 80;
     const params = await generateSign(exchange_name);
-    // 发送数据开交易所
+    // Send data to open an exchange
     const sendData = {
       address,
       params: `'${JSON.stringify(params)}'`,
@@ -122,7 +121,7 @@ export const useExchanges = () => {
       return Promise.resolve()
     }
     try {
-      // 发送给一键交易所接口
+      // Send to the one-click exchange interface
       const val: any = await createExchange(sendData);
       if (val.code == "true") {
         rate.value = 90;
@@ -180,7 +179,7 @@ export const useExchanges = () => {
   };
 
   /**
-   * 生成一个签名的交易所授权信息
+   * Generate a signed exchange authorization information
    */
   const generateSign = async (name: string) => {
     const wallet = await getWallet();
@@ -198,18 +197,18 @@ export const useExchanges = () => {
       const params = {
         type: "exchange_auth",
         exchange_name,
-        version: 1, //授权版本(固定)
-        exchanger_owner, //一键交易所创建者地址(钱包地址)
-        to, // 被授权者地址(固定地址，由李工提供)
-        block_number: blockNumber, // 授权时链的区块高度，用于确定授权有效性(从区块浏览器获得,如果拿不到就先写死)
-        sig: sigstr, //签名规则如下方解释
+        version: 1, //Authorized version (fixed)
+        exchanger_owner, //One Click Exchange founder's address (wallet address)
+        to, // Licensee's address (fixed address provided by Lee Gong)
+        block_number: blockNumber, // The block height of the chain at the time of authorization, which is used to determine the validity of the authorization (obtained from the block browser, if not, write to death).
+        sig: sigstr, //The following describes the signature rules
       };
       resolve(params)
     })
 
 
   };
-  // 连合约，发交易
+  //Even contract, issue trade
   const getContract = async () => {
     const wallet = await getWallet();
     const { URL } = state.account.currentNetwork;
@@ -234,13 +233,13 @@ export const useExchanges = () => {
     rate.value = 0;
   };
 
-  // 发送一键开交易所交易
+  // Send one click to open exchange trading
   const sendTo = async (name: string, amount: number, amount2: number,fee_rate:number) => {
     const wallet = await getWallet();
     const { address } = wallet;
     try {
       rate.value = 60;
-      // 发送开设交易所的费用 100ERB 至官方公司账户  连公司自己的节点
+      //Send the exchange opening fee of 100ERB to the official company account connected to the company's own node
       const baseName = encode(name);
       const str = `wormholes:{"version": "0","type": 11,"fee_rate": ${fee_rate},"name":"${baseName}","url":"www.wormhlesexchanger.com"}`;
       console.warn("exchanger-name----------------", str);
@@ -278,7 +277,7 @@ export const useExchanges = () => {
             return false;
           }
           if (Number(amount2) != 0) {
-            // 发送第二笔
+            // Send the second stroke
             send2(amount2, name);
           } else {
             speed.value = 100;
@@ -358,7 +357,7 @@ export const useExchanges = () => {
     }
   };
   /**
-   * 授权一键交易所
+   * Authorized one-click exchange
    * @returns
    */
   const authExchange = async () => {
@@ -387,12 +386,12 @@ export const useExchanges = () => {
     });
   };
 
-  // 查询交易所状态
+  // Querying Exchange Status
   /**
    *
    * @returns
-   * exchanger_flag bool == true 成功 第一笔  交易所质押金额（最小100，最大账户余额）
-   * status number == 2 成功 第二笔  托管服务费  固定200
+   * exchanger_flag bool == trueSuccessful first transaction pledge amount (minimum 100, maximum account balance)
+   * status number == 2 The second successful hosting service fee fixed 200
    *
    */
   const exchangeStatus = async () => {
@@ -406,10 +405,10 @@ export const useExchanges = () => {
   };
 
   /**
-   * 一键开交易所
-   * @param name 交易所名称
-   * @param amount 第一笔交易金额
-   * @param amount2 第二笔交易金额
+   * One click to open the exchange
+   * @param name Name of exchange
+   * @param amount The first transaction amount
+   * @param amount2 The second transaction amount
    */
   const createExchanges = async (
     name: string,
@@ -438,7 +437,7 @@ export const useExchanges = () => {
   };
 
   /**
-   * 关闭交易所
+   * Close the exchange
    */
   const closeExchanges = async () => {
     const wallet = await getWallet();
@@ -478,7 +477,7 @@ export const useExchanges = () => {
     });
   };
 
-  // 修改托管服务费/质押金额
+  // Modify the escrow service fee/pledge amount
   const modifExchangeBalance = async (
     amount: number,
     amount2: number,
@@ -487,7 +486,7 @@ export const useExchanges = () => {
   ) => {
     const wallet = await getWallet();
     const { address } = wallet;
-    // 追加质押金额
+    // Additional pledge amount
     const str = `wormholes:{"version": "0.0.1","type": 21}`;
     const data3 = toHex(str);
     const tx1 = {
@@ -497,7 +496,7 @@ export const useExchanges = () => {
       data: `0x${data3}`,
     };
 
-    // 发送第一笔质押金额
+    // Send the first pledge amount
     try {
       const data1 = await wallet.sendTransaction(tx1);
       localStorage.setItem("data1", JSON.stringify(data1));
@@ -516,9 +515,9 @@ export const useExchanges = () => {
       return Promise.reject(err);
     }
 
-    // 如果托管服务费不等于0
+    // If the hosting service fee is not equal to 0
     const exchangeStatus: ExchangeStatus = state.account.exchangeStatus;
-    // 发送第二笔托管服务费
+    // Send the second hosting fee
     if (amount2 > 0 && exchangeStatus.status != 2) {
       try {
         await send2(amount2, name, callBack);
@@ -526,14 +525,14 @@ export const useExchanges = () => {
         return Promise.reject(err);
       }
     } else {
-      // 如果不发送第二笔，直接cakkback
+      // If you do not send the second tranche, cakkback directly
       callBack();
     }
 
     return Promise.resolve();
   };
 
-  // 发送授权信息
+  // Sending Authorization Information
   const sendAuthData = async (address: string) => {
     try {
       const d: any = await getSysParams(address);
@@ -543,7 +542,7 @@ export const useExchanges = () => {
     }
   }
 
-  // 两笔交易都成功的时候，查询交易所是否生成成功,如果没有继续走后面的流程
+  // When both trades are successful, check whether the exchange was successfully generated, if not continue to follow the later process
   const initExchangeData = async () => {
     const wallet = await getWallet()
     const { address } = wallet
@@ -551,17 +550,17 @@ export const useExchanges = () => {
     const { ExchangerName, BlockNumber } = res
     let exchange_name = decode(ExchangerName);
     try {
-      // 如果交易所没有部署成功，重新部署
+      // If the exchange is not successfully deployed, redeploy it
       const insdata = await is_install(address)
       if (insdata.code == 'false') {
-        // 交易所没有部署成功，重新部署，和签名给后台
+        // The exchange failed to deploy successfully, redeploy, and sign to the backend
         const params = await generateSign(exchange_name);
-        // 发送数据开交易所
+        // Send data to open an exchange
         const sendData = {
           address,
           params: `'${JSON.stringify(params)}'`,
         };
-        // 发送给一键交易所接口
+        // Send to the one-click exchange interface
         const val: any = await createExchange(sendData);
         if (val.code == "true") {
           let time = setTimeout(async () => {
@@ -571,7 +570,7 @@ export const useExchanges = () => {
           return
         }
       } else {
-        // 查询 setExchangeSig 是否发成功,没有的话重新发
+        // Check whether setExchangeSig is successfully sent. If no setexChangesig is sent, send it again
         const data = await getExchangeSig(address)
         if (!data.data) {
           sendAuthData(address)

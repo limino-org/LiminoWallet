@@ -43,11 +43,10 @@ export default {
   setup(props: any, context: SetupContext) {
     const { t } = useI18n()
 
-    console.log('我加载了11111111111')
     const { emit }: any = context
-    // 输入框name
+    // Input box name
     let amount = ref(props.minersMoney)
-    // 金额和金额的最大值和最小值
+    // The amount and the maximum and minimum value of the amount
     let moneyMin = ref(100000)
     let moneyMax = ref(10000000)
 

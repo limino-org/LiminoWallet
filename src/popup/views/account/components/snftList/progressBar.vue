@@ -113,7 +113,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .bubble {
   border: 1px solid #aef0bf;
-  border-radius: 7px; /*圆角弧度为7px*/
+  border-radius: 7px;
   position: relative;
 
   &::after {

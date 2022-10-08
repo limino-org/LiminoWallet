@@ -19,7 +19,7 @@
           <van-field
             v-model="privatekey"
             autosize
-            name="私钥"
+            name="privacy"
             type="textarea"
             class="content"
             :placeholder="$t('import.forexample')"

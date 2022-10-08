@@ -131,7 +131,7 @@ const getDefaultOpt = () => {
     status: "pendding",
     callBack: () => {},
     failBack: () => {},
-    // 该状态下禁用按钮
+    // The button is disabled in this state
     disabled: [TradeStatus.pendding, TradeStatus.approve]
   });
 };

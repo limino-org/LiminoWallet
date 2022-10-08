@@ -12,7 +12,6 @@
       >
         {{ t("createExchange.anto_exchange") }}
       </div>
-      <!-- 加载图标 -->
       <img
         class="exchange-welcome-icon"
         src="@/popup/assets/exchange/SketchPngd639df730ff6d003324f6bb2b005d2a46f1f8b4b97a5840681e048ee15e4f94b.png"
@@ -21,7 +20,6 @@
         {{ t("createExchange.wait") }}
       </div>
       <div class="text-center please">{{t('createExchange.please')}}</div>
-      <!-- 添加进度图 -->
       <van-circle
         class="progress-bar"
         v-model:current-rate="currentRate"
@@ -32,9 +30,6 @@
         :color="gradientColor"
         :text="text"
       ></van-circle>
-      <!-- <div v-if="ready" style="padding: 20px">
-          <div>一键生成交易所成功！</div>
-        </div>-->
     </div>
     <van-dialog
       v-model:show="showExchange1"
@@ -54,7 +49,6 @@
         >
           {{ t("createExchange.anto_exchange") }}
         </div>
-        <!-- 加载图标 -->
         <img
           class="exchange-welcome-icon"
           src="@/popup/assets/exchange/SketchPng6487f59e1a3e4adec886c6b63f8c41c4aa0d61ebfe43fcaad735b3ff5ca97e8d.png"
@@ -62,7 +56,6 @@
         <div class="echange-slogan1 text-bold">
           {{ t("createExchange.opensuccessfully") }}
         </div>
-        <!-- 交易所信息 -->
         <div>
           <div class="exchange-create">
             <div class="table">
@@ -77,7 +70,6 @@
               </div>
               <div @click="toGoCMS" class="down">{{ adminUrl }}</div>
             </div>
-            <!-- 分割线 -->
             <div class="exchange-line"></div>
             <div class="table">
               <div class="top">
@@ -92,12 +84,10 @@
               <div @click="toGoAmount" class="down">{{ exchangeUrl }}</div>
             </div>
           </div>
-          <!-- 标语 -->
           <div class="echange-slogan2">
             <span class="left">{{ t("createExchange.confirm") }}</span>
             <span class="right">{{ t("createExchange.terms") }}</span>
           </div>
-          <!-- 控制按钮 -->
           <div class="exchange-button" style="margin: auto">
             <van-button size="normal" @click="tohome">{{
               t("createExchange.close")
@@ -227,10 +217,8 @@ export default defineComponent({
       return `${VUE_APP_EXCHANGES_URL}/c${add.toLowerCase()}/#/`;
     });
 
-    //环形图
     const text = computed(() => currentRate.value.toFixed(0) + "%");
 
-    // 复制地址
     const { toClipboard } = useClipboard();
     const toCopyCMS = async () => {
       try {
@@ -249,17 +237,13 @@ export default defineComponent({
       }
     };
 
-    // 跳转到后台
     const toGoCMS = () => {
       window.open(`${adminUrl.value}`);
     };
-    // 跳转到交易所
     const toGoAmount = () => {
       window.open(`${exchangeUrl.value}`);
     };
-    // 按钮
     const tohome = () => {
-      console.log("关闭");
       showExchange1.value = false;
     };
 
@@ -268,9 +252,6 @@ export default defineComponent({
       async (n) => {
         if (Number(n) == 100) {
           console.warn("watch------ currentRate", n);
-          // showExchange.value = false;
-          // showExchange1.value = true;
-          // 判断是否是发两笔交易
           nextTick(() => {
             const { amount, amount2 } = props;
             if (amount && amount2) {

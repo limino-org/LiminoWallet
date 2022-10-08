@@ -281,10 +281,10 @@ export default defineComponent({
       data.Validators.forEach((item: any) => {
         total = total.plus(item.Balance);
       });
-      // 总质押量
+      // Total amount of pledge
       const totalStr = total.div(1000000000000000000).toFixed(6);
 
-      // 总收益
+      // total revenue
       const totalprofit = state.account.exchangeTotalProfit;
       const totalPledge = new BigNumber(props.amount);
       myprofit.value = new BigNumber(totalprofit)

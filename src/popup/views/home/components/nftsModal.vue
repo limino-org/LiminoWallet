@@ -50,12 +50,10 @@ export default defineComponent({
     [Button.name]: Button
   },
   props: {
-    // v-model 方式绑定打开关闭
     modelValue: {
       type: Boolean,
       default: false
     },
-    // nfts列表
     data: {
       type: Object,
       default: {}
@@ -86,7 +84,7 @@ export default defineComponent({
     )
       
     const metaDomain = ref(`${VUE_APP_METAURL}`)
-    // 跳转到snft详情
+    // Jump to SNFT details
     const handleDetail = () => {
       const { snfts, name, img } = props.data
       const params = {

@@ -186,7 +186,6 @@ export default defineComponent({
         route.name == 'modifAutoExchange' ||
         route.name == 'createAutoExchange'
       ) {
-        console.log('打开弹窗')
         closeModal.value = true
       } else {
         router.replace({ name: props.cancelRouteName })

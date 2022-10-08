@@ -737,7 +737,7 @@ export default {
       if (len) {
         list.push(account);
       } else {
-        // 第一个账户默认选中
+        // The first account is selected by default
         // account.select = true
         list = [account];
       }

@@ -1,7 +1,6 @@
 <template>
   <!-- The current node provids | | no exchange  -->
   <div class="exchange-btn-box">
-    <!-- 帮助中心 -->
     <Transition name="slider">
       <div class="help-center-box flex right" v-if="!isSelect">
         <div class="flex right pl-20 pr-20">
@@ -34,10 +33,7 @@
     </Transition>
     <Transition name="slider">
       <div v-if="!isSelect2" class="exchange-con">
-        <!-- 一键开设交易所 -->
-
         <div class="pl-20 pr-20">
- 
           <div
             class="wallet-suspension hover"
             @mouseover="showExchange = true"
@@ -50,7 +46,6 @@
             <i class="iconfont icon-university-full"></i>
           </div>
           <Transition name="slider2">
-            <!-- 交易所设置 -->
             <div
               v-if="showExchange"
               :class="[
@@ -240,6 +235,7 @@ export default defineComponent({
   min-width: 80px;
   max-width: 170px;
   position: absolute;
+  z-index: 1;
   right: 83px;
   top: 10px;
   height: 30px;
@@ -341,6 +337,7 @@ export default defineComponent({
   min-width: 50px;
   bottom: 30px;
   right: 0px;
+  z-index: 100;
   button {
     transition: all 0.5s ease;
     &:hover {

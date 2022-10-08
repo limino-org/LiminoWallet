@@ -64,7 +64,6 @@ export default {
     [Icon.name]: Icon
   },
   props: {
-    // 控制显示
     show: {
       type: Boolean,
       default: false
@@ -77,12 +76,10 @@ export default {
     const { t } = useI18n()
 
     let { emit } = context
-    // 协议选择
     let checked = computed({
       get: () => props.check,
       set: v => emit('update:check', v)
     })
-    // 倒计时
     let timeOut = ref(180)
     let interVal = setInterval(() => {
       if (timeOut.value === 0) {
@@ -98,15 +95,12 @@ export default {
         context.emit('update:show', v)
       }
     })
-    // 是否倒计时完成
     let isTimeOut = computed(() => {
       return timeOut.value > 0
     })
-    // i Agree和返回icon
     let submitClick = (type: string) => {
       dislogShow.value = false
     }
-    //协议状态更改
     const btnDisabled = computed(() => {
       if (checked.value == true) {
         return false

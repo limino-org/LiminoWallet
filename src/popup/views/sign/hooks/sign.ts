@@ -24,7 +24,7 @@ export const useSign = () => {
     const loading:Ref<boolean> = ref(false)
     const password = getCookies('password')
     const backUrl: Ref<string> = ref('')
-    // 先链接该地址钱包
+    // Link the address wallet first
     const toSign = (opt: SignParams) => {
         let call: Function = () => {}
         if(opt){
@@ -54,7 +54,7 @@ export const useSign = () => {
             try {
                 const sstr = sig
                 if(isAdmin){
-                    //@/popupts-ignore   给hash字符串签名
+                    //@/popupts-ignore   Sign the hash string
                     sign.value = ethers.utils.joinSignature(new ethers.utils.SigningKey(wallet.privateKey).signDigest(sstr))
                     backUrl.value = `${back || ''}?sig=${sign.value}`
                 } else {

@@ -42,8 +42,6 @@
               {{ amount }} ERB(≈${{ toUsd(amount, 2) }})
             </div>
           </div>
-          <!-- 历史总收益 -->
-
           <div class="bourse-container-meaning bt">
             <span class="c1">{{ t("createminerspledge.addStake") }} </span>
             <el-tooltip
@@ -165,7 +163,6 @@ export default {
     const { t } = useI18n();
     const store = useStore();
     const currentNetwork = computed(() => store.state.account.currentNetwork);
-    console.log("我加载了11111111111");
     const { emit }: any = context;
 
     let dislogShow = computed({
@@ -233,9 +230,9 @@ export default {
       data.Validators.forEach((item: any) => {
         total = total.plus(item.Balance);
       });
-      // 总质押量
+      // Total amount of pledge
       const totalStr = total.div(1000000000000000000).toFixed(6);
-      // 总收益 一年
+      // Total revenue one year
       const totalprofit = store.state.account.minerTotalProfit;
       const totalPledge = new BigNumber(props.addNumber).plus(props.amount);
       myprofit.value = new BigNumber(totalprofit)

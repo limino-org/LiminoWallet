@@ -821,9 +821,7 @@ export default {
     .card-last {
       padding-bottom: 0;
     }
-  }
-  //   按钮组
-  .btn-box {
+  }  .btn-box {
     width: 170px;
     padding-bottom: 30px;
 
@@ -863,7 +861,6 @@ export default {
       }
     }
   }
-  //   小方格
   .check-list {
     position: absolute;
     left: 0;

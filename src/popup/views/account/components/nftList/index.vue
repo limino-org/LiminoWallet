@@ -110,7 +110,6 @@ export default defineComponent({
         nfts.forEach((item) => {
           try{
             item.info = JSON.parse(decode(item.raw_meta_url));
-          console.log("nft名称", item.info);
           }catch(err){
             console.error(err)
           }

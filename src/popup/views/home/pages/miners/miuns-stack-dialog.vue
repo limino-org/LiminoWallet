@@ -42,8 +42,6 @@
               {{ amount }} ERB(≈${{ toUsd(amount, 2) }})
             </div>
           </div>
-          <!-- 历史总收益 -->
-
           <div class="bourse-container-meaning bt">
             <span class="c1">{{ t("minerspledge.redemingAmount") }} </span>
             <el-tooltip
@@ -172,7 +170,6 @@ export default {
     const { dispatch, state, commit } = store;
     const currentNetwork = computed(() => store.state.account.currentNetwork);
     const { $tradeConfirm } = useTradeConfirm();
-    console.log("我加载了11111111111");
     const { emit }: any = context;
     const str = `wormholes:{"type":10,"version":"v0.0.1"}`;
     let dislogShow = computed({
@@ -282,9 +279,9 @@ export default {
       data.Validators.forEach((item: any) => {
         total = total.plus(item.Balance);
       });
-      // 总质押量
+      // Total amount of pledge
       const totalStr = total.div(1000000000000000000).toFixed(6);
-      // 总收益
+      // total revenue
       const totalprofit = store.state.account.minerTotalProfit;
       const totalPledge = new BigNumber(props.minusNumber);
       myprofit.value = new BigNumber(totalprofit)

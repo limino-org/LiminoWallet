@@ -460,7 +460,6 @@ export default {
       });
     };
 
-    // 打开账户列表
     const showModal: Ref<boolean> = ref(false);
     const showaccount = () => {
       showModal.value = true;

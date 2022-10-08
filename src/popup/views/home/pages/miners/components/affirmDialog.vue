@@ -9,8 +9,6 @@
       </div>
       <div class="flex center column">
         <span class="text-s">{{$t('minerspledge.unfortunately')}}</span>
-        <!-- 使用协议 -->
-        <!-- <div class="confirmation">Confirmation of <span>Terms & Conditions</span></div> -->
       </div>
       <div class="container-btn flex center">
         <van-button type="primary" class="btn" round @click="clickLeft">{{$t('minerspledge.gohome')}}</van-button>
@@ -34,7 +32,6 @@ export default {
     [Icon.name]: Icon
   },
   props: {
-    // 控制显示
     show: {
       type: Boolean,
       default: false

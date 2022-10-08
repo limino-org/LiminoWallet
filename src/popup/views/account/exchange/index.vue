@@ -23,7 +23,6 @@
               <span>({{$t('createExchange.yield')}})</span>
             </div>
             <div class="money flex between center-v">
-              <!-- {{使用toUsd}} ${{toUsd(money)}}   ≈$ {{toUsd(money,2)}}-->
               <span>{{money}}ERB ${{toUsd(money)}}</span>
               <span @click="customClick">{{$t('createExchange.custom')}}</span>
             </div>
@@ -86,7 +85,6 @@ export default {
     [Checkbox.name]: Checkbox
   },
   props: {
-    // 控制显示
     show: {
       type: Boolean,
       default: false
@@ -103,8 +101,6 @@ export default {
     const store = useStore()
     const exchangeStatus: any = computed(() => store.state.account.exchangeStatus)
     const { emit }: any = context
-    // 开过交易所了
-
     onBeforeMount(async () => {
       if (exchangeStatus.exchanger_flag) {
         const wallet = await getWallet()
@@ -115,22 +111,16 @@ export default {
       }
     })
 
-    // 输入框name
     let name = ref('')
-    // 金额和金额的最大值和最小值
     let moneyMin = ref(0)
     let moneyMax = ref(10000000)
-    // 账户详情
     const accountInfo: any = computed(() => store.state.account.accountInfo)
-    // server选择
     let serverIndex = ref(1)
     console.log(props)
-    // 协议选择
     let checked = computed({
       get: () => props.check,
       set: v => emit('update:check', v)
     })
-    // 显示协议
     const agreement = () => {
       emit('agreement')
     }
@@ -173,20 +163,11 @@ export default {
       try {
         // const isServer = serverIndex.value === 1
         await toCreate(name.value, money.value)
-        // 成功了
         emit('minersConfirm')
       } catch (err) {
         Toast(JSON.stringify(err))
       }
-      // emit('minersConfirm')
     }
-    // const sliderChange = (value: any) => {
-    //   if (value === 200) {
-    //     serverIndex.value = 1
-    //   } else {
-    //     serverIndex.value = 0
-    //   }
-    // }
     const changeServerIndex = (value: number) => {
       serverIndex.value = value
     }
@@ -195,11 +176,6 @@ export default {
       n => {
         console.log(n)
         showCreateExchange.value = n
-        // if (!n) {
-        //   name.value = "wormholes exchanger"
-        //   firstamount.value = 100
-        //   emit("close");
-        // }
       }
     )
     watch(
@@ -263,7 +239,6 @@ export default {
     }
     .miners-container {
       ::-webkit-input-placeholder {
-        /* WebKit browsers，webkit内核浏览器 */
         color: #232323;
         font-size: 12px;
       }

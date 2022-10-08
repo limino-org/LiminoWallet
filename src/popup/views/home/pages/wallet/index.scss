@@ -39,7 +39,6 @@ i {
   margin-bottom: 30px;
   margin-top: 8px;
 }
-// 账户详情模块
 .account-detail-box {
   min-height: 200px;
   color: #fff !important;
@@ -112,19 +111,19 @@ i {
             }
           }
           &.type1 {
-            // 绿色
+            // green
             .user,.tag-label {
               background: linear-gradient(270deg, #93EBAD 0%, #52E374 100%);
             }
           }
           &.type2 {
-            // 橙色
+            // orange
             .user,.tag-label {
               background: linear-gradient(90deg, #D9B560 0%, #D3E492 100%);
             }
           }
           &.type3 {
-            // 交易所
+            // exchange
             .user,.tag-label {
               background: linear-gradient(270deg, #21245F 0%, #1E275A 100%);
             }

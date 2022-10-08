@@ -37,7 +37,7 @@ export const getQuery = () => {
 }
 
 
-// 字符串转16进制
+// The string is converted to hexadecimal
 export function toHex(str: string) {
   if (str === '') return ''
   var hexCharCode = []
@@ -47,7 +47,7 @@ export function toHex(str: string) {
   return hexCharCode.join('')
 }
 
-// 16进制转utf-8
+// Hexadecimal to UTF-8
 export function hexToUtf8Str(hex: string, encoding = 'utf-8') {
   var trimedStr = hex.trim();
   var rawStr = trimedStr.substr(0, 2).toLowerCase() === "0x" ? trimedStr.substr(2) : trimedStr;
@@ -62,13 +62,13 @@ export function hexToUtf8Str(hex: string, encoding = 'utf-8') {
     curCharCode = parseInt(rawStr.substr(i, 2), 16);
     resultStr.push(curCharCode);
   }
-  // encoding为空时默认为utf-8
+  // Defaults to UTF-8 if Encoding is null
   var bytesView = new Uint8Array(resultStr);
   var str = new TextDecoder(encoding).decode(bytesView);
   return str;
 }
 
-// 数组乱序
+// An array of random sequence
 export const randArr = (arr: Array<any>) => {
   var res = [];
   var len = arr.length;
@@ -83,7 +83,7 @@ export const randArr = (arr: Array<any>) => {
 
 
 
-//base64转blob                                                                                                                                                                                        
+//Turn base64 blob                                                                                                                                                                                     
 export const base64ToBlob = (code: string) => {
   let parts = code.split(';base64,')
   let contentType = parts[0].split(':')[1]
@@ -96,12 +96,12 @@ export const base64ToBlob = (code: string) => {
   return new Blob([uInt8Array], { type: contentType })
 }
 
-// 下载base64图片
+//Download the Base64 image
 export const downloadBase64Img = (fileName: string = 'qrcode') => {
   let aLink = document.createElement('a')
   const canvasData = document.getElementsByTagName('canvas')
   let evt = document.createEvent("HTMLEvents")
-  evt.initEvent("click", true, true) // initEvent 不加后两个参数在FF下会报错  事件类型，是否冒泡，是否阻止浏览器的默认行为
+  evt.initEvent("click", true, true) //InitEvent If FF is not added to the last two parameters, it will report the error event type, whether to bubble, whether to block the default behavior of the browser
   aLink.download = fileName + new Date().getTime()
   aLink.href = canvasData[0].toDataURL("image/png");
   aLink.dispatchEvent(evt);
@@ -109,26 +109,27 @@ export const downloadBase64Img = (fileName: string = 'qrcode') => {
 }
 
 /**
- * @param url 图片路径
+ * @param url Image path
  */
 export function getUrlBase64(url: string) {
   return new Promise((resolve, reject) => {
     let canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     let img = new Image();
-    img.crossOrigin = "Anonymous"; //开启img的“跨域”模式
+     //Enable IMG Cross - domain mode
+    img.crossOrigin = "Anonymous";
     img.src = url;
     img.onload = function () {
       canvas.height = img.height;
       canvas.width = img.width;
       // @ts-ignore
-      ctx.drawImage(img, 0, 0, img.width, img.height); //参数可自定义
-      const dataURL = canvas.toDataURL("image/jpeg", 1); //获取Base64编码
+      ctx.drawImage(img, 0, 0, img.width, img.height); //Parameters can be customized
+      const dataURL = canvas.toDataURL("image/jpeg", 1); //Get Base64 encoding
       resolve(dataURL);
       // @ts-ignore
-      canvas = null; //清除canvas元素
+      canvas = null; //Clear Canvas elements
       // @ts-ignore 
-      img = null; //清除img元素
+      img = null; //Clear img elements
     };
     img.onerror = function () {
       reject(new Error("Could not load image at " + url));

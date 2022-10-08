@@ -24,7 +24,6 @@
               </span>
             </div>
             <div class="money flex between center-v">
-              <!-- {{使用toUsd}} ${{toUsd(money)}}   ≈$ {{toUsd(money,2)}}-->
               <span>{{money}}ERB $({{ utils.formatEther(Math.abs(money) + '')}})</span>
               <span @click="customClick">{{$t('createminerspledge.custom')}}</span>
             </div>

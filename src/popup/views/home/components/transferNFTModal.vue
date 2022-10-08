@@ -208,7 +208,7 @@ export default defineComponent({
   setup(props: any, context: SetupContext) {
     const { t } = useI18n();
     const { emit }: any = context;
-    // 倒计时
+    // count down
     const time = ref(3);
     const { $tradeConfirm } = useTradeConfirm();
     const showModal: Ref<boolean> = ref(false);
@@ -375,11 +375,11 @@ export default defineComponent({
             (item) => item != "undefined"
           );
           const list = [];
-          // 三种情况 1.合集集满 ，2.snft集满 ，3.碎片  暂不考虑合集情况
+          // Three cases: 1. Collection set is full, 2. SNFT set is full, 3. Fragment does not consider collection case for the time being
 
           for (let key of keys) {
             if (key) {
-              // 合成等级
+              // Synthetic grade
               props.selectList[key].forEach((child: any) => {
                 const {
                   MergeLevel,
@@ -607,11 +607,11 @@ export default defineComponent({
           const keys = Object.keys(props.selectList).filter(
             (item) => item != "undefined"
           );
-          // 三种情况 1.合集集满 ，2.snft集满 ，3.碎片  暂不考虑合集情况
+          // Three cases: 1. Collection set is full, 2. SNFT set is full, 3. Fragment does not consider collection case for the time being
 
           for (let key of keys) {
             if (key) {
-              // 合成等级
+              // Synthetic grade
               props.selectList[key].forEach((child: any) => {
                 const {
                   MergeLevel,
@@ -657,15 +657,15 @@ export default defineComponent({
       //   diff == 3 ? nftAddr + '000' : ''
       // }
       switch (props.txtype) {
-        // 兑换
+        // conversion
         case "2":
           str = `wormholes:{"type":6,"nft_address":"${nftAddr}","version":"v0.0.1"}`;
           break;
-        // 可质押
+        // To pledge
         case "3":
           str = `wormholes:{"type":7,"nft_address":"${nftAddr.substr(0,41)}","version":"0.0.1"}`;
           break;
-        // 可赎回
+        // redeemable
         case "1":
           str = `wormholes:{"type":8,"nft_address":"${nftAddr.substr(0,41)}","version":"0.0.1"}`;
           break;
@@ -692,11 +692,11 @@ export default defineComponent({
             (item) => item != "undefined"
           );
           const list = [];
-          // 三种情况 1.合集集满 ，2.snft集满 ，3.碎片  暂不考虑合集情况
+          //Three cases: 1. Collection set is full, 2. SNFT set is full, 3. Fragment does not consider collection case for the time being
 
           for (let key of keys) {
             if (key) {
-              // 合成等级
+              // Synthetic grade
               props.selectList[key].forEach((child: any) => {
                 const {
                   MergeLevel,

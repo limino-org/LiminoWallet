@@ -172,11 +172,8 @@ export default {
     const { t } = useI18n();
     const store = useStore();
     const { state } = store;
-    console.log("我加载了11111111111");
     const { emit }: any = context;
-    // 输入框name
     let amount = ref(props.minersMoney);
-    // 金额和金额的最大值和最小值
     let moneyMin = ref(100000);
     let moneyMax = ref(10000000);
     const { getContract } = useExchanges();
@@ -192,7 +189,7 @@ export default {
           const gasFee = ref();
           const { address } = state.account.accountInfo;
           const baseName = encode(props.name);
-          // 第一笔gas
+          //The first gas
           const str = `wormholes:{"version": "0","type": 11,"fee_rate": 100,"name":"${baseName}","url":""}`;
 
           const data3 = toHex(str);
@@ -204,9 +201,9 @@ export default {
           };
 
           gasFee.value = await getGasFee(tx1);
-          //debugger
+
           const gas2 = ref();
-          // 第二笔gas
+          //The second gas
           if (props.serverIndex == 1) {
             const contract = await getContract();
             const gasPrice = await contract.provider.getGasPrice();

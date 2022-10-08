@@ -82,7 +82,6 @@ export default defineComponent({
       showModal.value=false
     }
     const tomore=()=>{
-      console.log('获取更多');
       
     }
       watch(

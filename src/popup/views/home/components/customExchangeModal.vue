@@ -109,17 +109,14 @@ export default defineComponent({
     [Icon.name]: Icon,
   },
   props: {
-    // 弹窗标题
     title: {
       type: String,
       default: "",
     },
-    // v-model 方式绑定打开关闭
     modelValue: {
       type: Boolean,
       default: false,
     },
-    // 最大金额
     maxBalance: {
       type: Number,
       default: 100000000000000,
@@ -128,12 +125,11 @@ export default defineComponent({
       type: Number,
       default: 0,
     },
-    // 默认金额
     defaultAmount: {
       type: Number,
       default: null,
     },
-    // 是否有转换币种的按钮
+    // Is there a button to change currency
     hasTransferToken: {
       type: Boolean,
       default: false,
@@ -212,7 +208,7 @@ export default defineComponent({
       emit("handleConfirm", parseFloat(amount.value));
       showModal.value = false;
     };
-    // 当前选择的token
+    // The currently selected token
     const chooseToken = computed(() => {
       const token = state.transfer.chooseToken;
       const name = state.account.currentNetwork.currencySymbol;
@@ -223,14 +219,14 @@ export default defineComponent({
           };
     });
 
-    // 聚焦的时候如果金额为0，则清空金额
+    // If the amount is 0 in focus, the amount is cleared
     const handleFocus = () => {
       if (Number(amount.value) == 0) {
         amount.value = "";
       }
     };
     const { name }: any = route;
-    // 跳转到选币种
+    // Jump to Currency selection
     const handleChooseToken = () => {
       router.push({ name: "receive-choose", query: { backUrl: name } });
     };

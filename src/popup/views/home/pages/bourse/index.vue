@@ -134,7 +134,7 @@
         280ERB <span>(≈${{ toUsd(280, 2) }})</span>
       </div>
 
-      <!-- 追加质押金额 -->
+      <!-- Additional pledge amount -->
       <div class="bourse-container-meaning bt mt-14" v-if="isExchanger_flag">
         <span>{{ t("createExchange.addPl") }} </span>
         <el-tooltip
@@ -495,8 +495,6 @@ export default defineComponent({
 
   },
   beforeRouteEnter:(to,form,next)=>{
-    //to 到哪里去
-    //form 从哪里来
     next((vm:any )=> {
       let arr1 = vm;
       let arr = toRaw(arr1);
@@ -523,7 +521,7 @@ export default defineComponent({
       90: "",
       100: "",
     });
-    // 开设交易所状态
+    // Open exchange status
     const exchangeStatus: ComputedRef<ExchangeStatus> = computed(
       () => store.state.account.exchangeStatus
     );
@@ -548,8 +546,6 @@ export default defineComponent({
         console.log(blockNumber.value - accountInfoBlockNumber.value);
         
         if (exchangeStatus.value.exchanger_flag) {
-          console.log("获取质押调整的字段", accountInfo);
-          // console.log("交易所检测节点是ExchangerURL从data中获取",data)
           const { ExchangerBalance, ExchangerName, ExchangerURL, FeeRate } =
             accountInfo;
           let formatValue;
@@ -625,8 +621,6 @@ export default defineComponent({
         console.error(err);
       }
     };
-
-    // 滑块功能
     const value = ref(50);
 
     const isClose = ref(false);
@@ -636,7 +630,6 @@ export default defineComponent({
 
     showCreateExchange.value = props.show;
 
-    // server选择
     // let serverIndex = ref(1);
     let money = ref(0);
     let moneyMin = ref(0);
@@ -646,12 +639,12 @@ export default defineComponent({
     let showAgreement = ref(false);
     let moneyMax = ref(10);
     let isOne = ref(true);
-    // 第一次成功显示弹框
+    // The first successful display of the pop-up box
     let successDialog = ref(false);
     const customClick = () => {
       showAcount.value = true;
     };
-    // server选择
+    // servr selection
     let serverIndex = ref(1);
     const changeServerIndex = (value: number) => {
       if (exchangeStatus.value.exchanger_flag) {
@@ -715,8 +708,6 @@ export default defineComponent({
       } catch (err) {
         console.error(err);
       }
-      // 关闭上一页
-      console.log("执行到了这里");
       showCreateExchange.value = false;
     };
 
@@ -750,7 +741,7 @@ export default defineComponent({
     const router = useRouter();
     const back = () => {
       serverIndex.value=  2;
-      // 没有开交易所直接跳首页，否则上一页
+      // Do not open the exchange directly jump home page, otherwise the previous page
       if (isExchangeStatusStatus.value) {
         router.replace({ name: "exchange-management" });
       } else {
@@ -762,7 +753,7 @@ export default defineComponent({
       const { exchanger_flag, status } = store.state.account.exchangeStatus;
       const am = new BigNumber(accountInfo.value.amount);
 
-      // 未开过
+      // Did not open
       if (!exchanger_flag && status != 2) {
         if (am.lt(281)) {
           $toast.warn(t("createExchange.isPoor"));
@@ -780,8 +771,7 @@ export default defineComponent({
         console.log(error);
       }
     };
-    // 追加质押金额
-    // 追加质押确认弹窗
+    // Additional pledge confirmation pop-up window
     const showAddModal = ref(false);
     const handleAddAmount = () => {
       const am = new BigNumber(accountInfo.value.amount);
@@ -849,7 +839,7 @@ export default defineComponent({
       new Bignumber(accountInfo.value.amount).minus(1).toNumber()
     );
     const handleAdd = () => {
-      // 超过了可质押金额
+      // Exceeds the amount that can be pledged
       if (new Bignumber(addAmount.value || 0).gt(maxBalance.value)) {
         const ama = parseInt(new Bignumber(maxBalance.value).toString());
         addAmount.value = ama;
@@ -866,40 +856,9 @@ export default defineComponent({
     const closeBtnDisabled = ref(true);
 
     const changeAdd = () => {
-      // const am = new Bignumber(accountInfo.value.amount);
-      // const addNum = new Bignumber(addAmount.value);
-      // const exchangeBalance = exchangerBalance.value;
-      // if (addNum.eq(exchangeBalance)) {
-      //   closeBtnDisabled.value = true;
-      //   return;
-      // }
-      // if (addNum.gt(exchangeBalance)) {
-      //   closeBtnTxt.value = t("createExchange.pledgeRed");
-      //   closeBtnDisabled.value = false;
-      // } else {
-      //   // 如果小于200 关闭
-      //   if (addNum.lt(280)) {
-      //     closeBtnTxt.value = t("bourse.closeExchange");
-      //   }
-      //   // 大于等于200 小于质押,
-      //   if (addNum.gte(280) && addNum.lt(exchangeBalance)) {
-      //     closeBtnTxt.value = t("createExchange.pledgeRed");
-      //   }
-      //   closeBtnDisabled.value = false;
-      // }
+ 
     };
-    // const showCloseBtn = computed(() => {
-    //   const addNum = new Bignumber(addAmount.value);
-    //   const exchangeBalance = exchangerBalance.value;
-    //   if (addNum.lte(280) && !isTimeQualified.value) {
-    //     return false;
-    //   }
-    //   // if(addNum.eq(200)) {
-    //   //   return false
-    //   // }
-    //   // // 追加金额小于200
-    //   return true;
-    // });
+
     const bigAmount = new BigNumber(accountInfo.value.amount);
 
     const marks2 = ref<Marks>({});

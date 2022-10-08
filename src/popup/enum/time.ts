@@ -3,6 +3,6 @@
 export const mnemonicExpires = 86400000
 
 
-// 密码失效时间 默认30分钟/1800秒
+// Password expiration Time 
 // export const passwordExpires = 43200
 export const passwordExpires = 43200

@@ -98,7 +98,6 @@ export default defineComponent({
       const add = store.state.account.accountInfo.address
       return `${VUE_APP_EXCHANGESMANAGEMENT_URL}?address=${add.toLowerCase()}&exchangeAddress=${add.toLowerCase()}`
     })
-    // 跳转到后台
     const toGoCMS = () => {
       window.open(`${exchangeUrl.value}`)
     }
@@ -127,7 +126,6 @@ export default defineComponent({
         console.error(e)
       }
     }
-    // 跳转到交易所
     const toGoAmount = () => {
       window.open(`${adminUrl.value}`)
     }

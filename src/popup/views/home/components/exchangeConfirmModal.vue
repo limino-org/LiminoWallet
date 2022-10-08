@@ -172,12 +172,10 @@ export default defineComponent({
     [Icon.name]: Icon,
   },
   props: {
-    // 弹窗标题
     title: {
       type: String,
       default: "Set Amount",
     },
-    // v-model 方式绑定打开关闭
     modelValue: {
       type: Boolean,
       default: false,

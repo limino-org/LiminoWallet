@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>我是通知一下</h1>
+    <h1>Hello LiminoWallet</h1>
   <hello-world />
   </div>
 </template>

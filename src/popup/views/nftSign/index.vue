@@ -36,16 +36,6 @@
         <van-button type="primary" @click="goOn">{{t('sign.confirm')}}</van-button>
       </div>
     </div>
-    <!-- <div>
-        <van-field
-          type="password"
-          v-model="password"
-          placeholder="请输入密码"
-        ></van-field>
-        <div class="flex center btn-box">
-          <van-button type="primary" :loading="loading" @click="toSign" block>签名</van-button>
-        </div>
-      </div> -->
   </div>
 </template>
 <script lang="ts">

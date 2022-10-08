@@ -45,7 +45,6 @@ export default {
     [Icon.name]: Icon
   },
   props: {
-    // 控制显示
     show: {
       type: Boolean,
       default: false

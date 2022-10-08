@@ -103,9 +103,7 @@ export default {
     const { t } = useI18n()
     const store = useStore()
     const currentNetwork = computed(() => store.state.account.currentNetwork)
-    console.log('我加载了11111111111')
     const { emit }: any = context
-    // 输入框name
     let amount = ref(props.minersMoney)
     let dislogShow = computed({
       get: () => props.show,

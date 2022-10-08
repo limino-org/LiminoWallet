@@ -9,7 +9,7 @@
             <span>Closed Successfully Thank you for your company</span>
         </div>
         <div class="footer-btns">
-            <van-button style="width: 175px;" type="primary" class="btn" :disabled="Time !== 0" round @click="emitWarningSuccess">回首页{{Time === 0 ? '' : `(${Time}s)`}}</van-button>
+            <van-button style="width: 175px;" type="primary" class="btn" :disabled="Time !== 0" round @click="emitWarningSuccess">Back Home Page{{Time === 0 ? '' : `(${Time}s)`}}</van-button>
       </div>
     </div>
     </div>

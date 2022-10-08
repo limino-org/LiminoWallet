@@ -134,7 +134,7 @@ export const queryArraySnft = (params = {}) => {
     return httpPost(`${snftUrl4}/v2/queryArraySnft`,params)
    
   }
-  // 查询指定地址的账户信息
+  // Query the account information about the specified address
 export const getAccount = (address: string) => {
     return httpGet(`${wormholesscanApi}/account/${address}`)
 }

@@ -7,8 +7,6 @@
         }}</span>
       </template>
     </NavHeader>
-
-    <!-- 主体框 -->
     <div class="page-content">
       <Tip :message="t('exportprivatekey.warn')" />
       <div class="flex tab-box" v-if="check">

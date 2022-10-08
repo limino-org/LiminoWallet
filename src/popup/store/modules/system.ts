@@ -222,18 +222,10 @@ export default {
       const wallet = await getWallet()
       const { address } = wallet
       wallet.provider.send('eth_getAccountInfo',[address, "latest"]).then((res:any)=>{
-        sessionStorage.setItem('链上账户详情', JSON.stringify(res))
+        sessionStorage.setItem('eth_addountInfo', JSON.stringify(res))
         commit('UPDATA_ACCOUNTINFO', res)
       })
     },
-    // Get conversion rate to USD
-    // getTransferUSDRate({commit, state}: any) {
-    //   return erb_price().then(res => {
-    //     const { CNY,USD } = res
-    //     commit('UPDATE_TRANSFERUSDRATE', USD)
-    //     commit('UPDATE_TRANSFERCNYRATE', CNY)
-    //   })
-    // },
     setConversationid({commit, state}: any, id: string) {
       commit('UPDATA_CONVERSATIONID',id)
     }

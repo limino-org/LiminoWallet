@@ -130,7 +130,6 @@ export default defineComponent({
     const isMiner = computed(() => {
       return chainAccountInfo.value.PledgedBalance > 0;
     });
-    // 跳转到后台
     const toGoCMS = () => {
       window.open(`${exchangeUrl.value}`);
     };
@@ -164,7 +163,6 @@ export default defineComponent({
       }
     };
     const isCloseDialog = ref(false);
-    // 跳转到交易所
     const toGoAmount = () => {
       window.open(`${adminUrl.value}`);
     };

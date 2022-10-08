@@ -23,7 +23,6 @@
           </div>
           <div class="flex between t-bottom pl-14 pr-14">
             <div class="flex">
-              <!-- 全选 -->
               <div class="all-in flex center hover" @click="handleAll">
                 <i :class="`iconfont ${all ? 'icon-duihao2' : 'icon-check_line'}`"></i>
                 <span class="ml-4">
@@ -39,7 +38,7 @@
                 <div class="sel2 text-bold">{{selectTotal}} ERB (≈${{toUsd(selectTotal,2)}})</div>
               </div>
             </div>
-            <!-- convert按钮 -->
+            <!-- The convert button -->
             <div class="convert flex center">
               <van-button size="small" type="primary" @click="handleConfirm"
                 >

@@ -5,7 +5,7 @@
     </template>
   </NavHeader>
   <div class="exchange-manage" v-if="!loading">
-    <!-- 第一次开设成功 -->
+    <!-- The first time was successful -->
     <div class="bourse-img">
       <img
         class="exchange-welcome-icon"

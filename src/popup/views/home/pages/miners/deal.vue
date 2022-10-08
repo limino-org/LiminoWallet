@@ -366,14 +366,14 @@
         v-model:isWarning="isCloseHome"
         v-if="isCloseHome"
       ></close-home>
-      <!-- 调整质押金额 -->
+      <!-- Adjust the amount of pledge -->
       <ModifPledgeModal
         v-model="closeDialogTime"
         :max="formatValueNumber || PledgedAmount"
         @confirm="handleMinusConfirm"
       />
 
-      <!-- 减少质押弹窗 -->
+      <!-- Reduce the pledge pop-up window -->
       <MinusStackDialog
         v-model:show="showMinusModal"
         :minusNumber="minusNumber"
@@ -522,7 +522,7 @@ export default defineComponent({
     const { sendToPledge } = useExchanges();
     const appProvide = inject("appProvide");
     const pageLoading = ref(true);
-    //  是否是追加
+    //  Is it an append
     const isModif = ref(true);
     const showCloseBtn = ref(false);
 
@@ -536,10 +536,9 @@ export default defineComponent({
           "eth_getAccountInfo",
           [address, "latest"]
         );
-        //debugger;
         const blockn = web3.utils.toHex(blockNumber.value.toString());
         debugger
-        // 第一次质押金额/总质押金额*36 (第二次取消质押计算开始时间)+第二次质押金额/总金额*72=54 = (第二次取消质押可以撤销的时间)
+        // Amount of the first pledge/total amount of the pledge *36 (start time of the second cancellation of the pledge calculation)+ Amount of the second pledge/total amount *72=54 = (time when the second cancellation of the pledge can be revoked)
         showCloseBtn.value = new BigNumber(blockNumber.value)
           .minus(ethAccountInfo.value.PledgedBlockNumber)
           .gt(72);
@@ -608,13 +607,10 @@ export default defineComponent({
     } = useExchanges();
     const name = ref("");
     const handleNameBlur = () => {};
-    console.log("===========");
-    console.log("===========");
-
     const { dispatch } = store;
     const amount = ref(200);
 
-    // 开设交易所状态
+    // Open exchange status
     const exchangeStatus: ComputedRef<ExchangeStatus> = computed(
       () => store.state.account.exchangeStatus
     );
@@ -624,7 +620,7 @@ export default defineComponent({
       return bigAmount.gte(0) ? bigAmount.toNumber() : 0;
     });
     const sliderDisabled = computed(() => {
-      // 两笔都没交才能滑动滑条
+      // You can slide the slider only if you don't hand in both
       if (
         exchangeStatus.value.exchanger_flag == false &&
         exchangeStatus.value.status != 2
@@ -634,7 +630,7 @@ export default defineComponent({
       return true;
     });
     const isWarningText = ref(false);
-    // 禁用提交一键交易所按钮的状态
+    //Disable the status of the Submit one-click exchange button
     const openDisabled = computed(() => {
       const v = parseFloat(store.state.account.accountInfo.amount);
       // @ts-ignore
@@ -642,14 +638,14 @@ export default defineComponent({
         exchangeStatus.value.exchanger_flag == true &&
         exchangeStatus.value.status != 2
       ) {
-        // 第一笔费用交了 第二笔没交
+        //The first fee was paid and the second one was not paid
         if (v < 200) {
           return true;
         } else {
           return false;
         }
       }
-      // 第一笔没交  第二笔没交
+      //I didn't pay the first and I didn't pay the second
       // @ts-ignore
       if (
         exchangeStatus.value.exchanger_flag == false &&
@@ -687,9 +683,8 @@ export default defineComponent({
     const sendToPledgeHttp = async () => {
       try {
         isLoading.value = true;
-        // 追加金额大于0 就是追加质押，否则是第一次质押
-
-        // 如过选择的地址不是当前账户地址就拿选择的地址 -> 代理地址
+        // An additional amount greater than 0 is an additional pledge, otherwise it is the first pledge
+        // If the selected address is not the current account address, take the selected address -> proxy address
         const proxy_address =
           selectAccount.value.address.toUpperCase() ==
           accountInfo.value.address.toUpperCase()
@@ -708,20 +703,13 @@ export default defineComponent({
       }
     };
 
-    // 关闭
     const toCancel = () => {
       showCreateExchange.value = false;
     };
-    // 滑块功能
     const value = ref(50);
-    //const onChange = value => Toast('当前值：' + value)
-
  
-    // 临时按钮
     const toGo = () => {
-      // 关闭上一页
       showExchange.value = false;
-      console.log("第三页");
       showExchange1.value = true;
     };
 
@@ -734,9 +722,7 @@ export default defineComponent({
       showExchange.value = true;
       closeExchanges();
     };
-    // 按钮
     const tohome = () => {
-      console.log("关闭");
       showExchange1.value = false;
       showCreateExchange.value = false;
       emit("closeSonShow", false);
@@ -749,7 +735,7 @@ export default defineComponent({
       initData();
     };
 
-    // 关闭交易
+    // Close the deal
     watch(
       () => props.show,
       (n) => {
@@ -764,7 +750,7 @@ export default defineComponent({
     watch(
       () => sliderDisabled.value,
       (n) => {
-        // 如果滑块禁用，首笔资金限制100
+        // If the slider is disabled, the first fund limit is 100
         firstamount.value = 100;
       },
       { immediate: true }
@@ -779,7 +765,7 @@ export default defineComponent({
         }
       }
     );
-    // server选择
+    // Server selection
     let serverIndex = ref(0);
     let money = ref(0);
     let moneyMin = ref(0);
@@ -789,7 +775,7 @@ export default defineComponent({
     let showAgreement = ref(false);
     let moneyMax = ref(10);
     let isOne = ref(true);
-    // 第一次成功显示弹框
+    // The first successful display of the pop-up box
     let successDialog = ref(false);
     const customClick = () => {
       showAcount.value = true;
@@ -808,7 +794,6 @@ export default defineComponent({
         serverIndex.value = value;
       }
     };
-    // 协议返回
     const submitCheck = (type: string, flag: Boolean) => {
       if (type === "check" && flag) {
         checked.value = true;
@@ -826,7 +811,7 @@ export default defineComponent({
         return true;
       }
       if (RegUrl.test(name.value)) {
-        // 校验节点chainId
+        // Verify node chainId
         Toast.loading({
           message: t("common.veriPwd"),
         });
@@ -850,9 +835,7 @@ export default defineComponent({
       }
     };
    
-    // 禁用节点输入框
     const isOpen = ref(false);
-
     onMounted(async () => {
       await initData();
     });
@@ -892,8 +875,6 @@ export default defineComponent({
       } else {
         isFirst.value = true;
       }
-      console.log("金额的字段", formatValue);
-      console.log("获取质押调整的字段", data);
     };
     const isExchanger_flag = computed(
       () => store.state.account.exchangeStatus.exchanger_flag
@@ -920,7 +901,6 @@ export default defineComponent({
     };
     const isAffirmDialog = ref(false);
     const onSubmit = async () => {
-      // 追加
       if (isModif.value) {
         if (!addNumber.value) {
           $toast.warn(t("receive.numTip"));
@@ -929,13 +909,6 @@ export default defineComponent({
         onSubmitAddNumber();
         return;
       }
-      // 质押金额
-      // if(!name.value){
-      //   $dialog.open({title:t('minerspledge.beValidator'),message:t("minerspledge.warn"),type:'warn',callBack:() => {
-      //     openConfirmInfoModal()
-      //   }});
-      //   return
-      // }
       openConfirmInfoModal()
     };
 
@@ -1007,7 +980,7 @@ export default defineComponent({
     const closeDialogSubmit = ref(false);
 
     const selectAccount: Ref<AccountInfo | any> = ref({ ...accountInfo.value });
-    // 选择账户
+    // Select the account
     const handleAccount = (account: AccountInfo) => {
       selectAccount.value = account;
     };
@@ -1025,7 +998,7 @@ export default defineComponent({
       );
     });
 
-    // 打开选择代理地址的弹窗
+    // Open the pop-up window for selecting the proxy address
     const openModal = () => {
       if (isModif.value) {
         return;
@@ -1453,7 +1426,7 @@ export default defineComponent({
   }
   .miners-container {
     ::-webkit-input-placeholder {
-      /* WebKit browsers，webkit内核浏览器 */
+      /* WebKit browsers，webkit */
       color: #232323;
       font-size: 12px;
     }

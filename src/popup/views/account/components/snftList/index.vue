@@ -369,9 +369,9 @@ export default defineComponent({
           );
           const hasFull = !hasunfull && len == 16;
           if (!hasFull) {
-            // 如果未集满合集
+            // If the collection is not full
             checkObjs.data[key].forEach((item: any) => {
-              // 是否集满单个snft
+              //Whether a single SNFT is fully collected
               if (item.Chipcount == 16) {
                 add = new BigNumber(item.Chipcount)
                   .multipliedBy(0.143)
@@ -385,7 +385,7 @@ export default defineComponent({
               }
             });
           } else {
-            // 如果集满一个合集
+            // If I fill a set
             add = new BigNumber(16 * 16)
               .multipliedBy(0.271)
               .plus(add)

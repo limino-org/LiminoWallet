@@ -196,7 +196,6 @@
   
       const handleScroll = () => {
         const listDoms = listDom.value
-        // 获取选中地址的dom
         const newList = Array.from(listDoms.children)
         const ele: any = newList.find((item: any) => item.dataset.selected == 'true')
         const hei = ele.offsetTop - ele.offsetHeight

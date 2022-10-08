@@ -27,7 +27,6 @@
 		enterPwd: "Please enter the password for authentication",
 		smallTit: "Explore ERB Journey"
 	},
-	// 所有交易记录
 	transactionList: {
 		transactionrecord: 'Transaction Record'
 	},
@@ -163,7 +162,6 @@
 		import: 'Import',
 		tokenImportTip: "You have not held the ERC20 token, are you sure to import it?"
 	},
-	// nft交易
 	sendNft: {
 		transferfailed: 'NFT transfer failed',
 		transfersucceeded: 'Successful Nft transfer',
@@ -275,7 +273,6 @@
 		errTip: "Invalid token contract address",
 
 	},
-	// 创建交易所成功
 	createsuccessexchange: {
 		title: 'Share',
 		sendlink: 'send a link',
@@ -416,7 +413,6 @@
 		tomore: 'Stay tuned! ! !',
 		enterErr: "The format of your input is not correct!"
 	},
-	// nft详情
 	nftDetail: {
 		name: 'Name',
 		address: 'Address',
@@ -1223,7 +1219,6 @@
 	"categoryform": {
 		"categoryform": "You have not selected any data"
 	},
-	// 关闭交易所
 	closeexchange: {
 		closeexchange: 'CLOSE THE EXCHANGE',
 		lessthan: 'Your exchange is less than a year old',

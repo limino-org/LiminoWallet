@@ -255,7 +255,7 @@ export default {
             const key = accountInfo.value.address.toUpperCase();
       const hasAddress = currentNetwork.value.tokens[key] ?  currentNetwork.value.tokens[key].length : 0;
       if (hasAddress) {
-        // 寻址当前账户token列表是否已经存在改token
+        // Addresses whether the current account token list already exists to change tokens
         const newv = currentNetwork.value.tokens[key].find(
           (item: any) =>
             item.tokenContractAddress.toUpperCase() ==
@@ -263,7 +263,7 @@ export default {
         );
         if (newv) {
           tokenError.value = true
-          // 已存在、
+          //already exist
           return t("common.addressalreadyexists")
         }
       }

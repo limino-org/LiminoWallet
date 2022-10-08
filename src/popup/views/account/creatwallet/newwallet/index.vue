@@ -81,7 +81,6 @@ export default {
     const { commit, dispatch } = store;
     const onClickLeft = () => {
       router.go(-1);
-      console.log("返回");
     };
     const loading = ref(false)
     const password: Ref<string> = ref("");

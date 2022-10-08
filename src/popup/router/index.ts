@@ -260,7 +260,7 @@ router.beforeEach(async(to, form, next) =>  {
  const password = getCookies('password')
  debugger
  
-// 钱包未创建  -> 引导页
+// Wallet not created -> Boot page
 const filterNames1 = ['guide-step1','guide-step2','loginAccount-create-step1','loginAccount-create-step2','loginAccount-step1','loginAccount-step2','loginAccount-export-mnemonic','loginAccount-mnemonic-import','loginAccount-createing']
 if(!hasAccountFlag && !password && !filterNames1.includes(name.toString())) {
   console.log('11111111111111111111111111',name,filterNames1)
@@ -269,7 +269,7 @@ if(!hasAccountFlag && !password && !filterNames1.includes(name.toString())) {
   })
   return
 }
-// 已创建，未登录  -> 登录页
+// Created, not logged in -> Logged in page
 if(hasAccountFlag && !password && name != 'loginAccount-step1' && name != 'resetPwd-step1') {
   console.log('2222222222222222222222222222222222222',password,hasAccountFlag)
 

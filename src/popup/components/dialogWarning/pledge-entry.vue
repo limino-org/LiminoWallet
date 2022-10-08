@@ -5,8 +5,6 @@
         <span>Staking Income</span>
       </div>
       <div class="miners-container flex column between">
-        <!-- <div class="miners-container-item"> -->
-        <!-- 奖励 -->
 
         <div class="miners-container-entre">
           <div class="miners-container-entre_txt">Select</div>
@@ -20,7 +18,7 @@
           </div>
         </div>
 
-        <!-- 选择对应的value下面展示不同的介绍 -->
+        <!-- Select the corresponding value. The following displays different descriptions-->
         <!-- ERB -->
         <div class="select_erb" v-if="select_erb">
             Tips:Select ERB,your pledge income will be returned in the form ERB
@@ -37,7 +35,7 @@
               class="btn"
               plain
               @click="dislogShow = false"
-              >取消</van-button
+              >{{t('common.cancel')}}</van-button
             >
             <van-button
               type="primary"
@@ -46,7 +44,7 @@
               :disabled="Time !== 0"
               round
               @click="submit"
-              >确认{{ Time === 0 ? "" : `(${Time}s)` }}</van-button
+              >{{t('common.confirm')}}{{ Time === 0 ? "" : `(${Time}s)` }}</van-button
             >
           </div>
         </div>
@@ -87,11 +85,8 @@ export default {
     const { t } = useI18n();
      const store = useStore();
     const accountInfo = computed(() => store.state.account.accountInfo);
-    console.log("我加载了11111111111");
     const { emit }: any = context;
-    // 输入框name
     let amount = ref(props.minersMoney);
-    // 金额和金额的最大值和最小值
     let moneyMin = ref(100000);
     let moneyMax = ref(10000000);
 
@@ -114,11 +109,8 @@ export default {
     const isLoading = ref(false)
      const isWarning = ref(false);
     const submit = () => {
-      //如果没有选择
       if (getselect_va.value == '') {
           isWarning.value = true;
-        
-        
       }else{
         isLoading.value = true
         try {
@@ -141,7 +133,6 @@ export default {
          
         } catch (error) {
              isLoading.value = false
-            console.log("请选择文件")
         }
           
       }
@@ -150,18 +141,11 @@ export default {
     let screentNumber = () => {
       return Number(utils.formatEther(amount.value + "")).toFixed(2);
     };
-    // //奖励选择
-    // let  select_entry = (ERB:any) =>{
-    //  console.log("选择的是",ERB)   
-    // }
-    // let  select_entry2 = (SNFT:any) =>{
-    //  console.log("选择的是",SNFT)   
-    // }
+
     let select_erb = ref(false)
     let select_snft = ref(false)
     let getselect_va = ref('')
     let chan_select =(event:any)=>{
-        console.log("选择的结果是",event)
         getselect_va.value = event
         if(event === '0'){
                 select_erb.value = true;

@@ -705,7 +705,6 @@ export default {
   height: 30px;
   background-color: green;
 }
-// 最近交易用户
 .recent {
   .text {
     width: 100%;

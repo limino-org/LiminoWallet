@@ -6,7 +6,7 @@ console.warn('ethers', ethers)
 // @ts-ignore
 window.ethers = ethers
 /**
- * BIP44路径
+ * BIP44 Path
  * m / purpose' / coin' / account' / change / address_index
  * m Is fixed, and the purpose is also fixed. The value is 44 (or 0x8000002c)
  * This represents currency, 0 represents bitcoin, 1 represents bitcoin test chain, and 60 represents the complete currency list address of Ethereum：https://github.com/satoshilabs/slips/blob/master/slip-0044.md

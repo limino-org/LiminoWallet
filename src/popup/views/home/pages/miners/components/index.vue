@@ -24,7 +24,6 @@
               </span>
             </div>
             <div class="money flex between center-v">
-              <!-- {{使用toUsd}} ${{toUsd(money)}}   ≈$ {{toUsd(money,2)}}-->
               <span>{{money}}ERB $({{ utils.formatEther(Math.abs(money) + '')}})</span>
               <span @click="customClick">{{$t('createminerspledge.custom')}}</span>
             </div>
@@ -80,7 +79,6 @@ export default {
     [AgreementView.name]: AgreementView
   },
   props: {
-    // 控制显示
     show: {
       type: Boolean,
       default: false
@@ -99,9 +97,8 @@ export default {
     const accountInfo = computed(() => store.state.account.accountInfo)
     let address = accountInfo.value.address
     let showAgreement = ref(false)
-    // 开过交易所了
 
-    // 输入框name
+    // name
     let name = ref('https://api.wormholestest.com/')
     let isLoading = ref(false)
     let checked = ref(false)
@@ -125,9 +122,7 @@ export default {
         console.error(err)
       }
     }
-    // 协议返回
     const submitCheck = (type: string, flag: Boolean) => {
-      console.log('获取返回的类型', type)
       if (type === 'check' && flag) {
         checked.value = true
       } else {
@@ -144,7 +139,6 @@ export default {
         isLoading.value = true
         // const isServer = serverIndex.value === 1
         await toCreate(props.nodeValue, money.value, false)
-        // 成功了
         emit('minersConfirm')
       } catch (err) {
         Toast(JSON.stringify(err))
@@ -217,7 +211,7 @@ export default {
     }
     .miners-container {
       ::-webkit-input-placeholder {
-        /* WebKit browsers，webkit内核浏览器 */
+        /* WebKit browsers，webkit */
         color: #232323;
         font-size: 12px;
       }
@@ -277,7 +271,7 @@ export default {
           font-size: 10px !important;
         }
         ::-webkit-input-placeholder {
-          /* WebKit browsers，webkit内核浏览器 */
+          /* WebKit browsers，webkit*/
           color: #232323;
           font-size: 12px;
         }

@@ -118,7 +118,7 @@ export default {
       }
       const accountInfo = store.state.account.accountInfo
       const { keyStore } = accountInfo
-      // 通过密码解锁当前账户的keyStore文件
+      //Unlock the keyStore file of the current account with a password
       const data: CreateWalletByJsonParams = {
         password: password.value,
         json: keyStore
@@ -136,7 +136,7 @@ export default {
       const accountInfo = store.state.account.accountInfo
       //debugger
       const { keyStore } = accountInfo
-      // 通过密码解锁当前账户的keyStore文件
+      // Unlock the keyStore file of the current account with a password
       const data: CreateWalletByJsonParams = {
         password: password.value,
         json: keyStore

@@ -97,8 +97,6 @@ export default defineComponent({
       emit("handleClick");
     };
     const { data } = props;
-    console.log("数据", data);
-
     const sendAddress = computed(() => {
       return addressMask(props.data.to);
     });

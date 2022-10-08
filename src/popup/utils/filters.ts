@@ -118,7 +118,7 @@ export function calcTransaitionTotal(data: any = null) {
 }
 
 
-// 返回nft图片
+// nft img url
 export const nftImgUrl = (v: any) => {
   const { exchanger_addr } = v;
   let url = "";
@@ -145,8 +145,8 @@ export const scientificToNumber = (num:any) => {
   return num;
 }
 /**
- * 大数字转换，将大额数字转换为万、千万、亿等
- * @param value 数字值
+ * Large number conversion, converts large numbers into tens of millions, tens of millions, billions, etc
+ * @param value number
  */
 export function bigNumberTransform(value: any) {
   const newValue = ["", "", ""];
@@ -157,10 +157,8 @@ export function bigNumberTransform(value: any) {
   while (value / fr >= 1) {
     fr *= 10;
     num += 1;
-    // console.log('数字', value / fr, 'num:', num)
   }
   if (num <= 4) {
-    // 千
     // @ts-ignore
     newValue[0] = parseInt(value / 1000) + "";
     newValue[1] = "千";
@@ -215,10 +213,10 @@ export function bigNumberTransform(value: any) {
   return newValue.join("");
 }
 
-// 数字转换成js数字源语返回
+//The number is converted into JS digit source language and returned
 export const toNumber = (v: string) => new BigNumber(v).toExponential(10);
 
-// amount兑换成美元
+// Amount is changed into dollars
 export const toUsd = (v: string | number, keepDotLength = 18) => {
   if (!v) {
     return 0;
@@ -229,7 +227,7 @@ export const toUsd = (v: string | number, keepDotLength = 18) => {
     .toString();
 };
 
-// 在主网Wormholes的时候返回 兑换美元前面+ ≈$23，否则不返回
+// Returns + ≈$23 in front of the dollar when on the main web Wormholes, otherwise not
 export const toUsdSymbol = (v: string | number, keepDotLength = 6) => {
   const store = useStore();
   const showstr = toUsd(v,keepDotLength)
@@ -238,14 +236,14 @@ export const toUsdSymbol = (v: string | number, keepDotLength = 6) => {
   return chainId == 51888 ? `≈ $${showstr}`:''
 }
 
-// wei价格换成10进制
+// Wei Change the price to decimal
 export const weiToNumber = (v: number) => {
   return v ? utils.formatEther(v) : v;
 };
 
-// snft地址 转换成erb
-//  根据合成等级计算erb价格
-// 合成级别对应的兑换价格
+// SNFT addresses are converted to ERBs
+//  Calculate ERB price based on synthetic grade
+// The exchange price corresponding to the composite level
 // 0: 100000000000000000
 // 1: 150000000000000000
 // 2: 225000000000000000
@@ -253,7 +251,7 @@ export const weiToNumber = (v: number) => {
 export const snftToErb = (address) => {
   let erbNumber = null;
   switch (address.length) {
-    // snft 碎片
+    // snft chip
     case 42:
       erbNumber = utils.formatEther("95000000000000000");
       break;
@@ -261,11 +259,11 @@ export const snftToErb = (address) => {
     case 40:
       erbNumber = utils.formatEther("143000000000000000");
       break;
-      // 合集
+      // compilations
     case 39:
       erbNumber = utils.formatEther("271000000000000000");
       break;
-      // 期
+      // expect
     case 38:
       erbNumber = utils.formatEther("650000000000000000");
       break;
@@ -274,7 +272,7 @@ export const snftToErb = (address) => {
 };
 
 
-// 返回交易状态
+// Return transaction status
 export function transactionStatus(status: number){
   if(status == 1){
     return i18n.global.t('transationHistory.confirmed')
@@ -283,7 +281,7 @@ export function transactionStatus(status: number){
     return i18n.global.t('transationHistory.failed')
   }
 }
-// 返回交易形式
+// Back to Trade Form
 export function transactiontxType(status: string){
   if(status == 'send'){
     return i18n.global.t('transationHistory.send')
