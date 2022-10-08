@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="`new-nft-card pl-8 pr-8 ${data.total_hold == 216 ? 'blink' : ''}`"
+    :class="`new-nft-card pl-8 pr-8 ${data.total_hold == 256 ? 'blink' : ''}`"
   >
     <!-- 1.info -->
     <div class="coll-info">
@@ -354,9 +354,57 @@ export default defineComponent({
     const metaDomain = ref(`${VUE_APP_METAURL}`);
 
     // The conversion rate is calculated according to the number of SNFT selected
-    const ratio = computed(() => {
-      return 0.271;
-    });
+       // cacl ratio
+       const ratio = computed(() => {
+        const { status } = props;
+      if (status== "1" || status == "3") {
+          return 0.143
+        }
+        if (status == "2") {
+          const list = [];
+          const selectList = compData.value.children.filter(item => item.select)
+          // Three cases: 1. Collection set is full, 2. SNFT set is full, 3. Fragment does not consider collection case for the time being
+          selectList.forEach((child: any) => {
+                const {
+                  MergeLevel,
+                  Chipcount,
+                  pledgestate,
+                  snfts,
+                  nft_address,
+                } = child;
+                if (
+                  MergeLevel == 0 &&
+                  Chipcount > 0 &&
+                  pledgestate == "NoPledge"
+                ) {
+                  list.push(...snfts);
+                }
+                if (MergeLevel > 0 && Chipcount && pledgestate == "NoPledge") {
+                  list.push(nft_address.substr(0, 41));
+                }
+              });
+          let count = 0
+          let countNum = 0
+          list.forEach(add => {
+            const len = add.length
+            if(len == 42) {
+              countNum += 1
+              count = parseFloat(new BigNumber(count).plus(0.095).toFixed(8))
+            }
+            if(len == 41) {
+              countNum += 16
+              count = parseFloat(new BigNumber(count).plus(new BigNumber(16).multipliedBy(0.143)).toFixed(8))
+            }
+            if(len == 40) {
+              countNum += 256
+              count = parseFloat(new BigNumber(count).plus(new BigNumber(256).multipliedBy(0.271)).toFixed(8))
+            }
+          })
+          return isNaN(new BigNumber(count).div(countNum).toNumber()) ? 0 : new BigNumber(count).div(countNum).toFixed(4)
+        }
+
+
+    })
 
     const getNumber = computed(() => {
       const res = { ...props.data };
@@ -461,6 +509,7 @@ export default defineComponent({
         rgba(255, 255, 255, 1),
         rgb(253, 206, 78)
       );
+      animation: Gradient 6s ease infinite;
     }
     .coll-card {
       width: 35px;
@@ -522,6 +571,7 @@ export default defineComponent({
       margin-right: 0px !important;
     }
   }
+
   .total-amount {
     font-size: 12px;
     .select-box {
@@ -600,4 +650,18 @@ export default defineComponent({
     justify-content: space-between;
   }
 }
+
+
+@keyframes Gradient {
+    0% {
+        background-position: left 0 top 0;
+    }
+    50% {
+        background-position: left 50% top 0;
+    }
+    100% {
+        background-position: left 100% top 0;
+    }
+
+  }
 </style>
