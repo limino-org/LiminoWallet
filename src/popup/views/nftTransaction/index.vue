@@ -3,7 +3,7 @@
     <NavHeader :hasRight="false">
       <template v-slot:left>
         <div class="flex center cancel" @click="clickLeft">
-          {{ t("wallet.return") }}
+          {{ t("wallet.back") }}
         </div>
       </template>
     </NavHeader>
@@ -50,14 +50,21 @@
     </div>
   </div>
 
+  <div class="p-20">
+    <pre>{{txJSON}}</pre>
+  </div>
+
   <!-- Click to go to the next step-->
-  <van-sticky position="bottom" offset-bottom="30px">
-    <div class="btn-group">
+  <div class="btn-groups">
+     <div class="container pl-26 pr-26 flex evenly">
+      <van-button  @click="calcel" class="mr-10" plain block>{{
+        t("common.cancel")
+      }}</van-button>
       <van-button type="primary" @click="gonext" :loading="nextLoading" block>{{
         t("sendto.next")
       }}</van-button>
+     </div>
     </div>
-  </van-sticky>
 </template>
 
 <script lang="ts">
@@ -110,13 +117,14 @@ export default {
     const { query } = route;
     const { tx }: any = query;
     const newtx = JSON.parse(tx)
+    const txJSON = ref(newtx)
         console.warn('tx----------------',newtx)
 
     const clickRight = () => {
       router.replace({ name: "wallet" });
     };
     const clickLeft = () => {
-      router.back();
+      router.replace({name:"wallet"})
     };
     const toAccount: any = reactive({ data: {
       icon: getRandomIcon()
@@ -141,11 +149,15 @@ export default {
       }
     };
     const nextLoading: Ref<boolean> = ref(false);
-
+    const calcel = () => {
+      sendBackground({method:handleType.handleReject,response:{method:handleType.eth_sendTransaction}})
+    }
     return {
       t,
+      calcel,
       clickRight,
       clickLeft,
+      txJSON,
       gonext,
       accountInfo,
       toAddress,
@@ -160,6 +172,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  pre {
+    background: #d4e5f3;
+  }
 .cancel {
   font-size: 11px;
   color: #037cd6;

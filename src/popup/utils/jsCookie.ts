@@ -120,7 +120,7 @@ export function setCookies(key: string = pwdKey, value: any, expiresTime?: numbe
   }
   let expires = new Date(new Date() * 1 + seconds * 1000)
   Cookies.set(key, pwd, { expires: expires });
-  sendBackground({method:"login", data:{ password: pwd}})
+  sendBackground({method:"login", response:{ password: pwd}})
   store.commit('system/UPDATE_WALLET_TOKEN',pwdObj)
   return value
  
@@ -138,6 +138,7 @@ export function loginOut() {
     value:''
   })
   Cookies.set(pwdKey, '')
+  sendBackground({method:"logout"})
 }
 
 

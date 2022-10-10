@@ -44,5 +44,9 @@ export enum handleType {
   removeAllListeners = 'removeAllListeners',
   // Get account balance
   eth_getBalance = 'eth_getBalance',
-  net_version = 'net_version'
+  net_version = 'net_version',
+  logout = "logout",
+  login = "login",
+  getConnectList = "getConnectList",
+  handleReject = 'handleReject'
 }

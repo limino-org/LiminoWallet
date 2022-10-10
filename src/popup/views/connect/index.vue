@@ -37,7 +37,7 @@ import { Icon, Toast, Button, Sticky, Field,Checkbox, CheckboxGroup  } from "van
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useStore } from 'vuex';
 import AccountIcon from '@/popup/components/accountIcon/index.vue'
 import { addressMask } from '@/popup/utils/filters';
@@ -60,22 +60,35 @@ export default {
     const router = useRouter();
     const store = useStore()
     const accountInfo = computed(() => store.state.account.accountInfo)
-    
+    const { t } = useI18n();
     const accountList = computed(() => {
         return store.state.account.accountList
     })
     // @ts-ignore
     // const bg = chrome.runtime.getBackgroundPage();
-    const currentSender = bg.connectList.find(item => item.origin == bg.params[handleType.wallet_requestPermissions].sender.origin)
-    const accounts = currentSender ? currentSender.accountList : []
-    const { t } = useI18n();
-    const checkArr = [accountInfo.value.address,...accounts]
-    const checkedList = ref(checkArr)
+    // const currentSender = bg.connectList.find(item => item.origin == bg.params[handleType.wallet_requestPermissions].sender.origin)
+    // const accounts = currentSender ? currentSender.accountList : []
+
+    // const checkArr = [accountInfo.value.address,...accounts]
+    const checkedList = ref([])
+
     const { sender } = route.query
     console.warn('sender',sender)
     const senderData = ref(JSON.parse(decodeURIComponent(sender.toString())))
     const selectLen = computed(() => {
        return checkedList.value.length
+    })
+    onMounted(async()=>{
+      const method = 'wallet_requestPermissions'
+      // @ts-ignore
+      const list = await chrome.storage.local.get(['connectList'])
+       // @ts-ignore
+      const data = await chrome.storage.local.get([method])
+      const sendParams = data[method] ? data[method] : {}
+      const currentSender = list.connectList.find((item: any) => item.origin == sendParams.sender.origin)
+      const accounts = currentSender ? currentSender.accountList : []
+      const checkArr = [accountInfo.value.address,...accounts]
+      checkedList.value = checkArr
     })
     const next = () => {
       sendBackground({method:handleType.wallet_requestPermissions,response: {code:'200',data:[...checkedList.value]}})
@@ -86,7 +99,7 @@ export default {
         // @ts-ignore
       // const bg = chrome.runtime.getBackgroundPage();
       // bg.handleReject(handleType.wallet_requestPermissions)
-      sendBackground({method:handleType.wallet_requestPermissions,response:{code:"4001"}})
+      sendBackground({method:handleType.handleReject,response:{method:handleType.wallet_requestPermissions}})
     }
     return {
       route,

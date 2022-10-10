@@ -44,6 +44,7 @@ import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
 import { sendBackground } from '@/popup/utils/sendBackground'
+import { handleType } from '@/scripts/eventType'
 
 export default {
   name: 'sign',
@@ -99,7 +100,7 @@ export default {
       // const bg = chrome.runtime.getBackgroundPage()
       // bg.handleReject(signType)
       // bg.closePopup(signType)
-      sendBackground({method:signType,response:{code:'4001',data: null}})
+      sendBackground({method:handleType.handleReject,response:{method:signType}})
 
     }
     onMounted(() => {
