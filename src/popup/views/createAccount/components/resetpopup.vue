@@ -47,10 +47,10 @@ import { defineComponent, ref, Ref, watch, SetupContext, reactive, computed, nex
 import { Dialog, Button, Field, NumberKeyboard, Toast, Icon } from 'vant'
 import { regNum2 } from '@/popup/enum/regexp'
 import { toUsd } from '@/popup/utils/filters'
-import { setCookies, getCookies, hasLogin } from "@/popup/utils/jsCookie";
 import localforage from "localforage";
 import { useCountDown } from '@vant/use';
-import BigNumber from 'bignumber.js'
+import { useBroadCast } from '@/popup/utils/broadCost'
+
 export default defineComponent({
   name: 'resetpopup',
   emits: ['cancel'],
@@ -72,6 +72,7 @@ export default defineComponent({
     }
   },
   setup(props: any, context: SetupContext) {
+    const { handleUpdate } = useBroadCast()
     const { emit }: any = context
     const showModal: Ref<boolean> = ref(false)
     const ipt = ref(null)
@@ -118,7 +119,8 @@ export default defineComponent({
     // Reset the wallet
     const handleComfirm = async () => {
       try {
-        localforage.clear()
+        await localforage.clear()
+        handleUpdate()
         // setCookies('password','')
         location.reload()
       }catch(err) {

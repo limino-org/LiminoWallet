@@ -132,7 +132,7 @@ export default {
     };
     onMounted(async () => {
       // Get the decrypted mnemonic
-      const password = getCookies("password");
+      const password = await getCookies("password");
       const realmm = await parseMnemonic(password);
       // Correct sorting
       const nlist = realmm

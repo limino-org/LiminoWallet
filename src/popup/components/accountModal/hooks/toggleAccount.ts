@@ -54,7 +54,7 @@ export const useToggleAccount = () => {
     accountLoading.value = true;
     clickAccountIdx.value = idx;
     const { currentNetwork } = store.state.account;
-    const password: string = getCookies("password") || "";
+    const password: string = await getCookies("password") || "";
     const keyStore = toRaw(account.keyStore);
     const data: CreateWalletByJsonParams = {
       password,
@@ -89,7 +89,7 @@ export const useToggleAccount = () => {
   const createWalletByPath = async (callBack: Function = () => {}) => {
     // Get the current BIP44 path
     const { pathIndex, path }: any = { ...store.state.account.mnemonic };
-    const password: string = getCookies("password") || "";
+    const password: string = await getCookies("password") || "";
     let phrase: string = await parseMnemonic(password);
     let mnemonic: CreateWalletByMnemonicParams = { pathIndex, phrase, path };
     let wallet = await dispatch("account/createWallet", mnemonic);
@@ -109,9 +109,9 @@ export const useToggleAccount = () => {
     }
   };
 
-  const createAccount = () => {
+  const createAccount = async() => {
     // Store mnemonic words
-    const password: string = getCookies("password") || "";
+    const password: string = await getCookies("password") || "";
     if (!password) {
       router.replace({ name: "loginAccount-step1" });
     }

@@ -93,9 +93,9 @@ export default {
       );
       // Verify whether the private key is valid
       dispatch("account/importPrivateKey", privatekey.value.trim())
-        .then((wallet) => {
+        .then(async(wallet) => {
           const { privateKey, mnemonic, address } = wallet;
-          const password = getCookies("password") || "";
+          const password = await getCookies("password") || "";
           if (!password) {
             router.replace({ name: "loginAccount-step1" });
             return false;

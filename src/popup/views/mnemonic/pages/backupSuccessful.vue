@@ -80,7 +80,7 @@ export default {
     const data = ref("");
     onMounted(async () => {
       // Get the decrypted mnemonic
-      const password = getCookies("password");
+      const password = await getCookies("password");
       data.value = await parseMnemonic(password);
       commit("system/UPDATE_HASBACKUPMNEMONIC", true);
     });

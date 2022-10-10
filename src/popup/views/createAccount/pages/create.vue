@@ -116,7 +116,7 @@ CheckboxGroup,
 } from "vant";
 import { encryptPrivateKey, EncryptPrivateKeyParams } from "@/popup/utils/web3";
 import { ref, Ref, computed, toRaw, SetupContext, onMounted } from "vue";
-import { setCookies, getCookies, loginOut } from "@/popup/utils/jsCookie";
+import { setCookies } from "@/popup/utils/jsCookie";
 import { passwordExpires } from "@/popup/enum/time";
 import { web3 } from "@/popup/utils/web3";
 import { useRouter } from "vue-router";
@@ -164,7 +164,7 @@ setup() {
       loading.value = true;
       // Store password
       try {
-        const pwd: string = setCookies(
+        const pwd = setCookies(
           "password",
           password.value,
           passwordExpires

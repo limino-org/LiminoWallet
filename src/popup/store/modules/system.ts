@@ -4,7 +4,8 @@ import { useStore } from "vuex";
 import { addressMask, decimal } from "@/popup/utils/filters";
 import { erb_price } from '@/popup/http/modules/price'
 import { getWallet } from '@/popup/store/modules/account'
-import { guid } from '@/popup/utils/utils'
+import { useBroadCast } from '@/popup/utils/broadCost'
+const { handleUpdate } = useBroadCast()
 type WalletToken = {
   seconds: number
   time: number
@@ -112,18 +113,23 @@ export default {
     },
     UPDATA_SHOW(state: State, idx: number) {
       state[`show${idx}`] = true;
+      handleUpdate()
     },
     UPDATA_HIDE(state: State, idx: number) {
       state[`show${idx}`] ? (state[`show${idx}`] = false) : "";
+      handleUpdate()
     },
     UPDATE_GUIDEFLAG(state: State, val: boolean){
       state.finishedGuide = val
+      handleUpdate()
     },
     UPDATE_HASBACKUPMNEMONIC(state: State, val: boolean){
       state.hasBackUpMnemonic = val
+      handleUpdate()
     },
     UPDATE_LASTDELAYTIME(state:State, time: number){
       state.lastDelayTime = time
+      handleUpdate()
     },
     UPDATA_ACCOUNTINFO(state: State, info: any) {
       state.ethAccountInfo = info
@@ -145,6 +151,7 @@ export default {
         time,
         value:''
       }
+      handleUpdate()
     },
   },
   getters: {

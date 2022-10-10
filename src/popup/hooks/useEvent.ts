@@ -24,7 +24,6 @@ export const useEvent = () => {
         // const bg = chrome.runtime.getBackgroundPage();
         // bg.params[eventsEmitter.chainChanged].sendResponse({response: chainId})
         sendBackground({method:eventsEmitter.chainChanged, response:{code:"200",data:chainId}})
-
         dispatch("system/getEthAccountInfo");
         handleUpdate()
     })
@@ -34,7 +33,6 @@ export const useEvent = () => {
         // const bg = chrome.runtime.getBackgroundPage();
         // bg.params[eventsEmitter.accountsChanged].sendResponse({response:address})
         sendBackground({method:eventsEmitter.accountsChanged, response:{code:'200',data:address}})
-
         dispatch("system/getEthAccountInfo");
         handleUpdate()
     })

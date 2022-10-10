@@ -2,6 +2,8 @@ import { Toast, Notify, GridItem } from "vant";
 import { ethers, utils } from "ethers";
 import { clone } from 'pouchdb-utils';
 import storeObj from '@/popup/store/index'
+import { useBroadCast } from '@/popup/utils/broadCost'
+const { handleUpdate } = useBroadCast()
 // @ts-ignore
 window.utils = utils;
 import {
@@ -304,19 +306,14 @@ export default {
       const { path, pathIndex } = value;
       const data = { path, pathIndex };
       state.mnemonic = data;
+      handleUpdate()
     },
     // Update Wallet
     UPDATE_WALLET(state: State, value: any) {
-      console.log('wallet', value)
       wallet = value;
       if (wallet.provider) {
-        // @ts-ignore
-        // const bg = chrome.runtime.getBackgroundPage();
-        // bg.initWallet()
         sendBackground({method:'update-wallet'})
-
       }
-      localStorage.setItem("wallet", JSON.stringify({ ...value }));
     },
     // New account
     ADD_ACCOUNT(state: State, value: Array<Object>) {
@@ -386,11 +383,13 @@ export default {
           state.netWorkList[i] = network;
         }
       }
+      handleUpdate()
     },
     // Delete network by ID
     DETETE_NETWORK(state: State, id: string) {
       const list = state.netWorkList.filter((item) => item.id != id);
       state.netWorkList = list;
+      handleUpdate()
     },
     // Update network selection status
     UPDATE_NETWORKSTATUS(state: State, value: NetWorkData) {
@@ -406,6 +405,7 @@ export default {
     // Update the keystore of the current Wallet
     UPDATE_KEYSTORE(state: State, value: Object) {
       state.keyStore = value;
+      handleUpdate()
     },
     // Update the keystore of an address
     UPDATE_KEYSTORE_BYADDRESS(
@@ -422,6 +422,7 @@ export default {
       if (state.accountInfo.address.toUpperCase() == address.toUpperCase()) {
         state.accountInfo.keyStore = json;
       }
+      handleUpdate()
     },
     // Update account information
     UPDATE_ACCOUNTINFO(state: State, value: AccountInfo) {
@@ -457,6 +458,7 @@ export default {
       }
       state.currentNetwork = currentNetwork;
       state.netWorkList = netWorkList;
+      handleUpdate()
     },
     // Update balance
     UPDATE_BALANCE(state: State, balance: string) {
@@ -515,6 +517,7 @@ export default {
     // Add network to list
     PUSH_NETWORK(state: State, network: NetWorkData) {
       state.netWorkList.push(network);
+      handleUpdate()
     },
     // Update data on the chain
     UPDATE_CHAINACCOUNTINFO(state: State, val: any) {
@@ -540,18 +543,22 @@ export default {
       if (state.accountInfo.address.toUpperCase() == add && acc) {
         state.accountInfo = { ...acc }
       }
+      handleUpdate()
     },
     // Add address book
     ADD_CONTACTS(state: State, opt: ContactInfo) {
       state.contacts.unshift(opt);
+      handleUpdate()
     },
     // Delete Contact
     DELETE_CONTACT(state: State, index: number) {
       state.contacts.splice(index, 1);
+      handleUpdate()
     },
     // Edit Contact
     MODIF_CONTACT(state: State, { targetIndex, opt }: any) {
       state.contacts[targetIndex] = opt;
+      handleUpdate()
     },
     // Push to transaction queue
     ADD_TRANACTIONLIST(state: State, data: any) {
@@ -569,6 +576,7 @@ export default {
         }
         state.tranactionModel = true;
       }
+      handleUpdate()
     },
     // Update transaction queue data
     UPDATE_TRANACTIONLIST(state: State, data: TransactionReceipt) {
@@ -582,12 +590,14 @@ export default {
         }
       }
       state.tranactionModel = true;
+      handleUpdate()
     },
     // Remove a transaction from the transaction queue according to the hash
     DELETE_TRANACTIONLIST(state: State, hash: string) {
       const list = state.tranactionList;
       let idx = list.find((item) => item.hash == hash);
       list.splice(idx, 1);
+      handleUpdate()
     },
     // Close the transaction queue pending pop-up window
     CLOSE_TRANACTIONMODAL(state: State) {
@@ -632,6 +642,7 @@ export default {
       if (len > 10) {
         state.recentList.splice(len - 1, 1);
       }
+      handleUpdate()
     },
     // Update contractAddress
     UPDATE_CONTRACTADDRESS(state: State, ERBPay: string) {
@@ -646,6 +657,7 @@ export default {
       const txQueue = list ? JSON.parse(list) : []
       const newList = txQueue.filter((item: any) => item.hash != tx.hash)
       localStorage.setItem('txQueue', JSON.stringify(newList))
+      handleUpdate()
     },
     // new tx push to queue
     PUSH_TXQUEUE(state: State, tx: any) {
@@ -653,6 +665,7 @@ export default {
           const txQueue = list ? JSON.parse(list) : []
           txQueue.push(tx)
           localStorage.setItem('txQueue', JSON.stringify(txQueue))
+          handleUpdate()
         },
   },
   actions: {
@@ -667,14 +680,10 @@ export default {
     },
     // According to the current network status, the wallet status returns the wallet instance
     async getWallet({ commit, dispatch, state }: any) {
-      // @ts-ignore
-      // const bg = chrome.runtime.getBackgroundPage();
-
-
       try {
         const { accountInfo } = state;
         const { keyStore } = accountInfo;
-        const password: string = getCookies("password") || "";
+        const password: string = await getCookies("password") || "";
         if (!password) {
           const query = getQuery();
           // @ts-ignore
@@ -1266,7 +1275,7 @@ export default {
         Toast(i18n.global.t('createAccountpage.pwdRequired'));
         return Promise.reject();
       }
-      const pwd = getCookies("password");
+      const pwd = await getCookies("password");
       state.accountList.forEach(async (item: any) => {
         const { keyStore, address } = item;
         const privateKey = decryptPrivateKey({

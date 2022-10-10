@@ -79,7 +79,7 @@ import NavHeader from '@/popup/components/navHeader/index.vue'
 
 import { defineComponent, Ref, ref, watch, SetupContext, onBeforeMount, onBeforeUpdate, onMounted, nextTick } from 'vue'
 import router from '@/popup/router'
-import { setCookies, getCookies } from '@/popup/utils/jsCookie'
+import { setCookies } from '@/popup/utils/jsCookie'
 // @ts-ignore
 import { encrypt, decrypt } from '@/popup/utils/cryptoJS.js'
 import { useI18n } from 'vue-i18n'

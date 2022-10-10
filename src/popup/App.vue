@@ -39,7 +39,7 @@ import CommonModal from "@/popup/components/commonModal/index.vue";
 import { addressMask, transactionStatus } from "./utils/filters";
 import { guid } from '@/popup/utils/utils'
 import { useBroadCast } from '@/popup/utils/broadCost'
-
+import storeObj from '@/popup/store/index'
 export default {
   components: {
     [Button.name]: Button,
@@ -48,7 +48,8 @@ export default {
   setup() {
     const { t } = useI18n();
     const route = useRoute();
-    const { commit, dispatch, state, getters } = useStore();
+    const store = useStore();
+    const { commit, dispatch, state, getters } = store
     const { initWallet } = useWallet();
     const currentNetwork = computed(() => state.account.currentNetwork);
     provide("appProvide", appProvide());
@@ -57,13 +58,13 @@ export default {
      dispatch('system/setConversationid', guid())
            // Listen to the broadcast of the same source window
       const { broad } = useBroadCast()
-      broad.onmessage = (e) => {
+      broad.onmessage = async(e) => {
         const { data }: any = e
         const { action, id } = data
         if(data && action) {
           // If the same-origin window updates the account
           if(action == 'wromHoles-update' && id != state.system.conversationId) {
-            window.location.reload()
+           window.location.reload()
           }
         }
       }

@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import { CreateWalletByJsonParams, CreateWalletByMnemonicParams } from '@/popup/utils/ether'
-import { setCookies, getCookies } from '@/popup/utils/jsCookie'
+import { setCookies } from '@/popup/utils/jsCookie'
 import { ref, Ref, computed, toRaw, SetupContext, onMounted } from 'vue'
 import { Icon, NavBar, Form, Field, CellGroup, Button } from 'vant'
 import { passwordExpires } from '@/popup/enum/time'

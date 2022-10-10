@@ -66,7 +66,6 @@
 <script lang="ts">
 import SwitchNetwork from "@/popup/components/switchNetwork/index.vue";
 import { CreateWalletByJsonParams, CreateWalletByMnemonicParams,createWalletByJson } from '@/popup/utils/ether'
-import { setCookies, getCookies } from '@/popup/utils/jsCookie'
 import { ref, Ref, computed, toRaw, SetupContext, onMounted, inject } from 'vue'
 import { Icon, NavBar, Form, Field, CellGroup, Button, Toast } from 'vant'
 import { useRoute, useRouter } from 'vue-router'

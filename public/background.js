@@ -17,13 +17,11 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     clearConnectList()
   }
   const { data, target } = request;
-  console.log('target', target, data,request)
   if (!target) {
     return false
   }
   if (target != 'wormholes-inpage' && target != 'wormholes-popup' && (!data || !data.method)) {
     const errMsg = errorCode['4100']
-    console.warn('111---------------------------------------------------------')
     sendMessage(createMsg(errMsg, data.method || 'unknow'), {}, sender)
     return false
   }
@@ -31,7 +29,6 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
   // Check whether target is a Content-script injected wormholes-inpage
   // Authentication to check whether the connection is established
   const isConnect = await isConnected(sender)
-  console.warn('isConnect', isConnect, sender)
   //  When not connected
   if ((target == 'wormholes-inpage' && !isConnect) && (method != handleType.wallet_requestPermissions && method != handleType.eth_requestAccounts)) {
     const errMsg = errorCode['4100']
@@ -43,7 +40,6 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     const response = await getSenderAccounts(sender)
     const errMsg = { ...errorCode['200'], data: response }
     const sendMsg = createMsg(errMsg, method)
-    console.warn('connected...', sendMsg)
     sendMessage(sendMsg, {}, sender)
     return false
   }
@@ -71,8 +67,10 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     const { method, response} = data
     if (method == 'update-wallet') {
       initWallet()
+      sendResponse({code:200})
       return false
     }
+
     if (!params[method] || !params[method].sendResponse) {
       const errMsg = errorCode['4200']
       sendMessage(createMsg(errMsg, method || 'unknow'), {}, sender)
@@ -84,7 +82,6 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
 });
 
 const handleGetPwd = (str, time) => {
-  console.log('handleGetPwd',str, time)
   return decrypt(str, time)
 }
 
@@ -92,6 +89,7 @@ const handleGetPwd = (str, time) => {
 
 chrome.runtime.onInstalled.addListener(async () => {
   await clearConnectList()
+  await clearPwd()
   console.log('Background.js onInstalled.')
 })
 
@@ -256,7 +254,10 @@ function clearConnectList(){
   return chrome.storage.local.set({connectList:[]})
 }
 
-
+// clear password
+function clearPwd(){
+  return chrome.storage.local.set({password:''})
+}
 
 async function getPwd() {
   const local = await localforage.getItem("vuex") || null
@@ -278,14 +279,11 @@ const eventTypes = {
 async function initWallet() {
   const local = await localforage.getItem("vuex") || null
   if (!local) {
-    console.error("The wallet instance has not been initialized");
     const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The wallet has not been initialized. Please initialize the wallet first" }
     throw errMsg
   }
   const pwdVal = await getPwd()
-  console.warn('pwdVal', pwdVal)
   if (!pwdVal) {
-    console.error("The wallet instance has not been initialized");
     const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The wallet has not been initialized. Please initialize the wallet first" }
     throw errMsg
   }
@@ -376,7 +374,6 @@ export const handleType = {
   net_version: 'net_version',
   logout:"logout",
   login:"login",
-  getConnectList:"getConnectList",
   handleReject:'handleReject'
 }
 
@@ -396,34 +393,25 @@ const params = {
       closeTabs()
     }
   },
-  [handleType.getConnectList]:{
-    sendResponse:async(data,sendResponse,sender) => {
-      const errMsg = { ...errorCode['200'], data: data }
-      const method = handleType.getConnectList
-      const sendMsg = createMsg(errMsg, method)
-      // sendResponse(sendMsg)
-      await sendMessage(sendMsg, {}, sender)
-    }
-  },
+
   [handleType.logout]:{
     sendResponse:async() => {
-      chrome.storage.local.set({ password: "" })
+      await chrome.storage.local.set({ password: "" })
       await clearConnectList()
     }
   },
   [handleType.login]:{
-    sendResponse:async(data) => {
-      let localPwd = await chrome.storage.local.get(['password'])
-      const {password}= data
-      if (!localPwd.password && password) {
-        console.warn('set pwd', password)
-        chrome.storage.local.set({ password })
-        chrome.alarms.create(eventTypes.pwdExpired, { delayInMinutes: 60 });
-        chrome.alarms.onAlarm.addListener((e) => {
+    sendResponse:async(data, sendResponse, sender) => {
+      const { password }= data
+      if (password) {
+        await chrome.storage.local.set({ password })
+        chrome.alarms.create(eventTypes.pwdExpired, { delayInMinutes: 720 });
+        chrome.alarms.onAlarm.addListener(async(e) => {
           const { name } = e
           if (name == eventTypes.pwdExpired) {
-            chrome.storage.local.set({ password: "" })
-            console.log('clear pwd')
+            // 12 h password expired clear data
+            await clearConnectList()
+            await clearPwd()
           }
         })
       }
@@ -442,7 +430,6 @@ const params = {
       await setSenderAccounts(sender, data.data)
       const errMsg = { ...errorCode['200'], data: data }
       const sendMsg = createMsg(errMsg, method)
-      console.warn('sendMsg', sendMsg)
       await sendMessage(sendMsg, {}, sender)
       closeTabs()
     }
@@ -456,7 +443,6 @@ const params = {
       const errMsg = data
       const method = handleType.personal_sign
       const sendMsg = createMsg(errMsg, method)
-      console.warn('sendMsg', sendMsg)
       await sendMessage(sendMsg, {}, params[method].sender)
       closeTabs()
     },
@@ -470,7 +456,6 @@ const params = {
       const errMsg = { ...errorCode['200'], data: response }
       const method = handleType.eth_sign
       const sendMsg = createMsg(errMsg, handleType.eth_sign)
-      console.warn('sendMsg', sendMsg)
       await sendMessage(sendMsg, {}, params[method].sender)
       closeTabs()
     },
@@ -501,7 +486,6 @@ const params = {
         const errMsg = { ...errorCode['200'], data: response }
         const method = handleType.eth_getBlockNumber
         const sendMsg = createMsg(errMsg, method)
-        console.warn('sendMsg', sendMsg)
         sendMessage(sendMsg, {}, params[method].sender)
       } catch (err) {
         console.error('eth_blockNumber', err)
@@ -518,7 +502,6 @@ const params = {
       const errMsg = { ...errorCode['200'], data: response }
       const method = handleType.eth_getNetWork
       const sendMsg = createMsg(errMsg, handleType.eth_getNetWork)
-      console.warn('sendMsg', sendMsg)
       sendMessage(sendMsg, {}, params[method].sender)
     },
   },
@@ -542,7 +525,7 @@ const params = {
   // Switch account
   [eventsEmitter.accountsChanged]: {
     sendResponse: async (v) => {
-      console.warn('changeNetWork', v)
+      console.warn('accountsChanged', v)
       const wallet = await getWallet()
       const { response } = v;
       const errMsg = { ...errorCode['200'], data: response }
@@ -565,23 +548,12 @@ const params = {
       const method = handleType.eth_sendTransaction
       const senderParams = await getLocalParams(method)
       const sendMsg = createMsg(errMsg, method)
-      console.warn('sendMsg', sendMsg)
       await sendMessage(sendMsg, {}, senderParams.sender)
       closeTabs()
 
     },
   },
 };
-//  params = params;
-
-// Return to refuse
-const handleReject = async (type) => {
-  const errMsg = { ...errorCode['4001'], data: null }
-  const sendMsg = createMsg(errMsg, type)
-  await sendMessage(sendMsg, {},  params[type].sender)
-  closeTabs()
-}
-
 
 // call function
 const handlers = {
@@ -590,7 +562,6 @@ const handlers = {
     const method = handleType.wallet_requestPermissions
     const senderParams = await getLocalParams(method)
     const { status } =  senderParams
-    console.warn('********************', 'wallet_requestPermissions', status)
     const local = await localforage.getItem("vuex") || null
 
     const accountList = await getSenderAccounts(sender)
@@ -631,12 +602,10 @@ const handlers = {
   },
   // Signature Indicates a single signature of the interface
   async [handleType.personal_sign](data, sendResponse, sender) {
-    console.warn("chrome.windows", chrome.windows, data);
     // Signed hexadecimal data, signed account address
     const [sig, address] = data
     // Parsing signature data
     const recoverSig = ethers.utils.toUtf8String(sig)
-    console.warn('recoverSig', recoverSig)
     let str = `sig=${recoverSig}&signType=personal_sign`;
     const newurl = `${globalPath}#/sign?${str}`;
     try {
@@ -647,12 +616,10 @@ const handlers = {
   },
   //Signature Indicates a single signature of the interface
   async [handleType.eth_sign](data, sendResponse, sender) {
-    console.warn("chrome.windows", chrome.windows, data);
     //Sign the hexadecimal data and sign the account address
     const [address, sig] = data
     // Parsing signature data
     const recoverSig = ethers.utils.toUtf8String(sig)
-    console.warn('recoverSig', recoverSig)
     let str = `sig=${recoverSig}&signType=eth_sign`;
     const newurl = `${globalPath}#/sign?${str}`;
     try {
@@ -663,7 +630,6 @@ const handlers = {
   },
   // Signature Interface has multiple signatures at a time
   async [handleType.multiple_sign](data, sendResponse, sender) {
-    console.warn("chrome.windows", chrome.windows, data);
     // Sign the hexadecimal data and sign the account address
     let str = `sig=${data}`;
     const newurl = `${globalPath}#/multipleSign?${str}`;
@@ -717,11 +683,9 @@ const handlers = {
   // Obtain transaction information through transaction hash
   async [handleType.eth_getTransactionByHash](data, sendResponse, sender) {
     const [hash] = data
-    console.warn('eth_getTransactionByHash---------------', data)
     try {
       const wallet = await getWallet();
       const receipt = await wallet.provider.getTransaction(hash)
-      console.warn('receipt---------------', receipt)
       receipt.hash = hash
       const errMsg = { ...errorCode['200'], data: receipt || null }
       const sendMsg = createMsg(errMsg, handleType.eth_getTransactionByHash)
@@ -734,7 +698,6 @@ const handlers = {
   async [handleType.eth_chainId](data, sendResponse, sender) {
     try {
       const wallet = await getWallet();
-      console.log('wallet',wallet)
       const network = await wallet.provider.getNetwork();
       const chainId = ethers.utils.hexlify(network.chainId)
       const errMsg = { ...errorCode['200'], data: chainId }
@@ -748,7 +711,6 @@ const handlers = {
   async [handleType.net_version](data, sendResponse, sender) {
     try {
       const wallet = await getWallet();
-      console.log('wallet',wallet)
       const network = await wallet.provider.getNetwork();
       const chainId = ethers.utils.hexlify(network.chainId)
       const errMsg = { ...errorCode['200'], data: chainId }
@@ -761,7 +723,6 @@ const handlers = {
   // Gets the current wallet address
   async [handleType.eth_accounts](data, sendResponse, sender) {
     const wallet = await getWallet();
-    console.log('eth_accounts', wallet)
     const errMsg = { ...errorCode['200'], data: [wallet.address] }
     const sendMsg = createMsg(errMsg, handleType.eth_accounts)
     sendMessage(sendMsg, {}, sender)
@@ -776,12 +737,10 @@ const handlers = {
     const wallet = await getWallet()
     try {
       const gas = await wallet.provider.estimateGas(tx)
-      console.log('gas', gas)
       const errMsg = { ...errorCode['200'], data: gas }
       const sendMsg = createMsg(errMsg, handleType.eth_estimateGas)
       sendMessage(sendMsg, {}, sender)
     } catch (err) {
-      console.error('err', err)
       const { reason, message } = err
       const errMsg = {
         code: "-32000",
@@ -796,7 +755,6 @@ const handlers = {
   },
   // Estimated gas charges remove listening events and client logout
   async [handleType.removeAllListeners](data, sendResponse, sender) {
-    console.warn('removeAllListeners------------------', sender)
     let connectList = await getConnectList()
     const list = connectList.filter(item => item.origin != sender.origin)
     await chrome.storage.local.set({connectList:list})
@@ -833,13 +791,11 @@ function sendMessage(msg = {}, opt = {}, sender) {
     chrome.tabs.query(
       opt,
       async(tabs) => {
-        console.log('chrome.tabs.query', tabs, msg, opt, sender)
         if (tabs.length) {
           // send to sender
           for (const tab of tabs) {
             if(sender){
               if (tab.url.includes(sender.origin)) {
-                console.log('send message', msg, sender)
                 const { origin } = sender
                 chrome.tabs.sendMessage(tab.id, {...msg, origin});
                 resolve()
@@ -949,11 +905,6 @@ async function openTabPopup(
         currentWindow,
         pupupType: 'tab'
       }})
-      //  params[method]["window"] = e;
-      //  params[method]["sender"] = sender;
-      //  params[method]["handleResponse"] = handleResponse || null;
-      //  params[method].currentWindow = currentWindow
-      //  params[method].pupupType = 'tab'
       resolve(e)
     })
   })

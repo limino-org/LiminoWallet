@@ -22,10 +22,10 @@ export const useSign = () => {
     let { address, sig, backUrl: back } = query
     let isAdmin:Boolean = true
     const loading:Ref<boolean> = ref(false)
-    const password = getCookies('password')
     const backUrl: Ref<string> = ref('')
     // Link the address wallet first
-    const toSign = (opt: SignParams) => {
+    const toSign = async(opt: SignParams) => {
+        const password = await getCookies('password')
         let call: Function = () => {}
         if(opt){
             address =  opt.address
@@ -72,7 +72,6 @@ export const useSign = () => {
     return {
         toSign,
         loading,
-        password,
         sign,
         address,
         backUrl

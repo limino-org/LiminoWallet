@@ -78,7 +78,7 @@ import { Mnemonic } from "@/popup/store/modules/account";
 import { utils } from 'ethers'
 import  { web3 } from '@/popup/utils/web3'
 import { passwordExpires } from '@/popup/enum/time'
-import { setCookies, getCookies } from '@/popup/utils/jsCookie'
+import { setCookies } from '@/popup/utils/jsCookie'
 import localforage from 'localforage';
 
 export default {

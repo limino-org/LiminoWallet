@@ -42,7 +42,6 @@
 <script lang="ts">
 import QrcodeVue from 'qrcode.vue'
 import { downloadBase64Img } from '@/popup/utils/utils'
-import { setCookies, getCookies } from '@/popup/utils/jsCookie'
 import { ref, Ref, computed, toRaw, SetupContext, onMounted, onActivated, getCurrentInstance, ComponentInternalInstance  } from 'vue'
 import { Icon, NavBar, Form, Field, CellGroup, Button, Toast } from 'vant'
 import useClipboard from 'vue-clipboard3'

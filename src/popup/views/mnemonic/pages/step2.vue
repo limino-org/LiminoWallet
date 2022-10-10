@@ -86,7 +86,7 @@ export default {
     const password = ref()
     onMounted(async () => {
       // Get the decrypted mnemonic
-      const password = getCookies("password");
+      const password = await getCookies("password");
       const realmm = await parseMnemonic(password);
       const nlist = realmm
         .split(" ")

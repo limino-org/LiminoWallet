@@ -1,12 +1,20 @@
 <template>
   <div>
+    <NavHeader :title="t('wallet.wormHoles')" :hasLeft="false" :hasRight="false" />
     <div class="title">
-      <img class="iconele flex center" src="@/assets/logo1.png" alt />
+                
+    <WormTransition size="small">
+      <template v-slot:icon>
+        <img class="iconele" src="@/assets/token/logowallet.png" />
+      </template>
+    </WormTransition>
+      <!-- <img class="iconele flex center" src="@/assets/token/icon_blue.svg" alt /> -->
       <div class="tit-big text-center f-24">
         {{ t("createAccountpage.welcome") }}
       </div>
       <div class="tit-small text-center f-12 mt-14 mb-30 lh-16">
-        {{ t("loginwithpassword.smallTit") }}
+    
+        {{t('loginwithpassword.smallTit')}}
       </div>
     </div>
     <div class="create-new-password">
@@ -36,10 +44,9 @@
             ]"
           />
         </van-cell-group>
-        <div style="margin: 27px 16px 28px">
+        <div class="btn-box">
           <van-button
             :loading="loading"
-            :disable="btnDisabled"
             round
             block
             type="primary"
@@ -49,13 +56,23 @@
         </div>
       </van-form>
       <div class="text-center f-12">
+        <i18n-t tag="div" class="reset-box" keypath="createAccountpage.cantLogin">
+          <template v-slot:reset>
+        <span class="lh-20 tool hover" @click="reset" :disable="reset_flag">
+          {{ t("createAccountpage.resentWallet") }}
+        </span>
+          </template>
+        </i18n-t>
+
+      </div>
+      <!-- <div class="text-center f-12">
         <div class="tit-small lh-20 mb-20">
           {{ t("createAccountpage.cantLogin") }}
         </div>
         <div class="lh-20 tool hover" @click="reset">
           {{ t("createAccountpage.resentWallet") }}
         </div>
-      </div>
+      </div> -->
     </div>
     <Resetpopup
       v-model="resetmodule"
@@ -80,7 +97,7 @@ import {
 } from "vant";
 import { ref, Ref, computed, toRaw, SetupContext, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { setCookies, getCookies, loginOut } from "@/popup/utils/jsCookie";
+import { setCookies } from "@/popup/utils/jsCookie";
 import { passwordExpires } from "@/popup/enum/time";
 import { encryptPrivateKey, EncryptPrivateKeyParams } from "@/popup/utils/web3";
 import { web3 } from "@/popup/utils/web3";
@@ -91,7 +108,8 @@ import { regPassword1 } from "@/popup/enum/regexp";
 import { CreateWalletByJsonParams } from "@/popup/utils/ether";
 import { getWallet } from "@/popup/store/modules/account";
 import { encrypt, decrypt } from "@/popup/utils/cryptoJS.js";
-
+import NavHeader from "@/popup/components/navHeader/index.vue";
+import WormTransition from '@/popup/components/wromTransition/index.vue'
 export default {
   name: "loginAccount-step1",
   components: {
@@ -104,6 +122,8 @@ export default {
     [Checkbox.name]: Checkbox,
     [CheckboxGroup.name]: CheckboxGroup,
     Resetpopup,
+    NavHeader,
+    WormTransition
   },
   setup() {
     const password: Ref<string> = ref("");
@@ -134,19 +154,18 @@ export default {
       let errBool = true;
       try {
         await dispatch("account/createWalletByJson", data);
-        setCookies("password", password.value);
+        await setCookies("password", password.value);
         dispatch("account/updateAccount", currentNetwork);
         dispatch("account/updateBalance");
         const { query } = route;
         const { backUrl }: any = query;
-        if (backUrl && backUrl != "/loginAccount/step1") {
+        if (backUrl && backUrl != "/loginAccount/step1" && backUrl != '/') {
           router.replace({ path: backUrl, query });
         } else {
           router.replace({ name: "wallet" });
         }
       } catch (err) {
         errBool = false;
-        // Toast(t("loginwithpassword.wrong_password"));
       } finally {
         loading.value = false;
       }
@@ -192,13 +211,14 @@ export default {
       // pop-up window
       resetmodule.value = true;
     }
-
+    const reset_flag = ref(true);
     const handleComfirm = () => {};
     return {
       t,
       handleComfirm,
       asynPwd,
       cancel,
+      reset_flag,
       loading,
       password,
       onSubmit,
@@ -212,11 +232,15 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.btn-box {
+  margin: 50px 28px 30px;
+}
+.reset-box {
+  color: #828184;
+}
 .title {
   .iconele {
-    width: 50px;
-    // height: 60px;
-    margin: 50px auto 10px;
+    width: 19px;
   }
   .tit-big {
     line-height: 21px;

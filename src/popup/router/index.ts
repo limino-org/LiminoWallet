@@ -257,8 +257,7 @@ router.beforeEach(async(to, form, next) =>  {
 
  // Whether the password is valid
  const query = getQuery();
- const password = getCookies('password')
- debugger
+ const password = await getCookies('password')
  
 // Wallet not created -> Boot page
 const filterNames1 = ['guide-step1','guide-step2','loginAccount-create-step1','loginAccount-create-step2','loginAccount-step1','loginAccount-step2','loginAccount-export-mnemonic','loginAccount-mnemonic-import','loginAccount-createing']
@@ -291,9 +290,20 @@ if(hasAccountFlag && password && form.fullPath == '/' && to.fullPath == '/' && n
 }
 
 const filterNames2 = ['connect','sign','send']
+const filterNames3 = ['guide-step1','loginAccount-step1']
+
 if(hasAccountFlag && password && form.fullPath == '/' && name != 'wallet' && !filterNames2.includes(to.name.toString())) {
+  if(filterNames3.includes(to.name.toString())) {
+    next({name:"wallet"})
+    return
+  }
   console.log('33333333333333333333333333333333')
   next()
+  return
+}
+
+if(hasAccountFlag && password && filterNames3.includes(to.name.toString())) {
+  next({name:"wallet"})
   return
 }
 console.log('4444444444444444444444444444444444444444444')

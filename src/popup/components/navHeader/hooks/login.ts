@@ -11,12 +11,10 @@ export const useLogin = () => {
     const route = Vrouter.currentRoute.value;
     const router = Vrouter;
     // logout
-    const logout = () => {
+    const logout = async () => {
         clearWallet()
-        loginOut()
+        await loginOut()
         const query = getQuery()
-        console.log('tologin', '0', query)
-        sendBackground({method:"logout"})
         router.replace({ name: "loginAccount-step1", query: query || {} })
     }
     // authentication

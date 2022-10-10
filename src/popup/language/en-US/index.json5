@@ -198,6 +198,7 @@
 		periodTip:"During this period,you will not be allowed redeeming your S-NFT back"
 	},
 	"createAccountpage": {
+		cantLogin: "Can't log in? {reset}",
 		"pwdError": "Wrong password",
 		createAccount: "Create an Account",
 		setup: "Let's get you set up",
@@ -215,7 +216,6 @@
 		loginIn: "Log in",
 		welcome: "Welcome Back",
 		welcomeTitle: "Welcome Back",
-		cantLogin: "Can't log in? ",
 		resentWallet: "Reset Wallet",
 		rememberMe: "Remember Me",
 		creating: "Creating",

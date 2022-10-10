@@ -85,7 +85,6 @@ import {
   CreateWalletByJsonParams,
   CreateWalletByMnemonicParams,
 } from "@/popup/utils/ether";
-import { setCookies, getCookies } from "@/popup/utils/jsCookie";
 import { ref, Ref, computed, toRaw, SetupContext, onMounted } from "vue";
 import {
   Icon,

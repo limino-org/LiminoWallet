@@ -89,6 +89,7 @@ import { getRandomIcon } from "@/popup/utils";
 import { ethers, utils } from "ethers";
 import { VUE_APP_NODE_WORM_URL } from '@/popup/enum/env';
 const erc20Abi: any = require("@/popup/assets/json/erc20Abi.json");
+import { useBroadCast } from '@/popup/utils/broadCost'
 
 // import { useToast } from '@/plugins/toast'
 export default {
@@ -107,106 +108,7 @@ export default {
     const { t } = useI18n();
     const { dispatch,state } = useStore();
     const { $toast } = useToast();
-    
-    // token
-    const tokens = ref([
-      { name: "ERB Token", value: 2, hasAdd: false },
-      { name: "ETH Token", value: 3, hasAdd: true },
-      { name: "ABR Token", value: 4, hasAdd: false },
-      { name: "DOG Token", value: 25, hasAdd: false },
-      { name: "JACK Token", value: 25, hasAdd: false },
-      { name: "PIG Token", value: 25, hasAdd: true },
-      { name: "PIG Token", value: 25, hasAdd: true },
-      { name: "PIG Token", value: 25, hasAdd: true },
-      { name: "PIG Token", value: 25, hasAdd: true },
-      { name: "PIG Token", value: 25, hasAdd: true },
-      { name: "PIG Token", value: 25, hasAdd: true },
-      { name: "PIG Token", value: 25, hasAdd: true },
-      { name: "PIG Token", value: 25, hasAdd: true },
-      { name: "PIG Token", value: 25, hasAdd: true },
-      { name: "PIG Token", value: 25, hasAdd: true },
-      { name: "PIG Token", value: 25, hasAdd: true },
-      { name: "PIG Token", value: 25, hasAdd: true },
-      { name: "PIG Token", value: 25, hasAdd: true },
-      { name: "PIG Token", value: 25, hasAdd: true },
-      { name: "ACB Token", value: 25, hasAdd: false },
-      { name: "EAC Token", value: 25, hasAdd: false },
-      { name: "EAC Token", value: 25, hasAdd: false },
-      { name: "EAC Token", value: 25, hasAdd: false },
-      { name: "EAC Token", value: 25, hasAdd: false },
-      { name: "EAC Token", value: 25, hasAdd: false },
-      { name: "EAC Token", value: 25, hasAdd: false },
-      { name: "EAC Token", value: 25, hasAdd: false },
-      { name: "EAC Token", value: 25, hasAdd: false },
-      { name: "EAC Token", value: 25, hasAdd: false },
-      { name: "EAC Token", value: 25, hasAdd: false },
-      { name: "EAC Token", value: 25, hasAdd: false },
-      { name: "EAC Token", value: 25, hasAdd: false },
-      { name: "MINI Token", value: 25, hasAdd: false },
-    ]);
-    const search = ref("");
-    // const alist = computed(() => {
-    //   // Split into two-dimensional arrays according to the first letter
-    //   const list = tokens.value.map((item: any) => item);
-    //   list.sort((a: any, b: any) => {
-    //     return (a.name + "").localeCompare(b.name + "");
-    //   });
-
-    //   const newl = list.filter((item: any) => {
-    //     if (search.value) {
-    //       if (item.name.indexOf(search.value) > -1) {
-    //         return item;
-    //       }
-    //     } else {
-    //       return item;
-    //     }
-    //   });
-
-    //   const arr: any = [];
-    //   newl.forEach((item: any) => {
-    //     const { name } = item;
-    //     const label = name.substr(0, 1);
-    //     const f = arr.find((child: any) => child.label == label);
-    //     if (f) {
-    //       arr.forEach((sun: any) => {
-    //         const icon = getRandomIcon();
-    //         sun.label == label ? sun.children.push({ ...item, icon }) : "";
-    //       });
-    //     } else {
-    //       const icon = getRandomIcon();
-    //       arr.push({ label, children: [{ ...item, icon }] });
-    //     }
-    //   });
-    //   return arr;
-    // });
-
-    // const indexList = computed(() => {
-    //   return alist.value.map((item: any) => item.label);
-    // });
-
-    // tabs Switch data
-    // const tabs = reactive({
-    //   list: [
-    //     { name: "Search", value: 1, select: true },
-    //     { name: "Custom", value: 2, select: false },
-    //   ],
-    // });
-    // const changeTab = (e: any) => {
-    //   const { value, select } = e;
-    //   if (select) {
-    //     return;
-    //   } else {
-    //     tabs.list.forEach((item, idx) => {
-    //       if (item.value == value) {
-    //         item.select = true;
-    //       } else {
-    //         item.select = false;
-    //       }
-    //     });
-    //   }
-    // };
-    // Selected tab'
-    // const chooseTabdata = computed(() => tabs.list.find((item) => item.select));
+    const { handleUpdate } = useBroadCast()
     const router = useRouter();
     const currentNetwork = computed(() => state.account.currentNetwork)
     const accountInfo = computed(() => state.account.accountInfo)
@@ -236,6 +138,7 @@ export default {
             tokenContractAddress: tokenContractAddress.value,
             address,
           });
+          handleUpdate()
           $toast.success(t("currencyList.Importsuccessful"));
           router.replace({ name: "wallet" });
         } catch (err: any) {
@@ -312,19 +215,13 @@ export default {
       tokenError,
       cancel,
       asynToken,
-      // tabs,
-      // changeTab,
       t,
-      // chooseTabdata,
       back,
       precision,
       name,
       symbol,
       tokenContractAddress,
       onSubmit,
-      // indexList,
-      search,
-      // alist,
       VUE_APP_NODE_WORM_URL,
       handleImport,
     };
