@@ -442,8 +442,9 @@ const params = {
     sendResponse: async(data) => {
       const errMsg = data
       const method = handleType.personal_sign
+      const senderParams = await getLocalParams(method)
       const sendMsg = createMsg(errMsg, method)
-      await sendMessage(sendMsg, {}, params[method].sender)
+      await sendMessage(sendMsg, {}, senderParams.sender)
       closeTabs()
     },
   },
@@ -456,7 +457,8 @@ const params = {
       const errMsg = { ...errorCode['200'], data: response }
       const method = handleType.eth_sign
       const sendMsg = createMsg(errMsg, handleType.eth_sign)
-      await sendMessage(sendMsg, {}, params[method].sender)
+      const senderParams = await getLocalParams(method)
+      await sendMessage(sendMsg, {}, senderParams.sender)
       closeTabs()
     },
   },
@@ -470,7 +472,8 @@ const params = {
       const errMsg = { ...errorCode['200'], data: response }
       const method = handleType.multiple_sign
       const sendMsg = createMsg(errMsg, handleType.multiple_sign)
-      await sendMessage(sendMsg, {}, params[method].sender)
+      const senderParams = await getLocalParams(method)
+      await sendMessage(sendMsg, {}, senderParams.sender)
       closeTabs()
     },
   },
@@ -486,7 +489,8 @@ const params = {
         const errMsg = { ...errorCode['200'], data: response }
         const method = handleType.eth_getBlockNumber
         const sendMsg = createMsg(errMsg, method)
-        sendMessage(sendMsg, {}, params[method].sender)
+        const senderParams = await getLocalParams(method)
+        sendMessage(sendMsg, {}, senderParams.sender)
       } catch (err) {
         console.error('eth_blockNumber', err)
       }
@@ -497,12 +501,13 @@ const params = {
     status: 'close',
 
     // 获取网络id发送数据实例
-    sendResponse: (v) => {
+    sendResponse: async(v) => {
       const { response } = v
       const errMsg = { ...errorCode['200'], data: response }
       const method = handleType.eth_getNetWork
       const sendMsg = createMsg(errMsg, handleType.eth_getNetWork)
-      sendMessage(sendMsg, {}, params[method].sender)
+      const senderParams = await getLocalParams(method)
+      sendMessage(sendMsg, {}, senderParams.sender)
     },
   },
 
@@ -518,7 +523,8 @@ const params = {
       const connectList = await getConnectList()
       sendMsg.data.connectList = connectList
       sendMsg.data.address = wallet.address
-      sendMessage(sendMsg, {}, params[method].sender)
+      const senderParams = await getLocalParams(method)
+      sendMessage(sendMsg, {}, senderParams.sender)
 
     },
   },
@@ -534,7 +540,8 @@ const params = {
       const connectList = await getConnectList()
       sendMsg.data.connectList = connectList
       sendMsg.data.address = wallet.address
-      sendMessage(sendMsg, {}, params[method].sender)
+      const senderParams = await getLocalParams(method)
+      sendMessage(sendMsg, {}, senderParams.sender)
 
     },
   },

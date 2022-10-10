@@ -83,16 +83,14 @@ export default {
       }
     }
     const goOn = () => {
-      if (!sign.value) {
-        Toast(t('sign.ready'))
-        return
-      }
-      
-      // @ts-ignore
-      // const bg = chrome.runtime.getBackgroundPage()
-      // console.log('bg.params', bg.params)
-      // bg.params[signType].sendResponse({ response: sign.value })
-      sendBackground({method:signType,response:{code:'200',data: sign.value}})
+      toSign({
+        address: accountInfo.value.address,
+        sig: sig,
+        isAdmin: false,
+        call: (str: string) => {
+          sendBackground({method:signType,response:{code:'200',data: str}})
+        }
+      })
     }
 
     const cancel = () => {
@@ -104,7 +102,7 @@ export default {
 
     }
     onMounted(() => {
-      toSign()
+ 
     })
     return {
       t,

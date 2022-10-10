@@ -47,12 +47,11 @@ export const useSign = () => {
             password,
             address: address?.toString() || ''
         }
-        
-        
         return dispatch('account/connectWalletByPwdAddress', params).then(async (wallet) => {
             console.log('wallet', wallet)
             try {
                 const sstr = sig
+                console.warn('sstr-----------------', sstr, isAdmin)
                 if(isAdmin){
                     //@/popupts-ignore   Sign the hash string
                     sign.value = ethers.utils.joinSignature(new ethers.utils.SigningKey(wallet.privateKey).signDigest(sstr))
