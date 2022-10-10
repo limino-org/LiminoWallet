@@ -136,6 +136,6 @@ export const queryArraySnft = (params = {}) => {
   }
   // Query the account information about the specified address
 export const getAccount = (address: string) => {
-    return httpGet(`${wormholesscanApi}/account/${address}`)
+    return httpGet(`${contractApi}/account/${address}`)
 }
 
