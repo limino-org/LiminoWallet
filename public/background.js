@@ -367,6 +367,8 @@ export const handleType = {
   eth_estimateGas: 'eth_estimateGas',
   // Obtain transaction information through transaction hash
   eth_getTransactionByHash: 'eth_getTransactionByHash',
+  eth_getTransactionReceipt:'eth_getTransactionReceipt',
+  eth_getTransactionCount: "eth_getTransactionCount",
   // Remove listening events
   removeAllListeners: 'removeAllListeners',
   // Get account balance
@@ -551,6 +553,7 @@ const params = {
     status: 'close',
     sendResponse:async (v) => {
       const { data } = v;
+      console.log('eth_sendTransaction', data)
       const errMsg = { ...errorCode['200'], data: data.hash }
       const method = handleType.eth_sendTransaction
       const senderParams = await getLocalParams(method)
@@ -696,6 +699,32 @@ const handlers = {
       receipt.hash = hash
       const errMsg = { ...errorCode['200'], data: receipt || null }
       const sendMsg = createMsg(errMsg, handleType.eth_getTransactionByHash)
+      sendMessage(sendMsg, {}, sender)
+    } catch (err) {
+      console.error(err)
+    }
+  },
+  async [handleType.eth_getTransactionReceipt](data, sendResponse, sender) {
+    console.log('eth_getTransactionReceipt', data)
+    const [hash] = data
+    try {
+      const wallet = await getWallet();
+      const receipt = await wallet.provider.getTransactionReceipt(hash)
+      const errMsg = { ...errorCode['200'], data: receipt || null }
+      const sendMsg = createMsg(errMsg, handleType.eth_getTransactionReceipt)
+      sendMessage(sendMsg, {}, sender)
+    } catch (err) {
+      console.error(err)
+    }
+  },
+  async [handleType.eth_getTransactionCount](data,sendResponse,sender) {
+    console.log('eth_getTransactionCount', data)
+    const [hash] = data
+    try {
+      const wallet = await getWallet();
+      const receipt = await wallet.provider.getTransactionReceipt(hash)
+      const errMsg = { ...errorCode['200'], data: receipt || null }
+      const sendMsg = createMsg(errMsg, handleType.eth_getTransactionCount)
       sendMessage(sendMsg, {}, sender)
     } catch (err) {
       console.error(err)

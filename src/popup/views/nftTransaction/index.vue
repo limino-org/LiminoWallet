@@ -136,11 +136,7 @@ export default {
       try {
         const { from,to,value,data} = newtx
         const receipt = await dispatch("account/sendTransaction", {from,to: utils.getAddress(to),value,data});
-        console.log('receipt',receipt)
-        
-        // @ts-ignore 
-          // const bg = chrome.runtime.getBackgroundPage();
-          // bg.params[handleType.eth_sendTransaction].sendResponse({ response: receipt });
+   
           sendBackground({method:handleType.eth_sendTransaction,response:{code:"200",data: receipt}})
       } catch (err: any) {
         Toast(err.reason);

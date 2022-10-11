@@ -312,7 +312,7 @@ export default {
     UPDATE_WALLET(state: State, value: any) {
       wallet = value;
       if (wallet.provider) {
-        sendBackground({method:'update-wallet'})
+        sendBackground({ method: 'update-wallet' })
       }
     },
     // New account
@@ -661,12 +661,12 @@ export default {
     },
     // new tx push to queue
     PUSH_TXQUEUE(state: State, tx: any) {
-          const list = localStorage.getItem('txQueue')
-          const txQueue = list ? JSON.parse(list) : []
-          txQueue.push(tx)
-          localStorage.setItem('txQueue', JSON.stringify(txQueue))
-          handleUpdate()
-        },
+      const list = localStorage.getItem('txQueue')
+      const txQueue = list ? JSON.parse(list) : []
+      txQueue.push(tx)
+      localStorage.setItem('txQueue', JSON.stringify(txQueue))
+      handleUpdate()
+    },
   },
   actions: {
     // Judge whether there is an account with a certain address in the wallet
@@ -695,7 +695,7 @@ export default {
         // Link current network provider
         wallet = await dispatch("getProviderWallet");
         commit("UPDATE_WALLET", wallet);
-        sendBackground({method:'update-wallet'})
+        sendBackground({ method: 'update-wallet' })
         return Promise.resolve(wallet);
       } catch (err) {
         // @ts-ignore
@@ -920,53 +920,46 @@ export default {
       params: SendTransactionParams
     ) {
       const { to, value, call, gasPrice, gasLimit } = params;
-      const gasp = gasPrice ?  new BigNumber(gasPrice).dividedBy(1000000000).toFixed(12) : '0.0000000012';
+      const gasp = gasPrice ? new BigNumber(gasPrice).dividedBy(1000000000).toFixed(12) : '0.0000000012';
       let tx = {
         to,
         value: utils.parseEther(value),
         gasPrice: ethers.utils.parseEther(gasp),
         gasLimit: gasLimit || 21000,
       };
-
       // Update recent contacts
       commit("PUSH_RECENTLIST", to);
-      const newwallet = await dispatch("getProviderWallet");
-      let sendPromise = newwallet.sendTransaction(tx);
       console.log("i18n", i18n);
-      return new Promise((resolve, reject) => {
-        sendPromise
-          .then((data: any) => {
-            // Add to transaction queue
-            commit("ADD_TRANACTIONLIST", JSON.parse(JSON.stringify(data)));
-            resolve(data);
-            newwallet.provider
-              .waitForTransaction(data.hash)
-              .then((receipt: any) => {
-                const symbol = state.currentNetwork.currencySymbol
-                const rep: TransactionReceipt = handleGetTranactionReceipt(
-                  TransactionTypes.default,
-                  receipt,
-                  data,
-                  symbol
-                );
-                call ? call(rep) : "";
-                // Update transaction queue
-                commit("UPDATE_TRANACTIONLIST", rep);
-                // Add to transaction
-                commit("PUSH_TRANSACTION", rep);
-                dispatch("updateAllBalance");
-              });
-          })
-          .catch((err: any) => {
-            console.error(err);
-            const { code, reason } = err;
-            Toast(i18n.global.t("common.transactionfailed"));
-            localStorage.setItem(
-              i18n.global.t("common.transactionfailed"),
-              JSON.stringify(err)
-            );
-            reject(err);
-          });
+      return new Promise(async (resolve, reject) => {
+        try {
+          const newwallet = await dispatch("getProviderWallet");
+          let data = await newwallet.sendTransaction(tx);
+          // Add to transaction queue
+          commit("ADD_TRANACTIONLIST", JSON.parse(JSON.stringify(data)));
+          resolve(data);
+          const receipt = await newwallet.provider.waitForTransaction(data.hash)
+          const symbol = state.currentNetwork.currencySymbol
+          const rep: TransactionReceipt = handleGetTranactionReceipt(
+            TransactionTypes.default,
+            receipt,
+            data,
+            symbol
+          );
+          call ? call(rep) : "";
+          // Update transaction queue
+          commit("UPDATE_TRANACTIONLIST", rep);
+          // Add to transaction
+          commit("PUSH_TRANSACTION", rep);
+          dispatch("updateAllBalance");
+        } catch (err) {
+          console.error(err);
+          Toast(i18n.global.t("common.transactionfailed"));
+          localStorage.setItem(
+            i18n.global.t("common.transactionfailed"),
+            JSON.stringify(err)
+          );
+          reject(err);
+        }
       });
     },
     // Initiate token transaction
@@ -980,67 +973,46 @@ export default {
       return new Promise(async (resolve, reject) => {
         try {
           // Get contract token instance object
-          const { contractWithSigner, contract } = await dispatch(
-            "connectConstract",
-            address
-          );
+          const { contractWithSigner, contract } = await dispatch("connectConstract", address);
           console.log(" contract.estimate", contract, contractWithSigner);
-          contractWithSigner.estimateGas
-            .transfer(to, amount)
-            .then((gas: any) => {
-              const gasp = new BigNumber(gasPrice)
-                .dividedBy(1000000000)
-                .toFixed(12);
-              console.log("gas-->", utils.formatEther(gas));
-              const transferParams = {
-                gasLimit: gasLimit,
-                gasPrice: ethers.utils.parseEther(gasp),
-              };
-              console.log("transferParams", transferParams);
-              contractWithSigner
-                .transfer(to, amount, transferParams)
-                .then((data: any) => {
-                  // Add to transaction queue
-                  commit("ADD_TRANACTIONLIST", JSON.parse(JSON.stringify(data)));
-                  sessionStorage.setItem("token tx", JSON.stringify(data));
-                  resolve(data);
-                  // Monitor on chain confirmation
-                  wallet.provider
-                    .waitForTransaction(data.hash)
-                    .then(async (receipt: any) => {
-                      // Rewrite balance consistent with ordinary transaction bigNumber
-                      data.value = utils.parseEther(amount);
-                      sessionStorage.setItem(
-                        "token receipt",
-                        JSON.stringify(receipt)
-                      );
+          const gas = await contractWithSigner.estimateGas.transfer(to, amount)
+          const gasp = new BigNumber(gasPrice)
+            .dividedBy(1000000000)
+            .toFixed(12);
+          console.log("gas-->", utils.formatEther(gas));
+          const transferParams = {
+            gasLimit: gasLimit,
+            gasPrice: ethers.utils.parseEther(gasp),
+          };
+          const data = await contractWithSigner.transfer(to, amount, transferParams)
+          // Add to transaction queue
+          commit("ADD_TRANACTIONLIST", JSON.parse(JSON.stringify(data)));
+          sessionStorage.setItem("token tx", JSON.stringify(data));
+          resolve(data);
+          // Monitor on chain confirmation
+          const receipt = await wallet.provider.waitForTransaction(data.hash)
+          // Rewrite balance consistent with ordinary transaction bigNumber
+          data.value = utils.parseEther(amount);
+          sessionStorage.setItem(
+            "token receipt",
+            JSON.stringify(receipt)
+          );
 
-                      const token = state.currentNetwork.tokens[wallet.address.toUpperCase()].find(item => item.tokenContractAddress.toUpperCase() == address.toUpperCase())
-                      const symbol = token.symbol
-                      const rep: TransactionReceipt =
-                        handleGetTranactionReceipt(
-                          TransactionTypes.default,
-                          receipt,
-                          data,
-                          symbol,
-                        );
-                      // Update transaction queue
-                      commit("UPDATE_TRANACTIONLIST", rep);
-                      // Update account balance
-                      dispatch("updateTokensBalances");
-                      // Add to transaction
-                      commit("PUSH_TRANSACTION", { ...rep, tokenAddress: address });
-                    });
-                })
-                .catch((err: any) => {
-                  console.error(err);
-                  reject(err);
-                });
-            })
-            .catch((err: any) => {
-              console.error(err);
-              reject(err);
-            });
+          const token = state.currentNetwork.tokens[wallet.address.toUpperCase()].find((item: any) => item.tokenContractAddress.toUpperCase() == address.toUpperCase())
+          const symbol = token.symbol
+          const rep: TransactionReceipt =
+            handleGetTranactionReceipt(
+              TransactionTypes.default,
+              receipt,
+              data,
+              symbol,
+            );
+          // Update transaction queue
+          commit("UPDATE_TRANACTIONLIST", rep);
+          // Update account balance
+          dispatch("updateTokensBalances");
+          // Add to transaction
+          commit("PUSH_TRANSACTION", { ...rep, tokenAddress: address });
         } catch (err) {
           reject(err);
         }
@@ -1048,22 +1020,32 @@ export default {
     },
     // send data
     async sendTransaction({ commit, dispatch, state }: any, tx: any) {
-      const wallet = await getWallet();
-      console.log('newtx', tx)
-      const { to } = tx
-      // Update recent contacts
-      commit("PUSH_RECENTLIST", to);
-      return new Promise((resolve, reject) => {
-        wallet
-          .sendTransaction(tx)
-          .then((data: any) => {
-            resolve(data);
-          })
-          .catch((err: any) => {
-            console.error(err)
-            reject(err);
-          });
-      });
+      return new Promise(async(resolve, reject) => {
+        try {
+          const wallet = await getWallet();
+          console.log('newtx', tx)
+          const { to } = tx
+          // Update recent contacts
+          commit("PUSH_RECENTLIST", to);
+          const symbol = state.currentNetwork.currencySymbol
+          const data = await wallet.sendTransaction(tx);
+          
+          const receipt = await wallet.provider.waitForTransaction(data.hash)
+          const rep: TransactionReceipt = handleGetTranactionReceipt(
+            TransactionTypes.default,
+            receipt,
+            data,
+            symbol
+          );
+          // Update transaction queue
+          commit("UPDATE_TRANACTIONLIST", rep);
+          // Add to transaction
+          commit("PUSH_TRANSACTION", rep);
+          resolve(data)
+        } catch (err) {
+          console.error(err)
+        }
+      })
     },
 
     // Load wallet with address and password
@@ -1116,7 +1098,6 @@ export default {
           "connectConstract",
           tokenContractAddress
         );
-        console.log("contractWithSigner", contractWithSigner);
         const name = await contractWithSigner.name();
         const decimal = await contractWithSigner.decimals();
         const symbol = await contractWithSigner.symbol();

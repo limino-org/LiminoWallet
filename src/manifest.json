@@ -20,6 +20,9 @@
     "*://*/popup.html",
     "*://*/home.html"
   ],
+  "optional_permissions": [
+    "unlimitedStorage"
+  ],
   "content_scripts": [
 		{
 			"matches": ["*://*/*"],
@@ -37,14 +40,6 @@
     "service_worker": "background.js",
     "type":"module"
   },
-  "sandbox": {
-    "pages": [
-      "background.html"
-    ]
-  },
-  "optional_permissions": [
-    "unlimitedStorage"
-  ],
   "action": {
     "default_popup": "popup.html",
     "default_title": "__MSG_extName__",
@@ -54,7 +49,6 @@
       "48": "icons/logo-48.png"
     }
   },
-
   "web_accessible_resources": [{
     "resources": ["js/inject-script.js"],
     "matches": [
@@ -62,7 +56,6 @@
     ]
   }],
   "content_security_policy": {
-    "extension_pages": "script-src 'self' ; object-src 'self'",
-    "sandbox": "sandbox allow-scripts; script-src 'self'"
+    "extension_pages": "script-src 'self' ; object-src 'self'"
   }
 }

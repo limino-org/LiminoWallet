@@ -151,7 +151,15 @@ img {
     // left: 50%;
     // top: 50%;
     // transform: translate(-50%, -50%);
-    padding-bottom: 1PX;
+    // padding-bottom: 1PX;
+    // left: 50%;
+
+    // top: 50%;
+  
+    // -webkit-transform: translate3d(-50%, -50%, 0);
+  
+    // transform: translate3d(-50%, -50%, 0);
+    // padding: 5px;
   }
 }
 
@@ -414,6 +422,11 @@ img {
       .van-popover__arrow {
         //left: 321px;
       }
+    }
+  }
+  .van-dialog {
+    &.van-popup--center {
+      padding-bottom: 1px;
     }
   }
 }
