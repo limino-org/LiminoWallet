@@ -430,7 +430,7 @@
 		contacts: 'Contacts'
 	},
 	"sendSNFT": {
-		"sendSNFT": "sendSNFT",
+		"sendSNFT": "Send S-NFT",
 		"selected": "Selected",
 		"name": "Name",
 		"address": "Address",

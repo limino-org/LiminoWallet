@@ -357,7 +357,7 @@
         let str = "";
         switch (props.txtype) {
           case "2":
-            str = t("common.conver");
+          str = t("converSnft.converTit");
             break;
           case "3":
             str = t("createminerspledge.stake");

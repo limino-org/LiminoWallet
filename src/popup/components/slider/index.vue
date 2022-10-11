@@ -517,6 +517,7 @@ export default defineComponent({
 }
 .logoutBtn {
   background: transparent;
+  width: 220px;
 }
 @keyframes slider-in {
   0% {

@@ -178,13 +178,10 @@ export default defineComponent({
       router.replace({ name: 'wallet' })
     }
     const closeModal = ref(false)
+    const filterNames = ['sendSnft-step2','send', 'createNft-step2','sendNft-step2', 'modifAutoExchange', 'createAutoExchange']
     const clickRight = () => {
       if (
-        route.name == 'send' ||
-        route.name == 'createNft-step2' ||
-        route.name == 'sendNft-step2' ||
-        route.name == 'modifAutoExchange' ||
-        route.name == 'createAutoExchange'
+        filterNames.includes(route.name.toString())
       ) {
         closeModal.value = true
       } else {

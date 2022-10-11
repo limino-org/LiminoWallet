@@ -144,7 +144,7 @@
 		recive: "接收",
 		tokens: "代币",
 		NFTs: "收藏品",
-		SNFTs: "SNFTs",
+		SNFTs: "S-NFTs",
 		importToken: "导入代币",
 		createAnExchange: "一键开设交易所",
 		autoexchange: "一键创建交易所",
@@ -423,7 +423,7 @@
 		contacts: '联系'
 	},
 	"sendSNFT": {
-		"sendSNFT": "发送SNFT",
+		"sendSNFT": "发送S-NFT",
 		"selected": "已选中",
 		"name": "名称",
 		"address": "地址",
@@ -761,7 +761,7 @@
 		tOKENsMessage: "查看、添加和转移代币",
 		nFTs: "NFTs",
 		nFTsMessage: "查看、添加、转移、交换 NFT",
-		sNFTs: "SNFTs",
+		sNFTs: "S-NFTs",
 		sNFTsMessage: "查看、添加、转移、交换 SNFT",
 		exchange: "交易所",
 		exchangeMessage: "一键开设交易所",

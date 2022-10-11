@@ -31,7 +31,7 @@
 
     <SettingClass :label="t('setting.networks')">
       <template v-slot:icon>
-        <i class="iconfont icon-wangluo1"></i>
+        <i class="iconfont icon-wangluo"></i>
       </template>
       <setting-card @handleClick="routerPush({name: 'networkList'})" :label="t('setting.addNetworks')" />
     </SettingClass>
@@ -126,8 +126,15 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+
+:deep(){
+  .icon-wangluo {
+    font-size: 16px !important;
+  }
+}
 .settings-index {
   .settings-card {
+
     padding: 13px 12px 16px 14px;
     transition: ease 0.3s;
     &:hover {
@@ -136,6 +143,7 @@ export default {
     .title {
       .label {
         font-size: 18px;
+
       }
       .icon {
         font-size: 20px;

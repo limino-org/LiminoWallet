@@ -50,7 +50,6 @@ export default defineComponent({
   }
   .value-box {
     .value {
-      color: #b3b3b3;
       text-align: right;
     }
     i {

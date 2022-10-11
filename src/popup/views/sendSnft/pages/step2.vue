@@ -124,7 +124,7 @@
         />
       </van-tab>
     </van-tabs>
-    <van-sticky position="bottom" offset-bottom="30px">
+    <van-sticky position="bottom" offset-bottom="30px" v-if="hasChooseAddress">
       <div class="flex center btn-group">
         <van-button
           type="primary"

@@ -11,10 +11,8 @@
           }`"
         >
           <i
-            :class="`iconfont  ${
-              transactionTarget(accountInfo, data) == 'send'
-                ? 'icon-jiantou_youshang'
-                : 'icon-teshujiantouzuoxiantiao-copy'
+            :class="`iconfont ${
+              txTypeToIcon(data.txType)
             }`"
           ></i>
         </div>
@@ -103,8 +101,22 @@ export default defineComponent({
     const fromAddress = computed(() => {
       return addressMask(props.data.from);
     });
+    const txTypeToIcon = (type: string) => {
+      let s = ''
+      switch(type.trim()){
+        case 'send':
+        case 'other':
+          s = 'icon-arrowTop'
+          break;
+        case 'contract':
+          s = 'icon-caozuo-xunhuan1'
+          break;
+      }
+      return s
+    }
     return {
       t,
+      txTypeToIcon,
       viewDetail,
       transactionTarget,
       accountInfo,
