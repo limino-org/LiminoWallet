@@ -51,7 +51,7 @@
   </div>
 
   <div class="p-20">
-    <pre>{{txJSON}}</pre>
+    <div class="tx-json van-hairline--surround">{{txJSON}}</div>
   </div>
 
   <!-- Click to go to the next step-->
@@ -168,8 +168,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  pre {
-    background: #d4e5f3;
+  .tx-json {
+    padding: 10px;
+    border-radius: 4px;
+    word-break: break-all;
   }
 .cancel {
   font-size: 11px;
@@ -212,7 +214,7 @@ export default {
       color: #6a737d;
     }
     &::after {
-      border-radius: 20px;
+      border-radius: 5px;
     }
     .avatar {
       margin-top: 5px;

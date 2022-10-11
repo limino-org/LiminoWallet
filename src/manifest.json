@@ -2,7 +2,7 @@
   "name": "__MSG_extName__",
   "description": "A Vue Browser Extension",
   "default_locale": "en",
-  "version": "0.0.1.2",
+  "version": "1.0.0",
   "manifest_version": 3,
   "permissions": [
     "tabs",

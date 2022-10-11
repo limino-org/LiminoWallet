@@ -16,7 +16,7 @@
 </template>
 <script lang="ts">
 import { provide as appProvide } from "@/popup/provides/app";
-import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import {  useRoute, useRouter } from "vue-router";
 import {
   Ref,
   ref,
@@ -25,10 +25,11 @@ import {
   onActivated,
   onMounted,
   computed,
-  provide
+  provide,
+  nextTick
 } from "vue";
 import { useStore, mapActions } from "vuex";
-import { Button } from "vant";
+import { Button, Loading } from "vant";
 import { utils } from "ethers";
 import { useWallet } from "@/popup/hooks/useWallet";
 import { useI18n } from "vue-i18n";
@@ -39,7 +40,6 @@ import CommonModal from "@/popup/components/commonModal/index.vue";
 import { addressMask, transactionStatus } from "./utils/filters";
 import { guid } from '@/popup/utils/utils'
 import { useBroadCast } from '@/popup/utils/broadCost'
-import storeObj from '@/popup/store/index'
 export default {
   components: {
     [Button.name]: Button,
@@ -56,7 +56,7 @@ export default {
     onMounted(()=>{
       // update browser session window id
      dispatch('system/setConversationid', guid())
-           // Listen to the broadcast of the same source window
+      // Listen to the broadcast of the same source window
       const { broad } = useBroadCast()
       broad.onmessage = async(e) => {
         const { data }: any = e
@@ -68,15 +68,13 @@ export default {
           }
         }
       }
-
-      // let time = setTimeout(function() {
-      //   commit("account/UPDATE_WORMHOLES_URL", {
-      //   URL: "https://api.wormholes.com",
-      //   browser: "https://www.wormholesscan.com/#/",
-      //   id: 'wormholes-network-1'
-      // });
-      // clearTimeout(time)
-      // }, 1000)
+      window.onload = () => {
+        let time = setTimeout(() => {
+          document.getElementById('loading-page-box').style.display = 'none'
+          document.getElementById('app').style.display = 'block'
+          clearTimeout(time)
+        },600)
+      }
     })
     // Initialize wallet instance
     onBeforeMount(async () => {
@@ -108,18 +106,6 @@ export default {
     /* Chrome Safari */
   }
 }
-// .slider-box {
-//   position: fixed;
-//   left: 0;
-//   top: 0;
-//   right: 0;
-//   bottom: 0;
-//   &-container {
-//     position: relative;
-//     height: 100vh;
-//     z-index: -1;
-//   }
-// }
 :deep(.van-popup) {
   position: absolute;
 }
@@ -141,6 +127,9 @@ export default {
   }
   :deep(.van-toast) {
     word-break: keep-all !important;
+  }
+  & > .loading-box {
+    height: 100vh;
   }
 }
 
@@ -256,31 +245,4 @@ export default {
   }
 }
 
-.slide-right-enter-active,
-.slide-right-leave-active,
-.slide-left-enter-active,
-.slide-left-leave-active {
-  width: 100%;
-  height: 100%;
-  will-change: transform;
-  transition: all 500ms cubic-bezier(0.55, 0, 0.1, 1);
-  position: absolute;
-  backface-visibility: hidden;
-}
-.slide-right-enter-active {
-  opacity: 0;
-  transform: translate3d(-100%, 0, 0);
-}
-.slide-right-leave-active {
-  opacity: 0;
-  transform: translate3d(100%, 0, 0);
-}
-.slide-left-enter-active {
-  opacity: 0;
-  transform: translate3d(100%, 0, 0);
-}
-.slide-left-leave-active {
-  opacity: 0;
-  transform: translate3d(-100%, 0, 0);
-}
 </style>

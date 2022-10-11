@@ -338,7 +338,7 @@ export default defineComponent({
       display: block;
       content: "";
       width: 0;
-      margin: 0 auto -13px;
+      margin: 0 auto -11px;
       height: 0;
 
       border: 8px solid transparent;
