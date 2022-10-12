@@ -1288,9 +1288,8 @@ export default {
         );
         const contractWithSigner = contract.connect(wallet);
         console.warn("contractWithSigner--------------", contractWithSigner);
-        return Promise.resolve(
-          await contractWithSigner.balanceOf(wallet.address)
-        );
+        const amount = await contractWithSigner.balanceOf(wallet.address)
+        return Promise.resolve(utils.formatEther(amount));
       } catch (err) {
         return Promise.reject(err);
       }
