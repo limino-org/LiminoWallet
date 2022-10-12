@@ -274,11 +274,14 @@ export const snftToErb = (address) => {
 
 // Return transaction status
 export function transactionStatus(status: number){
-  if(status == 1){
+  if(status === 1){
     return i18n.global.t('transationHistory.confirmed')
   }
-  if(status == 0){
+  if(status === 0){
     return i18n.global.t('transationHistory.failed')
+  }
+  if(status === null) {
+    return  i18n.global.t('transationHistory.pendding')
   }
 }
 // Back to Trade Form

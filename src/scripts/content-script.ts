@@ -219,18 +219,6 @@ chrome.runtime.onConnect.addListener(function (port) {
 // }
 
 
-/**
- * TODO 
- * window.etherum.on('accountsChanged', (accounts) => {});
-window.etherum.on('chainChanged', (accounts) => {});
-window.etherum.on('connect', (accounts) => {});
-provider = new ethers.providers.Web3Provider(window.etherum)
-signer =  provider.getSigner()
-signer.getAddress()
-signer.signMessage()
-siger.sendTransaction()
-provider.getBlockNumber()
- */
 
 function initWormholesScript() {
   function provider() {

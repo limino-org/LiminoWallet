@@ -8,6 +8,7 @@ import { hashMessage } from "@/popup/utils/ether";
 import { useSign } from "@/popup/views/sign/hooks/sign";
 import { web3 } from "@/popup/utils/web3";
 import { encode, decode } from 'js-base64';
+import { clone } from 'pouchdb-utils';
 
 import {
   createExchange,
@@ -51,6 +52,20 @@ export const useExchanges = () => {
     const data = await contractWithSigner.functions.payForRenew({
       value: ethers.utils.parseEther(amount + ''),
     });
+    const { from, gasLimit, gasPrice, hash, nonce, to, type, value } = data;
+    commit("account/PUSH_TXQUEUE", {
+        hash,
+        from,
+        gasLimit,
+        gasPrice,
+         nonce,
+        to,
+        type,
+        value,
+        network: clone(store.state.account.currentNetwork),
+        txType: TransactionTypes.contract
+});
+
     callBack ? callBack() : "";
     localStorage.setItem('tx2', JSON.stringify(data))
     // debugger
@@ -62,7 +77,7 @@ export const useExchanges = () => {
       TransactionTypes.contract,
       receipt,
       data,
-      symbol
+      clone(store.state.account.currentNetwork)
     );
     const { status } = receipt;
     if (status == 0) {
@@ -225,7 +240,20 @@ const getContract = async () => {
       // debugger
       wallet.sendTransaction(tx1).then((receipt: any) => {
         const { hash } = receipt;
-        localStorage.setItem('tx1', JSON.stringify(receipt))
+        const { from, gasLimit, gasPrice, nonce, to, type, value } =receipt;
+        commit("account/PUSH_TXQUEUE", {
+                hash,
+                from,
+                gasLimit,
+                gasPrice,
+                nonce,
+                to,
+                type,
+                value,
+                network: clone(state.account.currentNetwork),
+                txType: TransactionTypes.default
+              });
+
         if(!isServer){
           $tradeConfirm.update({status:"approve"})
         }
@@ -238,7 +266,7 @@ const getContract = async () => {
               TransactionTypes.default,
               receipt2,
               receipt,
-              symbol
+              clone(store.state.account.currentNetwork)
             );
             commit("account/PUSH_TRANSACTION", rep);
             if(!isServer) {
@@ -328,9 +356,20 @@ const getContract = async () => {
 
 
       const receipt: any = await wallet.sendTransaction(tx1)
-
+      const { from, gasLimit, gasPrice, nonce, to, type, value, hash } =receipt;
+      commit("account/PUSH_TXQUEUE", {
+              hash,
+              from,
+              gasLimit,
+              gasPrice,
+              nonce,
+              to,
+              type,
+              value,
+              network: clone(state.account.currentNetwork),
+              txType: TransactionTypes.default
+            });
       $tradeConfirm.update({ status: "approve" })
-      const { hash } = receipt;
       const receipt2 = await wallet.provider.waitForTransaction(hash)
 
       const symbol = state.account.currentNetwork.currencySymbol
@@ -338,7 +377,7 @@ const getContract = async () => {
         TransactionTypes.default,
         receipt2,
         receipt,
-        symbol
+        clone(store.state.account.currentNetwork)
       );
       commit("account/PUSH_TRANSACTION", rep);
       const { status } = receipt2
@@ -478,8 +517,20 @@ const getContract = async () => {
       wallet
         .sendTransaction(tx1)
         .then((receipt: any) => {
+          const { from, gasLimit, gasPrice, nonce, to, type, value, hash } =receipt;
+          commit("account/PUSH_TXQUEUE", {
+                  hash,
+                  from,
+                  gasLimit,
+                  gasPrice,
+                  nonce,
+                  to,
+                  type,
+                  value,
+                  network: clone(state.account.currentNetwork),
+                  txType: TransactionTypes.default
+                });
           $tradeConfirm.update({ status: "approve" })
-          const { hash } = receipt;
           localStorage.setItem("close-exchange-tx", JSON.stringify(receipt));
           wallet.provider
             .waitForTransaction(hash)
@@ -489,7 +540,7 @@ const getContract = async () => {
                 TransactionTypes.default,
                 receipt2,
                 receipt,
-                symbol
+                clone(store.state.account.currentNetwork)
               );
               commit("account/PUSH_TRANSACTION", rep);
               await dispatch("account/getExchangeStatus");
@@ -597,6 +648,19 @@ const getContract = async () => {
     // Send the first pledge amount
     try {
       const data1 = await wallet.sendTransaction(tx1);
+      const { from, gasLimit, gasPrice, nonce, to, type, value, hash } =data1;
+      commit("account/PUSH_TXQUEUE", {
+              hash,
+              from,
+              gasLimit,
+              gasPrice,
+              nonce,
+              to,
+              type,
+              value,
+              network: clone(state.account.currentNetwork),
+              txType: TransactionTypes.default
+            });
       $tradeConfirm.update({ status: TradeStatus.approve })
       localStorage.setItem("data1", JSON.stringify(data1));
       const receipt1 = await wallet.provider.waitForTransaction(data1.hash);
@@ -640,6 +704,19 @@ const getContract = async () => {
     })
     try {
       const data1 = await wallet.sendTransaction(tx1);
+      const { from, gasLimit, gasPrice, nonce, to, type, value, hash } =data1;
+      commit("account/PUSH_TXQUEUE", {
+              hash,
+              from,
+              gasLimit,
+              gasPrice,
+              nonce,
+              to,
+              type,
+              value,
+              network: clone(state.account.currentNetwork),
+              txType: TransactionTypes.default
+            });
       $tradeConfirm.update({ status: TradeStatus.approve })
       localStorage.setItem("data1", JSON.stringify(data1));
       const receipt1 = await wallet.provider.waitForTransaction(data1.hash);
@@ -649,7 +726,7 @@ const getContract = async () => {
         TransactionTypes.default,
         receipt1,
         data1,
-        symbol
+        clone(store.state.account.currentNetwork)
       );
       dispatch("account/updateAllBalance");
       commit("account/PUSH_TRANSACTION", rep);

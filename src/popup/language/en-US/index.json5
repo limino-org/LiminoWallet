@@ -730,7 +730,8 @@
 		other: "Other",
 		confirmed: 'confirmed',
 		failed: 'failed',
-		contract: 'Contract'
+		contract: 'Contract',
+		pendding:"pendding"
 	},
 	"currencyConversion": {
 		"currencyConversion": "Currency Conversion",

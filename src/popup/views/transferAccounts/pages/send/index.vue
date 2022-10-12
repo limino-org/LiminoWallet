@@ -599,10 +599,15 @@ export default {
           "account/connectConstract",
           tokenContractAddress
         );
+        const am = (amount.value || 0) + ''
+        console.log('am---1', am)
+        const amountWei = web3.utils.toWei(am,'ether')
+        console.log('amountWei---1', amountWei)
+
         contractWithSigner.estimateGas
           .transfer(
             toAddress.value || accountInfo.value.address,
-            (amount.value || "0") + ""
+            amountWei
           )
           .then((gas: any) => {
             console.warn(
@@ -610,6 +615,8 @@ export default {
               utils.formatUnits(gas, "wei")
             );
             gasLimit.value = utils.formatUnits(gas, "wei");
+          }).catch(err => {
+            console.error('err', err)
           });
       } else {
         gasLimit.value = 21000;

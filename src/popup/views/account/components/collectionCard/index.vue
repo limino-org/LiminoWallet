@@ -195,6 +195,7 @@ export default defineComponent({
   }
 }
 .status0,
+.statusnull,
 .status1 {
   transform: scale(0.9);
 }
@@ -211,6 +212,14 @@ export default defineComponent({
   line-height: 14px;
   color: rgb(214, 25, 25);
   background: #ffe8e5;
+  padding: 0 5px;
+  border-radius: 7px;
+}
+.statusnull {
+  display: inline-block;
+  line-height: 14px;
+  color: #037cd6;
+  background: #d7e8f5;
   padding: 0 5px;
   border-radius: 7px;
 }

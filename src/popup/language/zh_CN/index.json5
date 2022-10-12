@@ -722,7 +722,8 @@
 		other: "其他",
 		confirmed: '确认的',
 		failed: '失败的',
-		contract: '合约'
+		contract: '合约',
+		pendding:"确认中"
 	},
 	"currencyConversion": {
 		"currencyConversion": "货币转换",

@@ -114,7 +114,7 @@ import {
 import { useRouter, useRoute } from "vue-router";
 import { ethers, utils } from "ethers";
 import { useStore, mapState } from "vuex";
-import { useExchanges } from "@/popup/views/home/hooks/useExchange";
+import { useExchanges } from "@/popup/hooks/useExchanges";
 import BigNumber from "bignumber.js";
 import { ExchangeStatus } from "@/popup/store/modules/account";
 import {
@@ -132,6 +132,7 @@ import useClipboard from "vue-clipboard3";
 import { getWallet, wallet } from "@/popup/store/modules/account";
 import { useI18n } from "vue-i18n";
 import { VUE_APP_EXCHANGESMANAGEMENT_URL,VUE_APP_EXCHANGES_URL } from "@/popup/enum/env";
+import { refDebounced } from "@vueuse/shared";
 export default defineComponent({
   name: "createExchange",
   components: {
@@ -170,10 +171,7 @@ export default defineComponent({
     const {
       showExchange,
       showExchange1,
-      currentRate,
       ready,
-      speed,
-      rate,
       createExchanges,
     } = useExchanges();
     const store = useStore();
@@ -217,8 +215,6 @@ export default defineComponent({
       return `${VUE_APP_EXCHANGES_URL}/c${add.toLowerCase()}/#/`;
     });
 
-    const text = computed(() => currentRate.value.toFixed(0) + "%");
-
     const { toClipboard } = useClipboard();
     const toCopyCMS = async () => {
       try {
@@ -248,9 +244,9 @@ export default defineComponent({
     };
 
     watch(
-      () => currentRate.value,
+      () => ready.value,
       async (n) => {
-        if (Number(n) == 100) {
+        if (n) {
           console.warn("watch------ currentRate", n);
           nextTick(() => {
             const { amount, amount2 } = props;
@@ -278,11 +274,7 @@ const gradientColor = {
       t,
       showExchange,
       showExchange1,
-      currentRate,
-      speed,
-      rate,
       ready,
-      text,
       toCopyCMS,
       toCopyAmount,
       tohome,

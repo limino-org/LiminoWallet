@@ -3,6 +3,8 @@ import { toHex } from "@/popup/utils/utils";
 import { Toast } from "vant";
 import { utils } from "ethers";
 import { web3 } from "@/popup/utils/web3";
+import { clone } from 'pouchdb-utils';
+
 import {
   getSnftOwner,
   collectionList,
@@ -51,13 +53,26 @@ export default {
       sessionStorage.setItem('nft_address', nft_address)
       sessionStorage.setItem("blockNumber", blockNumber)
       const data = await wallet.sendTransaction(tx1)
+      const { from, gasLimit, gasPrice, nonce, to, type, value, hash } =data;
+      commit("account/PUSH_TXQUEUE", {
+              hash,
+              from,
+              gasLimit,
+              gasPrice,
+              nonce,
+              to,
+              type,
+              value,
+              network: clone(store.state.account.currentNetwork),
+              txType: TransactionTypes.other
+            });
       const receipt = await wallet.provider.waitForTransaction(data.hash)
       const symbol = store.state.account.currentNetwork.currencySymbol
       const rep: TransactionReceipt = handleGetTranactionReceipt(
         TransactionTypes.other,
         receipt,
         data,
-        symbol
+        clone(store.state.account.currentNetwork)
       );
       // Add to transaction
       store.commit("account/PUSH_TRANSACTION", rep);
@@ -79,6 +94,19 @@ export default {
         value: utils.parseEther("0"),
       };
       const data = await wallet.sendTransaction(tx)
+      const { from, gasLimit, gasPrice, nonce, to, type, value, hash } =data;
+      commit("account/PUSH_TXQUEUE", {
+              hash,
+              from,
+              gasLimit,
+              gasPrice,
+              nonce,
+              to,
+              type,
+              value,
+              network: clone(store.state.account.currentNetwork),
+              txType: TransactionTypes.other
+            });
       const receipt = await wallet.provider.waitForTransaction(data.hash)
       // ts-ignore
       const symbol = store.state.account.currentNetwork.currencySymbol
@@ -86,7 +114,7 @@ export default {
         TransactionTypes.other,
         receipt,
         data,
-        symbol
+        clone(store.state.account.currentNetwork)
       );
       // Add to transaction
       store.commit("account/PUSH_TRANSACTION", rep);
@@ -110,7 +138,19 @@ export default {
       console.warn('tx', tx)
       const data = await wallet
       .sendTransaction(tx)
-      const { hash } = data;
+      const { from, gasLimit, gasPrice, nonce,  type, value, hash } =data;
+      commit("account/PUSH_TXQUEUE", {
+              hash,
+              from,
+              gasLimit,
+              gasPrice,
+              nonce,
+              to,
+              type,
+              value,
+              network: clone(store.state.account.currentNetwork),
+              txType: TransactionTypes.other
+            });
       console.log('11111', hash);
       const receipt = await wallet.provider.waitForTransaction(hash)
         const symbol = store.state.account.currentNetwork.currencySymbol
@@ -118,7 +158,7 @@ export default {
           TransactionTypes.other,
           receipt,
           data,
-          symbol
+          clone(store.state.account.currentNetwork)
         );
         // Add to transaction
         store.commit("account/PUSH_TRANSACTION", rep);

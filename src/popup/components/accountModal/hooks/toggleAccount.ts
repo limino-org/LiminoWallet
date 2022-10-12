@@ -16,7 +16,7 @@ import eventBus from "@/popup/utils/bus";
 import router from "@/popup/router";
 import { Mnemonic } from "ethers/lib/utils";
 import { AccountInfo } from "@/popup/store/modules/account";
-import { useExchanges } from "@/popup/views/home/hooks/useExchange";
+import { useExchanges } from "@/popup/hooks/useExchanges";
 export const useToggleAccount = () => {
   const store = useStore();
   const { initExchangeData } = useExchanges()

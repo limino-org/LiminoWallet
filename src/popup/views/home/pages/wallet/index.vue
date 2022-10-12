@@ -366,7 +366,7 @@ import GuideModal13 from "@/popup/components/guideModal/step13.vue";
 import BackUp from "@/popup/components/guideModal/backUp.vue";
 import BackUpBottom from "@/popup/components/guideModal/backupBottom.vue";
 import SnftDetails from "@/popup/components/snftdetails/index.vue";
-import { useExchanges } from "@/popup/views/home/hooks/useExchange";
+import { useExchanges } from "@/popup/hooks/useExchanges";
 import { web3 } from "@/popup/utils/web3";
 import { useToast } from "@/popup/plugins/toast";
 

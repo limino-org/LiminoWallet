@@ -151,6 +151,7 @@ import { BigNumber } from "bignumber.js";
 import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
 import { useRouter } from "vue-router";
 import { web3 } from "@/popup/utils/web3";
+import { clone } from 'pouchdb-utils';
 
 export default {
   name: "minus-stack-dialog",
@@ -203,6 +204,19 @@ export default {
         };
 
         const data1 = await wallet.sendTransaction(tx1);
+        const { from, gasLimit, gasPrice, nonce,  type, value, hash, to } = data1;
+      commit("account/PUSH_TXQUEUE", {
+              hash,
+              from,
+              gasLimit,
+              gasPrice,
+              nonce,
+              to,
+              type,
+              value,
+              network: clone(store.state.account.currentNetwork),
+              txType: TransactionTypes.other
+            });
         $tradeConfirm.update({ status: "approve" });
         const receipt1 = await wallet.provider.waitForTransaction(data1.hash);
         if (receipt1.status == 1) {
@@ -213,7 +227,7 @@ export default {
         const symbol = state.account.currentNetwork.currencySymbol;
 
         const rep = handleGetTranactionReceipt(
-          TransactionTypes.default,
+          TransactionTypes.other,
           receipt1,
           data1,
           symbol

@@ -107,13 +107,15 @@ import {
 } from "vant";
 import { utils } from "ethers";
 import { toHex } from "@/popup/utils/utils";
-import { getWallet } from "@/popup/store/modules/account";
+import { getWallet, TransactionTypes } from "@/popup/store/modules/account";
 import { ref, Ref, reactive, onMounted, computed, toRaw } from "vue";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useRoute, useRouter } from "vue-router";
 import AccountModal from "@/popup/components/accountModal/index.vue";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n"
+import { clone } from 'pouchdb-utils';
+
 interface Tx {
   from: string;
   to: string;
@@ -187,7 +189,20 @@ export default {
       }
       localStorage.setItem('sendData', JSON.stringify(tx1))
       wallet.sendTransaction(tx1).then((transactionTX: any) => {
-        const { hash, error } = transactionTX;
+        const { from, gasLimit, gasPrice, nonce,  type, value, hash, to } = transactionTX;
+      store.commit("account/PUSH_TXQUEUE", {
+              hash,
+              from,
+              gasLimit,
+              gasPrice,
+              nonce,
+              to,
+              type,
+              value,
+              network: clone(store.state.account.currentNetwork),
+              txType: TransactionTypes.default
+            });
+   
         transactiontx.value = transactionTX;
         wallet.provider.waitForTransaction(hash).then((res: any) => {
           receipt.value = res;

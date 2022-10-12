@@ -32,8 +32,8 @@
       </div>
     </div>
     <div class="swap-list van-hairline--top">
-      <CollectionCard @handleClick="handleView(item)" v-for="item in transactionList" :key="item.address" :data="item" />
-      <no-data v-if="!transactionList.length" />
+      <CollectionCard @handleClick="handleView(item)" v-for="item in txList" :key="item.address" :data="item" />
+      <no-data v-if="!txList.length" />
       <!-- View transaction details -->
       <van-dialog v-model:show="showTransactionModal" :showCancelButton="false" :showConfirmButton="false" closeOnClickOverlay>
         <TransactionDetail @handleClose="handleClose" :data="transactionData.data" />
@@ -61,6 +61,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { hexValue } from '@ethersproject/bytes'
 import { useI18n } from 'vue-i18n'
+import localforage from 'localforage'
 export default {
   components: {
     [Icon.name]: Icon,
@@ -86,6 +87,7 @@ export default {
       const list = store.state.account.currentNetwork.transactionList[address.toUpperCase()]
       return list || []
     })
+    const txList = ref([])
     const pageData = reactive({ data: {} })
     pageData.data = query
 
@@ -95,7 +97,19 @@ export default {
         query: { backUrl: 'receive-choose-code' }
       })
     }
-
+    onMounted(async() =>{
+      const id = currentNetwork.value.id
+      const targetAddress = accountInfo.value.address.toUpperCase()
+      debugger
+      const tx = await localforage.getItem(`txlist-${id}`)
+      debugger
+      const list = tx[targetAddress] || []
+      if(tokenContractAddress) {
+        txList.value = list.filter((item:any) =>  item.tokenAddress && item.tokenAddress.toUpperCase() == tokenContractAddress.toString().toUpperCase())
+      } else {
+        txList.value = list.filter((item:any) =>  !item.tokenAddress)
+      }
+    })
     // To buy
     const toBuy = () => {}
 
@@ -135,7 +149,8 @@ export default {
       transactionList,
       pageData,
       toBrowser,
-      toUsdSymbol
+      toUsdSymbol,
+      txList
     }
   }
 }

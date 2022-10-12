@@ -154,11 +154,12 @@
   import { useStore } from "vuex";
   import { useI18n } from "vue-i18n";
   import { addressMask, snftToErb, toUsd } from "@/popup/utils/filters";
-  import { getGasFee, getWallet } from "@/popup/store/modules/account";
+  import { getGasFee, getWallet, TransactionTypes } from "@/popup/store/modules/account";
   import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
   import { TradeStatus } from "@/popup/plugins/tradeConfirmationsModal/tradeConfirm";
   import { ethers } from "ethers";
   import { web3 } from "@/popup/utils/web3";
+  import { clone } from 'pouchdb-utils';
     //   Pledge redemption of a single SNFT
   export default defineComponent({
     name: "transfer-NFT-modal",
@@ -209,7 +210,7 @@
       const { $tradeConfirm } = useTradeConfirm();
       const showModal: Ref<boolean> = ref(false);
       const { dispatch, commit, state } = useStore();
-  
+      const {currentNetwork} = state.account
       watch(
         () => props.modelValue,
         (n) => {
@@ -259,8 +260,6 @@
         );
         const wallet = await getWallet();
         const { address } = wallet;
-        // loading.value = true;
-        let txQueue: Array<any> = [];
         let approveMessage = "";
         let successMessage = "";
         let wattingMessage = "";
@@ -320,7 +319,6 @@
                   data: `0x${data3}`,
                 };
                 const receipt: any = await wallet.sendTransaction(tx1);
-                txQueue.push(receipt);
                 const { from, gasLimit, gasPrice, hash, nonce, to, type, value } =
                   receipt;
                 commit("account/PUSH_TXQUEUE", {
@@ -332,6 +330,8 @@
                   to,
                   type,
                   value,
+                  network: clone(currentNetwork),
+                  txType: TransactionTypes.other
                 });
               $tradeConfirm.update({
                 status: "approve",

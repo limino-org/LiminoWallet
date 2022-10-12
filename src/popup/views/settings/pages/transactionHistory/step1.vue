@@ -59,6 +59,7 @@ import { useRouter } from 'vue-router'
 import { getRandomIcon } from '@/popup/utils'
 import CollectionCard from '@/popup/views/account/components/collectionCard/index.vue'
 import { TransactionTypes } from '@/popup/store/modules/account'
+import localforage from 'localforage'
 
 export default {
   name: 'transaction-history',
@@ -111,41 +112,34 @@ export default {
     }
 
     // Current account transaction list
-    const { accountInfo } = store.state.account
+    const { accountInfo, currentNetwork } = store.state.account
     const { address } = accountInfo
-    let tlist: any = []
-    try {
-      Object.keys(store.state.account.currentNetwork.transactionList).forEach(key => {
-        store.state.account.currentNetwork.transactionList[key].forEach((item: any) => {
-          tlist.push(item)
-        })
-      })
-    } catch (err) {
-      tlist = []
-    }
+    let tlist: any = ref([])
+
+
 
     // All transactions
     const transactionList = computed(() => {
-      return tlist.sort((a: any,b:any) =>  new Date(b.date).getTime() - new Date(a.date).getTime())
+      return tlist.value.sort((a: any,b:any) =>  new Date(b.date).getTime() - new Date(a.date).getTime())
     })
 
     // Send record
     const sendList = computed(() => {
-      const newlist = tlist || []
+      const newlist = tlist.value || []
       return newlist.filter((item: any) => {
         return item.txType == TransactionTypes.default
       })
     })
     // swap transaction
     const swapList = computed(() => {
-      const newlist = tlist || []
+      const newlist = tlist.value || []
       return newlist.filter(item => {
         return item.txType == TransactionTypes.swap
       })
     })
     // Other records
     const otherList = computed(() => {
-      const newlist = tlist || []
+      const newlist = tlist.value || []
       return newlist.filter(item => {
         return item.txType == TransactionTypes.other || item.txType == TransactionTypes.contract
       })
@@ -161,6 +155,18 @@ export default {
     const handleClose = () => {
       showTransactionModal.value = false
     }
+    onMounted(async() => {
+      const txList = await localforage.getItem(`txlist-${currentNetwork.id}`)
+      try {
+      Object.keys(txList).forEach(key => {
+        txList[key].forEach((item: any) => {
+          tlist.value.push(item)
+        })
+      })
+    } catch (err) {
+      tlist.value = []
+    }
+    })
     return {
       tabs,
       changeTab,

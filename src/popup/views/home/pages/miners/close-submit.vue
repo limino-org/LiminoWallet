@@ -120,6 +120,7 @@ import { useStore } from "vuex";
 import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
 import { useRouter } from "vue-router";
 import { ExchangeStatus, getWallet, TransactionReceipt,handleGetTranactionReceipt,TransactionTypes } from "@/popup/store/modules/account";
+import { clone } from 'pouchdb-utils';
 
 export default {
   components: {
@@ -139,7 +140,7 @@ export default {
     // The amount and the maximum and minimum value of the amount
     let moneyMin = ref(100000);
     let moneyMax = ref(10000000);
-
+    const {commit} = useStore()
     let dislogShow = computed({
       get: () => props.show,
       set: (v) => emit("update:show", v),
@@ -184,14 +185,27 @@ export default {
         console.log(tx1);
 
         const wallet = await getWallet();
-        const receipt: any = await wallet.sendTransaction(tx1);
-        const receipt2 = await wallet.provider.waitForTransaction(receipt.hash);
+        const data: any = await wallet.sendTransaction(tx1);
+        const { from, gasLimit, gasPrice, nonce,  type, value, hash, to } = data;
+      commit("account/PUSH_TXQUEUE", {
+              hash,
+              from,
+              gasLimit,
+              gasPrice,
+              nonce,
+              to,
+              type,
+              value,
+              network: clone(store.state.account.currentNetwork),
+              txType: TransactionTypes.other
+            });
+        const receipt2 = await wallet.provider.waitForTransaction(hash);
         const symbol = store.state.account.currentNetwork.currencySymbol
         const rep: TransactionReceipt = handleGetTranactionReceipt(
           TransactionTypes.other,
           receipt2,
-          receipt,
-          symbol
+          data,
+          clone(store.state.account.currentNetwork)
         );
         store.commit("account/PUSH_TRANSACTION", rep);
         const { status } = receipt2;
@@ -205,8 +219,6 @@ export default {
             },
           });
         }
-        console.log(receipt);
-        console.log("receiptreceiptreceipt");
         isLoading.value = false;
         emit("update:show", false);
         emit("open");

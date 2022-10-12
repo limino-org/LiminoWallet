@@ -154,11 +154,12 @@ import BigNumber from "bignumber.js";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
 import { addressMask, snftToErb, toUsd } from "@/popup/utils/filters";
-import { getGasFee, getWallet } from "@/popup/store/modules/account";
+import { getGasFee, getWallet, TransactionTypes } from "@/popup/store/modules/account";
 import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
 import { TradeStatus } from "@/popup/plugins/tradeConfirmationsModal/tradeConfirm";
 import { ethers } from "ethers";
 import { web3 } from "@/popup/utils/web3";
+import { clone } from 'pouchdb-utils';
 export default defineComponent({
   name: "transfer-NFT-modal",
   components: {
@@ -213,7 +214,7 @@ export default defineComponent({
     const { $tradeConfirm } = useTradeConfirm();
     const showModal: Ref<boolean> = ref(false);
     const { dispatch, commit, state } = useStore();
-
+    const {currentNetwork} = state.account
     watch(
       () => props.modelValue,
       (n) => {
@@ -352,6 +353,8 @@ export default defineComponent({
                 to,
                 type,
                 value,
+                network: clone(currentNetwork),
+                txType: TransactionTypes.other
               });
             }
             $tradeConfirm.update({
@@ -434,6 +437,8 @@ export default defineComponent({
                   to,
                   type,
                   value,
+                  network: clone(currentNetwork),
+                  txType: TransactionTypes.other
                 });
               }
             }
@@ -474,6 +479,8 @@ export default defineComponent({
                 to,
                 type,
                 value,
+                network: clone(currentNetwork),
+                txType: TransactionTypes.other
               });
             }
           }
@@ -607,8 +614,9 @@ export default defineComponent({
           const keys = Object.keys(props.selectList).filter(
             (item) => item != "undefined"
           );
+          console.log('keys------------', keys)
           // Three cases: 1. Collection set is full, 2. SNFT set is full, 3. Fragment does not consider collection case for the time being
-
+          debugger
           for (let key of keys) {
             if (key) {
               // Synthetic grade
@@ -620,15 +628,19 @@ export default defineComponent({
                   snfts,
                   nft_address,
                 } = child;
+                console.warn('chip', child)
                 if (
                   MergeLevel == 0 &&
                   Chipcount > 0 &&
                   pledgestate == "NoPledge"
                 ) {
+                  console.warn('未质押', nft_address, snfts)
                   list.push(...snfts);
                   allsnftList.push(...snfts)
                 }
                 if (MergeLevel > 0 && Chipcount && pledgestate == "NoPledge") {
+                  console.warn('未质押', nft_address, snfts)
+
                   list.push(nft_address);
                   allsnftList.push(...child.snfts)
                 }

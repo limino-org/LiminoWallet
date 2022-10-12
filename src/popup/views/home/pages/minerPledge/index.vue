@@ -32,7 +32,6 @@ import { useRouter } from 'vue-router'
 import { ref, nextTick } from 'vue'
 import AffirmDialog from './components/affirmDialog.vue'
 import NextDialog from './components/next.vue'
-import IndexDialog from './components/index.vue'
 import SuccessDialog from './components/success.vue'
 import LoadingView from '@/popup/components/minerpledge/loading.vue'
 import AgreementView from '@/popup/components/minerpledge/agreement.vue'
@@ -52,7 +51,6 @@ export default {
     AffirmDialog,
     NextDialog,
     SuccessDialog,
-    IndexDialog,
     LoadingView,
     AgreementView
   },

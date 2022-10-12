@@ -88,6 +88,8 @@
 
 <script lang="ts">
 import { emit } from "process";
+import { clone } from 'pouchdb-utils';
+
 import { Icon, Checkbox, Button, Toast, CellGroup, Cell } from "vant";
 import {
   ref,
@@ -99,7 +101,7 @@ import {
   onMounted,
   watch,
 } from "vue";
-import { getWallet } from "@/popup/store/modules/account";
+import { getWallet, handleGetTranactionReceipt, TransactionTypes } from "@/popup/store/modules/account";
 import { useStore } from "vuex";
 import { useI18n } from 'vue-i18n';
 
@@ -119,6 +121,7 @@ export default {
   setup(props: any, context: SetupContext) {
     const {t} = useI18n()
     let Time = ref(3);
+    const {commit} = useStore()
     nextTick(() => {
       let setIntervalValue = setInterval(() => {
         Time.value -= 1;
@@ -168,8 +171,28 @@ export default {
         console.log(tx1);
 
         const wallet = await getWallet();
-        const receipt: any = await wallet.sendTransaction(tx1);
-        const res = await wallet.provider.waitForTransaction(receipt.hash)
+        const data: any = await wallet.sendTransaction(tx1);
+        const { from, gasLimit, gasPrice, nonce,  type, value, hash, to } = data;
+      commit("account/PUSH_TXQUEUE", {
+              hash,
+              from,
+              gasLimit,
+              gasPrice,
+              nonce,
+              to,
+              type,
+              value,
+              network: clone(store.state.account.currentNetwork),
+              txType: TransactionTypes.other
+            });
+        const receipt = await wallet.provider.waitForTransaction(hash)
+            const rep = handleGetTranactionReceipt(
+      TransactionTypes.contract,
+      receipt,
+      data,
+      clone(store.state.account.currentNetwork)
+    );
+    commit("account/PUSH_TRANSACTION", rep);
         console.log(receipt);
         console.log("receiptreceiptreceiptreceiptreceipt");
         isLoading.value = false;
