@@ -1,8 +1,8 @@
 
 
 
-import {handleRpcRequest} from './modules/handleRpcRequest.js'
-import {handleRpcResponse} from './modules/handleRpcResponse.js'
+import { handleRpcRequest } from './modules/handleRpcRequest.js'
+import { handleRpcResponse } from './modules/handleRpcResponse.js'
 
 import {
   getPwd,
@@ -21,7 +21,7 @@ import {
 // Return true for asynchronous messages
 chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
   const walletPwd = await getPwd()
-  if(!walletPwd){
+  if (!walletPwd) {
     clearConnectList()
   }
   const { data, target } = request;
@@ -56,24 +56,24 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
 
 
 
-// form web page message
+  // form web page message
   if (target == 'wormholes-inpage') {
-      // Check whether the RPC Method is supported
-  if (!handleRpcRequest[method]) {
-    // Return error messages are not supported
-    const errMsg = errorCode['4200']
-    sendMessage(createMsg(errMsg, method || 'unknow'), {}, sender)
-    return false
-  }
+    // Check whether the RPC Method is supported
+    if (!handleRpcRequest[method]) {
+      // Return error messages are not supported
+      const errMsg = errorCode['4200']
+      sendMessage(createMsg(errMsg, method || 'unknow'), {}, sender)
+      return false
+    }
     // RPC calls
     handleRpcRequest[method](newParams, sendResponse, sender)
     return true;
   }
 
 
-// form popup message
+  // form popup message
   if (target == 'wormholes-popup') {
-    const { method, response} = data
+    const { method, response } = data
     if (method == 'update-wallet') {
       initWallet()
       return false
@@ -99,7 +99,7 @@ chrome.runtime.onInstalled.addListener(async () => {
 //  Listen window closed
 chrome.tabs.onRemoved.addListener(function (tabid, { windowId }) {
   Object.keys(handleRpcResponse).forEach(method => {
-    if (handleRpcResponse[method] &&  handleRpcResponse[method].window &&  handleRpcResponse[method].window.id == windowId) {
+    if (handleRpcResponse[method] && handleRpcResponse[method].window && handleRpcResponse[method].window.id == windowId) {
       resetParamsData(method)
     }
   })

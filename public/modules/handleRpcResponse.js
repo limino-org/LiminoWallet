@@ -30,22 +30,22 @@ export const handleRpcResponse = {
             const method = handleType.waitTxQueueResponse
             const { tab } = data
             console.log('tab------', tab)
-                try {
-                    console.log('handleType.waitTxQueueResponse', handleType.waitTxQueueResponse, sender)
-                    await waitTxQueueResponse()
-                    const bgMsg = { ...errorCode['200'], data: null }
-                    const sendBgMsg = createBgMsg(bgMsg, method)
-                    console.log('---------------- resolve')
-                    chrome.runtime.sendMessage(sender.id, sendBgMsg);
+            try {
+                console.log('handleType.waitTxQueueResponse', handleType.waitTxQueueResponse, sender)
+                await waitTxQueueResponse()
+                const bgMsg = { ...errorCode['200'], data: null }
+                const sendBgMsg = createBgMsg(bgMsg, method)
+                console.log('---------------- resolve')
+                chrome.runtime.sendMessage(sender.id, sendBgMsg);
 
-                } catch (err) {
-                    const bgMsg = { ...errorCode['-32003'], data: null }
-                    const sendBgMsg = createBgMsg(bgMsg, method)
-                    console.log('---------------- reject')
-                    chrome.runtime.sendMessage(sender.id, sendBgMsg);
+            } catch (err) {
+                const bgMsg = { ...errorCode['-32003'], data: null }
+                const sendBgMsg = createBgMsg(bgMsg, method)
+                console.log('---------------- reject')
+                chrome.runtime.sendMessage(sender.id, sendBgMsg);
 
-                }
-        
+            }
+
         }
     },
     [handleType.handleReject]: {
@@ -64,7 +64,7 @@ export const handleRpcResponse = {
 
     [handleType.logout]: {
         sendResponse: async (data, sendResponse, sender) => {
-            const {tab} = data
+            const { tab } = data
             await chrome.storage.local.set({ password: "" })
             await clearConnectList()
             const method = handleType.logout
