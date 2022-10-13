@@ -326,17 +326,17 @@ export const handleGetPwd = (str, time) => {
         opt,
         async(tabs) => {
             console.log('callback 111', tabs)
-            const newMsg = {...msg, origin}
           if (tabs.length) {
             // send to sender
             for (const tab of tabs) {
               if(sender){
                 console.log('callback 222', sender, tab)
                 if (tab.url.includes(sender.origin)) {
+                  const { origin } = sender
                   console.log('serviceWorker-callback 3333', tab)
-                  chrome.tabs.sendMessage(tab.id, newMsg);
+                  chrome.tabs.sendMessage(tab.id, {...msg, origin});
                   resolve()
-                } 
+                }
               } else {
                 const connectList = await getConnectList()
                 const originList = connectList.map(item => item.origin)
