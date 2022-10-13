@@ -11,6 +11,7 @@
     "storybook": "start-storybook -p 6006"
   },
   "dependencies": {
+    "@vant/touch-emulator": "^1.4.0",
     "axios": "^0.25.0",
     "bignumber.js": "^9.0.2",
     "copy-webpack-plugin": "^5",
@@ -32,7 +33,7 @@
     "vue-class-component": "^8.0.0-0",
     "vue-clipboard3": "^1.0.1",
     "vue-i18n": "^9.1.9",
-    "vue-loader-v16": "^16.8.3",
+    "vue-loader-v16": "16.0.0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0",
     "vuex-persist": "^3.1.3",

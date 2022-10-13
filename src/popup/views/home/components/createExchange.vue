@@ -287,6 +287,7 @@ const gradientColor = {
 });
 </script>
 <style lang="scss" scoped>
+
   .please{
     color: rgba(132, 132, 132, 1);
     font-size: 12px;

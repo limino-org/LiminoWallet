@@ -12,8 +12,7 @@
     "scripting",
     "storage",
     "alarms",
-    "<all_urls>",
-    "*://*/*"
+    "unlimitedStorage"
   ],
   "host_permissions":[
     "*://*/*",
@@ -21,7 +20,7 @@
     "*://*/home.html"
   ],
   "optional_permissions": [
-    "unlimitedStorage"
+    
   ],
   "content_scripts": [
 		{

@@ -326,7 +326,7 @@ event.initEvent('wormHoles-callback-event', true, true);
 // Listen for callback events
 document.addEventListener('wormHoles-callback-event', (res) => {
     // accepting of data
-    console.log('event----', res.detail,window.location.origin)
+    console.log('Service Worker Response ',res.detail.data)
     let { type, data } = res.detail;
     if (type == "wormholes-callback") {
         const { method, response } = data

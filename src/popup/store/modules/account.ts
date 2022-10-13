@@ -432,30 +432,6 @@ export default {
     UPDATE_ACCOUNTINFO(state: State, value: AccountInfo) {
       state.accountInfo = value;
     },
-    // UPDATE_TRANSACTION(state: State, value:TransactionReceipt){
-    //   const { to, from, tokenAddress,hash, network } = value;
-    //   const currentNetwork: NetWorkData = {...network};
-    //   const netWorkList = toRaw(state.netWorkList);
-    //   const tokenAdd = tokenAddress ? tokenAddress.toUpperCase() : '';
-    //   const formAdd = from.toUpperCase();
-    //   const len2 =
-    //   typeof currentNetwork.transactionList[formAdd] != undefined &&
-    //     currentNetwork.transactionList[formAdd]
-    //     ? currentNetwork.transactionList[formAdd].length
-    //     : 0;
-    //   if(len2) {
-    //     Object.keys(currentNetwork.transactionList).forEach((key) => {
-    //       const keyVal = key.toUpperCase();
-    //       if (keyVal == formAdd) {
-    //         currentNetwork.transactionList[keyVal].forEach(child => {
-    //           if(child.hash.toLowerCase() === hash.toLowerCase()){
-    //             child = {...value}
-    //           }
-    //         });
-    //       }
-    //     });
-    //   }
-    // },
     // Transaction list pushed to current account
     async PUSH_TRANSACTION(state: State, value: TransactionReceipt) {
       const { to, from, tokenAddress,network } = value;
@@ -686,7 +662,7 @@ export default {
       await localforage.setItem('txQueue', newList)
       handleUpdate()
     },
-    // new tx push to queue
+    // // new tx push to queue
     async PUSH_TXQUEUE(state: State, tx: any) {
       const list: any = await localforage.getItem('txQueue')
       const txQueue = list && list.length ? list : []
@@ -1265,7 +1241,7 @@ export default {
           for (let i = 0; i < tokens.length; i++) {
             console.log('result[i]', result[i])
             // @ts-ignore
-            tokens[i].balance = utils.formatEther(result[i]);
+            tokens[i].balance = result[i];
           }
         });
       }
@@ -1389,29 +1365,31 @@ export default {
     },
     // The result of polling the transaction queue
     async waitTxQueueResponse({ commit, state }: any) {
-      const list: any = await localforage.getItem('txQueue')
-      const txQueue = list && list.length ? list : []
-      if (!txQueue.length) {
-        return Promise.resolve()
-      }
-      try {
-        for await (const iterator of txQueue) {
-          const {network,hash, txType} = iterator
-          const data1 = await wallet.provider.waitForTransaction(hash);
-          const rep: TransactionReceipt = handleGetTranactionReceipt(
-            txType,
-            data1,
-            iterator,
-            network
-          );
-          commit("DEL_TXQUEUE", { ...iterator });
-          commit("PUSH_TRANSACTION", { ...rep });
-        }
-        return Promise.resolve()
-      } catch (err) {
-        console.error(err)
-        return Promise.reject(err)
-      }
+      // const list: any = await localforage.getItem('txQueue')
+      // const txQueue = list && list.length ? list : []
+      // if (!txQueue.length) {
+      //   return Promise.resolve()
+      // }
+      // try {
+      //   for await (const iterator of txQueue) {
+      //     const {network,hash, txType} = iterator
+      //     const data1 = await wallet.provider.waitForTransaction(hash);
+      //     const rep: TransactionReceipt = handleGetTranactionReceipt(
+      //       txType,
+      //       data1,
+      //       iterator,
+      //       network
+      //     );
+      //     commit("DEL_TXQUEUE", { ...iterator });
+      //     commit("PUSH_TRANSACTION", { ...rep });
+      //   }
+      //   return Promise.resolve()
+      // } catch (err) {
+      //   console.error(err)
+      //   return Promise.reject(err)
+      // }
+      // // The service worker performs
+      return sendBackground({ method: 'waitTxQueueResponse' })
     }
   },
   namespaced: true,

@@ -141,7 +141,6 @@ export default {
       state.transferCNYRate = val
     },
     UPDATA_CONVERSATIONID(state: State, id: string) {
-      console.warn('UPDATA_CONVERSATIONID', id)
       state.conversationId = id
     },
     UPDATE_WALLET_TOKEN(state: State, token: WalletToken) {

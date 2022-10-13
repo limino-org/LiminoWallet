@@ -27,8 +27,8 @@
   </div>
   <div class="btn-box pb-20 pt-20 " >
       <div class="container  flex between  pr-30 pl-30">
-        <van-button class="mr-20" block @click="cancel">{{t('restWallet.cancel')}}</van-button>
-        <van-button block @click="next" :disabled="selectLen?false:true" type="primary">{{t('common.connectTxt')}}</van-button>
+        <van-button class="mr-20" block @click="cancel" >{{t('restWallet.cancel')}}</van-button>
+        <van-button block @click="next" :disabled="selectLen?false:true" :loading="loading" type="primary">{{t('common.connectTxt')}}</van-button>
       </div>
   </div>
 </template>
@@ -90,18 +90,16 @@ export default {
       const checkArr = [accountInfo.value.address,...accounts]
       checkedList.value = checkArr
     })
+    const loading = ref(false)
     const next = () => {
+      loading.value = true
       sendBackground({method:handleType.wallet_requestPermissions,response: {code:'200',data:[...checkedList.value]}})
-      // //   @ts-ignore
-      // bg.params[handleType.wallet_requestPermissions].sendResponse({response: [...checkedList.value]})
     }
     const cancel = () => {
-        // @ts-ignore
-      // const bg = chrome.runtime.getBackgroundPage();
-      // bg.handleReject(handleType.wallet_requestPermissions)
       sendBackground({method:handleType.handleReject,response:{method:handleType.wallet_requestPermissions}})
     }
     return {
+      loading,
       route,
       t,
       next,

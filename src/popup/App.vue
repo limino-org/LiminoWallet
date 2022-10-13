@@ -54,13 +54,10 @@ export default {
     const currentNetwork = computed(() => state.account.currentNetwork);
     provide("appProvide", appProvide());
     onMounted(()=>{
-      let time = setTimeout(() => {
-        dispatch('account/waitTxQueueResponse')
-        clearTimeout(time)
-      }, 5000)
-      // update browser session window id
+     dispatch('account/waitTxQueueResponse')
+     // update browser session window id
      dispatch('system/setConversationid', guid())
-      // Listen to the broadcast of the same source window
+     // Listen to the broadcast of the same source window
       const { broad } = useBroadCast()
       broad.onmessage = async(e) => {
         const { data }: any = e

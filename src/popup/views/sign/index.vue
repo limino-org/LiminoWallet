@@ -17,16 +17,13 @@
         <div class="title">{{t('sign.walletaddress')}}</div>
         <div class="value">{{ accountInfo.address }}</div>
         <div class="title">{{t('sign.signaturedata')}}</div>
-        <div class="flex center" v-if="loading">
-          <van-loading color="#1989fa" />
-        </div>
-        <div v-else :class="`value hover ${signSelect ? 'focus' : ''}`" @click="toCopy">{{ sig }}</div>
+        <div :class="`value hover ${signSelect ? 'focus' : ''}`" @click="toCopy">{{ sig }}</div>
       </div>
 
       <div class="btn-box">
         <div class="container flex between ml-24 mr-24">
           <van-button type="default" @click="cancel" plain>{{t('sign.cancel')}}</van-button>
-          <van-button type="primary" @click="goOn">{{t('sign.confirm')}}</van-button>
+          <van-button type="primary" @click="goOn" :loading="loading">{{t('sign.confirm')}}</van-button>
         </div>
       </div>
     </div>
@@ -66,7 +63,7 @@ export default {
     const back = () => {
       router.replace({ name: 'wallet' })
     }
-    const { toSign, loading, password, sign, address }: any = useSign()
+    const { toSign, password, sign, address }: any = useSign()
     const signSelect: Ref<boolean> = ref(false)
     const { toClipboard } = useClipboard()
     const toCopy = async () => {
@@ -82,7 +79,9 @@ export default {
         console.error(e)
       }
     }
+    const loading = ref(false)
     const goOn = () => {
+      loading.value = true
       toSign({
         address: accountInfo.value.address,
         sig: sig,
@@ -94,10 +93,6 @@ export default {
     }
 
     const cancel = () => {
-      // @ts-ignore
-      // const bg = chrome.runtime.getBackgroundPage()
-      // bg.handleReject(signType)
-      // bg.closePopup(signType)
       sendBackground({method:handleType.handleReject,response:{method:signType}})
 
     }

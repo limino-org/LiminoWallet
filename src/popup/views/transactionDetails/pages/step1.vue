@@ -100,9 +100,7 @@ export default {
     onMounted(async() =>{
       const id = currentNetwork.value.id
       const targetAddress = accountInfo.value.address.toUpperCase()
-      debugger
       const tx = await localforage.getItem(`txlist-${id}`)
-      debugger
       const list = tx[targetAddress] || []
       if(tokenContractAddress) {
         txList.value = list.filter((item:any) =>  item.tokenAddress && item.tokenAddress.toUpperCase() == tokenContractAddress.toString().toUpperCase())
