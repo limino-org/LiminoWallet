@@ -161,7 +161,7 @@
   
       const {$toast} = useToast()
   
-      const next = () => {
+      const next = async() => {
         const mnemonic = list.value.map(item => item.value.trim()).join(' ')
         const check = list.value.find(item => item.validator)
         const len = list.value.filter(item => item.value.trim()).length
@@ -171,7 +171,9 @@
         }
         try {
           ethers.Wallet.fromMnemonic(mnemonic, "m/44'/60'/0'/0/0")
-          router.push({ name: "loginAccount-mnemonic-import", query: { mnemonic: encodeURIComponent(mnemonic) } })
+          // @ts-ignore
+          await chrome.storage.local.set({mnemonic: mnemonic})
+          router.push({ name: "loginAccount-mnemonic-import"})
         }catch(err){
           console.error(err.toString())
           $toast.warn(t('importByMnemonic.errorMonic'))

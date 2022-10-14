@@ -49,10 +49,6 @@
             ></qrcode-vue>
           </div>
         </div>
-<!--        <div class="load-btn flex center h-30 hover f-12" @click="download">-->
-<!--          <span>{{ t("exportprivatekey.saveQRcode") }}</span>-->
-<!--          <i class="iconfont icon-xiazai1"></i>-->
-<!--        </div>-->
       </div>
       <div class="btn-groups">
       <div class="container pl-28 pr-28">
@@ -71,6 +67,7 @@
           @keydown.enter="unlock"
         />
       </div>
+      <div v-if="pwdErr" class="ipt-message">{{pwdErrMsg}}</div>
       <div class="btn-groups">
         <div class="container pl-28 pr-28">
           <van-button @click="unlock" type="primary" block>{{t('transferNft.confirm')}}</van-button>
@@ -165,6 +162,7 @@ export default {
     const download = () => {
       downloadBase64Img();
     };
+    const pwdErrMsg = ref('')
     const checkFlag = ref(false);
     const password = ref("");
     // Selected tab
@@ -172,17 +170,21 @@ export default {
     const pwdErr = ref(false)
     const  unlock = async () => {
       pwdErr.value = false
+      if(!password.value) {
+        pwdErr.value = true
+        pwdErrMsg.value = t('loginwithpassword.pleaseinput')
+        return false
+      }
       try {
         // Unlock the keystore file of the current account through the password
           parseMnemonic(password.value).then(res => {
              mnemonic.value = res;
-             pwdErr.value = true
              checkFlag.value = true;
-
           });
       } catch (err) {
-        // pwdErr.value = true
+        pwdErr.value = true
         $toast.fail(err.toString());
+        pwdErrMsg.value = err.toString()
       }
     };
     return {
@@ -197,6 +199,7 @@ export default {
       download,
       checkFlag,
       unlock,
+      pwdErrMsg,
       pwdErr
     };
   },
@@ -207,15 +210,26 @@ export default {
 .pwd-tit {
   padding: 0 26px 0;
 }
+.ipt-message {
+  color: #D73A49;
+  margin: 0 15px;
+}
 .ipt {
   min-height: 44px;
   background: #ffffff;
-  margin: 0 15px 10px;
+  margin: 0 15px 0;
   border-radius: 5px;
-  padding: 10px 0;
+  padding: 10px 0 5px;
   //border: 1px solid #bbc0c5;
   &.error {
-    border-color: #d73a49;
+    :deep(){
+      .van-field {
+        .van-field__body {
+    border: 1px solid #D73A49;
+    background: #FBF2F3;
+  }
+      }
+    }
   }
   .van-field {
     padding: 0;

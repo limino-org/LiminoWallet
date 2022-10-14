@@ -143,16 +143,14 @@ export default {
       try {
         await createWalletByJson(data)
         isError.value = false
-        const time = new Date().getTime()
         //   Encrypt and store the time with a password according to the, transfer it to Step2, and then use PWD to restore the time at Step2
-        const tkstr = encrypt('reset-token' + time, time.toString())
-        localStorage.setItem('resetpwdtk', tkstr)
         const {toName} = route.query
+        // @ts-ignore
+        await chrome.storage.local.set({comfirm_password:password.value})
         if(toName == 'loginAccount-step1') {
-          router.replace({ name: toName, query:{time}})
+          router.replace({ name: toName })
         } else {
-          router.replace({ name: route.query.toName ? route.query.toName :'successpage', params:{time}})
-
+          router.replace({ name: route.query.toName ? route.query.toName :'successpage' })
         }
       }catch(err){
         console.error(err)

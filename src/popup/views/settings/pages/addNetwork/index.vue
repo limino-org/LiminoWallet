@@ -11,7 +11,7 @@
     </div>
 
     <div>
-      <van-form @submit="onSubmit">
+      <van-form ref="form">
         <div class="label text-bold">
           <span>*</span>{{ t("addNetwork.networkname") }}
         </div>
@@ -99,7 +99,7 @@
               @click="handleDelNet"
               >{{ t("addNetwork.delete") }}</van-button
             >
-            <van-button block type="primary" native-type="submit">
+            <van-button block type="primary" :loading="loading" @click="onSubmit">
               {{ isModif ? t("addNetwork.submit") : t("addNetwork.add") }}
             </van-button>
           </div>
@@ -125,6 +125,7 @@ import { ethers, utils } from "ethers";
 import { useBroadCast } from "@/popup/utils/broadCost";
 import { useToast } from "@/popup/plugins/toast";
 import { getWallet } from "@/popup/store/modules/account";
+import { useDialog } from "@/popup/plugins/dialog";
 
 
 export default {
@@ -153,7 +154,7 @@ export default {
     }: any = data;
 
     
-    const { state, commit } = store;
+    const { state, commit, dispatch } = store;
     const label: Ref<string> = ref(qlabel);
     const URL: Ref<string> = ref(qurl);
     const chainId: Ref<number> = ref(qid || null);
@@ -246,14 +247,19 @@ export default {
     });
     const netWorkList = computed(() => state.account.netWorkList);
     const { $toast } = useToast();
-
-    const onSubmit = () => {
+    const form = ref()
+    const onSubmit = async() => {
       console.warn("netWorkList", netWorkList);
       loading.value = true;
+      try {
+        await form.value.validate()
       let time = setTimeout(()=>{
         saveData();
         clearTimeout(time)
-      },0)
+      },300)
+      }catch(err){
+        loading.value = false;
+      }
     };
     const nameError = ref(false)
     const asyncName = (v: string) => {
@@ -286,6 +292,7 @@ export default {
         isModif.value ? "account/MODIF_NETWORK" : "account/PUSH_NETWORK",
         netWork
       );
+      dispatch("account/getProviderWallet");
       handleUpdate();
       loading.value = false;
       $toast.success(
@@ -296,19 +303,25 @@ export default {
       router.back();
     };
 
+    const {$dialog} = useDialog()
     // Delete network
     const handleDelNet = () => {
-      Dialog.confirm({
-        title: t("addNetwork.hint"),
-        message: t("addNetwork.confirmdeletion", { qlabel: qlabel }),
-      }).then(() => {
-        // on confirm
+
+      $dialog.open({
+        message:t("addNetwork.confirmdeletion", { qlabel: qlabel }),
+        type: "warn",
+        theme: "dark",
+        confirmBtnText: t("common.no"),
+        cancelBtnText: t("common.yes"),
+        callBack() {},
+        cancelBack() {
+                  // on confirm
         store.commit("account/DETETE_NETWORK", id);
         $toast.success(
           t("addNetwork.deletingnetworksucceeded", { qlabel: qlabel })
         );
         router.back();
-        return true;
+        },
       });
     };
 
@@ -349,8 +362,10 @@ export default {
       ID,
       currencySymbol,
       browser,
+      form,
       RegUrl,
       asyncurl,
+      loading,
       urlError,
       chainError,
       asyncName,

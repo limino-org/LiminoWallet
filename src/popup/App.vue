@@ -70,6 +70,8 @@ export default {
         }
       }
       window.onload = () => {
+        // @ts-ignore
+        chrome.storage.local.set({comfirm_password: ''})
         let time = setTimeout(() => {
           document.getElementById('loading-page-box').style.display = 'none'
           document.getElementById('app').style.display = 'block'

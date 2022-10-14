@@ -91,7 +91,7 @@
                 ></i>
               </div>
               <!-- Address, copy, QR code-->
-              <div class="address-card flex">
+              <div class="address-card flex" @click="toCopy">
                 <div class="add">{{ accountInfo.address }}</div>
               </div>
               <div class="amount mt-8">

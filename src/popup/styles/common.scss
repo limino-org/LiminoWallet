@@ -220,11 +220,7 @@ img {
   }
 }
 
-:deep() {
-  .popover-dialog {
-    // max-width: 50vw;
-  }
-}
+
 
 
 .van-cell .van-field__body {
@@ -284,6 +280,15 @@ img {
   color: #848484;
   font-size: 12px;
 }
+
+
+.van-field.error {
+  .van-field__body {
+    border: 1px solid #D73A49;
+    background: #FBF2F3;
+  }
+}
+
 @media screen and (min-width: 750px) {                                                                                                                                 
   html {
     font-size: 50PX !important; // ignored

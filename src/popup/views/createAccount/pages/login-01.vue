@@ -1,20 +1,22 @@
 <template>
   <div>
-    <NavHeader :title="t('wallet.wormHoles')" :hasLeft="false" :hasRight="false" />
+    <NavHeader
+      :title="t('wallet.wormHoles')"
+      :hasLeft="false"
+      :hasRight="false"
+    />
     <div class="title">
-                
-    <WormTransition size="small">
-      <template v-slot:icon>
-        <img class="iconele" src="@/assets/token/logowallet.png" />
-      </template>
-    </WormTransition>
+      <WormTransition size="small">
+        <template v-slot:icon>
+          <img class="iconele" src="@/assets/token/logowallet.png" />
+        </template>
+      </WormTransition>
       <!-- <img class="iconele flex center" src="@/assets/token/icon_blue.svg" alt /> -->
       <div class="tit-big text-center f-24">
         {{ t("createAccountpage.welcome") }}
       </div>
       <div class="tit-small text-center f-12 mt-14 mb-30 lh-16">
-    
-        {{t('loginwithpassword.smallTit')}}
+        {{ t("loginwithpassword.smallTit") }}
       </div>
     </div>
     <div class="create-new-password">
@@ -56,14 +58,17 @@
         </div>
       </van-form>
       <div class="text-center f-12">
-        <i18n-t tag="div" class="reset-box" keypath="createAccountpage.cantLogin">
+        <i18n-t
+          tag="div"
+          class="reset-box"
+          keypath="createAccountpage.cantLogin"
+        >
           <template v-slot:reset>
-        <span class="lh-20 tool hover" @click="reset" :disable="reset_flag">
-          {{ t("createAccountpage.resentWallet") }}
-        </span>
+            <span class="lh-20 tool hover" @click="reset" :disable="reset_flag">
+              {{ t("createAccountpage.resentWallet") }}
+            </span>
           </template>
         </i18n-t>
-
       </div>
       <!-- <div class="text-center f-12">
         <div class="tit-small lh-20 mb-20">
@@ -105,11 +110,14 @@ import Resetpopup from "@/popup/views/createAccount/components/resetpopup.vue";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
 import { regPassword1 } from "@/popup/enum/regexp";
-import { CreateWalletByJsonParams } from "@/popup/utils/ether";
+import {
+  CreateWalletByJsonParams,
+  createWalletByJson,
+} from "@/popup/utils/ether";
 import { getWallet } from "@/popup/store/modules/account";
 import { encrypt, decrypt } from "@/popup/utils/cryptoJS.js";
 import NavHeader from "@/popup/components/navHeader/index.vue";
-import WormTransition from '@/popup/components/wromTransition/index.vue'
+import WormTransition from "@/popup/components/wromTransition/index.vue";
 export default {
   name: "loginAccount-step1",
   components: {
@@ -123,7 +131,7 @@ export default {
     [CheckboxGroup.name]: CheckboxGroup,
     Resetpopup,
     NavHeader,
-    WormTransition
+    WormTransition,
   },
   setup() {
     const password: Ref<string> = ref("");
@@ -133,6 +141,8 @@ export default {
     const { dispatch, commit, state } = useStore();
     const router = useRouter();
     const route = useRoute();
+    const accountInfo = state.account.accountInfo;
+    const { keyStore } = accountInfo;
     const onSubmit = async (value: object) => {
       loading.value = true;
       checkPwd();
@@ -144,8 +154,6 @@ export default {
     };
 
     const checkPwd = async () => {
-      const accountInfo = state.account.accountInfo;
-      const { keyStore } = accountInfo;
       const { currentNetwork } = state.account;
       const data: CreateWalletByJsonParams = {
         password: password.value,
@@ -159,7 +167,7 @@ export default {
         dispatch("account/updateBalance");
         const { query } = route;
         const { backUrl }: any = query;
-        if (backUrl && backUrl != "/loginAccount/step1" && backUrl != '/') {
+        if (backUrl && backUrl != "/loginAccount/step1" && backUrl != "/") {
           router.replace({ path: backUrl, query });
         } else {
           router.replace({ name: "wallet" });
@@ -190,27 +198,40 @@ export default {
     const cancel = () => {
       resetmodule.value = false;
     };
-    // Verifying login status
-    const checkTime = () => {
-      const resetpwdtk = localStorage.getItem("resetpwdtk");
-      const { time } = route.query;
 
-      if (!time || !resetpwdtk) {
-        return false;
-      }
-      const tk = decrypt(resetpwdtk, time.toString());
-      if (!resetpwdtk || !time || tk != "reset-token" + time) {
-        localStorage.removeItem("resetpwdtk");
-        return false;
-      }
-      return true;
+    const getConfirmPwd = async () => {
+      // @ts-ignore
+      const pwd = await chrome.storage.local.get("comfirm_password");
+      console.warn("***********************", pwd);
+
+      return pwd && pwd.comfirm_password ? pwd.comfirm_password : "";
     };
-    const flag = checkTime();
+    // Verifying login status
+    const checkConfirmPwd = async () => {
+      const pwd = await getConfirmPwd();
+      console.warn("=============================", pwd);
+      // @ts-ignore
+      await chrome.storage.local.set({ comfirm_password: "" });
+      if (!pwd) {
+        return;
+      }
+      //Unlock the keyStore file of the current account with a password
+      const data: CreateWalletByJsonParams = {
+        password: pwd,
+        json: keyStore,
+      };
+      try {
+        await createWalletByJson(data);
+        resetmodule.value = true;
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-    if (flag) {
-      // pop-up window
-      resetmodule.value = true;
-    }
+    onMounted(async () => {
+      checkConfirmPwd();
+    });
+
     const reset_flag = ref(true);
     const handleComfirm = () => {};
     return {

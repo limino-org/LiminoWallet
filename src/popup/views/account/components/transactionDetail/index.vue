@@ -35,7 +35,7 @@
         </div>
         <div class="card flex between card-sml">
           <div class="label">{{t('transactionDetails.gasfee')}}
-                      <van-popover v-model:show="showPopover" theme="dark" placement="top-start" >
+                      <van-popover v-model:show="showPopover" theme="dark" placement="top" class="popover-btn-tip" >
               <div class="f-12 pl-10 pr-10 pt-10 pb-10" @click="showPopover = false">{{t('common.gasFee')}}</div>
               <template #reference>
                 <van-icon name="question hover" @mouseover="showPopover = true" @mouseout="showPopover = false" />

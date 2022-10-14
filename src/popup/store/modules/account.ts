@@ -392,6 +392,16 @@ export default {
     // Delete network by ID
     DETETE_NETWORK(state: State, id: string) {
       const list = state.netWorkList.filter((item) => item.id != id);
+      if(state.currentNetwork.id == id) {
+        list.forEach(item => {
+          if(item.isMain) {
+            item.select = true
+          } else {
+            item.select = false
+          }
+        })
+        state.currentNetwork = list[0]
+      }
       state.netWorkList = list;
       handleUpdate()
     },

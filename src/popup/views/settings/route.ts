@@ -73,7 +73,7 @@ export default  {
         },
       },
       {
-        path: "/settings/resetPwd-step2/:time",
+        path: "/settings/resetPwd-step2",
         name: "resetPwd-step2",
         component:() =>  import("@/popup/views/settings/pages/resetPwd/step2.vue"),
         meta: {

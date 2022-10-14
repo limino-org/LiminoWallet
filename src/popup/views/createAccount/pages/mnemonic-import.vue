@@ -89,7 +89,7 @@
 
 </template>
 <script lang="ts">
-import Vue from 'vue'
+import Vue, { onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
 import { Icon, Toast, Button, Sticky, Field, Form, CellGroup, Switch, Checkbox, CheckboxGroup } from 'vant'
 import { encryptPrivateKey, EncryptPrivateKeyParams } from '@/popup/utils/web3'
@@ -130,7 +130,7 @@ setup() {
   const { t } = useI18n()
   const router = useRouter()
   const route = useRoute()
-  const mnemonic = decodeURIComponent(route.query.mnemonic?.toString() || '')
+  const mnemonic = ref('')
   const store = useStore()
   const { commit, dispatch } = store
   const password: Ref<string> = ref('')
@@ -142,8 +142,18 @@ setup() {
     }
   // Listen to the broadcast of the same source window
   const { handleUpdate } = useBroadCast()
-
-
+    onBeforeMount(async() => {
+        // @ts-ignore
+      const mnc = await chrome.storage.local.get('mnemonic');
+      if(mnc && mnc.mnemonic) {
+       // @ts-ignore
+       mnemonic.value = mnc && mnc.mnemonic ? mnc.mnemonic : ''
+      // @ts-ignore
+       await chrome.storage.local.set({mnemonic:''});
+      } else {
+        router.back()
+      }
+    })
   const onSubmit = async (value: object) => {
     console.log('submit', value)
     if (password.value == password2.value) {
@@ -157,7 +167,7 @@ setup() {
           const mnemonicParams: any = {
             pathIndex,
             path: getPath(pathIndex),
-            phrase: mnemonic
+            phrase: mnemonic.value
           }
           await store
             .dispatch('account/createWalletByMnemonic', mnemonicParams)
