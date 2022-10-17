@@ -13,6 +13,9 @@ export const useWallet = () => {
         const { hasAccount } = useLogin()
         const hasAcc = await hasAccount()
         const password = await getCookies()
+        if(!hasAcc) {
+            router.replace({ name: 'guide-step1'})
+        }
         try {
             let newwallet = await getWallet()
             dispatch('account/updateAllBalance')
