@@ -591,37 +591,29 @@ export default {
 
     // Set gaslimit dynamically
     const calcGasLimit = async () => {
-      const { tokenContractAddress } = chooseToken.value;
-      // Token transfer dynamic estimation gaslimit
-      if (tokenContractAddress) {
-        // Get contract token instance object
-        const { contractWithSigner, contract } = await dispatch(
-          "account/connectConstract",
-          tokenContractAddress
-        );
-        const am = (amount.value || 0) + ''
-        console.log('am---1', am)
-        const amountWei = web3.utils.toWei(am,'ether')
-        console.log('amountWei---1', amountWei)
-
-        contractWithSigner.estimateGas
-          .transfer(
-            toAddress.value || accountInfo.value.address,
-            amountWei
-          )
-          .then((gas: any) => {
-            console.warn(
-              "gas----------------==",
-              utils.formatUnits(gas, "wei")
-            );
-            gasLimit.value = utils.formatUnits(gas, "wei");
-          }).catch(err => {
-            console.error('err', err)
-          });
-      } else {
-        gasLimit.value = 21000;
-      }
-    };
+    const { tokenContractAddress } = chooseToken.value;
+    // Token transfer dynamic estimation gaslimit
+    if (tokenContractAddress) {
+      const amountWei = web3.utils.toWei(amount.value ? amount.value.toString() : '1','ether')
+      // Get contract token instance object
+      const { contractWithSigner, contract } = await dispatch(
+        "account/connectConstract",
+        tokenContractAddress
+      );
+      contractWithSigner.estimateGas
+        .transfer(
+          toAddress.value || accountInfo.value.address,
+          amountWei
+        )
+        .then((gas: any) => {
+          const limitWei = utils.formatUnits(gas, "wei")
+          gasLimit.value = parseFloat(new BigNumber(limitWei).plus(new BigNumber(limitWei).multipliedBy(0.2)).toFixed(0) ||'0');
+          console.log('gasLimit.value', gasLimit.value,limitWei)
+        });
+    } else {
+      gasLimit.value = 21000;
+    }
+  };
 
     const amountErr = ref(false);
     const handleAmountBlur = async () => {

@@ -1215,7 +1215,7 @@
 		copyAddr: "Address Hash Copied",
 		confirmExit:"Confirm exit",
 		guideBtnTip:"Your digital wallet data is only saved on your browser's local storage; be sure to create a backup to avoid potential permanent losses. Uninstalling your browser and/or clearing your browser data will also potentially result in permanent losses!",
-		asyncData:"Data synchronization, please wait."
+		loadingText:"Loading, please wait."
 	},
 	"categoryform": {
 		"categoryform": "You have not selected any data"
@@ -1304,7 +1304,7 @@
 	"currencyList": {
 		"importerror": "Token contract error",
 		"addressalreadyexists": "The token already exists at the current address",
-		sure: 'Determine to import tokens',
+		sure: 'Determine to import tokens {tokenName} ?',
 		Importsuccessful: 'Tokens have been imported successfully',
 		error: 'Import failed, the token is not supported by the current network',
 		tip: "View full history on {link}",

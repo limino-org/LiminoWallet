@@ -214,6 +214,7 @@ export const getGasFee = async (tx: any) => {
     return gasFee
   } catch (err) {
     console.error(err)
+    return Promise.reject(err)
   }
 }
 // Clear the current wallet instance
@@ -664,22 +665,25 @@ export default {
     UPDATE_FIRSTTIME(state: State, bool: Boolean) {
       state.firstTime = bool
     },
-    // Delete data from a queue
-    async DEL_TXQUEUE(state: State, tx: any) {
-      const list: any = await localforage.getItem('txQueue')
-      const txQueue = list && list.length ? list : []
-      const newList = txQueue.filter((item: any) => item.hash.toUpperCase() != tx.hash.toUpperCase())
-      await localforage.setItem('txQueue', newList)
-      handleUpdate()
-    },
-    // // new tx push to queue
-    async PUSH_TXQUEUE(state: State, tx: any) {
-      const list: any = await localforage.getItem('txQueue')
-      const txQueue = list && list.length ? list : []
-      txQueue.push(tx)
-      await localforage.setItem('txQueue', txQueue)
-      handleUpdate()
-    },
+ // New trades are pushed to the trade queue
+ async PUSH_TXQUEUE(state: State, tx: any) {
+  const { network: { id } } = tx
+  const queuekey = `txQueue-${id}`
+  const list: any = await localforage.getItem(queuekey)
+  const txQueue = list && list.length ? list : []
+  txQueue.push(tx)
+  await localforage.setItem(queuekey, txQueue)
+},
+// Delete data from a queue
+// Delete data from a queue
+async DEL_TXQUEUE(state: State, tx: any) {
+  const {network:{id}} = tx
+  const queueKey = `txQueue-${id}`
+  const list: any = await localforage.getItem(queueKey)
+  const txQueue = list && list.length ? list : []
+  const newList = txQueue.filter((item: any) => item.hash.toUpperCase() != tx.hash.toUpperCase())
+  await localforage.setItem(queueKey, newList)
+},
   },
   actions: {
     // Judge whether there is an account with a certain address in the wallet
@@ -958,6 +962,7 @@ export default {
           nonce,
           to,
           type,
+          transitionType: null,
           value,
           network: clone(currentNetwork),
           txType: TransactionTypes.default
@@ -1011,7 +1016,9 @@ export default {
           const gasp = new BigNumber(gasPrice)
             .dividedBy(1000000000)
             .toFixed(12);
-          console.log("gas-->", utils.formatEther(gas));
+            
+          console.log("gas-->",utils.formatEther(gas));
+          console.log('gas2 ->',gasp)
           const transferParams = {
             gasLimit: gasLimit,
             gasPrice: ethers.utils.parseEther(gasp),
@@ -1030,6 +1037,7 @@ export default {
             nonce,
             to,
             type,
+            transitionType: null,
             value,
             network: clone({...state.currentNetwork, currencySymbol: symbol}),
             txType: TransactionTypes.default
@@ -1170,7 +1178,7 @@ export default {
         const logoUrl = "eth.jpg";
         let balance = "0";
         try {
-          balance = await contractWithSigner.balanceOf(wallet.address);
+          balance = utils.formatEther(await contractWithSigner.balanceOf(wallet.address));
         } catch (err: any) {
           // Toast(i18n.global.t("currencyList.importerror"));
           return Promise.reject(i18n.global.t("currencyList.importerror"))

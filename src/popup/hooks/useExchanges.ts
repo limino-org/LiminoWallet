@@ -45,6 +45,7 @@ export const useExchanges = () => {
   const { toSign, sign } = useSign();
 
   const sendTx2 = async (amount: any, callBack?: Function) => {
+    const network = clone(store.state.account.currentNetwork)
    try {
     const wallet = await getWallet()
     const contractWithSigner = await getContract();
@@ -62,8 +63,9 @@ export const useExchanges = () => {
         to,
         type,
         value,
-        network: clone(store.state.account.currentNetwork),
-        txType: TransactionTypes.contract
+        network,
+        txType: TransactionTypes.contract,
+        transitionType: null,
 });
 
     callBack ? callBack() : "";
@@ -251,7 +253,8 @@ const getContract = async () => {
                 type,
                 value,
                 network: clone(state.account.currentNetwork),
-                txType: TransactionTypes.default
+                txType: TransactionTypes.default,
+                transitionType: '11',
               });
 
         if(!isServer){
@@ -367,14 +370,15 @@ const getContract = async () => {
               type,
               value,
               network: clone(state.account.currentNetwork),
-              txType: TransactionTypes.default
+              txType: TransactionTypes.other,
+              transitionType: '9',
             });
       $tradeConfirm.update({ status: "approve" })
       const receipt2 = await wallet.provider.waitForTransaction(hash)
 
       const symbol = state.account.currentNetwork.currencySymbol
       const rep: TransactionReceipt = handleGetTranactionReceipt(
-        TransactionTypes.default,
+        TransactionTypes.other,
         receipt2,
         receipt,
         clone(store.state.account.currentNetwork)
@@ -528,7 +532,8 @@ const getContract = async () => {
                   type,
                   value,
                   network: clone(state.account.currentNetwork),
-                  txType: TransactionTypes.default
+                  txType: TransactionTypes.other,
+                  transitionType: '22',
                 });
           $tradeConfirm.update({ status: "approve" })
           localStorage.setItem("close-exchange-tx", JSON.stringify(receipt));
@@ -537,7 +542,7 @@ const getContract = async () => {
             .then(async (receipt2: any) => {
               const symbol = state.account.currentNetwork.currencySymbol
               const rep: TransactionReceipt = handleGetTranactionReceipt(
-                TransactionTypes.default,
+                TransactionTypes.other,
                 receipt2,
                 receipt,
                 clone(store.state.account.currentNetwork)
@@ -659,14 +664,15 @@ const getContract = async () => {
               type,
               value,
               network: clone(state.account.currentNetwork),
-              txType: TransactionTypes.default
+              txType: TransactionTypes.other,
+              transitionType: '21',
             });
       $tradeConfirm.update({ status: TradeStatus.approve })
       localStorage.setItem("data1", JSON.stringify(data1));
       const receipt1 = await wallet.provider.waitForTransaction(data1.hash);
       const symbol = state.account.currentNetwork.currencySymbol
       const rep: TransactionReceipt = handleGetTranactionReceipt(
-        TransactionTypes.default,
+        TransactionTypes.other,
         receipt1,
         data1,
         symbol
@@ -715,7 +721,8 @@ const getContract = async () => {
               type,
               value,
               network: clone(state.account.currentNetwork),
-              txType: TransactionTypes.default
+              txType: TransactionTypes.other,
+              transitionType: '22',
             });
       $tradeConfirm.update({ status: TradeStatus.approve })
       localStorage.setItem("data1", JSON.stringify(data1));
@@ -723,7 +730,7 @@ const getContract = async () => {
       $tradeConfirm.update({ status: TradeStatus.success })
       const symbol = state.account.currentNetwork.currencySymbol
       const rep: TransactionReceipt = handleGetTranactionReceipt(
-        TransactionTypes.default,
+        TransactionTypes.other,
         receipt1,
         data1,
         clone(store.state.account.currentNetwork)

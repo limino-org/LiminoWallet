@@ -295,7 +295,6 @@ export default defineComponent({
   height: 35px;
   .van-field {
     padding: 0;
-    width: 140px;
     display: inline-block;
     :deep(input) {
       font-size: 12px;

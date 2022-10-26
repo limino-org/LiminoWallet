@@ -214,6 +214,7 @@ export default {
               to,
               type,
               value,
+              transitionType: '10',
               network: clone(store.state.account.currentNetwork),
               txType: TransactionTypes.other
             });
@@ -265,12 +266,13 @@ export default {
           try {
             const wallet = await getWallet();
             gasPrice.value = await wallet.provider.getGasPrice();
+            const priceStr = ethers.utils.formatUnits(gasPrice,'wei')
             gasLimit.value = await wallet.estimateGas(tx1);
             // @ts-ignore
             gasFee.value = new BigNumber(
               ethers.utils.formatEther(gasLimit.value)
             )
-              .dividedBy(ethers.utils.formatEther(gasPrice.value))
+              .multipliedBy(priceStr)
               .toFixed(9);
           } catch (err: any) {
             console.error(err);

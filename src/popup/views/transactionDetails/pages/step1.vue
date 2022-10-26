@@ -206,6 +206,9 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.swap-list {
+  padding-bottom: 60px;
+}
 .fixed-bottom {
   margin-top: 46px;
 }

@@ -1,69 +1,109 @@
+import { ethers } from './ethers.js'
 import { getWallet } from './common.js'
 import { localforage } from './localforage.js'
 export const useGetTxReceipt = () => {
   async function waitTxQueueResponse() {
-    const wallet = await getWallet()
-    const list = await localforage.getItem('txQueue')
-    const txQueue = list && list.length ? list : []
-    if (!txQueue.length) {
-      return Promise.resolve()
-    }
-    try {
-      for await (const iterator of txQueue) {
-        const { network, hash, txType } = iterator
-        const data1 = await wallet.provider.waitForTransaction(hash);
-        const rep = handleGetTranactionReceipt(
-          txType,
-          data1,
-          iterator,
-          network
-        );
-        DEL_TXQUEUE({ ...iterator });
-        PUSH_TRANSACTION({ ...rep });
-      }
-      return Promise.resolve()
-    } catch (err) {
-      console.log(err)
-      return Promise.reject(err)
-    }
+    const {id} = state.currentNetwork
+    const queuekey = `txQueue-${id}`
+    return new Promise(async(resolve, reject) => {
+        const list  = await localforage.getItem(queuekey)
+        const txQueue = list && list.length ? list : []
+        const newWallet = await getWallet()
+        if (!txQueue.length) {
+          resolve(true)
+        }
+        try {
+          for await (const iterator of txQueue) {
+            let {hash, transitionType, nft_address, blockNumber, network, txType} = iterator
+            const data1 = await newWallet.provider.waitForTransaction(hash);
+            let convertAmount = ''
+            if(transitionType && transitionType == '6') {
+              const len = nft_address.length
+              switch(len) {
+                case 42:
+                  break;
+                case 41:
+                  nft_address += '0'
+                  break;
+                case 40:
+                  nft_address += '00'
+                  break;
+                case 39:
+                  nft_address += '000'
+                  break;
+              }
+              const nftAccountInfo = await newWallet.provider.send(
+                "eth_getAccountInfo",
+                [nft_address,  ethers.utils.hexlify((data1.blockNumber - 1).toString())]
+              );
+              const {MergeLevel, MergeNumber} = nftAccountInfo
+              if(MergeLevel === 0) {
+                convertAmount = new BigNumber(MergeNumber).multipliedBy(0.095).toNumber()
+              }else if(MergeLevel === 1) {
+                convertAmount = new BigNumber(MergeNumber).multipliedBy(16).multipliedBy(0.143).toNumber()
+              } else if(MergeLevel === 2) {
+                convertAmount = new BigNumber(MergeNumber).multipliedBy(256).multipliedBy(0.271).toNumber()
+              } else if(MergeLevel === 3) {
+                convertAmount = new BigNumber(MergeNumber).multipliedBy(4096).multipliedBy(0.65).toNumber()
+              }
+              
+            }
+            const rep = handleGetTranactionReceipt(
+              txType ||TransactionTypes.other,
+              data1,
+              {...iterator, convertAmount},
+              network
+            );
+            DEL_TXQUEUE({ ...iterator });
+            PUSH_TRANSACTION({ ...rep });
+          }
+          resolve(true)
+        } catch (err) {
+          console.error(err)
+          reject(err)
+        }finally{
+          clearTimeout(time)
+        }
+  
+    })
   }
 
   // Delete data from a queue
   async function DEL_TXQUEUE(tx) {
-    const list = await localforage.getItem('txQueue')
+    const {network:{id}} = tx
+    const queueKey = `txQueue-${id}`
+    const list = await localforage.getItem(queueKey)
     const txQueue = list && list.length ? list : []
-    const newList = txQueue.filter(item => item.hash.toUpperCase() != tx.hash.toUpperCase())
-    await localforage.setItem('txQueue', newList)
+    const newList = txQueue.filter((item) => item.hash.toUpperCase() != tx.hash.toUpperCase())
+    await localforage.setItem(queueKey, newList)
 
   }
 
 
   async function PUSH_TRANSACTION(value) {
-    const { to, from, tokenAddress, network } = value;
-    const txNetwork = { ...network };
-    const { id, currencySymbol } = txNetwork
-    const formAdd = from.toUpperCase();
-    const txListKey = `txlist-${id}`
-    let txList = await localforage.getItem(txListKey)
-    if (txList && typeof txList == 'object') {
-      const receipt = { ...value, symbol: currencySymbol }
-      delete receipt.network
-      if (txList[formAdd] && txList[formAdd].length) {
-        const hasHash = txList[formAdd].find(tx => tx.hash.toUpperCase() == value.hash.toUpperCase())
-        !hasHash ? txList[formAdd].unshift(clone(receipt)) : ''
+    const { from, network } = value;
+      const txNetwork = {...network};
+      const {id, currencySymbol} = txNetwork
+      const formAdd = from.toUpperCase();
+      const txListKey = `txlist-${id}`
+      let txList = await localforage.getItem(txListKey)
+      if(txList && typeof txList == 'object') {
+        const receipt = {...value,symbol:currencySymbol}
+        if(txList[formAdd] && txList[formAdd].length) {
+          const hasHash = txList[formAdd].find((tx) => tx.hash.toUpperCase() == value.hash.toUpperCase())
+          !hasHash ? txList[formAdd].unshift(clone(receipt)) : ''
+        } else {
+          txList[formAdd] = [clone(receipt)]
+        }
       } else {
-        txList[formAdd] = [clone(receipt)]
+        const receipt = {...value,symbol:currencySymbol}
+        txList = {
+          [formAdd]:[clone(receipt)]
+        }
       }
-    } else {
-      const receipt = { ...value, symbol: currencySymbol }
-      delete receipt.network
-      txList = {
-        [formAdd]: [clone(receipt)]
-      }
-    }
-    DEL_TXQUEUE(value)
-    // save txlist
-    localforage.setItem(txListKey, clone(txList))
+      DEL_TXQUEUE(value)
+      // save txlist
+      localforage.setItem(txListKey, clone(txList))
   }
   return {
     waitTxQueueResponse

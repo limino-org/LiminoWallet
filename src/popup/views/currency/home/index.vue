@@ -171,6 +171,9 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.swap-list {
+  padding-bottom: 60px;
+}
 .currency {
   .currency-symbol {
     width: 60px;

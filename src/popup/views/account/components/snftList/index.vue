@@ -85,7 +85,7 @@
     @success="reLoading"
     @fail="reLoading"
   />
-  <SnftModal v-model="showModal" @change="handleChoose" />
+  <SnftModal v-model="showModal" :loading="loadNft" @change="handleChoose" />
 </template>
 
 <script lang="ts">
@@ -484,6 +484,10 @@ export default defineComponent({
 
     const showModal = ref(false);
     const handleShowModal = () => {
+      if(loadNft.value) {
+        Toast(t('common.loadingText'))
+        return
+      }
       showModal.value = !showModal.value;
     };
     /**

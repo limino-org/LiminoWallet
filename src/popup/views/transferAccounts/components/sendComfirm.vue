@@ -150,15 +150,15 @@ export default defineComponent({
     }
     const router = useRouter()
     const nextLoading = ref(false)
-
+    const callBack = () => {
+            router.replace({name:'wallet'})
+          }
     const handleComfirm = () => {
       showModal.value = false
        const params = {
         ...props.data,
         call(data: any){
-          const callBack = () => {
-            router.replace({name:'wallet'})
-          }
+         
           const {status} = data
           if(status == 1) {
             $tradeConfirm.update({status:"success",callBack})
@@ -177,6 +177,7 @@ export default defineComponent({
           $tradeConfirm.update({status:"approve"})
         })
         .catch((err: any) => {
+          $tradeConfirm.update({status:"fail",callBack})
           Toast(err.reason)
         })
         .finally(() => (nextLoading.value = false))

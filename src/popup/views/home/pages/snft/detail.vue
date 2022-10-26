@@ -61,6 +61,12 @@
               @click.stop="selectSingleSnft"
               v-show="actionType == '1' || actionType == '3'"
             ></div>
+            <!-- lock -->
+            <div class="lock-img-box" v-if="actionType === '1' && !canRedeem && disabled(item) == ''">
+              <div class="flex center">
+                <svg t="1666159609780" class="lock-img" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3307" width="200" height="200"><path d="M785.07008 409.6H716.8V273.07008C716.8 178.80064 640.39936 102.4 546.12992 102.4h-68.25984C383.60064 102.4 307.2 178.80064 307.2 273.07008V409.6h-68.27008c-37.5296 0-68.25984 30.74048-68.25984 68.27008v375.47008c0 37.5296 30.73024 68.25984 68.25984 68.25984h546.14016c37.5296 0 68.25984-30.73024 68.25984-68.25984V477.87008c0-37.5296-30.73024-68.27008-68.25984-68.27008zM546.12992 673.19808v111.872h-68.25984V673.19808c-20.33664-11.79648-34.14016-33.59744-34.14016-58.79808 0-37.66272 30.5664-68.25984 68.27008-68.25984s68.27008 30.59712 68.27008 68.25984c0 25.20064-13.80352 47.0016-34.14016 58.79808z m102.4-263.59808H375.47008V273.07008c0-56.53504 45.86496-102.4 102.4-102.4h68.25984c56.53504 0 102.4 45.86496 102.4 102.4V409.6z" p-id="3308" fill="rgba(255,255,255,.7)"></path></svg>
+              </div>
+            </div>
           </div>
         </van-swipe-item>
       </van-swipe>
@@ -77,6 +83,7 @@
         :own="hasChooseNum"
         :total="16"
         :ratio="ratio"
+        :maxRadio="0.143"
       />
     </div>
     <!-- snft- info -->
@@ -101,7 +108,7 @@
     <div class="flex center">
       <div class="btn-box flex evenly">
         <div
-          class="btn"
+          :class="`btn ${!canRedeem && actionType == '1' ? 'disabled' : ''}`"
           @click="toSend"
           v-if="showSendBtn"
         >
@@ -113,7 +120,7 @@
           <div class="btn-txt text-center">{{ t("sendSNFT.send") }}</div>
         </div>
         <div
-          class="btn"
+          :class="`btn`"
           @click="handleConvert"
           v-if="showConvertBtn"
         >
@@ -137,13 +144,13 @@
           <div class="btn-txt text-center">{{ t("createExchange.stake") }}</div>
         </div>
         <div
-          class="btn"
+          :class="`btn ${!canRedeem ? 'disabled' : ''}`"
           @click="handleReStaking"
           v-if="showReStakingBtn"
         >
           <div class="flex center">
             <div class="icon-in flex center">
-              <i class="iconfont icon-044chuizi"></i>
+              <i class="iconfont icon-key"></i>
             </div>
           </div>
           <div class="btn-txt text-center">
@@ -328,7 +335,19 @@ export default {
           Toast.clear();
         });
     };
-
+    const canRedeem = ref(false)
+    const getAddressInfo = async(address) => {
+      canRedeem.value = false
+      const wallet = await getWallet()
+      const blockNumber = await wallet.provider.getBlockNumber()
+      const res = await wallet.provider.send('eth_getAccountInfo', [address, "latest"])
+      const { NFTPledgedBlockNumber } = res
+      if(NFTPledgedBlockNumber && (blockNumber - NFTPledgedBlockNumber) > 6307200) {
+        // You can redeem
+        canRedeem.value = true
+      }
+      console.warn('res', res,blockNumber)
+    }
     const { nft_token_id, nft_contract_addr } = route.query;
     // First query
     const params = {
@@ -338,7 +357,7 @@ export default {
       count: "16",
     };
     getNft256(params);
-
+    getAddressInfo(pageData.value.children[0].nft_address)
     const hancleClick = (e, i) => {
       console.log(e, i);
       swipe.value?.swipeTo(i);
@@ -359,8 +378,13 @@ export default {
         count: "16",
       };
       getNft256(params);
+      if(actionType.value == '1') {
+        const snftAddress = pageData.value.children[e].nft_address
+        getAddressInfo(snftAddress)
+      }
     };
 
+    
     const showImg = () => {
       const idx = pageData.value.children.findIndex((item) => item.select);
       const arr2 = pageData.value.children.map(
@@ -373,7 +397,87 @@ export default {
         showIndicators: true,
       });
     };
+    const hasDisabled = computed(() => {
+      return chooseSnftData.value.disabled ? true : false;
+    });
 
+    const showConvertBtn =  computed(() => {
+      let flag = false
+      switch(actionType.value){
+        case '1':
+        flag = false
+          break;
+        case '2':
+        flag = chooseSnftData.value.snfts.length ? true : false
+          break;
+        case '3':
+        flag = false
+          break;
+      }
+      return flag
+    })
+    const showSendBtn =  computed(() => {
+      let flag = false
+      switch(actionType.value){
+        case '1':
+        flag = !hasDisabled.value
+          break;
+        case '2':
+        flag = chooseSnftData.value.snfts.length ? true : false
+          break;
+        case '3':
+        flag = !hasDisabled.value
+          break;
+      }
+      return flag 
+    })
+    const showStakingBtn =  computed(() => {
+      let flag = false
+      switch(actionType.value){
+        case '1':
+        flag = false
+          break;
+        case '2':
+        flag = false
+          break;
+        case '3':
+        flag = !hasDisabled.value
+          break;
+      }
+      return flag
+    })
+    const showReStakingBtn = computed(() => {
+      let flag = false
+      switch(actionType.value){
+        case '1':
+        flag = !hasDisabled.value
+          break;
+        case '2':
+        flag = false
+          break;
+        case '3':
+        flag = false
+          break;
+      }
+      return flag
+    })
+    
+    const imgGary =  computed(() => {
+      let flag = ''
+
+      switch(actionType.value){
+        case '1':
+          !showReStakingBtn.value ? flag = 'gary' : ''
+          break;
+        case '2':
+         !chooseSnftData.value.snfts.length ? flag = 'gary' : ''
+          break;
+        case '3':
+         !showStakingBtn.value ? flag = 'gary' : ''
+          break;
+      }
+      return flag
+    })
     const getDisabled = (item: any) => {
       const { pledgestate, Chipcount, disabled } = item;
       const status = actionType.value;
@@ -400,6 +504,7 @@ export default {
     };
 
     const toSend = () => {
+      if(actionType.value == '1' && !canRedeem.value) return
       if (actionType.value == "2") {
         if (!chooseNum.value) {
           Toast(t("sendSNFT.pleaseselect"));
@@ -489,9 +594,19 @@ export default {
 
     // Total amount
     const totalAmount = computed(() => {
+      if((showReStakingBtn.value || showStakingBtn.value)&& chooseSnftData.value.selectFlag){
+        const data = chooseSnftData.value;
+      const { MergeLevel, snfts, pledgestate,selectFlag } = data;
+       return parseFloat(
+          new BigNumber(snfts.length).multipliedBy(0.143).toFixed(6)
+        );
+      }
       if (!selectList.value.length) {
         return 0;
       }
+
+     
+
       // If 256 direct incoming aggregate addresses are selected
       if (selectList.value.length == 16) {
         const erb = snftToErb(selectList.value[0].nft_address.substr(0, 40));
@@ -511,7 +626,7 @@ export default {
       if (type == "next") {
         swipe.value?.next();
       }
-      if (type == "prev") {
+      if (type == "prev") {      
         swipe.value?.prev();
       }
     };
@@ -542,6 +657,7 @@ export default {
     };
 
     const handleReStaking = () => {
+      if(!canRedeem.value) return
       // Check whether the current SNFT is callable
       const { MergeLevel, snfts, pledgestate ,selectFlag} = chooseSnftData.value
       if (selectFlag) {
@@ -565,91 +681,12 @@ export default {
         chooseSnftData.value.selectFlag = !chooseSnftData.value.selectFlag
       }
     }
-    const hasDisabled = computed(() => {
-      return chooseSnftData.value.disabled ? true : false;
-    });
-
-    const showConvertBtn =  computed(() => {
-      let flag = false
-      switch(actionType.value){
-        case '1':
-        flag = false
-          break;
-        case '2':
-        flag = chooseSnftData.value.snfts.length ? true : false
-          break;
-        case '3':
-        flag = false
-          break;
-      }
-      return flag
-    })
-    const showSendBtn =  computed(() => {
-      let flag = false
-      switch(actionType.value){
-        case '1':
-        flag = !hasDisabled.value
-          break;
-        case '2':
-        flag = chooseSnftData.value.snfts.length ? true : false
-          break;
-        case '3':
-        flag = !hasDisabled.value
-          break;
-      }
-      return flag 
-    })
-    const showStakingBtn =  computed(() => {
-      let flag = false
-      switch(actionType.value){
-        case '1':
-        flag = false
-          break;
-        case '2':
-        flag = false
-          break;
-        case '3':
-        flag = !hasDisabled.value
-          break;
-      }
-      return flag
-    })
-    const showReStakingBtn = computed(() => {
-      let flag = false
-      switch(actionType.value){
-        case '1':
-        flag = !hasDisabled.value
-          break;
-        case '2':
-        flag = false
-          break;
-        case '3':
-        flag = false
-          break;
-      }
-      return flag
-    })
-    
-    const imgGary =  computed(() => {
-      let flag = ''
-
-      switch(actionType.value){
-        case '1':
-          !showReStakingBtn.value ? flag = 'gary' : ''
-          break;
-        case '2':
-         !chooseSnftData.value.snfts.length ? flag = 'gary' : ''
-          break;
-        case '3':
-         !showStakingBtn.value ? flag = 'gary' : ''
-          break;
-      }
-      return flag
-    })
+   
     return {
       handleReStaking,
       selectSingleSnft,
       imgGary,
+      canRedeem,
       showConvertBtn,
       showStakingBtn,
       showReStakingBtn,
@@ -694,6 +731,20 @@ export default {
 <style lang="scss" scoped>
 :deep(.progress-bar) {
   background: none;
+}
+.lock-img-box {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  &>div {
+    width: 100%;
+    height: 100%;
+  }
+  .lock-img {
+    width: 80px;
+  }
 }
 .snft-detail {
   width: 375px;

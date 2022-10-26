@@ -16,10 +16,7 @@ export function getSnftOwner(params = {}){
     return httpGet(`${wormholesscanApi}/snft_meta/page`, params)
 }
 
-// Exchange casting nft
-export function uploadNft(params = {}){
-    return httpPost(`${wormholesApi}/v2/upload`, params)
-}
+
 
 // Query collection
 export function collectionList(params = {}) {

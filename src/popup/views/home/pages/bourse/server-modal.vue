@@ -182,13 +182,14 @@ export default defineComponent({
         if (n) {
           const contract = await getContract();
           const gasPrice = await contract.provider.getGasPrice();
+          const priceStr = ethers.utils.formatUnits(gasPrice,'wei')
           const gasLimit = await contract.estimateGas.payForRenew({
             value: ethers.utils.parseEther(200 + ""),
           });
           gasFee.value = gasFee.value = new Bignumber(
             ethers.utils.formatEther(gasLimit)
           )
-            .dividedBy(ethers.utils.formatEther(gasPrice))
+            .multipliedBy(priceStr)
             .toFixed(9);
    
         }

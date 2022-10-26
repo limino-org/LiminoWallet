@@ -1,5 +1,4 @@
 // @TS-NOCHECK
-import 'amfe-flexible'
 import '@vant/touch-emulator';
 import { createApp } from 'vue'
 import '@/popup/utils/ether'

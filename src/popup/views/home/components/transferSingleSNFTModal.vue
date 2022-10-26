@@ -71,7 +71,7 @@
               <div class="van-hairline--bottom"></div>
               <div class="m-card">
                 <div class="m-label">{{ t("bourse.stakingPeriod") }}</div>
-                <div class="m-value">1 Year</div>
+                <div class="m-value">1 {{t('createExchange.year')}}</div>
               </div>
               <div class="van-hairline--bottom"></div>
               <div class="m-card">
@@ -160,6 +160,7 @@
   import { ethers } from "ethers";
   import { web3 } from "@/popup/utils/web3";
   import { clone } from 'pouchdb-utils';
+import { useToast } from "@/popup/plugins/toast";
     //   Pledge redemption of a single SNFT
   export default defineComponent({
     name: "transfer-NFT-modal",
@@ -208,6 +209,7 @@
       // count down
       const time = ref(3);
       const { $tradeConfirm } = useTradeConfirm();
+      const {$toast} = useToast()
       const showModal: Ref<boolean> = ref(false);
       const { dispatch, commit, state } = useStore();
       const {currentNetwork} = state.account
@@ -215,7 +217,7 @@
         () => props.modelValue,
         (n) => {
           console.log("selectList", props.selectList);
-          console.log("txtype", props.txtype);
+          console.log("txtype", props.txtype, typeof props.txtype);
           showModal.value = n;
           if (n) {
             let t = setInterval(() => {
@@ -225,6 +227,7 @@
               time.value = time.value -1
             },1000)
             if (props.txtype == "2" || props.txtype == "1") {
+              console.warn('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
               calcProfit();
             }
             calcGasFee();
@@ -372,39 +375,52 @@
       const myprofit = ref("");
       const historyProfit = ref("");
       const calcProfit = async () => {
-        const wallet = await getWallet();
-        const blockNumber = await wallet.provider.getBlockNumber();
-        const blockn = web3.utils.toHex(blockNumber.toString());
-        const data = await wallet.provider.send("eth_getValidator", [blockn]);
-        // const data2 = await getAccount(accountInfo.value.address)
-        let total = new BigNumber(0);
-        data.Validators.forEach((item: any) => {
-          total = total.plus(item.Balance);
-        });
-        // total zhiyaliang
-        const totalStr = total.div(1000000000000000000).toFixed(6);
-  
-        // total profit
-        const totalprofit = state.account.exchangeTotalProfit;
-        const totalPledge = new BigNumber(props.selectTotal);
-        myprofit.value = new BigNumber(totalprofit)
-          .multipliedBy(
-            totalPledge.div(new BigNumber(totalStr).div(7).multipliedBy(4))
+     try {
+      console.log('1---------------------------')
+      const wallet = await getWallet();
+      const blockNumber = await wallet.provider.getBlockNumber();
+      const blockn = web3.utils.toHex(blockNumber.toString());
+      console.log('2---------------------------',blockn)
+      const data = await wallet.provider.send("eth_getValidator", [blockn]);
+      console.log('3---------------------------',data)
+       // const data2 = await getAccount(accountInfo.value.address)
+       let total = new BigNumber(0);
+      data.Validators.forEach((item: any) => {
+        total = total.plus(item.Balance);
+      });
+      // total zhiyaliang
+      const totalStr = total.div(1000000000000000000).toFixed(6);
+
+      // total profit
+      const totalprofit = state.account.exchangeTotalProfit; // 2522880
+      const totalPledge = new BigNumber(props.selectTotal);
+      myprofit.value = new BigNumber(totalprofit)
+        .multipliedBy(
+          totalPledge.div(new BigNumber(totalStr).div(7).multipliedBy(4))
+        )
+        .toFixed(6);
+        debugger
+        /**
+         * 历史收益 = 一年总出块 * (我的质押金额/（全网总质押量/7*4）)
+         */
+      historyProfit.value = new BigNumber(totalprofit)
+        .multipliedBy(
+          new BigNumber(props.selectTotal).div(
+            new BigNumber(totalStr).div(7).multipliedBy(4)
           )
-          .toFixed(6);
-        historyProfit.value = new BigNumber(totalprofit)
-          .multipliedBy(
-            new BigNumber(props.selectTotal).div(
-              new BigNumber(totalStr).div(7).multipliedBy(4)
-            )
-          )
-          .toFixed(6);
-        console.warn("historyProfit", historyProfit.value);
-        console.warn("myprofit", myprofit.value);
-      };
+        )
+        .toFixed(6);
+      console.warn("historyProfit", historyProfit.value);
+      console.warn("myprofit", myprofit.value);
+     }catch(err){
+      console.log('4---------------------------',err)
+     }
+     
+    };
   
       const gasFee = ref("");
       const calcGasFee = async () => {
+       try {
         const { address } = state.account.accountInfo;
         console.warn('calc gasfee -----------------------------------:',props.selectList)
         const [data] = props.selectList
@@ -439,6 +455,10 @@
         };
         const gas = await getGasFee(tx1);
         gasFee.value = new BigNumber(gas).multipliedBy(1).toFixed(6);
+       }catch(err){
+        console.warn('gas err', err)
+        $toast.warn(err)
+       }
       };
   
 

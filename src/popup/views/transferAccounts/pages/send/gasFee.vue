@@ -120,7 +120,7 @@
 </div>
 </template>
 <script lang="ts">
-import { ref } from "@vue/reactivity";
+import { ref,onActivated } from "vue";
 import { getWallet } from "@/popup/store/modules/account";
 import { utils } from "ethers";
 import BigNumber from "bignumber.js";
@@ -249,7 +249,9 @@ setup(props: any) {
           amountWei
         )
         .then((gas: any) => {
-          gasLimit.value = utils.formatUnits(gas, "wei");
+          const limitWei = utils.formatUnits(gas, "wei")
+          gasLimit.value = parseFloat(new BigNumber(limitWei).plus(new BigNumber(limitWei).multipliedBy(0.2)).toFixed(0));
+          console.log('gasLimit.value', gasLimit.value,limitWei)
         });
     } else {
       gasLimit.value = 21000;
@@ -311,7 +313,7 @@ setup(props: any) {
     };
     router.replace({ name: backUrl || "send", query });
   };
-  onMounted(async () => {
+  onActivated(async () => {
     calcGasLimit();
     initGas();
   });
@@ -462,7 +464,7 @@ font-size: 12px;
   background: #f1f3f4;
   border-radius: 22px;
   .ipt-box {
-    width: 60px;
+    width: 160px;
     background: none;
     .van-cell {
       background: none;

@@ -233,7 +233,6 @@ import {
 } from "vant";
 import { ref, Ref, computed, toRaw, SetupContext, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { uploadNft } from "@/popup/http/modules/nft";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
 import Categoryform from "@/popup/components/categoryform/index.vue";

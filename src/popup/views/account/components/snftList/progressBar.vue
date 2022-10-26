@@ -28,7 +28,7 @@
       <!-- bubble -->
 
       <div class="bubble">
-        <div class="num">0.143</div>
+        <div class="num">{{maxRadio}}</div>
       </div>
     </div>
     <div class="flex between scale">
@@ -69,6 +69,10 @@ export default defineComponent({
       type: Number,
       default: 0.15,
     },
+    maxRadio: {
+      type: Number,
+      default: 0.271
+    }
   },
   setup(props: any) {
     const width = ref(0);
@@ -236,6 +240,18 @@ export default defineComponent({
 
   100% {
     width: 100%;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .bubble{
+    &::before{
+      bottom: -10px;
+    }
+    &::after {
+      border: 4px solid;
+      border-color: #fff transparent transparent;
+    }
   }
 }
 </style>

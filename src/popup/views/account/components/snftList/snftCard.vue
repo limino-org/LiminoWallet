@@ -400,7 +400,7 @@ export default defineComponent({
               count = parseFloat(new BigNumber(count).plus(new BigNumber(256).multipliedBy(0.271)).toFixed(8))
             }
           })
-          return isNaN(new BigNumber(count).div(countNum).toNumber()) ? 0 : new BigNumber(count).div(countNum).toFixed(4)
+          return isNaN(new BigNumber(count).div(countNum).toNumber()) ? 0 : new BigNumber(count).div(countNum).toFixed(3)
         }
 
 

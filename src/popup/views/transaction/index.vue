@@ -199,6 +199,7 @@ export default {
               to,
               type,
               value,
+              transitionType: '11',
               network: clone(store.state.account.currentNetwork),
               txType: TransactionTypes.default
             });

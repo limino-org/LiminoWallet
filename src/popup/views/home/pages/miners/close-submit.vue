@@ -195,6 +195,7 @@ export default {
               nonce,
               to,
               type,
+              transitionType: '10',
               value,
               network: clone(store.state.account.currentNetwork),
               txType: TransactionTypes.other

@@ -56,15 +56,12 @@ export const encryptMnemonic = (params: EncryptMnemonicParams) => {
 export const parseMnemonic = async (password: string): Promise<string> => {
   try {
     const json: any =await localforage.getItem("mnemonic") || "";
-    debugger
     const s: any = web3.eth.accounts.decrypt(json, password);
-    debugger
     const str = web3.utils.toUtf8(s.privateKey);
     return Promise.resolve(str);
   } catch (err) {
     console.error(err);
     Toast(i18n.global.t("wallet.wrongpassword"));
-    debugger
     return Promise.reject(err);
   }
 };

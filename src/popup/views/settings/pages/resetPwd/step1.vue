@@ -1,6 +1,6 @@
 <template>
   <div class="bourse">
-       <NavHeader :title="`${toName ? t('restWallet.restWallet') : t('setting.safety')}`">
+       <NavHeader :title="`${toName !== 'resetPwd-step2' ? t('restWallet.restWallet') : t('setting.resetPwd')}`">
       <template v-slot:left>
         <span class="back" @click="appProvide.back">{{t('common.back')}}</span>
       </template>

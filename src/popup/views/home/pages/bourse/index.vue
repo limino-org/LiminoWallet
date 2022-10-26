@@ -207,7 +207,7 @@
                 ><span class="flex right">None</span>
                 <i
                   :class="`iconfont ${
-                    serverIndex == 0 ? 'icon-duigouxiao' : 'icon-dui'
+                    serverIndex == 0 ? 'icon-duihao2' : 'icon-check_line'
                   }`"
                 ></i
               ></span>
@@ -238,7 +238,7 @@
                 ><span>Best</span>
                 <i
                   :class="`iconfont ${
-                    serverIndex == 1 ? 'icon-duigouxiao' : 'icon-dui'
+                    serverIndex == 1 ? 'icon-duihao2' : 'icon-check_line'
                   }`"
                 ></i
               ></span>

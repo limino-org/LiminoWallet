@@ -44,7 +44,7 @@ import {
 } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToggleAccount } from "@/popup/components/accountModal/hooks/toggleAccount";
-import { Icon, Dialog, Button, Loading, ActionSheet } from "vant";
+import { Icon, Dialog, Button, Loading, ActionSheet,Toast } from "vant";
 import AccountIcon from "@/popup/components/accountIcon/index.vue";
 import { decimal } from "@/popup/utils/filters";
 import { useStore } from "vuex";

@@ -71,7 +71,7 @@
             <div class="van-hairline--bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.stakingPeriod") }}</div>
-              <div class="m-value">1 Year</div>
+              <div class="m-value">1 {{t('createExchange.year')}}</div>
             </div>
             <div class="van-hairline--bottom"></div>
             <div class="m-card">
@@ -228,7 +228,7 @@ export default defineComponent({
             }
             time.value = time.value -1
           },1000)
-          if (props.txtype == "2") {
+          if (props.txtype == "1") {
             calcProfit();
           }
           calcGasFee();
@@ -316,6 +316,7 @@ export default defineComponent({
               list.push(nft_address.substr(0, 41));
             });
           }
+          let transitionType = ''
           //debugger;
           try {
             for await (const iterator of list) {
@@ -323,14 +324,17 @@ export default defineComponent({
               switch (props.txtype) {
                 // transfer
                 case "2":
+                transitionType = '6'
                   str = `wormholes:{"type":6,"nft_address":"${iterator}","version":"v0.0.1"}`;
                   break;
                 // pledge
                 case "3":
+                transitionType = '7'
                   str = `wormholes:{"type":7,"nft_address":"${iterator}","version":"0.0.1"}`;
                   break;
                 // redemption
                 case "1":
+                transitionType = '8'
                   str = `wormholes:{"type":8,"nft_address":"${iterator}","version":"0.0.1"}`;
                   break;
               }
@@ -353,6 +357,7 @@ export default defineComponent({
                 to,
                 type,
                 value,
+                transitionType,
                 network: clone(currentNetwork),
                 txType: TransactionTypes.other
               });
@@ -437,6 +442,7 @@ export default defineComponent({
                   to,
                   type,
                   value,
+                  transitionType:'6',
                   network: clone(currentNetwork),
                   txType: TransactionTypes.other
                 });
@@ -477,6 +483,7 @@ export default defineComponent({
                 gasPrice,
                 nonce,
                 to,
+                transitionType:'6',
                 type,
                 value,
                 network: clone(currentNetwork),
@@ -555,18 +562,22 @@ export default defineComponent({
     const myprofit = ref("");
     const historyProfit = ref("");
     const calcProfit = async () => {
+     try {
+      console.log('1---------------------------')
       const wallet = await getWallet();
       const blockNumber = await wallet.provider.getBlockNumber();
       const blockn = web3.utils.toHex(blockNumber.toString());
+      console.log('2---------------------------')
       const data = await wallet.provider.send("eth_getValidator", [blockn]);
-      // const data2 = await getAccount(accountInfo.value.address)
-      let total = new BigNumber(0);
+      console.log('3---------------------------')
+       // const data2 = await getAccount(accountInfo.value.address)
+       let total = new BigNumber(0);
       data.Validators.forEach((item: any) => {
         total = total.plus(item.Balance);
       });
       // total zhiyaliang
       const totalStr = total.div(1000000000000000000).toFixed(6);
-
+      console.log('totalStr', totalStr)
       // total profit
       const totalprofit = state.account.exchangeTotalProfit;
       const totalPledge = new BigNumber(props.selectTotal);
@@ -575,6 +586,7 @@ export default defineComponent({
           totalPledge.div(new BigNumber(totalStr).div(7).multipliedBy(4))
         )
         .toFixed(6);
+        debugger
       historyProfit.value = new BigNumber(totalprofit)
         .multipliedBy(
           new BigNumber(props.selectTotal).div(
@@ -584,6 +596,10 @@ export default defineComponent({
         .toFixed(6);
       console.warn("historyProfit", historyProfit.value);
       console.warn("myprofit", myprofit.value);
+     }catch(err){
+      console.log('4---------------------------',err)
+     }
+     
     };
 
     const gasFee = ref("");
