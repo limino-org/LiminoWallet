@@ -177,8 +177,6 @@ export default defineComponent({
     const exchangeStatus = computed(() => state.account.exchangeStatus);
     const gasFee = ref("");
     const {
-      addExchangeBalance,
-      miunsExchangeBalance,
       send2,
       sendTx2,
       getContract,

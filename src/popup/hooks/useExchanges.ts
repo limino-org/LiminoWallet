@@ -453,7 +453,7 @@ const getContract = async () => {
    * @/popupreturns 
    *
    */
-  const exchangeStatus = async () => {
+  const handleExchangeStatus = async () => {
     try {
       let wallet = await getWallet();
       const status = await checkAuth(wallet.address);
@@ -752,7 +752,7 @@ const getContract = async () => {
     adminUrl,
     ready,
     generateSign,
-    exchangeStatus,
+    handleExchangeStatus,
     close,
     closeExchanges,
     sendTo,

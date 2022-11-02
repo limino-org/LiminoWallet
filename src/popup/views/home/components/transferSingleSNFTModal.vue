@@ -267,10 +267,6 @@ export default defineComponent({
     const handleComfirm = async () => {
       emit("update:modelValue", false);
       console.log("selectList", props.selectList);
-      sessionStorage.setItem(
-        new Date().toUTCString(),
-        JSON.stringify(props.selectList)
-      );
       const wallet = await getWallet();
       const { address } = wallet;
       let approveMessage = "";

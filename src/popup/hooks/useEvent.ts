@@ -20,18 +20,12 @@ export const useEvent = () => {
         const wallet = await getWallet()
         const net = await wallet.provider.getNetwork()
         const chainId = web3.utils.toHex(net.chainId)
-        // @ts-ignore Send to page
-        // const bg = chrome.runtime.getBackgroundPage();
-        // bg.params[eventsEmitter.chainChanged].sendResponse({response: chainId})
         sendBackground({method:eventsEmitter.chainChanged, response:{code:"200",data:chainId}})
         dispatch("system/getEthAccountInfo");
         handleUpdate()
     })
     // account Change
     eventBus.on(eventHandler.changeAccount, (address: string) => {
-        // @ts-ignore Send to page
-        // const bg = chrome.runtime.getBackgroundPage();
-        // bg.params[eventsEmitter.accountsChanged].sendResponse({response:address})
         sendBackground({method:eventsEmitter.accountsChanged, response:{code:'200',data:address}})
         dispatch("system/getEthAccountInfo");
         handleUpdate()
