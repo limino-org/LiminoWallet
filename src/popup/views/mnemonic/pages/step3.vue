@@ -64,6 +64,7 @@ import { parseMnemonic } from "@/popup/utils/web3";
 import { randArr } from "@/popup/utils/utils";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import { useStore } from 'vuex';
 
 export default {
   name: "mnemonic-step3",
@@ -75,6 +76,7 @@ export default {
   setup() {
     const { t } = useI18n();
     const router = useRouter();
+    const store = useStore()
     // Unsorted
     const list = reactive({
       data: [],
@@ -133,7 +135,7 @@ export default {
     onMounted(async () => {
       // Get the decrypted mnemonic
       const password = await getCookies("password");
-      const realmm = await parseMnemonic(password);
+      const realmm = await parseMnemonic(password,store.state.mnemonic.keyStore);
       // Correct sorting
       const nlist = realmm
         .split(" ")

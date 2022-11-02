@@ -2,7 +2,7 @@
   <Transition name="slider">
     <div class="transfer-NFT" v-if="showModal">
       <div class="transfer-nft-con">
-        <div class="con">
+        <div class="container">
           <div class="notices pl-14 pr-14 pt-4 pb-4 flex center-v">
             <i class="iconfont icon-warn"></i>
             <span class="lh-14"
@@ -156,7 +156,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .con {
-  max-width: 750px;
+  max-width: 820px;
   margin: 0 auto;
   box-sizing: border-box;
 

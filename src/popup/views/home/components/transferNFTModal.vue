@@ -9,7 +9,7 @@
       :title="''"
     >
       <div class="title text-center text-bold van-hairline--bottom">
-         {{ submitText }}
+        {{ submitText }}
       </div>
       <!-- <div class="flex center pintu mt-20">
         <i class="iconfont icon-pintu"></i>
@@ -41,7 +41,7 @@
             </div>
             <div class="van-hairline--bottom"></div>
             <div class="m-card">
-              <div class="m-label ">{{ t("bourse.gasFee") }}</div>
+              <div class="m-label">{{ t("bourse.gasFee") }}</div>
               <div class="m-value gasFee">≈ {{ gasFee }} ERB</div>
             </div>
           </div>
@@ -71,7 +71,7 @@
             <div class="van-hairline--bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.stakingPeriod") }}</div>
-              <div class="m-value">1 {{t('createExchange.year')}}</div>
+              <div class="m-value">1 {{ t("createExchange.year") }}</div>
             </div>
             <div class="van-hairline--bottom"></div>
             <div class="m-card">
@@ -122,8 +122,14 @@
       </div>
       <div class="flex evenly pb-30 pl-16 pr-16">
         <van-button @click="cencel">{{ t("transferNft.cancel") }}</van-button>
-        <van-button :loading="loading" :disabled="time < 1 ? false : true" type="primary" @click="handleComfirm">
-          {{ t("transferNft.confirm") }} <span v-if="time > 0">({{time}}S)</span>
+        <van-button
+          :loading="loading"
+          :disabled="time < 1 ? false : true"
+          type="primary"
+          @click="handleComfirm"
+        >
+          {{ t("transferNft.confirm") }}
+          <span v-if="time > 0">({{ time }}S)</span>
         </van-button>
       </div>
     </van-dialog>
@@ -154,12 +160,16 @@ import BigNumber from "bignumber.js";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
 import { addressMask, snftToErb, toUsd } from "@/popup/utils/filters";
-import { getGasFee, getWallet, TransactionTypes } from "@/popup/store/modules/account";
+import {
+  getGasFee,
+  getWallet,
+  TransactionTypes,
+} from "@/popup/store/modules/account";
 import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
 import { TradeStatus } from "@/popup/plugins/tradeConfirmationsModal/tradeConfirm";
 import { ethers } from "ethers";
 import { web3 } from "@/popup/utils/web3";
-import { clone } from 'pouchdb-utils';
+import { clone } from "pouchdb-utils";
 export default defineComponent({
   name: "transfer-NFT-modal",
   components: {
@@ -183,7 +193,7 @@ export default defineComponent({
     },
     // length
     selectNumber: {
-      type: Number,
+      type: Number || String,
       default: 0,
     },
     // total
@@ -205,6 +215,10 @@ export default defineComponent({
       type: String,
       default: "3",
     },
+    ratio:{
+      type: Number,
+      default: 0.095
+    }
   },
   setup(props: any, context: SetupContext) {
     const { t } = useI18n();
@@ -214,7 +228,7 @@ export default defineComponent({
     const { $tradeConfirm } = useTradeConfirm();
     const showModal: Ref<boolean> = ref(false);
     const { dispatch, commit, state } = useStore();
-    const {currentNetwork} = state.account
+    const { currentNetwork } = state.account;
     watch(
       () => props.modelValue,
       (n) => {
@@ -223,11 +237,11 @@ export default defineComponent({
         showModal.value = n;
         if (n) {
           let t = setInterval(() => {
-            if(time.value == 0) {
-              clearInterval(t)
+            if (time.value == 0) {
+              clearInterval(t);
             }
-            time.value = time.value -1
-          },1000)
+            time.value = time.value - 1;
+          }, 1000);
           if (props.txtype == "1") {
             calcProfit();
           }
@@ -243,7 +257,7 @@ export default defineComponent({
       () => showModal.value,
       (n) => {
         if (!n) {
-          time.value = 3
+          time.value = 3;
           emit("update:modelValue", false);
           loading.value = false;
         }
@@ -303,6 +317,8 @@ export default defineComponent({
           emit("fail");
         },
       });
+      console.log('props.type', props.type)
+      console.log('props.txtype', props.txtype)
       // coll transfer
       if (props.type == "2") {
         if (props.txtype == "1" || props.txtype == "3") {
@@ -312,11 +328,21 @@ export default defineComponent({
           );
           for (let key of keys) {
             props.selectList[key].forEach((child: any) => {
-              const { nft_address } = child;
-              list.push(nft_address.substr(0, 41));
+              let { nft_address, MergeLevel } = child;
+              switch (MergeLevel) {
+                case 0:
+                  break;
+                case 1:
+                  nft_address = nft_address.substr(0, 41);
+                  break;
+                case 2:
+                  nft_address = nft_address.substr(0, 40);
+                  break;
+              }
+              list.push(nft_address);
             });
           }
-          let transitionType = ''
+          let transitionType = "";
           //debugger;
           try {
             for await (const iterator of list) {
@@ -324,17 +350,17 @@ export default defineComponent({
               switch (props.txtype) {
                 // transfer
                 case "2":
-                transitionType = '6'
+                  transitionType = "6";
                   str = `wormholes:{"type":6,"nft_address":"${iterator}","version":"v0.0.1"}`;
                   break;
                 // pledge
                 case "3":
-                transitionType = '7'
+                  transitionType = "7";
                   str = `wormholes:{"type":7,"nft_address":"${iterator}","version":"0.0.1"}`;
                   break;
                 // redemption
                 case "1":
-                transitionType = '8'
+                  transitionType = "8";
                   str = `wormholes:{"type":8,"nft_address":"${iterator}","version":"0.0.1"}`;
                   break;
               }
@@ -358,8 +384,9 @@ export default defineComponent({
                 type,
                 value,
                 transitionType,
+                nft_address: iterator,
                 network: clone(currentNetwork),
-                txType: TransactionTypes.other
+                txType: TransactionTypes.other,
               });
             }
             $tradeConfirm.update({
@@ -369,7 +396,7 @@ export default defineComponent({
             $tradeConfirm.update({
               status: "success",
             });
-            emit("success");
+
           } catch (err) {
             console.error(err);
             $tradeConfirm.update({
@@ -396,20 +423,22 @@ export default defineComponent({
                   snfts,
                   nft_address,
                 } = child;
-                if (
-                  MergeLevel == 0 &&
-                  Chipcount > 0 &&
-                  pledgestate == "NoPledge"
-                ) {
-                  list.push(...snfts);
-                }
-                if (MergeLevel > 0 && Chipcount && pledgestate == "NoPledge") {
-                  list.push(nft_address.substr(0, 41));
+                switch(MergeLevel){
+                  case 2:
+                  list.push(nft_address.substr(0, 40));
+                    break;
+                  case 1:
+                   list.push(nft_address.substr(0, 41));
+                    break;
+                  case 0:
+                    list.push(...snfts);
+                    break;
                 }
               });
             }
           }
           //debugger
+          console.log('list', list)
           try {
             for await (let nft_address of list) {
               if (nft_address) {
@@ -442,16 +471,16 @@ export default defineComponent({
                   to,
                   type,
                   value,
-                  transitionType:'6',
+                  transitionType: "6",
+                  nft_address: nft_address,
                   network: clone(currentNetwork),
-                  txType: TransactionTypes.other
+                  txType: TransactionTypes.other,
                 });
               }
             }
             $tradeConfirm.update({ status: "approve" });
             await dispatch("account/waitTxQueueResponse");
             $tradeConfirm.update({ status: "success" });
-            emit("success");
           } catch (err) {
             $tradeConfirm.update({ status: "fail" });
             console.error(err);
@@ -460,7 +489,22 @@ export default defineComponent({
       }
       // chip transfer
       if (props.type == "1") {
-        const list = props.selectList.map((item: any) => item.nft_address);
+        const list = [];
+        props.selectList.forEach((item: any) => {
+          let { nft_address, MergeLevel } = item;
+              switch (MergeLevel) {
+                case 0:
+                  break;
+                case 1:
+                  nft_address = nft_address.substr(0, 41);
+                  break;
+                case 2:
+                  nft_address = nft_address.substr(0, 40);
+                  break;
+              }
+              list.push(nft_address);
+        })
+        console.log('list----2', list)
         try {
           for await (let nft_address of list) {
             if (nft_address) {
@@ -483,11 +527,12 @@ export default defineComponent({
                 gasPrice,
                 nonce,
                 to,
-                transitionType:'6',
+                transitionType: "6",
                 type,
                 value,
                 network: clone(currentNetwork),
-                txType: TransactionTypes.other
+                nft_address,
+                txType: TransactionTypes.other,
               });
             }
           }
@@ -562,55 +607,63 @@ export default defineComponent({
     const myprofit = ref("");
     const historyProfit = ref("");
     const calcProfit = async () => {
-     try {
-      console.log('1---------------------------')
-      const wallet = await getWallet();
-      const blockNumber = await wallet.provider.getBlockNumber();
-      const blockn = web3.utils.toHex(blockNumber.toString());
-      console.log('2---------------------------')
-      const data = await wallet.provider.send("eth_getValidator", [blockn]);
-      console.log('3---------------------------')
-       // const data2 = await getAccount(accountInfo.value.address)
-       let total = new BigNumber(0);
-      data.Validators.forEach((item: any) => {
-        total = total.plus(item.Balance);
-      });
-      // total zhiyaliang
-      const totalStr = total.div(1000000000000000000).toFixed(6);
-      console.log('totalStr', totalStr)
-      // total profit
-      const totalprofit = state.account.exchangeTotalProfit;
-      const totalPledge = new BigNumber(props.selectTotal);
-      myprofit.value = new BigNumber(totalprofit)
-        .multipliedBy(
-          totalPledge.div(new BigNumber(totalStr).div(7).multipliedBy(4))
-        )
-        .toFixed(6);
-        debugger
-      historyProfit.value = new BigNumber(totalprofit)
-        .multipliedBy(
-          new BigNumber(props.selectTotal).div(
-            new BigNumber(totalStr).div(7).multipliedBy(4)
+      try {
+        console.log("1---------------------------");
+        const wallet = await getWallet();
+        const blockNumber = await wallet.provider.getBlockNumber();
+        const blockn = web3.utils.toHex(blockNumber.toString());
+        console.log("2---------------------------");
+        const data = await wallet.provider.send("eth_getValidator", [blockn]);
+        console.log("3---------------------------");
+        // const data2 = await getAccount(accountInfo.value.address)
+        let total = new BigNumber(0);
+        data.Validators.forEach((item: any) => {
+          total = total.plus(item.Balance);
+        });
+        // total zhiyaliang
+        const totalStr = total.div(1000000000000000000).toFixed(6);
+        console.log("totalStr", totalStr);
+        // total profit
+        const totalprofit = state.account.exchangeTotalProfit;
+        const totalPledge = new BigNumber(props.selectTotal);
+        myprofit.value = new BigNumber(totalprofit)
+          .multipliedBy(
+            totalPledge.div(new BigNumber(totalStr).div(7).multipliedBy(4))
           )
-        )
-        .toFixed(6);
-      console.warn("historyProfit", historyProfit.value);
-      console.warn("myprofit", myprofit.value);
-     }catch(err){
-      console.log('4---------------------------',err)
-     }
-     
+          .toFixed(6);
+        debugger;
+        historyProfit.value = new BigNumber(totalprofit)
+          .multipliedBy(
+            new BigNumber(props.selectTotal).div(
+              new BigNumber(totalStr).div(7).multipliedBy(4)
+            )
+          )
+          .toFixed(6);
+        console.warn("historyProfit", historyProfit.value);
+        console.warn("myprofit", myprofit.value);
+      } catch (err) {
+        console.log("4---------------------------", err);
+      }
     };
 
     const gasFee = ref("");
     const calcGasFee = async () => {
       const { address } = state.account.accountInfo;
-      console.warn('calc gasfee -----------------------------------:',props.selectList)
-      console.warn('props.txtype -----------------------------------:',props.txtype)
-      console.warn('props.type -----------------------------------:',props.type)
+      console.warn(
+        "calc gasfee -----------------------------------:",
+        props.selectList
+      );
+      console.warn(
+        "props.txtype -----------------------------------:",
+        props.txtype
+      );
+      console.warn(
+        "props.type -----------------------------------:",
+        props.type
+      );
 
       let list = [];
-      let allsnftList = []
+      let allsnftList = [];
       if (props.type == "2") {
         if (props.txtype == "1" || props.txtype == "3") {
           const keys = Object.keys(props.selectList).filter(
@@ -618,11 +671,10 @@ export default defineComponent({
           );
           for (let key of keys) {
             props.selectList[key].forEach((child: any) => {
-              const { nft_address,snfts } = child;
+              const { nft_address, snfts } = child;
               list.push(nft_address);
-              allsnftList.push(child.nft_address.substr(0,41))
+              allsnftList.push(child.nft_address);
             });
-        
           }
         }
 
@@ -630,9 +682,8 @@ export default defineComponent({
           const keys = Object.keys(props.selectList).filter(
             (item) => item != "undefined"
           );
-          console.log('keys------------', keys)
+          console.log("keys------------", keys);
           // Three cases: 1. Collection set is full, 2. SNFT set is full, 3. Fragment does not consider collection case for the time being
-          debugger
           for (let key of keys) {
             if (key) {
               // Synthetic grade
@@ -644,21 +695,31 @@ export default defineComponent({
                   snfts,
                   nft_address,
                 } = child;
-                console.warn('chip', child)
+                console.warn("chip", child);
                 if (
                   MergeLevel == 0 &&
                   Chipcount > 0 &&
                   pledgestate == "NoPledge"
                 ) {
-                  console.warn('未质押', nft_address, snfts)
+                  console.warn("未质押", nft_address, snfts);
                   list.push(...snfts);
-                  allsnftList.push(...snfts)
+                  allsnftList.push(...snfts);
                 }
                 if (MergeLevel > 0 && Chipcount && pledgestate == "NoPledge") {
-                  console.warn('未质押', nft_address, snfts)
-
-                  list.push(nft_address);
-                  allsnftList.push(...child.snfts)
+                  console.warn("未质押", nft_address, snfts);
+                  let newNftAddr = nft_address
+                  switch(MergeLevel){
+                    case 2:
+                    newNftAddr = nft_address.substr(0,40)
+                      break;
+                    case 1:
+                    newNftAddr = nft_address.substr(0,41)
+                      break;
+                    case 0:
+                      break;
+                  }
+                  list.push(newNftAddr);
+                  allsnftList.push(newNftAddr);
                 }
               });
             }
@@ -667,17 +728,70 @@ export default defineComponent({
       }
       // chip transfer
       if (props.type == "1") {
-        list = props.selectList.map((item: any) => item.nft_address);
-        allsnftList = [...list]
+        if(props.txtype == '2') {
+          props.selectList.forEach((item: any) => {
+            let {
+            MergeLevel,
+            Chipcount,
+            pledgestate,
+            snfts,
+            nft_address,
+          } = item;
+          switch(MergeLevel){
+            case 0:
+              break;
+            case 1:
+            nft_address = nft_address.substr(0,41)
+              break;
+            case 2:
+            nft_address = nft_address.substr(0,40)
+              break;
+          }
+          list.push(nft_address);
+    
+          })
+          allsnftList = [...list];
+        }else {
+          props.selectList.forEach((item: any) => {
+          const {
+            MergeLevel,
+            Chipcount,
+            pledgestate,
+            snfts,
+            nft_address,
+            isUnfreeze,
+            DeletedAt,
+          } = item;
+          if (
+            MergeLevel == 1 &&
+            pledgestate == "Pledge" &&
+            typeof isUnfreeze !== "undefined" &&
+            isUnfreeze &&
+            !DeletedAt
+          ) {
+            list.push(nft_address);
+            allsnftList = [...list];
+          }
+          if (MergeLevel == 0 && pledgestate == "NoPledge") {
+            list.push(nft_address);
+            allsnftList = [...list];
+          }
+        });
+        }
       }
-      console.warn('allsnftList -----------------------------------:',allsnftList)
+      console.warn(
+        "allsnftList -----------------------------------:",
+        allsnftList
+      );
+      console.warn("list -----------------------------------:", list);
 
       const len = list.length;
       const [nft_address] = allsnftList;
       console.log("list---------------", list);
       let str = "";
 
-      let nftAddr = nft_address
+      let nftAddr = nft_address;
+      // const addlen = nft_address.length
       // if(addlen < 42) {
       //   const diff = 42 - addlen
       //   diff == 1 ? nftAddr + '0' : ''
@@ -691,11 +805,17 @@ export default defineComponent({
           break;
         // To pledge
         case "3":
-          str = `wormholes:{"type":7,"nft_address":"${nftAddr.substr(0,41)}","version":"0.0.1"}`;
+          str = `wormholes:{"type":7,"nft_address":"${nftAddr.substr(
+            0,
+            41
+          )}","version":"0.0.1"}`;
           break;
         // redeemable
         case "1":
-          str = `wormholes:{"type":8,"nft_address":"${nftAddr.substr(0,41)}","version":"0.0.1"}`;
+          str = `wormholes:{"type":8,"nft_address":"${nftAddr.substr(
+            0,
+            41
+          )}","version":"0.0.1"}`;
           break;
       }
       console.log("str-------------------", str);
@@ -709,77 +829,10 @@ export default defineComponent({
       gasFee.value = new BigNumber(gas).multipliedBy(len).toFixed(6);
     };
 
-    // cacl ratio
-    const ratio = computed(() => {
-      if (props.type == "2") {
-        if (props.txtype == "1" || props.txtype == "3") {
-          return 0.143
-        }
-        if (props.txtype == "2") {
-          const keys = Object.keys(props.selectList).filter(
-            (item) => item != "undefined"
-          );
-          const list = [];
-          //Three cases: 1. Collection set is full, 2. SNFT set is full, 3. Fragment does not consider collection case for the time being
 
-          for (let key of keys) {
-            if (key) {
-              // Synthetic grade
-              props.selectList[key].forEach((child: any) => {
-                const {
-                  MergeLevel,
-                  Chipcount,
-                  pledgestate,
-                  snfts,
-                  nft_address,
-                } = child;
-                if (
-                  MergeLevel == 0 &&
-                  Chipcount > 0 &&
-                  pledgestate == "NoPledge"
-                ) {
-                  list.push(...snfts);
-                }
-                if (MergeLevel > 0 && Chipcount && pledgestate == "NoPledge") {
-                  list.push(nft_address.substr(0, 41));
-                }
-              });
-            }
-          }
-          let count = 0
-          let countNum = 0
-          list.forEach(add => {
-            const len = add.length
-            if(len == 42) {
-              countNum += 1
-              count = parseFloat(new BigNumber(count).plus(0.095).toFixed(8))
-            }
-            if(len == 41) {
-              countNum += 16
-              count = parseFloat(new BigNumber(count).plus(new BigNumber(16).multipliedBy(0.143)).toFixed(8))
-            }
-            if(len == 40) {
-              countNum += 256
-              count = parseFloat(new BigNumber(count).plus(new BigNumber(256).multipliedBy(0.271)).toFixed(8))
-            }
-          })
-          return new BigNumber(count).div(countNum).toFixed(6)
-        }
-      }
-      if (props.type == "1") {
-        if (props.txtype == "1" || props.txtype == "3") {
-          return 0.143
-        }
-
-        if(props.txtype == '2') {
-          return 0.095
-        }
-      }
-
-    })
     return {
       t,
-      ratio,
+
       submitText,
       showModal,
       gasFee,

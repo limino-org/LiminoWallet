@@ -84,6 +84,7 @@ export default defineComponent({
         width.value = Number(
           new BigNumber(value).div(total).multipliedBy(100).toFixed(2)
         );
+        console.log('width', width.value, value, total)
       }
     );
     const showPopover = ref(false);

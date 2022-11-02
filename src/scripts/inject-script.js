@@ -31,7 +31,6 @@ function provider() {
             if(code && code == 200){
               resolve(res.data)
             } else {
-              console.error(res)
               reject(res)
             }
         })

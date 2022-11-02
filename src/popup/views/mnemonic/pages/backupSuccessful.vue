@@ -70,7 +70,7 @@ export default {
     const { t } = useI18n();
     const router = useRouter();
     const show: Ref<boolean> = ref(false);
-    const { commit } = useStore();
+    const { commit, state } = useStore();
     const toHome = () => {
       router.push({ name: "wallet" });
     };
@@ -81,7 +81,7 @@ export default {
     onMounted(async () => {
       // Get the decrypted mnemonic
       const password = await getCookies("password");
-      data.value = await parseMnemonic(password);
+      data.value = await parseMnemonic(password, state.mnemonic.keyStore);
       commit("system/UPDATE_HASBACKUPMNEMONIC", true);
     });
 

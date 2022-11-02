@@ -202,6 +202,7 @@ export default {
         }
       } else {
         urlError.value = true;
+        loading.value = false;
         return t("addNetwork.Invalidrpcurl");
       }
     };
@@ -257,7 +258,7 @@ export default {
         saveData();
         clearTimeout(time)
       },300)
-      }catch(err){
+      }finally{
         loading.value = false;
       }
     };
@@ -281,7 +282,6 @@ export default {
         URL: URL.value,
         browser: browser.value,
         currencySymbol: currencySymbol.value,
-        transactionList: {},
         chainId: Number(chainId.value),
         tokens: {},
         id: id || guid(),

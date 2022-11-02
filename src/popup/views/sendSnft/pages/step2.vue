@@ -255,12 +255,24 @@ export default {
           }
           try {
             for await (let item of sendList) {
+              let { MergeLevel, nft_address } = item
+              switch(MergeLevel){
+                case 0:
+                  break;
+                case 1:
+                nft_address = nft_address.substr(0,41)
+                  break;
+                case 2:
+                nft_address = nft_address.substr(0,40)
+                  break;
+              }
               const tx = {
                 to: toAddress.value,
-                nft_address: item.address,
+                nft_address,
               };
               await dispatch("nft/send", tx);
             }
+            dispatch('account/waitTxQueueResponse')
             showSendSuccessModal.value = true;
           } catch (err) {
             Toast(err.reason);

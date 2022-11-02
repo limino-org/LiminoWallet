@@ -64,6 +64,7 @@
       <van-dialog
         v-model:show="showTransactionModal"
         :showCancelButton="false"
+        class="transaction-modal"
         :showConfirmButton="false"
         closeOnClickOverlay
       >
@@ -74,15 +75,13 @@
       </van-dialog>
     </div>
   </div>
-  <van-sticky offset-bottom="100" position="bottom">
-    <div class="flex center fixed-bottom">
+  <div class="flex center fixed-bottom">
       <div class="container">
         <span class="f-12 view-history hover" @click="toBrowser">{{
           t("wallet.toBrowser")
         }}</span>
       </div>
     </div>
-  </van-sticky>
 </template>
 <script lang="ts">
 import {
@@ -207,10 +206,15 @@ export default {
 </script>
 <style lang="scss" scoped>
 .swap-list {
-  padding-bottom: 60px;
+  height: calc(100vh - 48PX - 245px - 50PX);
+  overflow-y: scroll;
 }
 .fixed-bottom {
-  margin-top: 46px;
+  height: 50px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 .view-history {
   color: #037cd6;
@@ -218,7 +222,7 @@ export default {
 .currency {
   .currency-bd {
     background: rgba(244, 250, 255, 1);
-    min-height: 235px;
+    height: 235px;
   }
   .currency-icon {
     // background: rgba(3, 125, 214, 1);

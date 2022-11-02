@@ -5,6 +5,7 @@ console.log('web3', web3)
 import { BlockHeader, Block } from "web3-eth"; // ex. package types
 import i18n from "@/popup/language/index";
 import localforage from 'localforage';
+import store from "../store";
 
 
 export const connectWeb3Wallet = (privateKey: string) => {};
@@ -46,22 +47,35 @@ export const encryptMnemonic = (params: EncryptMnemonicParams) => {
       privateKey: web3.utils.toHex(mnemonic),
       password,
     });
-    localforage.setItem("mnemonic", mnemonicData);
+    // localforage.setItem("mnemonic", mnemonicData);
+    store.commit('mnemonic/UPDATE_MNEMONIC', mnemonicData)
   } catch (err) {
     console.error(err);
   }
 };
 
 // Unlock the mnemonic and return
-export const parseMnemonic = async (password: string): Promise<string> => {
+// export const parseMnemonic = async (password: string): Promise<string> => {
+//   try {
+//     const json: any =await localforage.getItem("mnemonic") || "";
+//     const s: any = web3.eth.accounts.decrypt(json, password);
+//     const str = web3.utils.toUtf8(s.privateKey);
+//     return Promise.resolve(str);
+//   } catch (err) {
+//     console.error(err);
+//     Toast(i18n.global.t("wallet.wrongpassword"));
+//     return Promise.reject(err);
+//   }
+// };
+export const parseMnemonic = async (password: string, json: any): Promise<string> => {
   try {
-    const json: any =await localforage.getItem("mnemonic") || "";
     const s: any = web3.eth.accounts.decrypt(json, password);
     const str = web3.utils.toUtf8(s.privateKey);
-    return Promise.resolve(str);
+    return str;
   } catch (err) {
     console.error(err);
     Toast(i18n.global.t("wallet.wrongpassword"));
     return Promise.reject(err);
   }
 };
+

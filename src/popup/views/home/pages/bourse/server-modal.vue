@@ -1,5 +1,6 @@
 <template>
   <van-dialog
+    class="server-modal"
     v-model:show="show"
     show-cancel-button
     teleport="#page-box"
@@ -53,7 +54,7 @@
             </template>
           </van-popover>
         </div>
-        <div class="value lh-16">300 days / 1560 hour</div>
+        <div class="value lh-16">{{ t("createExchange.serverDesc",{days,hours}) }}</div>
       </div>
       <div class="card">
         <div class="label lh-16 mb-2">
@@ -157,6 +158,14 @@ export default defineComponent({
       type: String,
       default: "",
     },
+    hours: {
+      type: Number,
+      default: 0
+    },
+    days: {
+      type: Number,
+      default: 0
+    }
   },
   setup(props: any, context: SetupContext) {
     const { emit } = context;
@@ -262,6 +271,7 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
+
 .popover-tip {
   max-width: 150px;
 }
@@ -275,7 +285,7 @@ export default defineComponent({
 .form-box {
   border-radius: 10px;
   border: 1px solid #e4e7e8;
-  margin: 27px 15px 15px;
+  margin: 26px 15px 15px;
   padding: 12px 15px 0;
 }
 .card {

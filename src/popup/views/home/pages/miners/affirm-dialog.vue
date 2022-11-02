@@ -64,7 +64,7 @@
               </el-tooltip>
               <div class="exchange exchange-z">
                 <span >≈ </span>
-                <span class="c2"> 0.000021000 ERB(≈$1)</span>
+                <span class="c2"> {{gasFee}} ERB(≈$ {{toUsd(gasFee,6)}})</span>
               </div>
             </div>
           </div>
@@ -81,11 +81,13 @@
 
 <script lang="ts">
 import { Button, Overlay, Field, Toast, Icon } from 'vant'
-import { ref, SetupContext, computed, nextTick } from 'vue'
+import { ref, SetupContext, computed, nextTick, watch } from 'vue'
 import { ethers, utils } from "ethers";
 import {formatEther,toUsd} from "@/popup/utils/filters";
 import { useI18n } from 'vue-i18n'
 import { ElTooltip } from 'element-plus'
+import { toHex } from '@/popup/utils/utils';
+import { getGasFee } from '@/popup/store/modules/account';
 
 import { useStore } from 'vuex';
 
@@ -105,6 +107,27 @@ export default {
     const currentNetwork = computed(() => store.state.account.currentNetwork)
     const { emit }: any = context
     let amount = ref(props.minersMoney)
+
+    const gasFee = ref('0')
+    watch(() => props.show, async() => {
+      const {address} = store.state.account.accountInfo
+
+        // Agent pledge
+        const str = `wormholes:{"type":9,"proxy_address":"","proxy_sign":"","version":"v0.0.1"}`
+            const data3 = toHex(str);
+            debugger
+      const tx1 = {
+        to: address,
+        value:  ethers.utils.parseEther(props.amount + ""),
+        data: `0x${data3}`,
+      };
+      gasFee.value = await getGasFee(tx1) || '0'
+
+
+    },{
+      deep: true,
+      immediate: true
+    })
     let dislogShow = computed({
       get: () => props.show,
       set: v => emit('update:show', v)
@@ -139,7 +162,8 @@ export default {
       screentNumber,
       currentNetwork,
       toUsd,
-      ...props
+      ...props,
+      gasFee
     }
   }
 }

@@ -49,7 +49,7 @@
       <div class="card flex between" @click="showServerModal = true">
         <div class="info">
           <div class="label">{{ t("createExchange.server") }}</div>
-          <div class="desc">{{ t("createExchange.serverDesc") }}</div>
+          <div class="desc">{{ t("createExchange.serverDesc",{days,hours}) }}</div>
         </div>
         <div class="flex center">
           <van-icon name="arrow" />
@@ -60,7 +60,7 @@
   <div class="flex center loading-page" v-else>
     <van-loading color="#037CD6" />
   </div>
-  <ServerModal v-model="showServerModal" :exchangeName="exchangeName"  @updateStatus="handleUpdateStatus"/>
+  <ServerModal v-model="showServerModal" :exchangeName="exchangeName"  :days="days" :hours="hours" @updateStatus="handleUpdateStatus"/>
   <div class="guide-mask" @click.stop="closeGuide" v-if="showGuideMask">
     <div class="container">
       <div class="guide-header"></div>
@@ -90,14 +90,14 @@
 <script lang="ts">
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { encode, decode } from "js-base64";
-
+import { useExchanges } from '@/popup/hooks/useExchanges'
 import Tip from "@/popup/components/tip/index.vue";
-import { computed, defineComponent, onMounted, ref } from "@vue/runtime-core";
+import { computed, defineComponent, onMounted, Ref, ref } from "@vue/runtime-core";
 import { Button, Icon, Loading } from "vant";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-
+import moment from 'moment'
 import ServerModal from "./server-modal.vue";
 import {
   VUE_APP_EXCHANGESMANAGEMENT_URL,
@@ -126,6 +126,7 @@ export default {
       () =>
         exchangeStatus.value.exchanger_flag && exchangeStatus.value.status == 2
     );
+    const {getContract} = useExchanges()
     const back = () => {
       router.back();
     };
@@ -137,7 +138,27 @@ export default {
       const add = state.account.accountInfo.address;
       return `${VUE_APP_EXCHANGESMANAGEMENT_URL}?address=${add.toLowerCase()}&exchangeAddress=${add.toLowerCase()}`;
     });
-
+    const days:Ref<number> = ref(0)
+    const hours:Ref<number> = ref(0)
+    const hasEnableServe = ref(false)
+    const getServerExpiDate = async() => {
+      const contractWithSigner = await getContract()
+      const [date] = await contractWithSigner.functions.endTime(state.account.accountInfo.address)
+      const nowTime = new Date().getTime()
+      const a = date.toNumber() > 0 ? date.toNumber() * 1000 : 0
+      const b = nowTime
+      if(a === 0) {
+        return
+      }
+      hasEnableServe.value = true
+      const timestamp = moment(a)
+      const nowTimestamp = moment(b);
+      const totalHours = timestamp.diff(nowTimestamp,'hours')
+      const hour = totalHours%24
+      const day = timestamp.diff(nowTimestamp, 'days')
+      days.value = day
+      hours.value = hour
+    }
     const toAdmin = () => {
       window.open(adminUrl.value);
     };
@@ -175,6 +196,7 @@ export default {
       } finally {
         loading.value = false;
       }
+      getServerExpiDate()
     };
     onMounted(initData);
     eventBus.on("walletReady", async () => {
@@ -216,7 +238,10 @@ export default {
       showGuideMask,
       showServer,
       initData,
-      closeGuide
+      closeGuide,
+      days,
+      hours,
+      hasEnableServe
     };
   },
 };

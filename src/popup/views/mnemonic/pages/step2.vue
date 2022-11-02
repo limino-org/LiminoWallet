@@ -87,7 +87,7 @@ export default {
     onMounted(async () => {
       // Get the decrypted mnemonic
       const password = await getCookies("password");
-      const realmm = await parseMnemonic(password);
+      const realmm = await parseMnemonic(password,store.state.mnemonic.keyStore);
       const nlist = realmm
         .split(" ")
         .map((key: string) => ({ name: key, status: false }));

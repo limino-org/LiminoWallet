@@ -16,7 +16,7 @@
     </div>
     <!-- 2.compilations -->
     <div
-      :class="`coll-list flex ${compData.total_hold == 256 ? 'active' : ''}`"
+      :class="`coll-list flex ${compData.total_hold && compData.MergeLevel == 2 ? 'active' : ''}`"
     >
       <div
         class="coll-card hover"
@@ -26,13 +26,13 @@
       >
         <i
           class="iconfont icon-duihao2 check-icon"
-          v-show="item.select && showIcon"
+          v-show="item.select && showIcon && compData.MergeLevel < 2"
         ></i>
         <img
           src="./select-white.svg"
           class="check-icon-default no-select"
           alt=""
-          v-show="!getDisabled(item) && showIcon"
+          v-show="!getDisabled(item) && showIcon && compData.MergeLevel < 2"
         />
         <img
           loading="lazy"
@@ -131,11 +131,15 @@ export default defineComponent({
   },
   setup(props: any, context: SetupContext) {
     const { t } = useI18n();
-
+    console.log('props.data------', props.data)
     const compData = ref({ select: false, children: [] });
     watch(
       () => props.selectAll,
       (n, o) => {
+        // @ts-ignore
+        if(props.status === '1' && compData.value.pledgestate === 'Pledge' && !compData.value.isUnfreeze) {
+          return
+        }
         compData.value.select = n;
         compData.value.children.forEach((item) => {
           if (getDisabled(item) == "") {
@@ -149,15 +153,17 @@ export default defineComponent({
       { deep: true, immediate: true }
     );
 
+
     const collIdStr = "0x80000000000000000000000000000000000";
     const { id, FullNFTs, select } = props.data;
-    if (props.status == "3") {
+    if(props.data.MergeLevel !== 2) {
+      if (props.status == "3") {
       FullNFTs.forEach((item: any) => {
         item.select = select ? true : false;
         item.address = item.nft_address.substr(0, 40);
-        const { Chipcount, pledgestate } = item;
+        const { Chipcount, pledgestate, MergeLevel, Exchange } = item;
         if (pledgestate == "NoPledge") {
-          if (!Chipcount || Chipcount < 16) {
+          if (!Chipcount || MergeLevel !== 1 || Exchange === 1) {
             item.disabled = true;
           } else {
             item.disabled = false;
@@ -171,8 +177,8 @@ export default defineComponent({
       FullNFTs.forEach((item: any) => {
         item.select = select ? true : false;
         item.address = item.nft_address.substr(0, 40);
-        const { Chipcount, pledgestate } = item;
-        if (pledgestate == "Pledge" || Chipcount < 16) {
+        const { Chipcount, pledgestate, MergeLevel, Exchange } = item;
+        if (pledgestate == "Pledge" || MergeLevel !== 1 || !Chipcount || Exchange === 1) {
           item.disabled = true;
         } else {
           item.disabled = false;
@@ -183,26 +189,29 @@ export default defineComponent({
       FullNFTs.forEach((item: any) => {
         item.select = select ? true : false;
         item.address = item.nft_address.substr(0, 40);
-        const { Chipcount, pledgestate } = item;
-
+        const { Chipcount, pledgestate, isUnfreeze, DeletedAt, MergeLevel, Exchange } = item;
         if (pledgestate == "Pledge") {
-          if (Chipcount != 16) {
+          if (!Chipcount || MergeLevel !== 1 || Exchange === 1) {
             item.disabled = true;
           } else {
             item.disabled = false;
           }
         }
-        if (pledgestate == "NoPledge") {
+        if (pledgestate == "NoPledge" ||(typeof isUnfreeze != 'undefined' && isUnfreeze === false) || Exchange === 1) {
           item.disabled = true;
         }
       });
     }
 
+    }
+
+    const coll_address = collIdStr + id
     compData.value = {
       id,
       children: toRaw(FullNFTs),
       select: false,
-      address: collIdStr + id,
+      address: coll_address,
+      nft_address: coll_address,
       ...props.data,
     };
 
@@ -223,24 +232,32 @@ export default defineComponent({
       );
       router.push({ name: props.toName });
     };
-    const toggleSelect = () => {
-      context.emit("changeSelect", props.data);
-    };
+
     // The number of selected items
     const checkLen = computed(() => {
+       // @ts-ignore
+      if(compData.value.select && compData.value.MergeLevel == 2) {
+        // @ts-ignore
+        return compData.value.MergeNumber
+      }
       const list = compData.value.children
         .filter((item) => item.select)
-        
-      const { status } = props;
+      const { status, data } = props;
+      let total = 0
       if (status == "2") {
-        const arr = list.map((item) => item.Chipcount);
-        if (arr.length) {
-          return arr.reduce((total: number, num: number) => total + num);
-        }
-        return 0
+        list.forEach(item => {
+          total+=item.snfts.length
+        })
+        return total
       }
       if (status == "1" || status == "3") {
-          return list.length;
+        let total = 0
+        // TODO 计算 解冻质押时选中的碎片数量
+        list.forEach(item => {
+          const {MergeLevel, MergeNumber} = item
+          total += MergeNumber
+        })
+          return total;
         }
 
       return 0;
@@ -275,10 +292,15 @@ export default defineComponent({
 
     // sndt click
     const handleClick = (item: any, idx: number) => {
+      console.log('item', item, props)
       if (!props.showIcon) {
         return;
       }
-      const { Chipcount, pledgestate, loaded, disabled } = item;
+      if(props.data.MergeLevel == 2) {
+        return
+      }
+      const { Chipcount, pledgestate, loaded, disabled, MergeLevel } = item;
+      debugger
       const { status } = props;
 
       if (!loaded) {
@@ -312,21 +334,18 @@ export default defineComponent({
       });
     };
     const getDisabled = (item: any) => {
-      const { pledgestate, Chipcount, disabled } = item;
+      const { pledgestate, Chipcount, disabled, isUnfreeze, DeletedAt, MergeLevel, Exchange } = item;
       const { status } = props;
       if (status == "3") {
-        return disabled ? "disabled" : "";
+        return disabled || Exchange === 1 ? "disabled" : "";
       }
       if (status == "2") {
-        if (pledgestate == "Pledge" || !Chipcount) {
+        if (pledgestate == "Pledge" || !Chipcount  || Exchange === 1) {
           return "disabled";
         }
       }
       if (status == "1") {
-        if (pledgestate == "Pledge" && Chipcount != 16) {
-          return "disabled";
-        }
-        if (pledgestate == "NoPledge") {
+        if (pledgestate == "NoPledge" || (typeof isUnfreeze != 'undefined' && isUnfreeze === false) || Exchange === 1) {
           return "disabled";
         }
       }
@@ -334,6 +353,21 @@ export default defineComponent({
     };
     // All/none
     const chooseAll = () => {
+      console.log('props.data', props.data)
+      // @ts-ignore
+      if(props.data.MergeLevel === 2 && props.data.Chipcount && props.status === '1') {
+      // @ts-ignore
+        if(props.status === '1' && compData.value.pledgestate === 'Pledge' && !compData.value.isUnfreeze) {
+          Toast(t('common.unisUnfreeze'))
+          return
+        }
+        compData.value.select = !compData.value.select;
+        context.emit("changeSelect", {
+        ...compData.value,
+        children: compData.value.select ? [ toRaw(props.data)] : [],
+      });
+        return
+      }
       compData.value.select = !compData.value.select;
       //debugger
       if (compData.value) {
@@ -356,7 +390,9 @@ export default defineComponent({
     // The conversion rate is calculated according to the number of SNFT selected
        // cacl ratio
        const ratio = computed(() => {
-        const { status } = props;
+        const { status, data } = props;
+        const {MergeLevel} = data
+
       if (status== "1" || status == "3") {
           return 0.143
         }
@@ -400,6 +436,9 @@ export default defineComponent({
               count = parseFloat(new BigNumber(count).plus(new BigNumber(256).multipliedBy(0.271)).toFixed(8))
             }
           })
+          if(MergeLevel == 2) {
+            return countNum ? 0.271 : 0
+        }
           return isNaN(new BigNumber(count).div(countNum).toNumber()) ? 0 : new BigNumber(count).div(countNum).toFixed(3)
         }
 
@@ -408,17 +447,37 @@ export default defineComponent({
 
     const getNumber = computed(() => {
       const res = { ...props.data };
+      console.warn('res------------', res)
       const { status } = props;
       if (status == "3" || status == "1") {
-        const list = compData.value.children
-        .filter((item) => !item.disabled)
-        return list.length;
+        let total = 0
+        if(props.data.MergeLevel === 2) {
+          return props.data.MergeNumber
+        }
+        compData.value.children
+        .forEach((item) => {
+          if(!item.disabled){
+            const {MergeLevel,MergeNumber} = item
+            total += MergeNumber
+          }
+        })
+        return total;
       }
       if (status == "2") {
         let total = 0;
-        res.children.forEach((item) => {
+        const { MergeLevel, MergeNumber, Chipcount} = res
+        if(MergeLevel === 2 && Chipcount) {
+          total += MergeNumber
+          return total
+        }
+        res.children.forEach((item: any) => {
           if (getDisabled(item) == "") {
-            total += item.snfts.length;
+            const {MergeLevel:level,total_hold} = item
+            if(level === 1 && total_hold) {
+              total += total_hold
+            } else {
+              total += item.snfts.length;
+            }
           }
         });
         return total;
@@ -443,7 +502,6 @@ export default defineComponent({
       getDisabled,
       layoutType,
       toDetail,
-      toggleSelect,
       toUsd,
       weiToNumber,
       toUsdSymbol,

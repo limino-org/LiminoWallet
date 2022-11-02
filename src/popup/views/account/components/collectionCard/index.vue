@@ -1,6 +1,6 @@
 <template>
   <div
-    class="collection-card flex between van-hairline--bottom clickActive"
+    class="collection-card flex between"
     @click="viewDetail"
   >
     <div class="collection-card-left flex">
@@ -11,8 +11,8 @@
           }`"
         >
           <i
-            :class="`iconfont ${
-              txTypeToIcon(data.txType)
+            :class="`iconfont  ${
+              txTypeToIcon(data)
             }`"
           ></i>
         </div>
@@ -20,7 +20,7 @@
       <div class="token-info flex center">
         <div>
           <div class="name">
-            {{ transactiontxType(data.txType) }}
+            {{ handleTxType(data) }}
             <span :class="`status${data.status}`">
               {{ transactionStatus(data.status) }}
             </span>
@@ -36,10 +36,10 @@
     <div class="collection-card-right flex center">
       <div>
         <div class="van-ellipsis text-right val lh-18">
-          {{ utils.formatEther(data.value) }} {{data.symbol}}
+         {{data.transitionType == '6' ? '+' + data.convertAmount : '-' + utils.formatEther(data.value)}} {{data.symbol}}
         </div>
         <div class="van-ellipsis text-right usd lh-18">
-          {{ toUsdSymbol(utils.formatEther(data.value), 2) }} 
+          {{data.transitionType == '6' ? toUsdSymbol(data.convertAmount, 4) : toUsdSymbol(utils.formatEther(data.value),4)}} 
         </div>
       </div>
     </div>
@@ -94,16 +94,20 @@ export default defineComponent({
     const viewDetail = () => {
       emit("handleClick");
     };
-    const { data } = props;
+
     const sendAddress = computed(() => {
       return addressMask(props.data.to);
     });
     const fromAddress = computed(() => {
       return addressMask(props.data.from);
     });
-    const txTypeToIcon = (type: string) => {
+    const txTypeToIcon = (data: any) => {
+      const {txType,transitionType} = data
       let s = ''
-      switch(type.trim()){
+      if(transitionType == '6') {
+        return 'icon-caozuo-xunhuan1'
+      }
+      switch(txType.trim()){
         case 'send':
         case 'other':
           s = 'icon-arrowTop'
@@ -114,10 +118,19 @@ export default defineComponent({
       }
       return s
     }
+    const handleTxType = (item: any) => {
+      const {transitionType,txType} = item
+      console.warn('transitionType', transitionType)
+     if(transitionType && transitionType == '6') {
+        return t('common.conver')
+     } else {
+      return transactiontxType(txType)
+     }
+    }
     return {
       t,
-      txTypeToIcon,
       viewDetail,
+      txTypeToIcon,
       transactionTarget,
       accountInfo,
       formatDate,
@@ -127,8 +140,8 @@ export default defineComponent({
       utils,
       toUsdSymbol,
       transactionStatus,
-      transactiontxType,
       currentNetwork,
+      handleTxType
     };
   },
 });
@@ -137,12 +150,15 @@ export default defineComponent({
 <style lang="scss" scoped>
 .collection-card {
   height: 62px;
-  padding-left: 18px;
+  padding-left: 15px;
   padding-right: 10px;
   transition: ease 0.3s;
+  border-bottom: 1px solid #E4E7E8;
+  cursor: pointer;
+  transition: ease .3s;
   &:hover {
-    cursor: pointer;
-    background: rgb(244, 247, 250);
+    background: #E9F5FE;
+    padding-left: 20px;
   }
   &-left {
     .token-icon {
@@ -155,6 +171,9 @@ export default defineComponent({
         border-radius: 50%;
 
         font-size: 26px;
+        i {
+          font-size: 16px;
+        }
         &.success {
           border: 1PX solid rgba(40, 167, 69, 1);
           color: rgba(40, 167, 69, 1);
@@ -170,6 +189,10 @@ export default defineComponent({
       .name {
         font-size: 12px;
         line-height: 16px;
+        font-weight: bold;
+        span {
+          font-weight: normal;
+        }
       }
       .amount {
         font-size: 10px;
@@ -188,6 +211,7 @@ export default defineComponent({
     }
     .val {
       color: #000;
+      font-weight: bold;
     }
     .usd {
       color: #9a9a9a;
@@ -195,7 +219,6 @@ export default defineComponent({
   }
 }
 .status0,
-.statusnull,
 .status1 {
   transform: scale(0.9);
 }
@@ -212,14 +235,6 @@ export default defineComponent({
   line-height: 14px;
   color: rgb(214, 25, 25);
   background: #ffe8e5;
-  padding: 0 5px;
-  border-radius: 7px;
-}
-.statusnull {
-  display: inline-block;
-  line-height: 14px;
-  color: #037cd6;
-  background: #d7e8f5;
   padding: 0 5px;
   border-radius: 7px;
 }

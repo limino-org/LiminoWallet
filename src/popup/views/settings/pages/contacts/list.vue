@@ -228,7 +228,7 @@ export default {
 
   :deep(.van-sticky--fixed) {
     .sort-box {
-      max-width: 750px;
+      max-width: 820px;
       margin: 0 auto;
       position: relative;
     }

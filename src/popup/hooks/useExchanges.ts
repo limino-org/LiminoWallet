@@ -229,7 +229,7 @@ const getContract = async () => {
     const baseName = encode(name);
     try {
       const rate_str: number = fee_rate? new BigNumber(fee_rate).multipliedBy(10).toNumber() : 100
-      // Send the exchange opening fee of 100ERB to the official company account connected to the company's own node
+      // Send the exchange opening fee of 280ERB to the official company account connected to the company's own node
       const str = `wormholes:{"version": "0","type": 11,"fee_rate": ${rate_str},"name":"${baseName}","url":""}`;
       // const str = `wormholes:{"type":"9", "proxy_address":"0x591813F0D13CE48f0E29081200a96565f466B212", "version":"0.0.1"}`
       const data3 = toHex(str);

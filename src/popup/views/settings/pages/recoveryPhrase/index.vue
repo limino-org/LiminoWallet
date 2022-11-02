@@ -177,7 +177,7 @@ export default {
       }
       try {
         // Unlock the keystore file of the current account through the password
-          parseMnemonic(password.value).then(res => {
+          parseMnemonic(password.value,store.state.mnemonic.keyStore).then(res => {
              mnemonic.value = res;
              checkFlag.value = true;
           }).catch(err => {

@@ -89,7 +89,7 @@
 
 </template>
 <script lang="ts">
-import Vue, { onBeforeMount } from 'vue'
+import Vue, { nextTick, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
 import { Icon, Toast, Button, Sticky, Field, Form, CellGroup, Switch, Checkbox, CheckboxGroup } from 'vant'
 import { encryptPrivateKey, EncryptPrivateKeyParams } from '@/popup/utils/web3'
@@ -185,7 +185,7 @@ setup() {
                 privateKey: web3.utils.toHex(mnemonic.toString()),
                 password: password.value
               })
-              localforage.setItem('mnemonic', mnemonicData)
+              commit('mnemonic/UPDATE_MNEMONIC', mnemonicData)
               await dispatch('account/addAccount', {
                 keyStore,
                 mnemonic: mnemonicParams,

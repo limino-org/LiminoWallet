@@ -164,12 +164,12 @@ export type UpdateKeyStoreByAddressParams = {
 
 // Transactions
 export type TransactionReceipt = {
-  // networkId
   network: NetWorkData,
   // Transaction type is used for list / detail display
   txType: string;
   // Transaction type
   type: number;
+  blockNumber: any,
   // state
   status: number;
   // date
@@ -188,9 +188,13 @@ export type TransactionReceipt = {
   hash: string;
   // gas price
   effectiveGasPrice: BigNumber;
-  // symbol
-  // symbol: string
-  tokenAddress?: string
+  tokenAddress?: string,
+  // transition type
+  transitionType? : string
+  // nft_address
+  nft_address?: string
+  //  convert amount
+  convertAmount? : string
 };
 export let wallet: any = null;
 export const getWallet = () => {
@@ -203,6 +207,7 @@ export const getWallet = () => {
 };
 // calc gasFee
 export const getGasFee = async (tx: any) => {
+  console.log('估算gas', tx)
   try {
     const wall = await getWallet()
     const gasPrice = await wall.provider.getGasPrice()
@@ -1019,6 +1024,7 @@ async DEL_TXQUEUE(state: State, tx: any) {
             
           console.log("gas-->",utils.formatEther(gas));
           console.log('gas2 ->',gasp)
+          
           const transferParams = {
             gasLimit: gasLimit,
             gasPrice: ethers.utils.parseEther(gasp),
@@ -1343,7 +1349,7 @@ async DEL_TXQUEUE(state: State, tx: any) {
         commit("UPDATE_KEYSTORE_BYADDRESS", { json: newStore, address });
       });
       // Unlock mnemonic and return
-      const mnemonic = await parseMnemonic(pwd);
+      const mnemonic = await parseMnemonic(pwd, storeObj.state.mnemonic.keyStore);
       // Re encrypt mnemonics
       encryptMnemonic({ mnemonic, password });
       return Promise.resolve();
@@ -1440,15 +1446,13 @@ export function handleGetTranactionReceipt(
   tx: any,
   network: NetWorkData
 ) {
-  const { from, to, value, nonce, hash} = tx;
-  const { gasUsed, status, effectiveGasPrice, type } = receipt;
+  const { from, to, value, nonce, hash, transitionType, nft_address, convertAmount } = tx;
+  const { gasUsed, status, effectiveGasPrice, type, blockNumber } = receipt;
   const date = new Date();
-  sessionStorage.setItem("receipt", JSON.stringify(receipt));
-  sessionStorage.setItem("tx", JSON.stringify(tx));
   let newType = txType;
   // If it is a contract transaction and to is 0xFFFFFF, rewrite to swap type
   if (
-    txType == TransactionTypes.contract &&
+    txType == TransactionTypes.contract && to &&
     to.toUpperCase() ==
     "0xffffffffffffffffffffffffffffffffffffffff".toUpperCase()
   ) {
@@ -1466,33 +1470,37 @@ export function handleGetTranactionReceipt(
     gasUsed,
     hash,
     effectiveGasPrice,
+    blockNumber,
+    transitionType: transitionType || '',
+    nft_address: nft_address || '',
+    convertAmount: convertAmount || '',
     network
   };
   return rec;
 }
 
 
-export function handleGetPenddingTranactionReceipt(
-  txType: string,
-  tx: any,
-  network: NetWorkData
-){
-  const { from, to, value, nonce, hash } = tx;
-  const {currencySymbol} = network
-  const date = new Date();
-  const rec: TransactionReceipt = {
-    txType,
-    type: 2,
-    status: null,
-    from,
-    to,
-    value,
-    date,
-    nonce,
-    gasUsed: ethers.BigNumber.from('0'),
-    hash,
-    effectiveGasPrice: ethers.BigNumber.from('0'),
-    network
-  };
-  return rec;
-}
+// export function handleGetPenddingTranactionReceipt(
+//   txType: string,
+//   tx: any,
+//   network: NetWorkData
+// ){
+//   const { from, to, value, nonce, hash } = tx;
+//   const {currencySymbol} = network
+//   const date = new Date();
+//   const rec: TransactionReceipt = {
+//     txType,
+//     type: 2,
+//     status: null,
+//     from,
+//     to,
+//     value,
+//     date,
+//     nonce,
+//     gasUsed: ethers.BigNumber.from('0'),
+//     hash,
+//     effectiveGasPrice: ethers.BigNumber.from('0'),
+//     network
+//   };
+//   return rec;
+// }

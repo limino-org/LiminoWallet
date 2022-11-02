@@ -21,8 +21,8 @@ export const useWallet = () => {
             dispatch('account/updateAllBalance')
             eventBus.emit('walletReady', newwallet)
         } catch (err) {
-            console.error('err', err)
-            if(err && err.toString().indexOf('invalid password') > -1) {
+            console.log('err', err.toString())
+            if(err.toString().indexOf('invalid password') > -1) {
                 router.replace({ name: "loginAccount-step1", query:{...query,backUrl: getURLPath()} })
                 return 
             }

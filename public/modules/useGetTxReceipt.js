@@ -1,55 +1,67 @@
 import { ethers } from './ethers.js'
-import { getWallet } from './common.js'
+import { getWallet, toHex } from './common.js'
 import { localforage } from './localforage.js'
+import BigNumber from './bignumber.js'
 export const useGetTxReceipt = () => {
   async function waitTxQueueResponse() {
-    const {id} = state.currentNetwork
+    const local = await localforage.getItem("vuex") || null
+    const { id } = local.account.currentNetwork
     const queuekey = `txQueue-${id}`
+    console.warn('queuekey', queuekey)
     return new Promise(async(resolve, reject) => {
         const list  = await localforage.getItem(queuekey)
+        console.warn('list----', list)
         const txQueue = list && list.length ? list : []
-        const newWallet = await getWallet()
+        console.log('txQueue', txQueue)
         if (!txQueue.length) {
           resolve(true)
         }
         try {
+          const newWallet = await getWallet()
           for await (const iterator of txQueue) {
             let {hash, transitionType, nft_address, blockNumber, network, txType} = iterator
             const data1 = await newWallet.provider.waitForTransaction(hash);
             let convertAmount = ''
-            if(transitionType && transitionType == '6') {
-              const len = nft_address.length
-              switch(len) {
-                case 42:
-                  break;
-                case 41:
-                  nft_address += '0'
-                  break;
-                case 40:
-                  nft_address += '00'
-                  break;
-                case 39:
-                  nft_address += '000'
-                  break;
+            if(nft_address) {
+              if(transitionType && transitionType == '6') {
+                const len = nft_address.length
+                switch(len) {
+                  case 42:
+                    break;
+                  case 41:
+                    nft_address += '0'
+                    break;
+                  case 40:
+                    nft_address += '00'
+                    break;
+                  case 39:
+                    nft_address += '000'
+                    break;
+                }
+                
+                const blocknum = ethers.utils.hexValue(data1.blockNumber - 1)
+                console.warn('blocknum', blocknum)
+                const nftAccountInfo = await newWallet.provider.send(
+                  "eth_getAccountInfo",
+                  [nft_address,  blocknum]
+                );
+                console.warn('nftAccountInfo', nftAccountInfo)
+                const {MergeLevel, MergeNumber} = nftAccountInfo
+                if(MergeLevel === 0) {
+                  convertAmount = new BigNumber(MergeNumber).multipliedBy(0.095).toNumber()
+                }else if(MergeLevel === 1) {
+                  convertAmount = new BigNumber(MergeNumber).multipliedBy(0.143).toNumber()
+                } else if(MergeLevel === 2) {
+                  convertAmount = new BigNumber(MergeNumber).multipliedBy(0.271).toNumber()
+                } else if(MergeLevel === 3) {
+                  convertAmount = new BigNumber(MergeNumber).multipliedBy(0.65).toNumber()
+                }
+                
               }
-              const nftAccountInfo = await newWallet.provider.send(
-                "eth_getAccountInfo",
-                [nft_address,  ethers.utils.hexlify((data1.blockNumber - 1).toString())]
-              );
-              const {MergeLevel, MergeNumber} = nftAccountInfo
-              if(MergeLevel === 0) {
-                convertAmount = new BigNumber(MergeNumber).multipliedBy(0.095).toNumber()
-              }else if(MergeLevel === 1) {
-                convertAmount = new BigNumber(MergeNumber).multipliedBy(16).multipliedBy(0.143).toNumber()
-              } else if(MergeLevel === 2) {
-                convertAmount = new BigNumber(MergeNumber).multipliedBy(256).multipliedBy(0.271).toNumber()
-              } else if(MergeLevel === 3) {
-                convertAmount = new BigNumber(MergeNumber).multipliedBy(4096).multipliedBy(0.65).toNumber()
-              }
-              
             }
+
             const rep = handleGetTranactionReceipt(
-              txType ||TransactionTypes.other,
+              txType || 'other',
               data1,
               {...iterator, convertAmount},
               network
@@ -61,10 +73,7 @@ export const useGetTxReceipt = () => {
         } catch (err) {
           console.error(err)
           reject(err)
-        }finally{
-          clearTimeout(time)
         }
-  
     })
   }
 
@@ -118,19 +127,19 @@ export const useGetTxReceipt = () => {
  * @param tx Transaction return data
  * @returns
  */
-export function handleGetTranactionReceipt(
+ export function handleGetTranactionReceipt(
   txType,
   receipt,
   tx,
   network
 ) {
-  const { from, to, value, nonce, hash } = tx;
-  const { gasUsed, status, effectiveGasPrice, type } = receipt;
+  const { from, to, value, nonce, hash, transitionType, nft_address, convertAmount } = tx;
+  const { gasUsed, status, effectiveGasPrice, type, blockNumber } = receipt;
   const date = new Date();
   let newType = txType;
   // If it is a contract transaction and to is 0xFFFFFF, rewrite to swap type
   if (
-    txType == 'contract' &&
+    txType == 'contract' && to &&
     to.toUpperCase() ==
     "0xffffffffffffffffffffffffffffffffffffffff".toUpperCase()
   ) {
@@ -148,6 +157,10 @@ export function handleGetTranactionReceipt(
     gasUsed,
     hash,
     effectiveGasPrice,
+    blockNumber,
+    transitionType: transitionType || '',
+    nft_address: nft_address || '',
+    convertAmount: convertAmount || '',
     network
   };
   return rec;

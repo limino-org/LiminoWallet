@@ -90,7 +90,7 @@ export const useToggleAccount = () => {
     // Get the current BIP44 path
     const { pathIndex, path }: any = { ...store.state.account.mnemonic };
     const password: string = await getCookies("password") || "";
-    let phrase: string = await parseMnemonic(password);
+    let phrase: string = await parseMnemonic(password, store.state.mnemonic.keyStore);
     let mnemonic: CreateWalletByMnemonicParams = { pathIndex, phrase, path };
     let wallet = await dispatch("account/createWallet", mnemonic);
     let { privateKey, address } = wallet;

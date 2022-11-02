@@ -1,5 +1,5 @@
 <template>
-    <NavHeader :title="t('setting.resetPwd')" :hasRight="hasRight"></NavHeader>
+    <NavHeader :title="t('setting.resetPwd')" :hasRight="true"></NavHeader>
   <WormTransition size="small">
     <template v-slot:icon>
       <img class="iconele flex center" src="@/assets/icon_blue.svg" alt />
@@ -81,6 +81,8 @@ import { useStore } from 'vuex'
 import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import localforage from 'localforage'
 import { useToast } from '@/popup/plugins/toast'
+import { useLogin } from "@/popup/components/navHeader/hooks/login";
+
 export default {
   name: 'restPwd-step1',
   components: {
@@ -102,6 +104,7 @@ export default {
     const pwd1Err = ref(false)
     const pwd2Err = ref(false)
     const {$toast} = useToast()
+    const { logout } = useLogin()
     const asynPwd = (val: string) => {
       pwd1Err.value = false
       if(!val) {
@@ -139,25 +142,29 @@ export default {
     const toggleMask2 = () => {
       mask2.value ? (mask2.value = false) : (mask2.value = true)
     }
-
+    const pwd = ref()
     const checkPwd = async () => {
-      // @ts-ignore
-      const pwd = await chrome.storage.local.get('comfirm_password')
-      // @ts-ignore
-      await chrome.storage.local.set({comfirm_password:''})
-      if (!pwd) {
+      if(!pwd.value) {
+       // @ts-ignore
+       pwd.value = await chrome.storage.local.get('comfirm_password')
+       // @ts-ignore
+       await chrome.storage.local.set({comfirm_password:''})
+      }
+
+      if (!pwd.value.comfirm_password) {
         router.back()
         return
       }
       const { keyStore } = accountInfo
       //Unlock the keyStore file of the current account with a password
       const data: CreateWalletByJsonParams = {
-        password: pwd.comfirm_password,
+        password: pwd.value.comfirm_password,
         json: keyStore
       }
       try {
         await createWalletByJson(data)
       }catch(err){
+        console.warn('err', err)
         router.back()
       }
     }
@@ -166,7 +173,6 @@ export default {
     })
 
     const onSubmit = async () => {
-      checkPwd()
       if (password.value != password2.value) {
         Toast(t('createwallet.notmatch'))
         return
@@ -175,18 +181,18 @@ export default {
         // Before resetting the password, re encrypt all cached keystores
         await dispatch('account/updateKeyStoreByPwd', password.value)
         $toast.success(t('resetPwd.resetsuccessful'))
-        setCookies('password', password.value)
-        router.replace({ name: 'loginAccount-step1' })
+        
+        nextTick(async() => {
+          await logout()
+          router.replace({ name: 'loginAccount-step1' })
+        })
       } catch (err) {
+        console.log('err---', err)
         $toast.warn(t('resetPwd.failedtochange'))
       }
     }
     // Right cancel button
-    const hasRight = () => {
-      router.push({
-        name: 'wallet'
-      })
-    }
+
     return {
       password,
       onSubmit,
@@ -200,7 +206,6 @@ export default {
       mask2,
       toggleMask2,
       password2,
-      hasRight
     }
   }
 }

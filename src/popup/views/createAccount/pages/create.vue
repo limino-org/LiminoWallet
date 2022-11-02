@@ -98,7 +98,7 @@
 
 </template>
 <script lang="ts">
-import Vue from "vue";
+import Vue, { nextTick } from "vue";
 import { useStore } from "vuex";
 import NavHeader from '@/popup/components/navHeader/index.vue'
 
@@ -197,11 +197,13 @@ setup() {
           privateKey: web3.utils.toHex(phrase),
           password: password.value,
         });
-        await localforage.setItem("mnemonic", mnemonicData);
-
-        router.replace({
+        // await localforage.setItem("mnemonic", mnemonicData);
+        commit('mnemonic/UPDATE_MNEMONIC', mnemonicData)
+        nextTick(() => {
+          router.replace({
           name: "loginAccount-createing",
         });
+        })
       } catch (err) {
         console.error(err);
         loading.value = false;

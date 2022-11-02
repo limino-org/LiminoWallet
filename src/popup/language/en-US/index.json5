@@ -1120,7 +1120,7 @@
 		staking:"Staking & Redemption",
 		stakingDesc:"Add stake or redeem your stake",
 		server:"Server",
-		serverDesc:"365 Days / 0 Hours",
+		serverDesc:"{days} Days / {hours} Hours",
 		pageTip:"This is the exchange management page.If you want to go to Exchange's page ,click on \"Exchange\".If you want to he exchange's console,click on \"console\".If you want to add the stake amount or redeem your staking,click on \"Staking & Redemption\".If you want to change the setting of server,Click on \"Server\".",
 		serveTip1:"This is the fee you have to pay for the server for one year.",
 		serveTip2:"This is the using time of our server you left.",
@@ -1170,9 +1170,9 @@
 		agreementfirst: 'Please tick the agreement first',
 		hintText: 'Current account does not meet transaction requirements',
 		right_and_interests:
-		"You need to pledge at least 100000ERB and you will become our pledge node after selecting the pledge and downloading our node program.  In the meantime, you need to keep your node program running at all times.  After becoming an equity pledge node, you will have the opportunity to be selected to participate in our blockchain consensus, with a high probability of being selected to distribute SNFT rewards.  The higher your pledge, the more likely you are to be selected.  ",
+		"You need to pledge at least 70000ERB and you will become our pledge node after selecting the pledge and downloading our node program.  In the meantime, you need to keep your node program running at all times.  After becoming an equity pledge node, you will have the opportunity to be selected to participate in our blockchain consensus, with a high probability of being selected to distribute SNFT rewards.  The higher your pledge, the more likely you are to be selected.  ",
 		exchange_pledge:
-		"You need to pledge a minimum of 100ERB to open your exchange. After choosing the exchange pledge, you can choose to use your own server or we will provide the server (there will be an additional charge).  After successfully opening your exchange, you will have the opportunity to get block subsidy of blockchain. The higher your pledge amount, the higher the probability of being selected.  ",
+		"You need to pledge a minimum of 280ERB to open your exchange. After choosing the exchange pledge, you can choose to use your own server or we will provide the server (there will be an additional charge).  After successfully opening your exchange, you will have the opportunity to get block subsidy of blockchain. The higher your pledge amount, the higher the probability of being selected.  ",
 		no_data: "No Data",
 		mainNetwork: "Main Network",
 		save: "Save",
@@ -1215,7 +1215,13 @@
 		copyAddr: "Address Hash Copied",
 		confirmExit:"Confirm exit",
 		guideBtnTip:"Your digital wallet data is only saved on your browser's local storage; be sure to create a backup to avoid potential permanent losses. Uninstalling your browser and/or clearing your browser data will also potentially result in permanent losses!",
-		loadingText:"Loading, please wait."
+		loadingText:"Loading, please wait.",
+		convertAmount:"Convert amount",
+		stakingLess:"Staking less than one year",
+		stakingThanYear:"Staking for one year",
+		withoutStaking:"Fragment Synthesized S-NFTs",
+		unisUnfreeze:"The pledge has not been unfrozen"
+
 	},
 	"categoryform": {
 		"categoryform": "You have not selected any data"

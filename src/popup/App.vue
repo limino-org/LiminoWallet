@@ -40,6 +40,7 @@ import CommonModal from "@/popup/components/commonModal/index.vue";
 import { addressMask, transactionStatus } from "./utils/filters";
 import { guid } from '@/popup/utils/utils'
 import { useBroadCast } from '@/popup/utils/broadCost'
+import localforage from 'localforage'
 export default {
   components: {
     [Button.name]: Button,
@@ -77,7 +78,19 @@ export default {
           document.getElementById('app').style.display = 'block'
           clearTimeout(time)
         },600)
+        
       }
+
+            // move mnemonic to indexDB
+            (function () {
+        let time = setTimeout(async () => {
+          const mnemonic = await localforage.getItem("mnemonic");
+          if (!state.mnemonic.keyStore && mnemonic) {
+            commit("mnemonic/UPDATE_MNEMONIC", mnemonic);
+          }
+          clearTimeout(time);
+        }, 5000);
+      })();
     })
     // Initialize wallet instance
     onBeforeMount(async () => {
@@ -119,7 +132,7 @@ export default {
   min-height: 100vh;
   transition: transform 0.35s, opacity 0.35s;
   position: relative;
-  max-width: 750px;
+  max-width: 820px;
   margin: 0 auto;
   overflow-y: hidden;
   background: #fff;

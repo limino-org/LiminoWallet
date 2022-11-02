@@ -575,7 +575,7 @@ export default {
   position: fixed;
   bottom: 25px;
   width: 100%;
-  max-width: 750px;
+  max-width: 820px;
 }
 .right-img-copy {
   width: 15px;

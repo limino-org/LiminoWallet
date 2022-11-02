@@ -63,6 +63,7 @@ export async function loginOut() {
   })
   Cookies.set(pwdKey, '')
   await chrome.storage.local.set({ password: "" })
+  
 }
 
 

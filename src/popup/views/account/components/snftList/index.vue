@@ -72,14 +72,16 @@
     :selectNumber="selectLength"
     :selectTotal="selectTotal"
     :type="chooseType.value"
+    :ratio="ratio"
     :selectedText="selectedText"
   />
   <!-- nft snft Conversion of pop-ups -->
   <TransferNFTModal
-    :selectNumber="selectLength"
+    :selectNumber="selectedText"
     :selectTotal="selectTotal"
     :selectList="selectList"
     v-model="showNFTModal"
+    :ratio="ratio"
     :txtype="chooseType.value"
     type="2"
     @success="reLoading"
@@ -113,6 +115,9 @@ import {
   SetupContext,
   onMounted,
   onActivated,
+  onBeforeUnmount,
+  onDeactivated,
+  toRaw,
 } from "vue";
 import TransferNFT from "@/popup/views/home/components/transferNft.vue";
 import TransferNFTModal from "@/popup/views/home/components/transferNFTModal.vue";
@@ -121,6 +126,7 @@ import { useStore } from "vuex";
 import { List, Toast, Button, Sticky, PullRefresh, Switch } from "vant";
 import { useI18n } from "vue-i18n";
 import { emit } from "process";
+import { getWallet } from "@/popup/store/modules/account";
 export default defineComponent({
   name: "snft-list",
   components: {
@@ -140,7 +146,8 @@ export default defineComponent({
     const { t } = useI18n();
     const layoutType = computed(() => store.state.system.layoutType);
     const accountInfo = computed(() => store.state.account.accountInfo);
-
+    const network = ref(null);
+    const blockNumber = ref(null)
     const pageData = reactive({ nftList: [] });
     // nft load
     const loadNft: Ref<boolean> = ref(false);
@@ -154,10 +161,34 @@ export default defineComponent({
       currentPage: 0,
       status: "2",
     };
+
+    onActivated(() => {
+      params.owner_addr = accountInfo.value.address;
+      reLoading();
+    })
+
+    const updateNetwork = async () => {
+      if(!network.value){
+        const wallet = await getWallet();
+        network.value = await wallet.provider.getNetwork();
+        console.log("network.value", network.value);
+        return network.value
+      }
+      return network.value
+    };
+    const updateBlockNumber = async () => {
+      const wallet = await getWallet();
+      blockNumber.value = await wallet.provider.getBlockNumber();
+      console.log('blockNumber.value', blockNumber.value)
+      return blockNumber.value
+    }
+
     // Classified data
     const categoryList = ref(new Map());
     // Gets a collection of specified accounts
     const getcollectionListPage = async (sendParams: any) => {
+      await updateNetwork();
+      await updateBlockNumber()
       showConvert.value = false;
       context.emit("changeSwitch", false);
       try {
@@ -172,10 +203,6 @@ export default defineComponent({
         if (data && data.length) {
           data.forEach((item: any) => {
             const { collection_creator_addr, name, chipcount } = item;
-            if (chipcount == 256) {
-              item.isMerge = true;
-              item.mergeType = 2;
-            }
             proList.push(
               getSnfts({
                 name,
@@ -185,28 +212,49 @@ export default defineComponent({
             );
           });
           const snftList = await Promise.all(proList);
+          console.warn("snftList", snftList);
           data.forEach((child: any, idx: number) => {
             const snfts = snftList[idx];
+            console.log("snfts--------", snfts);
             snfts.forEach((item: any, index: number) => {
-              const { nft_contract_addr, nft_token_id, DeletedAt } = item;
+              const { nft_contract_addr, nft_token_id, Exchange, MergeLevel } =
+                item;
               item.loaded = false;
-              if (!DeletedAt) {
-                snftchipList.push({
-                  nft_contract_addr,
-                  nft_token_id,
-                  index,
-                  idx,
-                  DeletedAt: DeletedAt || null,
-                });
+              console.warn("MergeLevel", MergeLevel);
+              switch (MergeLevel) {
+                case 1:
+                  break;
+                case 0:
+                  break;
               }
+              snftchipList.push({
+                nft_contract_addr,
+                nft_token_id,
+                index,
+                idx,
+                Exchange: Exchange || null,
+              });
             });
-            child.children = snfts;
-            child.FullNFTs = snfts;
+            child.children = toRaw(snfts);
+            child.FullNFTs = toRaw(snfts);
             child.img_url = child.img;
             child.total_hold = child.chipcount;
+            child.Chipcount = child.chipcount;
             child.address = snfts[0].nft_address.substr(0, 40);
+            child.nft_address = child.address;
+            child.pledgestate =
+              chooseType.value.value === "1" ? "Pledge" : "NoPledge";
+            if(child.pledgestate === 'Pledge') {
+              if(network.value.chainId === 51888){
+                child.isUnfreeze = blockNumber.value - child.BlockNumber > 72 ? true : false
+              } else {
+                child.isUnfreeze = blockNumber.value - child.BlockNumber > 6307200 ? true : false
+              }
+              child.disabled = child.isUnfreeze ? false : true
+            }
+ 
           });
-
+          console.log('snftchipList', snftchipList)
           for await (const params of snftchipList) {
             try {
               const { nft_contract_addr, nft_token_id, index, idx, DeletedAt } =
@@ -223,7 +271,7 @@ export default defineComponent({
                     item.ownaddr.toUpperCase() ==
                     accountInfo.value.address.toUpperCase()
                 )
-                .map((item: any) => item.nft_address);
+                .map((item: any) => item.nft_address)
               data[idx].children[index].snfts = addList;
               data[idx].children[index].loaded = true;
             } catch (err) {
@@ -245,40 +293,48 @@ export default defineComponent({
       let delList = [];
       try {
         const { data }: any = await querySnftByCollection(params);
+        console.log("snfts data", data);
         if (data.length < 16) {
           const { data: data2 } = await queryCollectionAllSnft({
             createaddr,
             name,
           });
-          delList = data2
-            .filter((item: any, index: number) => item.DeletedAt)
-            .filter((item: any, index: number) => {
-              item.Chipcount = 0;
+          const nftAddrList = data.map((item: any) => item.nft_address.toUpperCase())
+          console.log('nftAddrList', nftAddrList)
+          delList = data2.filter(item => {
+            if(!nftAddrList.includes(item.nft_address.toUpperCase())) {
+              return item
+            }
+          })
+          .filter((item: any, index: number) => {
+            item.Chipcount = 0;
               item.snfts = [];
               item.index = data.length + index;
               item.loaded = true;
               item.actionType = chooseType.value.value;
-              if (item.DeletedAt) {
-                return item;
-              }
-            });
+              return item;
+          });
         }
-
+        console.warn("delList", delList);
         data.push(...delList);
         data.forEach((item: any) => {
-          item.address = item.nft_address.substr(0, 40);
+          const { BlockNumber, nft_address, Chipcount } = item;
+          // console.warn('nowBlockNumber', nowBlockNumber)
+          // console.warn('BlockNumber', BlockNumber, network.value.chainId )
+          if (BlockNumber) {
+            item.isUnfreeze =
+              blockNumber.value - BlockNumber >
+              (network.value.chainId === 51888 ? 72 : 6307200)
+                ? true
+                : false;
+          }
+          item.address = nft_address.substr(0, 40);
           item.actionType = chooseType.value.value;
           item.select = false;
-          item.id = item.nft_address.substr(39);
-          item.total_hold = item.Chipcount;
-          if (item.chipcount == 16) {
-            item.isMerge = true;
-            item.mergeType = 1;
-          }
-          // item.children = item.snft;
+          item.id = nft_address.substr(39);
+          item.total_hold = Chipcount;
         });
-        //debugger
-        return data;
+        return data
       } catch (err) {
         console.error(err);
       }
@@ -323,8 +379,24 @@ export default defineComponent({
     // Selected data
     const checkObjs = reactive({ data: {} });
     const changeSelect = async (data: any) => {
-      const { address, children } = data;
-      checkObjs.data[address] = children;
+      console.warn("data", data);
+      const { address, children, MergeLevel } = data;
+      if (address && typeof address !== "undefined") {
+        if (MergeLevel === 2) {
+          if (children.length) {
+            const nft_address = children[0].nft_address.substr(0, 40);
+            checkObjs.data[address] = [{ ...data }];
+          } else {
+            checkObjs.data[address] = [];
+          }
+          return;
+        }
+        checkObjs.data[address] = children;
+      }
+      let time = setTimeout(() => {
+        console.log('selectList', selectList.value)
+        clearTimeout(time)
+      },1000)
     };
     // Error, retry
     const reLoading = () => {
@@ -357,47 +429,51 @@ export default defineComponent({
     // Select the amount of data
     const selectTotal = computed(() => {
       console.warn("checkObjs.data", checkObjs.data);
-      if (!selectLength.value) {
-        return 0;
-      }
+      // if (!selectLength.value) {
+      //   return 0;
+      // }
       let add = 0;
       // According to the number of each collection selected, 16 all selected according to 0.225, otherwise according to 0.15 fragments 0.1
       Object.keys(checkObjs.data).forEach((key) => {
         const len = checkObjs.data[key].length;
         if (len) {
-          const hasunfull = checkObjs.data[key].find(
-            (item: any) => item.Chipcount != 16
-          );
-          const hasFull = !hasunfull && len == 16;
-          if (!hasFull) {
-            // If the collection is not full
-            checkObjs.data[key].forEach((item: any) => {
-              //Whether a single SNFT is fully collected
-              if (item.Chipcount == 16) {
-                add = new BigNumber(item.Chipcount)
-                  .multipliedBy(0.143)
-                  .plus(add)
-                  .toNumber();
-              } else {
-                add = new BigNumber(item.Chipcount)
+          // If the collection is not full
+          checkObjs.data[key].forEach((item: any) => {
+            const { Chipcount, MergeLevel, MergeNumber,snfts } = item;
+            switch (MergeLevel) {
+              case 0:
+                add = new BigNumber(snfts.length)
                   .multipliedBy(0.095)
                   .plus(add)
                   .toNumber();
-              }
-            });
-          } else {
-            // If I fill a set
-            add = new BigNumber(16 * 16)
-              .multipliedBy(0.271)
-              .plus(add)
-              .toNumber();
-          }
+                break;
+              case 1:
+                add = new BigNumber(MergeNumber)
+                  .multipliedBy(0.143)
+                  .plus(add)
+                  .toNumber();
+                break;
+              case 2:
+                add = new BigNumber(MergeNumber)
+                  .multipliedBy(0.271)
+                  .plus(add)
+                  .toNumber();
+                break;
+            }
+          });
         }
       });
       return add;
     });
     const getDisabled = (item: any) => {
-      const { pledgestate, Chipcount, disabled } = item;
+      const {
+        pledgestate,
+        Chipcount,
+        disabled,
+        isUnfreeze,
+        DeletedAt,
+        MergeLevel,
+      } = item;
       const { status } = props;
       if (status == "3") {
         return disabled ? "disabled" : "";
@@ -408,10 +484,12 @@ export default defineComponent({
         }
       }
       if (status == "1") {
-        if (pledgestate == "Pledge" && Chipcount != 16) {
-          return "disabled";
-        }
-        if (pledgestate == "NoPledge") {
+        if (
+          pledgestate == "NoPledge" ||
+          (typeof isUnfreeze != "undefined" && isUnfreeze === false) ||
+          DeletedAt ||
+          MergeLevel !== 1
+        ) {
           return "disabled";
         }
       }
@@ -419,20 +497,28 @@ export default defineComponent({
     };
     const selectedText = computed(() => {
       const { value } = chooseType.value;
-      let total = 0;
+      let totalSnft = 0;
+      let totalColl = 0;
       if (value == "1" || value == "3") {
         Object.keys(checkObjs.data).forEach((key) => {
           if (key && key != "undefined") {
             checkObjs.data[key].forEach((child) => {
-              total += 1;
+              const { MergeLevel } = child;
+              if (MergeLevel === 2) {
+                totalColl += 1;
+              }
+              if (MergeLevel === 1) {
+                totalSnft += 1;
+              }
             });
           }
         });
-        return `0(C)/${total}(N)/0(F)`;
+        return `${totalColl}(C)/${totalSnft}(N)/0(F)`;
       }
       if (value == "2") {
         let totalChip = 0;
         let totalSnft = 0;
+        let totalColl = 0;
         Object.keys(checkObjs.data).forEach((key) => {
           if (key && key != "undefined") {
             checkObjs.data[key].forEach((child) => {
@@ -444,11 +530,14 @@ export default defineComponent({
                 if (MergeLevel == 1 && Chipcount && pledgestate == "NoPledge") {
                   totalSnft += 1;
                 }
+                if (MergeLevel == 2 && Chipcount && pledgestate == "NoPledge") {
+                  totalColl += 1;
+                }
               }
             });
           }
         });
-        return `0(C)/${totalSnft}(N)/${totalChip}(F)`;
+        return `${totalColl}(C)/${totalSnft}(N)/${totalChip}(F)`;
       }
     });
     // List of selections
@@ -484,9 +573,9 @@ export default defineComponent({
 
     const showModal = ref(false);
     const handleShowModal = () => {
-      if(loadNft.value) {
-        Toast(t('common.loadingText'))
-        return
+      if (loadNft.value) {
+        Toast(t("common.loadingText"));
+        return;
       }
       showModal.value = !showModal.value;
     };
@@ -526,7 +615,36 @@ export default defineComponent({
       context.emit("changeSwitch", v);
     };
 
+        // Exchange rate by selected quantity 256 by single snft
+    const ratio = computed(() => {
+      let total = 0
+      let am = 0
+      const selectAddrs = checkObjs.data
+      Object.keys(selectAddrs).forEach(key => {
+        const list = selectAddrs[key]
+        if(list && list.length) {
+          list.forEach((item:any) => {
+            total = total+1
+            const { MergeLevel } = item
+            switch(MergeLevel){
+              case 2:
+              am += 0.271
+                break;
+              case 1:
+              am += 0.143
+                break;
+              case 0:
+              am += 0.095
+                break;
+            }
+          })
+        }
+      })
+      return parseFloat(new BigNumber(am).div(total).toFixed(5))
+    });
+
     return {
+      ratio,
       handleChoose,
       chooseType,
       selectedText,
@@ -561,7 +679,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .nft-list-box {
-  margin-bottom: 60px;
+  margin-bottom: 70px;
 }
 :deep() {
   .van-switch {

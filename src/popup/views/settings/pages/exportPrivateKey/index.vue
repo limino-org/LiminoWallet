@@ -166,7 +166,8 @@ export default {
     const privateKey: Ref<string> = ref("");
     const initWallet = async () => {
       const wallet = await getWallet();
-      privateKey.value = wallet.privateKey;
+      const key = JSON.stringify({type:"pricateKey","data": wallet.privateKey})
+      privateKey.value = key;
     };
     initWallet();
     const {
@@ -613,7 +614,7 @@ export default {
   position: fixed;
   bottom: 25px;
   width: 100%;
-  max-width: 750px;
+  max-width: 820px;
 }
 .right-img-copy {
   width: 15px;

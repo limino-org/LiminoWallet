@@ -139,7 +139,7 @@ export default {
       const data = await wallet
       .sendTransaction(tx)
       const { from, gasLimit, gasPrice, nonce,  type, value, hash } =data;
-      commit("account/PUSH_TXQUEUE", {
+      store.commit("account/PUSH_TXQUEUE", {
               hash,
               from,
               gasLimit,
@@ -148,22 +148,22 @@ export default {
               to,
               type,
               value,
-              transitionType: null,
+              transitionType: '1',
               network: clone(store.state.account.currentNetwork),
               txType: TransactionTypes.other
             });
       console.log('11111', hash);
-      const receipt = await wallet.provider.waitForTransaction(hash)
-        const symbol = store.state.account.currentNetwork.currencySymbol
-        const rep: TransactionReceipt = handleGetTranactionReceipt(
-          TransactionTypes.other,
-          receipt,
-          data,
-          clone(store.state.account.currentNetwork)
-        );
-        // Add to transaction
-        store.commit("account/PUSH_TRANSACTION", rep);
-      return receipt
+      // const receipt = await wallet.provider.waitForTransaction(hash)
+      //   const symbol = store.state.account.currentNetwork.currencySymbol
+      //   const rep: TransactionReceipt = handleGetTranactionReceipt(
+      //     TransactionTypes.other,
+      //     receipt,
+      //     data,
+      //     clone(store.state.account.currentNetwork)
+      //   );
+      //   // Add to transaction
+      //   store.commit("account/PUSH_TRANSACTION", rep);
+      return data
     },
     // Get asset list according to owner
     async getSnftOwner({ commit, state }: any, page: string) {

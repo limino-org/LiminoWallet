@@ -409,7 +409,7 @@ export default defineComponent({
   position: fixed;
   bottom: 25px;
   width: 100%;
-  max-width:750px;
+  max-width:820px;
 }
 </style>
 

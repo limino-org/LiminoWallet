@@ -173,6 +173,7 @@ export default {
 <style lang="scss" scoped>
 .swap-list {
   padding-bottom: 60px;
+  margin-top: 20px;
 }
 .currency {
   .currency-symbol {
@@ -215,9 +216,7 @@ export default {
     }
   }
 
-  .swap-list {
-    margin-top: 20px;
-  }
+
 }
 .iconfont {
   color: #fff;

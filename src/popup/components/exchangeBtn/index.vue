@@ -323,12 +323,12 @@ export default defineComponent({
   }
 }
 .ex-inner {
-  width: 750px;
+  width: 820px;
   margin: 0 auto;
   position: relative;
 }
 .exchange-box {
-  max-width: 750px;
+  max-width: 820px;
   box-sizing: border-box;
   margin: 0 auto;
 }
