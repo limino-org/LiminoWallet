@@ -115,6 +115,7 @@ export default defineComponent({
       (n) => {
         if (!n) {
           emit("update:modelValue", false);
+          all.value = false
         }
       }
     );
@@ -123,7 +124,7 @@ export default defineComponent({
     }
 
     const handleAll = () => {
-      all.value = all.value ? all.value = false : all.value = true 
+      all.value = !all.value
       emit('handleAll', all.value)
     }
 

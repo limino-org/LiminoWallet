@@ -143,6 +143,7 @@ import { ElTooltip } from "element-plus";
 import { useStore } from "vuex";
 import { toHex } from "@/popup/utils/utils";
 import {
+  getGasFee,
   getWallet,
   handleGetTranactionReceipt,
   TransactionTypes,
@@ -192,6 +193,7 @@ export default {
         },
       });
       try {
+        const network =  clone(store.state.account.currentNetwork)
         const amount = props.minusNumber;
         const wallet = await getWallet();
         const { address } = wallet;
@@ -215,7 +217,7 @@ export default {
               type,
               value,
               transitionType: '10',
-              network: clone(store.state.account.currentNetwork),
+              network,
               txType: TransactionTypes.other
             });
         $tradeConfirm.update({ status: "approve" });
@@ -225,16 +227,15 @@ export default {
         } else {
           $tradeConfirm.update({ status: "fail" });
         }
-        const symbol = state.account.currentNetwork.currencySymbol;
-
-        const rep = handleGetTranactionReceipt(
-          TransactionTypes.other,
-          receipt1,
-          data1,
-          symbol
-        );
+        // const rep = handleGetTranactionReceipt(
+        //   TransactionTypes.other,
+        //   receipt1,
+        //   data1,
+        //   network
+        // );
         dispatch("account/updateAllBalance");
-        commit("account/PUSH_TRANSACTION", rep);
+        await store.dispatch('account/waitTxQueueResponse')
+        // commit("account/PUSH_TRANSACTION", rep);
       } catch (err) {
         $tradeConfirm.update({ status: "fail" });
       }
@@ -264,16 +265,7 @@ export default {
             data: `0x${data3}`,
           };
           try {
-            const wallet = await getWallet();
-            gasPrice.value = await wallet.provider.getGasPrice();
-            const priceStr = ethers.utils.formatUnits(gasPrice,'wei')
-            gasLimit.value = await wallet.estimateGas(tx1);
-            // @ts-ignore
-            gasFee.value = new BigNumber(
-              ethers.utils.formatEther(gasLimit.value)
-            )
-              .multipliedBy(priceStr)
-              .toFixed(9);
+            gasFee.value = await getGasFee(tx1)
           } catch (err: any) {
             console.error(err);
           }

@@ -303,3 +303,12 @@ export function transactiontxType(status: string){
   }
  
 }
+
+export const transferAmount = (data: any) => {
+  const {transitionType, value, convertAmount} = data
+  const transferNumber = utils.formatEther(value)
+  if(!transitionType) return '-' + transferNumber
+  if(transitionType === '6') return '+' + convertAmount
+  // if(transitionType === '10' || transitionType === '12') return '+' + transferNumber
+  return '-' + transferNumber
+}

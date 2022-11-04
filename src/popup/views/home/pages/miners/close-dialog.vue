@@ -187,13 +187,14 @@ export default {
               txType: TransactionTypes.other
             });
         const receipt = await wallet.provider.waitForTransaction(hash)
-            const rep = handleGetTranactionReceipt(
-      TransactionTypes.contract,
-      receipt,
-      data,
-      clone(store.state.account.currentNetwork)
-    );
-    commit("account/PUSH_TRANSACTION", rep);
+    //         const rep = handleGetTranactionReceipt(
+    //   TransactionTypes.contract,
+    //   receipt,
+    //   data,
+    //   clone(store.state.account.currentNetwork)
+    // );
+    // commit("account/PUSH_TRANSACTION", rep);
+    await store.dispatch('account/waitTxQueueResponse')
         console.log(receipt);
         console.log("receiptreceiptreceiptreceiptreceipt");
         isLoading.value = false;

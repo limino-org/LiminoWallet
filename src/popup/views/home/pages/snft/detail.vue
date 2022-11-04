@@ -6,7 +6,7 @@
       <div :class="`img-box flex center van-hairline--surround hover   flex center ${
           item.select ? 'active' : ''
         }`" v-for="(item, idx) in pageData.children" :key="item.address" @click="hancleClick(item, idx)">
-        <img :src="`${metaDomain}${item.source_url}`" :class="`flex center ${item.select ? 'active' : ''} ${imgGary(item)}`" fit="cover" />
+        <img :src="`${metaDomain}${item.source_url}`" :class="`flex center ${item.select ? 'active' : ''} ${imgGarySmall(item)}`" fit="cover" />
         <div class="lock-img-box" v-if="handlecanRedeem(item) === false">
           <div class="flex center">
             <svg t="1666159609780" class="lock-img-small" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3307" width="200" height="200">
@@ -75,7 +75,7 @@
       <div class="card border-bottom mt-8">
         <div class="name">{{ t("sendSNFT.amount") }}</div>
         <div class="value">
-          <span>{{ totalAmount }}ERB</span>
+          <span>{{ totalAmount }} ERB</span>
           <span class="usd">≈$ {{ toUsd(totalAmount, 2) }}</span>
         </div>
       </div>
@@ -134,8 +134,8 @@
     </div>
   </div>
   <!-- Transfer Erb -->
-  <TransferNFTModal :selectNumber="chooseNum" :selectName="chooseName" :selectAddress="chooseAddress" :selectTotal="totalAmount" :selectList="selectList" txtype="2" type="1" :ratio="ratio" v-model="showModal" @success="reLoading" @fail="reLoading" />
-  <TransferSingleSNFTModal :txtype="actionType" :selectNumber="1" :ratio="ratio" :selectTotal="stakingTotalAmount" :selectList="selectStakingList" v-model="showStakingModal" @success="handleSuccess" />
+  <TransferNFTModal :selectNumber="selectText" :selectName="chooseName" :selectAddress="chooseAddress" :selectTotal="totalAmount" :selectList="selectList" txtype="2" type="1" :ratio="ratio" v-model="showModal" @success="reLoading" @fail="reLoading" />
+  <TransferSingleSNFTModal :txtype="actionType" :selectNumber="selectText" :ratio="ratio" :selectTotal="stakingTotalAmount" :selectList="selectStakingList" v-model="showStakingModal" @success="handleSuccess" />
 </template>
 <script lang="ts">
 import {
@@ -340,7 +340,8 @@ export default {
     };
     getNft256(params);
     const { MergeLevel, nft_address: nft_addr, children } = pageData.value;
-    getAddressInfo(children[0].nft_address);
+    const nftAddr = MergeLevel === 2 ? nft_addr + '00' : children[0].nft_address
+    getAddressInfo(nftAddr);
     const hancleClick = (e, i) => {
       console.log(e, i);
       swipe.value?.swipeTo(i);
@@ -369,7 +370,9 @@ export default {
         // } else {
         //   snftAddress = children[e].nft_address;
         // }
-        getAddressInfo(snftAddress);
+
+    const nftAddr = MergeLevel === 2 ? nft_address + '00' : snftAddress
+        getAddressInfo(nftAddr);
       }
     };
 
@@ -449,16 +452,47 @@ export default {
       }
       return flag;
     });
-
-    const imgGary = (data: any) => {
+    const imgGarySmall = (data: any) => {
       let flag = "";
-      const { MergeLevel, pledgestate, snfts, total_hold, disabled, Exchange } =
+      console.warn('actionType.value', actionType.value)
+      const { MergeLevel, pledgestate, snfts, total_hold, disabled, Exchange, Chipcount } =
         data;
       switch (actionType.value) {
         case "1":
+        case "3":
           disabled ? (flag = "gary") : "";
           break;
         case "2":
+          if (
+            MergeLevel === 0 ||
+            !snfts.length ||
+            pledgestate === "Pledge" ||
+            Exchange === 1
+          ) {
+            flag = "gary";
+          }
+          break;
+      }
+      return flag;
+    }
+    const imgGary = (data: any) => {
+      let flag = "";
+      console.warn('actionType.value', actionType.value)
+      const { MergeLevel, pledgestate, snfts, total_hold, disabled, Exchange, Chipcount } =
+        data;
+      switch (actionType.value) {
+        case "1":
+        if(MergeLevel === 1 ){
+          if((pledgestate === 'Pledge' && Chipcount)) {
+            return
+          }
+        }
+          disabled ? (flag = "gary") : "";
+          break;
+        case "2":
+        if(MergeLevel === 0 && snfts.length &&  pledgestate === "NoPledge" && Exchange !== 1 ) {
+            return
+          }
           if (
             MergeLevel === 0 ||
             !snfts.length ||
@@ -485,7 +519,6 @@ export default {
         MergeLevel,
       } = item;
       const { status } = actionType.value;
-      console.log("-----------------status", status, isUnfreeze, DeletedAt);
       if (status == "3") {
         return disabled ? "disabled" : "";
       }
@@ -682,25 +715,47 @@ export default {
           .multipliedBy(0.271)
           .toNumber();
       }
-      if (chooseSnftData.value.selectFlag) {
-        const data = chooseSnftData.value;
-        const { MergeLevel, snfts, pledgestate, selectFlag } = data;
-        if (MergeLevel === 0) {
+      console.log('---000')
+      const data = chooseSnftData.value;
+        const { MergeLevel, snfts, pledgestate, Chipcount, selectFlag } = data;
+        if (MergeLevel === 1 && Chipcount && selectFlag) {
           return parseFloat(
-            new BigNumber(snfts.length).multipliedBy(0.095).toFixed(6)
+            new BigNumber(Chipcount).multipliedBy(0.143).toFixed(6)
           );
         }
-        if (MergeLevel === 1) {
+  
+        const len = selectList.value.length
+        console.log('---222', len)
+        if (len) {
           return parseFloat(
-            new BigNumber(snfts.length).multipliedBy(0.143).toFixed(6)
+            new BigNumber(len).multipliedBy(0.095).toFixed(6)
           );
         }
-      }
+
       if (!selectList.value.length) {
         return 0;
       }
     });
 
+    const selectText = computed(() => {
+      if (
+        pageData.value.MergeLevel === 2 &&
+        pageData.value.Chipcount
+      ) {
+        return `1(C)/0(N)/0(F)`
+      }
+      const data = chooseSnftData.value;
+        const { MergeLevel, snfts, pledgestate, Chipcount, selectFlag } = data;
+        if (MergeLevel === 1 && Chipcount && selectFlag) {
+          return `0(C)/1(N)/0(F)`
+        }
+
+        const len = selectList.value.length
+        if(len){
+          return `0(C)/0(N)/${len}(F)`
+        }
+
+    })
     const to = (type: string) => {
       if (type == "next") {
         swipe.value?.next();
@@ -854,6 +909,7 @@ export default {
       handleReStaking,
       selectSingleSnft,
       imgGary,
+      imgGarySmall,
       canRedeem,
       showConvertBtn,
       showStakingBtn,
@@ -891,6 +947,7 @@ export default {
       toUsd,
       hasChooseNum,
       chooseSnftData,
+      selectText,
       selectList,
       handleConvert,
       ratio,
@@ -966,8 +1023,8 @@ export default {
         align-items: center;
 
         &.gary {
-          filter: grayscale(100%);
-          filter: gray;
+          backdrop-filter: saturate(80%) blur(0px);
+        filter: grayscale(100%);
         }
 
         :deep(img) {
@@ -1013,7 +1070,6 @@ export default {
   }
 
   .swipe-img {
-    border-radius: 8px;
     overflow: hidden;
 
     img {
@@ -1022,11 +1078,18 @@ export default {
       display: block;
       background: #f1f2f3;
       object-fit: cover;
+      border-radius: 8px;
 
       &.gary {
+        backdrop-filter: saturate(80%) blur(0px);
         filter: grayscale(100%);
-        filter: gray;
+        &:hover {
+      border: none;
+    }
       }
+    }
+    img:hover {
+      border: 1PX solid #037cd6;
     }
   }
 
@@ -1154,16 +1217,21 @@ export default {
       }
 
       &:hover {
-        background: rgba($color: green, $alpha: 0.2);
+        // background: rgba($color: #666, $alpha: 0.6);
+        border: 1PX solid #037cd6;
       }
 
       &.disabled {
-        background: rgba($color: #dbdddd, $alpha: 0.1);
         backdrop-filter: saturate(80%) blur(0px);
         filter: grayscale(100%);
         // background-image: linear-gradient(135deg,#f5f7fa,#c3cfe2);
         // opacity: 0.5;
         cursor: no-drop;
+        // filter: grayscale(100%);
+        // filter: gray;
+        &:hover {
+          border: none;
+        }
       }
 
       &.select {
@@ -1183,7 +1251,10 @@ export default {
     right: 0;
     top: 0;
     bottom: 0;
-
+    border-radius: 8px;
+    &:hover {
+      border: 1PX solid #037cd6;
+    }
     &.selected {
       background: rgba($color: #037cd6, $alpha: 0.6);
     }

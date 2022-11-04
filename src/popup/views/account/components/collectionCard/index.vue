@@ -36,7 +36,7 @@
     <div class="collection-card-right flex center">
       <div>
         <div class="van-ellipsis text-right val lh-18">
-         {{data.transitionType == '6' ? '+' + data.convertAmount : '-' + utils.formatEther(data.value)}} {{data.symbol}}
+        {{transferAmount(data)}} {{data.symbol}}
         </div>
         <div class="van-ellipsis text-right usd lh-18">
           {{data.transitionType == '6' ? toUsdSymbol(data.convertAmount, 4) : toUsdSymbol(utils.formatEther(data.value),4)}} 
@@ -65,6 +65,7 @@ import {
   toUsdSymbol,
   transactionStatus,
   transactiontxType,
+  transferAmount
 } from "@/popup/utils/filters";
 import { useStore } from "vuex";
 import { AccountInfo } from "@/popup/store/modules/account";
@@ -127,9 +128,12 @@ export default defineComponent({
       return transactiontxType(txType)
      }
     }
+
+
     return {
       t,
       viewDetail,
+      transferAmount,
       txTypeToIcon,
       transactionTarget,
       accountInfo,

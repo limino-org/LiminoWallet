@@ -31,7 +31,7 @@
         </div>
         <div class="card flex between card-sml pt-10">
           <div class="label">{{data.transitionType == '6' ? t('common.convertAmount') : t('transactionDetails.transferAmount')}}</div>
-          <div class="value">{{ data.transitionType == '6' ? '+' + data.convertAmount : '-' + utils.formatEther(data.value) }} {{currentNetwork.currencySymbol}}</div>
+          <div class="value">{{ transferAmount(data) }} {{currentNetwork.currencySymbol}}</div>
 
         </div>
         <div class="card flex between card-sml">
@@ -63,7 +63,7 @@ import { SetupContext, Ref, ref, reactive, onMounted, defineComponent, computed 
 import { Icon, Toast, Button,Popover } from 'vant'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { transactionTarget, formatDate, addressMask, formatEther, transactionStatus, parseEther } from '@/popup/utils/filters'
+import { transactionTarget, formatDate, addressMask, formatEther, transactionStatus, parseEther, transferAmount } from '@/popup/utils/filters'
 import { utils } from 'ethers'
 import { copy } from '@/popup/utils/utils'
 import { useI18n } from 'vue-i18n'
@@ -139,7 +139,8 @@ export default defineComponent({
       tolink,
       totalAmount,
       transactionStatus,
-      gasFee
+      gasFee,
+      transferAmount
     }
   }
 })

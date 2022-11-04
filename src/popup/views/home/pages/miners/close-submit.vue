@@ -201,14 +201,15 @@ export default {
               txType: TransactionTypes.other
             });
         const receipt2 = await wallet.provider.waitForTransaction(hash);
-        const symbol = store.state.account.currentNetwork.currencySymbol
-        const rep: TransactionReceipt = handleGetTranactionReceipt(
-          TransactionTypes.other,
-          receipt2,
-          data,
-          clone(store.state.account.currentNetwork)
-        );
-        store.commit("account/PUSH_TRANSACTION", rep);
+        // const symbol = store.state.account.currentNetwork.currencySymbol
+        // const rep: TransactionReceipt = handleGetTranactionReceipt(
+        //   TransactionTypes.other,
+        //   receipt2,
+        //   data,
+        //   clone(store.state.account.currentNetwork)
+        // );
+        // store.commit("account/PUSH_TRANSACTION", rep);
+        await store.dispatch('account/waitTxQueueResponse')
         const { status } = receipt2;
         if (status == 0) {
           $tradeConfirm.update({ status: "fail" });

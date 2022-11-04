@@ -46,8 +46,8 @@
                   <!-- Account list Popup-->
                   <AccountModal v-model="showModal" />
                   <!-- <SnftDetails v-model="showModal" /> -->
+                  <GuideModal10></GuideModal10>
                   <div class="tag-list flex">
-                    <GuideModal10></GuideModal10>
                     <van-popover
                       v-model:show="showPopover"
                       trigger="manual"
@@ -77,7 +77,7 @@
                             />
                           </span>
                           <div class="tag-label flex center-v">
-                            <span>Validator</span>
+                            <span>{{t('common.validator')}}</span>
                           </div>
                         </div>
                       </template>
@@ -109,7 +109,7 @@
                             />
                           </span>
                           <div class="tag-label flex center-v">
-                            <span>Exchange</span>
+                            <span>{{t('common.marketplace')}}</span>
                           </div>
                         </div>
                       </template>
@@ -205,12 +205,6 @@
               <GuideModal5></GuideModal5>
             </div>
           </div>
-          <!-- <div class="actions-btn" v-if="currentNetwork.id == 'wormholes-network-1'">
-            <div class="action-icon flex center">
-              <i class="iconfont icon-icon_huabanfuben"></i>
-            </div>
-            <div class="action-name text-center">{{ t("wallet.swap") }}</div>
-          </div> -->
         </div>
       </div>
       <van-tabs v-model:active="active" sticky :offset-top="48">
@@ -268,14 +262,6 @@
             />
           </template>
         </van-tab>
-        <!-- nft list -->
-        <!-- TODO: Delete -->
-        <!-- <van-tab name="b">
-          <template #title>{{ $t("wallet.NFTs") }}</template>
-          <template #default>
-            <NftList />
-          </template>
-        </van-tab> -->
         <!-- snft list -->
         <van-tab name="c">
           <template #title>{{ $t("wallet.SNFTs") }}</template>

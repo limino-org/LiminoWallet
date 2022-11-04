@@ -26,13 +26,13 @@
       >
         <i
           class="iconfont icon-duihao2 check-icon"
-          v-show="item.select && showIcon && compData.MergeLevel < 2"
+          v-show="item.select && showIcon && compData.MergeLevel < 2 && !getDisabled(item)"
         ></i>
         <img
           src="./select-white.svg"
           class="check-icon-default no-select"
           alt=""
-          v-show="!getDisabled(item) && showIcon && compData.MergeLevel < 2"
+          v-show="!getDisabled(item) && showIcon && compData.MergeLevel < 2 && !item.select"
         />
         <img
           loading="lazy"
@@ -56,7 +56,7 @@
         :class="`all-box flex center-v mr-8 hover ${
           compData.select ? 'active' : ''
         }`"
-        @click.stop="chooseAll"
+        @click.stop="chooseAll(compData.select ? false : true)"
       >
         <i
           :class="`iconfont mr-4 ${
@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, SetupContext, toRaw, watch } from "vue";
+import { defineComponent, nextTick, ref, SetupContext, toRaw, watch } from "vue";
 import {
   addressMask,
   decimal,
@@ -133,25 +133,7 @@ export default defineComponent({
     const { t } = useI18n();
     console.log('props.data------', props.data)
     const compData = ref({ select: false, children: [] });
-    watch(
-      () => props.selectAll,
-      (n, o) => {
-        // @ts-ignore
-        if(props.status === '1' && compData.value.pledgestate === 'Pledge' && !compData.value.isUnfreeze) {
-          return
-        }
-        compData.value.select = n;
-        compData.value.children.forEach((item) => {
-          if (getDisabled(item) == "") {
-            item.select = n;
-          }
-        });
-        const { children } = compData.value;
-        const clds = children.filter((item) => item.select);
-        context.emit("changeSelect", { ...compData.value, children: clds });
-      },
-      { deep: true, immediate: true }
-    );
+
 
 
     const collIdStr = "0x80000000000000000000000000000000000";
@@ -205,6 +187,9 @@ export default defineComponent({
 
     }
 
+    watch(() => props.selectAll, (n) => {
+      console.warn('select all 222222222222')
+    })
     const coll_address = collIdStr + id
     compData.value = {
       id,
@@ -271,17 +256,27 @@ export default defineComponent({
     });
     //The total amount selected
     const totalAmount = computed(() => {
-      const arr = compData.value.children
-        .filter((item) => item.select)
-        .map((item) => item.Chipcount);
+      // @ts-ignore
+      if(compData.value.select && compData.value.MergeLevel == 2) {
+        // @ts-ignore
+        return new BigNumber(compData.value.MergeNumber).multipliedBy(0.271).toNumber()
+      }
       let total = 0;
-      arr.forEach((num: any) => {
-        if (num == 16) {
-          total = new BigNumber(num).multipliedBy(0.143).plus(total).toNumber();
-        } else {
-          total = new BigNumber(num).multipliedBy(0.095).plus(total).toNumber();
-        }
-      });
+      compData.value.children
+        .forEach((item) => {
+          const {select,MergeLevel,MergeNumber,snfts} = item
+          if(select) {
+            switch(MergeLevel){
+              case 1:
+                total = new BigNumber(MergeNumber).multipliedBy(0.143).plus(total).toNumber();
+                break;
+              case 0:
+                total = new BigNumber(snfts.length).multipliedBy(0.095).plus(total).toNumber();
+                break;
+            }
+          }
+        })
+
       return total;
     });
 
@@ -334,25 +329,40 @@ export default defineComponent({
       });
     };
     const getDisabled = (item: any) => {
-      const { pledgestate, Chipcount, disabled, isUnfreeze, DeletedAt, MergeLevel, Exchange } = item;
+      const {
+        pledgestate,
+        Chipcount,
+        disabled,
+        isUnfreeze,
+        DeletedAt,
+        Exchange,
+        MergeLevel,
+      } = item;
       const { status } = props;
       if (status == "3") {
-        return disabled || Exchange === 1 ? "disabled" : "";
+        if(Exchange === 1 || pledgestate == "Pledge" || !Chipcount || MergeLevel < 1  ){
+          return "disabled";
+        }
+        // return disabled ? "disabled" : "";
       }
       if (status == "2") {
-        if (pledgestate == "Pledge" || !Chipcount  || Exchange === 1) {
+        if (pledgestate == "Pledge" || !Chipcount || Exchange === 1) {
           return "disabled";
         }
       }
       if (status == "1") {
-        if (pledgestate == "NoPledge" || (typeof isUnfreeze != 'undefined' && isUnfreeze === false) || Exchange === 1) {
+        if (
+          pledgestate == "NoPledge" ||
+          (typeof isUnfreeze != "undefined" && isUnfreeze === false) ||
+          DeletedAt ||  MergeLevel < 1
+        ) {
           return "disabled";
         }
       }
       return "";
     };
     // All/none
-    const chooseAll = () => {
+    const chooseAll = (bool: boolean) => {
       console.log('props.data', props.data)
       // @ts-ignore
       if(props.data.MergeLevel === 2 && props.data.Chipcount && props.status === '1') {
@@ -361,19 +371,19 @@ export default defineComponent({
           Toast(t('common.unisUnfreeze'))
           return
         }
-        compData.value.select = !compData.value.select;
+        compData.value.select = bool;
         context.emit("changeSelect", {
         ...compData.value,
-        children: compData.value.select ? [ toRaw(props.data)] : [],
+        children: bool ? [ toRaw(props.data)] : [],
       });
         return
       }
-      compData.value.select = !compData.value.select;
+      compData.value.select = bool;
       //debugger
       if (compData.value) {
         compData.value.children.forEach((item) => {
           if (getDisabled(item) == "") {
-            item.select = compData.value.select;
+            item.select = bool;
           }
         });
       }
@@ -385,6 +395,21 @@ export default defineComponent({
         children: children.filter((item) => item.select),
       });
     };
+
+    watch(
+      () => props.selectAll,
+      (n, o) => {
+        // @ts-ignore
+        if(props.status === '1' && compData.value.pledgestate === 'Pledge' && !compData.value.isUnfreeze) {
+          return
+        }
+        console.warn('nnnnnnnnnn', n)
+        nextTick(() => {
+          chooseAll(n)
+        })
+      },
+      { deep: true,immediate: true }
+    );
     const metaDomain = ref(`${VUE_APP_METAURL}`);
 
     // The conversion rate is calculated according to the number of SNFT selected

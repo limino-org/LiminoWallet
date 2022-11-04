@@ -64,18 +64,20 @@ export default {
               type,
               value,
               network: clone(store.state.account.currentNetwork),
-              txType: TransactionTypes.other
+              txType: TransactionTypes.other,
+              transitionType: '6',
             });
       const receipt = await wallet.provider.waitForTransaction(data.hash)
-      const symbol = store.state.account.currentNetwork.currencySymbol
-      const rep: TransactionReceipt = handleGetTranactionReceipt(
-        TransactionTypes.other,
-        receipt,
-        data,
-        clone(store.state.account.currentNetwork)
-      );
-      // Add to transaction
-      store.commit("account/PUSH_TRANSACTION", rep);
+      // const symbol = store.state.account.currentNetwork.currencySymbol
+      // const rep: TransactionReceipt = handleGetTranactionReceipt(
+      //   TransactionTypes.other,
+      //   receipt,
+      //   data,
+      //   clone(store.state.account.currentNetwork)
+      // );
+      // // Add to transaction
+      // store.commit("account/PUSH_TRANSACTION", rep);
+      store.dispatch('account/waitTxQueueResponse')
       return receipt
     },
     // Personal casting NFT
@@ -105,19 +107,22 @@ export default {
               type,
               value,
               network: clone(store.state.account.currentNetwork),
-              txType: TransactionTypes.other
+              txType: TransactionTypes.other,
+              transitionType: '0',
+
             });
       const receipt = await wallet.provider.waitForTransaction(data.hash)
       // ts-ignore
-      const symbol = store.state.account.currentNetwork.currencySymbol
-      const rep: TransactionReceipt = handleGetTranactionReceipt(
-        TransactionTypes.other,
-        receipt,
-        data,
-        clone(store.state.account.currentNetwork)
-      );
-      // Add to transaction
-      store.commit("account/PUSH_TRANSACTION", rep);
+      // const symbol = store.state.account.currentNetwork.currencySymbol
+      // const rep: TransactionReceipt = handleGetTranactionReceipt(
+      //   TransactionTypes.other,
+      //   receipt,
+      //   data,
+      //   clone(store.state.account.currentNetwork)
+      // );
+      // // Add to transaction
+      // store.commit("account/PUSH_TRANSACTION", rep);
+      store.dispatch('account/waitTxQueueResponse')
       return receipt
     },
     // Transfer NFT

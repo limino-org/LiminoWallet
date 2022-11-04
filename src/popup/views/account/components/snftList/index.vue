@@ -358,7 +358,7 @@ export default defineComponent({
           owner_addr,
           status: p[status],
         });
-
+        handleAll(false)
         if (!list || !list.length) {
           finished.value = true;
         }
@@ -440,6 +440,12 @@ export default defineComponent({
           // If the collection is not full
           checkObjs.data[key].forEach((item: any) => {
             const { Chipcount, MergeLevel, MergeNumber,snfts } = item;
+            // if(MergeLevel === 2) {
+            //   add += new BigNumber(MergeNumber)
+            //  .multipliedBy(0.271)
+            //   .plus(add)
+            //   .toNumber();
+            // }
             switch (MergeLevel) {
               case 0:
                 add = new BigNumber(snfts.length)
@@ -563,9 +569,13 @@ export default defineComponent({
     const selectAll = ref(false);
     //All/none
     const handleAll = (select) => {
+      console.warn('select-----------------', select)
       selectAll.value = select;
     };
 
+    watch(() => selectAll.value, (n) => {
+      console.warn('select all 1111111111111')
+    })
     // The drop-down load
     const onRefresh = () => {
       reLoading();

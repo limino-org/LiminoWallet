@@ -1104,8 +1104,10 @@ async DEL_TXQUEUE(state: State, tx: any) {
             to,
             type,
             value,
+            transitionType: null,
             network: clone(state.currentNetwork),
-            txType: TransactionTypes.default
+            txType: TransactionTypes.default,
+            
           });
           // const penddingRep = handleGetPenddingTranactionReceipt(TransactionTypes.default,data, symbol)
           // commit("PUSH_TRANSACTION", penddingRep);
@@ -1389,29 +1391,6 @@ async DEL_TXQUEUE(state: State, tx: any) {
     },
     // The result of polling the transaction queue
     async waitTxQueueResponse({ commit, state }: any) {
-      // const list: any = await localforage.getItem('txQueue')
-      // const txQueue = list && list.length ? list : []
-      // if (!txQueue.length) {
-      //   return Promise.resolve()
-      // }
-      // try {
-      //   for await (const iterator of txQueue) {
-      //     const {network,hash, txType} = iterator
-      //     const data1 = await wallet.provider.waitForTransaction(hash);
-      //     const rep: TransactionReceipt = handleGetTranactionReceipt(
-      //       txType,
-      //       data1,
-      //       iterator,
-      //       network
-      //     );
-      //     commit("DEL_TXQUEUE", { ...iterator });
-      //     commit("PUSH_TRANSACTION", { ...rep });
-      //   }
-      //   return Promise.resolve()
-      // } catch (err) {
-      //   console.error(err)
-      //   return Promise.reject(err)
-      // }
       // // The service worker performs
       return sendBackground({ method: 'waitTxQueueResponse' })
     }
@@ -1440,7 +1419,7 @@ export enum TransactionTypes {
  * @param tx Transaction return data
  * @returns
  */
-export function handleGetTranactionReceipt(
+ export function handleGetTranactionReceipt(
   txType: string,
   receipt: any,
   tx: any,
@@ -1478,6 +1457,7 @@ export function handleGetTranactionReceipt(
   };
   return rec;
 }
+
 
 
 // export function handleGetPenddingTranactionReceipt(

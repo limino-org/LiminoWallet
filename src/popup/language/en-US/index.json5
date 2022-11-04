@@ -1008,7 +1008,7 @@
 		"overallvalue": "Total value",
 		"bypledge": "By pledge",
 		"gaingreaterbenefits": "Gain greater benefits",
-		"buyatexchange": "You can also Buy SNFT at the exchange",
+		"buyatexchange": "You can also Buy S-NFTs at the exchange",
 		"cancel": "Cancel",
 		"confirm": "Confirm",
 		"ratio": "Ratio",
@@ -1170,7 +1170,7 @@
 		agreementfirst: 'Please tick the agreement first',
 		hintText: 'Current account does not meet transaction requirements',
 		right_and_interests:
-		"You need to pledge at least 70000ERB and you will become our pledge node after selecting the pledge and downloading our node program.  In the meantime, you need to keep your node program running at all times.  After becoming an equity pledge node, you will have the opportunity to be selected to participate in our blockchain consensus, with a high probability of being selected to distribute SNFT rewards.  The higher your pledge, the more likely you are to be selected.  ",
+		"You need to pledge at least 70000ERB and you will become our pledge node after selecting the pledge and downloading our node program.  In the meantime, you need to keep your node program running at all times.  After becoming an equity pledge node, you will have the opportunity to be selected to participate in our blockchain consensus, with a high probability of being selected to distribute S-NFTs rewards.  The higher your pledge, the more likely you are to be selected.  ",
 		exchange_pledge:
 		"You need to pledge a minimum of 280ERB to open your exchange. After choosing the exchange pledge, you can choose to use your own server or we will provide the server (there will be an additional charge).  After successfully opening your exchange, you will have the opportunity to get block subsidy of blockchain. The higher your pledge amount, the higher the probability of being selected.  ",
 		no_data: "No Data",
@@ -1220,7 +1220,9 @@
 		stakingLess:"Staking less than one year",
 		stakingThanYear:"Staking for one year",
 		withoutStaking:"Fragment Synthesized S-NFTs",
-		unisUnfreeze:"The pledge has not been unfrozen"
+		unisUnfreeze:"The pledge has not been unfrozen",
+		marketplace:"Marketplace",
+		validator:"Validator",
 
 	},
 	"categoryform": {
@@ -1378,8 +1380,9 @@
 		stackingTip: "This is the estimated annual income after the additional staking done",
 		select: "Select",
 		selectErb: "Tips：Select ERB. Your pledge income will be returned in the form of ERB.",
-		selectSnft: "Tips：Select SNFT. Your pledge income will be returned in the form ofSNFT.",
+		selectSnft: "Tips：Select SNFT. Your pledge income will be returned in the form of S-NFTs.",
 		closeTip: "If you do the redemption. your income will decrease.",
+		closeTip2:"Sorry, the pledge is redeemable after 1 year.",
 		addzhiya: "Stake Additional Tokens",
 		stackFee: "Pledge fee",
 		tip7:"The threshold value means the maxium amount of ERB you can redeem while you can still be the validator.If you enter the amount bigger than this amount,you will redeem all of your ERB.",

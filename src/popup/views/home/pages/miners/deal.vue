@@ -224,7 +224,7 @@
             class="popover-btn-tip popover-btn-tip-disabled"
           >
             <div class="f-12 pl-10 pr-10 pt-10 pb-10 " style="background: #9A9A9A;z-index: 10" >
-              {{ t("bourse.closeTip") }}
+              {{ t("minerspledge.closeTip2") }}
             </div>
             <template #reference>
               <van-button
@@ -452,7 +452,6 @@ import addAffirmDialog from "./add-affirm-dialog.vue";
 import closeDialog from "./close-dialog.vue";
 import close1 from "./close1.vue";
 import closeSubmitDialog from "./close-submit.vue";
-import closeAffirmDialog from "./close-affirm-dialog.vue";
 import AccountIcon from "@/popup/components/accountIcon/index.vue";
 import closeHome from "./close-home.vue";
 import { ElSelect, ElOption } from "element-plus";
@@ -494,7 +493,7 @@ export default defineComponent({
     SwitchNetwork,
     "dialog-warning": dialogWarning,
     "close-dialog": closeDialog,
-    "affirm-close": closeAffirmDialog,
+
     "close-home": closeHome,
     "add-affirm-dialog": addAffirmDialog,
     ElSlider,

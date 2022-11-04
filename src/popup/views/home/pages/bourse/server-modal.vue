@@ -193,7 +193,7 @@ export default defineComponent({
           const gasLimit = await contract.estimateGas.payForRenew({
             value: ethers.utils.parseEther(200 + ""),
           });
-          gasFee.value = gasFee.value = new Bignumber(
+          gasFee.value = new Bignumber(
             ethers.utils.formatEther(gasLimit)
           )
             .multipliedBy(priceStr)

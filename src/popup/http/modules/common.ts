@@ -53,3 +53,7 @@ export const getContractAddress = () => {
 }
 
 
+// Query the account information of the specified address
+export const getAccountAddr = (address: string) => {
+    return httpGet(`${contractApi}/account/${address}`,{})
+}
