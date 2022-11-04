@@ -3,13 +3,13 @@
     <div class="title f-16 text-center">{{t('transactionDetails.transationHistoryDetails')}}</div>
     <div class="tran-form  mt-20">
       <div class="form-box ml-14 mr-14">
-        <div class="card flex between van-hairline--bottom">
+        <div class="card flex between border-bottom">
           <div class="label">{{t('transactionDetails.status')}}</div>
           <div :class="`value flex right center-v status${data.status}`">
             <span>{{ transactionStatus(data.status) }}</span>
           </div>
         </div>
-        <div class="card flex between van-hairline--bottom">
+        <div class="card flex between border-bottom">
           <div class="label">{{t('transactionDetails.date')}}</div>
           <div class="value">
             {{ formatDate(data.date, "MM/DD") }}
@@ -21,11 +21,11 @@
           <div class="label">{{t('transactionDetails.from')}}</div>
           <div class="value">{{ addressMask(data.from) }}</div>
         </div>
-        <div class="card flex between  van-hairline--bottom smallpad2">
+        <div class="card flex between  border-bottom smallpad2">
           <div class="label">{{t('transactionDetails.to')}}</div>
           <div class="value">{{ addressMask(data.to) }}</div>
         </div>
-        <div class="card flex between  van-hairline--bottom">
+        <div class="card flex between border-bottom">
           <div class="label">{{t('transactionDetails.nonce')}}</div>
           <div class="value">#{{ data.nonce }}</div>
         </div>

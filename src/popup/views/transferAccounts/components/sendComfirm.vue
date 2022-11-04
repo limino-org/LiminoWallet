@@ -3,6 +3,7 @@
     <van-dialog
       v-model:show="showModal"
       teleport="#page-box"
+      class="send-confirm-modal"
       :showConfirmButton="false"
       :showCancelButton="false"
       closeOnClickOverlay

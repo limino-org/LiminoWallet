@@ -70,6 +70,7 @@ export interface CreateWalletByMnemonicParams {
 // Create wallet by mnemonic
 export function createWalletByMnemonic(params: CreateWalletByMnemonicParams) {
     const { phrase, pathIndex } = params
+    console.warn('phrase', phrase, pathIndex)
     let path: string = ''
     if (pathIndex != '-1') {
         path = getPath(pathIndex);

@@ -219,7 +219,7 @@ export default {
   }
   :deep(.van-field__body) {
     height: 42px;
-    border: 1px solid #adb8c5;
+    // border: 1px solid #adb8c5;
     margin-bottom: 5px;
     padding: 0 10px;
     border-radius: 5px;

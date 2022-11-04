@@ -20,15 +20,19 @@
     <div v-show="tabVal.value == 1">
       <div class="import operate">
         <van-form>
-          <van-cell-group inset class="text">
+          <van-cell-group inset :class="`${errReason ? 'error' : ''} text`">
             <van-field
               v-model="privatekey"
               autosize
               type="textarea"
-              class="content"
+              :class="` content`"
               :placeholder="$t('import.forexample')"
             />
           </van-cell-group>
+          <div class="error mt-6" v-show="errReason">
+            <div @click="toCopy" class="hover" v-if="errAddress">{{errAddress}}</div>
+            <div>{{errReason}}</div>
+          </div>
           <div class="btn-group">
             <div class="container pl-28 pr-28">
               <van-button round block type="primary" :loading="loading" @click="onSubmit">{{
@@ -51,6 +55,7 @@
               :placeholder="$t('import.forexample')"
             />
           </van-cell-group>
+
           <div class="btn-group">
             <div class="container pl-28 pr-28"></div>
             <van-button round block type="primary" :loading="loading" @click="onSubmit">{{
@@ -61,7 +66,9 @@
       </div>
     </div>
   </div>
+
 </template>
+
 <script lang="ts">
 import { encryptPrivateKey, EncryptPrivateKeyParams } from "@/popup/utils/web3";
 import { ref, SetupContext, Ref, computed } from "vue";
@@ -85,6 +92,7 @@ import { useBroadCast } from "@/popup/utils/broadCost";
 import { useToast } from "@/popup/plugins/toast";
 import { useDialog } from "@/popup/plugins/dialog";
 import Tip from "@/popup/components/tip/index.vue";
+import useClipboard from 'vue-clipboard3'
 
 export default {
   name: "importAccount-step1",
@@ -112,9 +120,13 @@ export default {
     const { $dialog } = useDialog();
     const { $toast } = useToast();
     const loading = ref(false)
+    const errAddress = ref()
+    const errReason = ref()
     // Import account using private key
     const onSubmit = (values: string) => {
       loading.value = true
+      errAddress.value = ''
+      errReason.value = ''
       console.log("submit", values);
       console.log(
         "privatekey.value",
@@ -146,11 +158,16 @@ export default {
           handleUpdate();
           router.push({ name: "wallet" });
         })
-        .catch(({ reason }) => {
+        .catch(({ reason, address }) => {
           // Login failed status
           privatekey.value = "";
-          console.log("$dialog", $dialog);
-          $dialog.success(reason || t("importerror.cannotenter"));
+          errAddress.value = address
+          errReason.value = reason
+          // $dialog.open({
+          //   type:'warn',
+          //   message:!address ? reason || t("importerror.cannotenter") : null,
+          //   element: address ? document.getElementById('errInnerElement') : null
+          // });
         }).finally(() => {
           loading.value = false
         });
@@ -169,8 +186,21 @@ export default {
     const handleClick = (item: any) => {
       Toast(t("importerror.inputofprivatekey"));
     };
+
+        // Copy user address
+    const { toClipboard } = useClipboard()
+    const toCopy = async () => {
+      try {
+        await toClipboard(`${errAddress.value}`)
+        // console.log(accountInfo.value.address)
+        $toast.success(t('copy.title'))
+      } catch (e) {
+        console.error(e)
+      }
+    }
     return {
       t,
+      toCopy,
       privatekey,
       onSubmit,
       tabVal,
@@ -178,6 +208,8 @@ export default {
       active,
       btnList,
       handleClick,
+      errAddress,
+      errReason
     };
   },
 };
@@ -242,5 +274,15 @@ a {
       border: none;
     }
   }
+  .van-cell-group.error {
+    background: #FBF2F3;
+    border-color: #D73A49;
+    .van-field {
+      background: none;
+    }
+  }
+}
+.error {
+  color: #D73A49;
 }
 </style>

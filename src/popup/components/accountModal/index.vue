@@ -56,17 +56,6 @@
                 </div>
               </div>
             </div>
-
-            <!-- <div class="flex right center-v add-choose-icon">
-              <van-loading
-                v-show="
-                  accountLoading &&
-                  clickAccountIdx2 != null &&
-                  clickAccountIdx2 == index
-                "
-                color="#1989fa"
-              />
-            </div> -->
           </div>
         </div>
         <!-- Non-imported accounts -->
@@ -112,17 +101,6 @@
                 </div>
               </div>
             </div>
-
-            <!-- <div class="flex right center-v add-choose-icon">
-              <van-loading
-                v-show="
-                  accountLoading &&
-                  clickAccountIdx != null &&
-                  clickAccountIdx == index
-                "
-                color="#1989fa"
-              />
-            </div> -->
           </div>
         </div>
       </div>
@@ -281,6 +259,7 @@ export default defineComponent({
         let time2 = setTimeout(() => {
           Toast.clear();
           clearTimeout(time2);
+          handleScroll();
         }, 300);
         clearTimeout(time);
       });

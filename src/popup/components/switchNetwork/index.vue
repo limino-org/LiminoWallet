@@ -1,5 +1,5 @@
 <template>
-  <van-dialog v-model:show="showModalNetwork" teleport="#page-box" closeOnClickOverlay :showConfirmButton="false">
+  <van-dialog v-model:show="showModalNetwork" teleport="#page-box" class="switch-network-modal" closeOnClickOverlay :showConfirmButton="false">
     <div class="title text-center text-bold">{{ t("internet.title") }}</div>
 
     <div class="activited-net">

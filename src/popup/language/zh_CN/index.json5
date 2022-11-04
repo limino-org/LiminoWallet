@@ -2,7 +2,7 @@
 	"copy": {
 		"copySuccess": "助记词已复制到剪贴板",
 		copy: '已复制到剪贴板',
-		title: '公共地址已复制到剪贴板',
+		title: '地址已复制到剪贴板',
 		titlekyc: '私钥已复制到剪贴板',
 		titlehash: '交易hash已复制到剪贴板'
 	},

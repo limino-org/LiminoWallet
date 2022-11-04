@@ -5,13 +5,13 @@
         <div>
           <div class="title" v-if="title">{{title}}</div>
           <div class="flex center icon-box"><Icon name="warning" /></div>
-          <div class="text text-center mt-8 pl-20 pr-20">{{ message }}</div>
+          <div class="text text-center mt-8 pl-20 pr-20">{{message}}</div>
           <div
             :class="`flex mt-26 btn-box ${
               hasCancelBtn && hasConfirmBtn ? 'between' : 'center'
             }`"
           >
-            <Button @click="cancelCall" v-if="hasCancelBtn"   :plain="theme == 'light' ? false : true">{{
+            <Button @click="cancelCall" v-if="hasCancelBtn" :plain="theme == 'light' ? false : true">{{
               cancelText
             }}</Button>
             <Button

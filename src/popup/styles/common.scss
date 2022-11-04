@@ -138,6 +138,7 @@ img {
   color: #037CD6;
 }
 
+
 .van-dialog {
   overflow: scroll;
   top: 50%;
@@ -160,6 +161,8 @@ img {
   
     // transform: translate3d(-50%, -50%, 0);
     // padding: 5px;
+    // transform: none;
+    // transform-origin: center;
   }
 }
 
@@ -631,12 +634,18 @@ img {
   .add-pledge-modal {
     height: 768PX;
   }
-  .transaction-modal {
-    max-height: 518PX;
-  }
   .account-list-modal1 {
     max-height: 508PX;
   }
   .account-list-modal2 {
     max-height: 662PX;
+  }
+  .switch-network-modal {
+    min-height: 250px;
+  }
+  .send-confirm-modal {
+    height: 360px;
+  }
+  .transaction-modal {
+    height: 430px;
   }

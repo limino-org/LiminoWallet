@@ -1,7 +1,7 @@
 {
 	"copy": {
 		copy: 'Has been copied to clipboard',
-		title: 'Public address has been copied to clipboard',
+		title: 'Address has been copied to clipboard',
 		titlekyc: 'Private key has been copied to clipboard',
 		titlehash: 'Transaction hash has been copied to clipboard',
 		"copySuccess": "Secret Recovery Phrase Copy Success",

@@ -187,7 +187,7 @@ export const eventTypes = {
 }
 
 
-
+let wallet = null;
 export async function initWallet() {
   const local = await localforage.getItem("vuex") || null
   if (!local) {
@@ -204,10 +204,24 @@ export async function initWallet() {
     const { keyStore } = accountInfo;
     const { URL } = currentNetwork
     const params = { json: keyStore, password: pwdVal };
-    let wallet = null;
-    wallet = await createWalletByJson(params);
-    let provider = ethers.getDefaultProvider(URL);
-    const newwallet = wallet.connect(provider);
+    let newwallet = null
+    if(!wallet) {
+      wallet = await createWalletByJson(params);
+      let provider = ethers.getDefaultProvider(URL);
+      newwallet = wallet.connect(provider);
+    } else {
+      if(wallet.provider) {
+        // Determines whether the url of the current provider is consistent with the one in the cache
+        if(wallet.provider.connection.url !== URL) {
+          let provider = ethers.getDefaultProvider(URL);
+          newwallet = wallet.connect(provider);
+        }
+      } else {
+        let provider = ethers.getDefaultProvider(URL);
+        newwallet = wallet.connect(provider);
+      }
+    }
+    wallet = newwallet
     return newwallet
   } catch (err) {
     clearConnectList()

@@ -322,6 +322,7 @@ export default {
     UPDATE_WALLET(state: State, value: any) {
       wallet = value;
       if (wallet.provider) {
+        console.log('wallet', wallet)
         sendBackground({ method: 'update-wallet' })
       }
     },
@@ -859,20 +860,25 @@ async DEL_TXQUEUE(state: State, tx: any) {
       }
     },
     // Import account via private key
+    // Import the account using the private key
     async importPrivateKey({ commit, state }: any, privatekey: string) {
       try {
-        wallet = await ImportPrivateKey({ privatekey });
-        // During import, judge whether the address exists in the current account list. If it does, an exception will be thrown and the import will not continue
-        const { address } = wallet;
+        const wa = await ImportPrivateKey({ privatekey });
+        const { URL } = state.currentNetwork;
+        // debugger
+        let provider = ethers.getDefaultProvider(URL);
+        const newWallet = wa.connect(provider)
+        // During the import, check whether the address exists in the current account list. If the address exists, an exception is thrown and the import will not continue
+        const { address } = newWallet;
         const { accountList } = state;
         const a = accountList.find(
           (item: any) => item.address.toUpperCase() == address.toUpperCase()
         );
         if (a) {
-          return Promise.reject({ reason: i18n.global.t("common.existed") });
+          return Promise.reject({ reason: i18n.global.t("common.existed"),address: a.address });
         } else {
-          commit("UPDATE_WALLET", wallet);
-          return Promise.resolve(wallet);
+          commit("UPDATE_WALLET", newWallet);
+          return newWallet;
         }
       } catch (err) {
         return Promise.reject(err);

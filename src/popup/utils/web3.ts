@@ -68,12 +68,13 @@ export const encryptMnemonic = (params: EncryptMnemonicParams) => {
 //   }
 // };
 export const parseMnemonic = async (password: string, json: any): Promise<string> => {
+  let cloneJson = JSON.parse(JSON.stringify(json))
   try {
-    const s: any = web3.eth.accounts.decrypt(json, password);
+    const s: any = web3.eth.accounts.decrypt(cloneJson, password);
     const str = web3.utils.toUtf8(s.privateKey);
     return str;
   } catch (err) {
-    console.error(err);
+    console.error('err:', err);
     Toast(i18n.global.t("wallet.wrongpassword"));
     return Promise.reject(err);
   }
