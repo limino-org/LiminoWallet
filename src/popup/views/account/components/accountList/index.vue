@@ -99,7 +99,7 @@ export default defineComponent({
     padding-left: 15px;
     padding-right: 15px;
     transition: ease 0.3s;
-    border-bottom: 1PX solid rgba($color: #bbc0c5, $alpha: 0.5);
+    border-bottom: 1PX solid rgba($color: #B3B3B3, $alpha: 0.5);
     &:hover {
       background: rgb(244, 247, 250);
     }

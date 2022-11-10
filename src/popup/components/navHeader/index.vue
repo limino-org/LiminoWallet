@@ -46,7 +46,7 @@
     <SwitchNetwork v-model="showModalNetwork" />
   </div>
   <!-- Close the tip -->
-  <van-dialog v-model:show="closeModal" :show-cancel-button="false" :show-confirm-button="false">
+  <van-dialog v-model:show="closeModal" class="cancel-modal" teleport="#page-box" :show-cancel-button="false" :show-confirm-button="false">
     <div>
       <div class="flex center close-icon-tip">
         <van-icon name="warning" />

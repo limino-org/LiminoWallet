@@ -13,8 +13,25 @@
   </transition>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, unref  } from "vue";
+import { useRoute, useRouter } from "vue-router";
+const router = useRouter()
+const route = useRoute()
+console.warn('route---', route)
+// watch(() => route, (n) => {
+//   console.warn('route change...')
+//   hide()
+// },{
+//   deep: true
+// })
 
+// watch(
+//   () => unref(router.currentRoute).name,
+//   (val: string) => {
+//     console.warn('route change...')
+//     hide()
+//   },
+// );
  enum ToastType {
   success = "success",
   warn = "warn",

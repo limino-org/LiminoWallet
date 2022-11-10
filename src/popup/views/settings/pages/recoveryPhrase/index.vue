@@ -224,7 +224,7 @@ export default {
   margin: 0 15px 0;
   border-radius: 5px;
   padding: 10px 0 5px;
-  //border: 1px solid #bbc0c5;
+  //border: 1px solid #B3B3B3;
   &.error {
     :deep(){
       .van-field {
@@ -283,7 +283,7 @@ export default {
   background: #f4faff;
   position: relative;
   border-radius: 5px;
-  border: 1px solid #bbc0c5;
+  border: 1px solid #B3B3B3;
   color: #848484;
   i {
     position: absolute;

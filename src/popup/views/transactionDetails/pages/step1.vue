@@ -41,14 +41,14 @@
               {{ t("wallet.send") }}
             </div>
           </div>
-          <div class="actions-list-card">
+          <!-- <div class="actions-list-card">
             <div class="actions-list-card-icon flex center" @click="toSwap">
               <i class="iconfont icon-icon_huabanfuben"></i>
             </div>
             <div class="actions-list-card-label text-center">
               {{ t("wallet.swap") }}
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
@@ -122,15 +122,7 @@ export default {
     const { tokenContractAddress } = query;
     const accountInfo = computed(() => store.state.account.accountInfo);
     const currentNetwork = computed(() => store.state.account.currentNetwork);
-    const transactionList = computed(() => {
-      const { accountInfo } = store.state.account;
-      const { address } = accountInfo;
-      const list =
-        store.state.account.currentNetwork.transactionList[
-          address.toUpperCase()
-        ];
-      return list || [];
-    });
+
     const txList = ref([]);
     const pageData = reactive({ data: {} });
     pageData.data = query;
@@ -195,7 +187,6 @@ export default {
       transactionData,
       decimal,
       currentNetwork,
-      transactionList,
       pageData,
       toBrowser,
       toUsdSymbol,

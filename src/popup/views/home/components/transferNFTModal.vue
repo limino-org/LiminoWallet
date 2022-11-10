@@ -8,7 +8,7 @@
       closeOnClickOverlay
       :title="''"
     >
-      <div class="title text-center text-bold van-hairline--bottom">
+      <div class="title text-center text-bold border-bottom">
         {{ submitText }}
       </div>
       <!-- <div class="flex center pintu mt-20">
@@ -25,7 +25,7 @@
               <div class="m-label">{{ t("transferNft.select") }}</div>
               <div class="m-value">{{ selectNumber }}</div>
             </div>
-            <div class="van-hairline--bottom"></div>
+            <div class="border-bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("transferNft.amount") }}</div>
               <div class="m-value">
@@ -33,13 +33,13 @@
                 <span class="usd">≈ $ {{ toUsd(selectTotal, 2) }}</span>
               </div>
             </div>
-            <div class="van-hairline--bottom"></div>
+            <div class="border-bottom"></div>
 
             <div class="m-card">
               <div class="m-label">{{ t("transferNft.ratio") }}</div>
               <div class="m-value">{{ ratio }}</div>
             </div>
-            <div class="van-hairline--bottom"></div>
+            <div class="border-bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.gasFee") }}</div>
               <div class="m-value gasFee">≈ {{ gasFee }} ERB</div>
@@ -55,7 +55,7 @@
               <div class="m-label">{{ t("transferNft.select") }}</div>
               <div class="m-value">{{ selectNumber }}</div>
             </div>
-            <div class="van-hairline--bottom"></div>
+            <div class="border-bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("transferNft.amount") }}</div>
               <div class="m-value">
@@ -63,17 +63,17 @@
                 <span class="usd">≈ $ {{ toUsd(selectTotal, 2) }}</span>
               </div>
             </div>
-            <div class="van-hairline--bottom"></div>
+            <div class="border-bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.income") }}</div>
-              <div class="m-value">≈ {{myprofit}} ERB(≈ $1)</div>
+              <div class="m-value">≈ {{myprofit}} ERB(≈ ${{toUsd(myprofit, 5)}})</div>
             </div>
-            <div class="van-hairline--bottom"></div>
+            <div class="border-bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.stakingPeriod") }}</div>
               <div class="m-value">1 {{ t("createExchange.year") }}</div>
             </div>
-            <div class="van-hairline--bottom"></div>
+            <div class="border-bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.gasFee") }}</div>
               <div class="m-value gasFee">≈{{ gasFee }} ERB</div>
@@ -89,7 +89,7 @@
               <div class="m-label">{{ t("transferNft.select") }}</div>
               <div class="m-value">{{ selectNumber }}</div>
             </div>
-            <div class="van-hairline--bottom"></div>
+            <div class="border-bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("transferNft.amount") }}</div>
               <div class="m-value">
@@ -97,7 +97,7 @@
                 <span class="usd">≈$ {{ toUsd(selectTotal, 2) }}</span>
               </div>
             </div>
-            <div class="van-hairline--bottom"></div>
+            <div class="border-bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.hsitoryReturn") }}</div>
               <div class="m-value">
@@ -109,7 +109,7 @@
               <div class="m-label">{{ t("bourse.income") }}</div>
               <div class="m-value">≈ 0.000000001 ERB(≈ $ 1)</div>
             </div> -->
-            <div class="van-hairline--bottom"></div>
+            <div class="border-bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.gasFee") }}</div>
               <div class="m-value gasFee">≈{{ gasFee }} ERB</div>
@@ -610,67 +610,53 @@ export default defineComponent({
         const addressInfo = await getAccountAddr(wallet.address)
         console.warn('addressInfo', addressInfo)
         const {rewardSNFTCount,exchangerAmount,snftAmount} = addressInfo
-        const exchangeNum = ethers.utils.formatEther(exchangerAmount)
-        const snftNum = ethers.utils.formatEther(snftAmount)
+        const exchangeNum = ethers.utils.formatEther(exchangerAmount || '0')
+        const snftNum = ethers.utils.formatEther(snftAmount || '0')
+        if(props.txtype === '1') {
         
         const rio = new BigNumber(props.selectTotal).div(new BigNumber(exchangeNum).plus(snftNum))
         historyProfit.value = new BigNumber(rewardSNFTCount).multipliedBy(0.095).multipliedBy(rio).toFixed(5)
-        myprofit.value = '0'
-        debugger
-        // const blockNumber = await wallet.provider.getBlockNumber();
-        // const blockn = web3.utils.toHex(blockNumber.toString());
-        // console.log("2---------------------------", blockn);
-        // const data = await wallet.provider.send("eth_getValidator", [blockn]);
-        // console.log("3---------------------------", data);
-        // const data2 = await getAccount(accountInfo.value.address)
-        // let total = new BigNumber(0);
-        // data.Validators.forEach((item: any) => {
-        //   total = total.plus(item.Balance);
-        // });
-        // // total zhiyaliang
-        // const totalStr = total.div(1000000000000000000).toFixed(6);
+        }
+        console.warn('eth_getAllStakers',props.txtype)
+        if(props.txtype === '3') {
 
-        // // total profit
-        // const totalprofit = state.account.exchangeTotalProfit; // 2522880
-        // const totalPledge = new BigNumber(props.selectTotal);
-        // myprofit.value = new BigNumber(totalprofit)
-        //   .multipliedBy(
-        //     totalPledge.div(new BigNumber(totalStr).div(7).multipliedBy(4))
-        //   )
-        //   .toFixed(6);
-        // debugger;
+          const {Stakers} = await wallet.provider.send('eth_getAllStakers')
+        console.warn('pledgeTotal', Stakers)
+        const totalPledge = Stakers.map((item: any) => item.Balance).reduce((prev, total) => new BigNumber(prev).plus(prev))
+      
+        const am = new BigNumber(snftNum).plus(exchangeNum).div(totalPledge).multipliedBy(599184).multipliedBy(snftNum.div(new BigNumber(exchangeNum).plus(snftNum))).toFixed(5)
+        myprofit.value = am  
+      }
+      
         /**
-         * 历史收益 = 一年总出块 * (我的质押金额/（全网总质押量/7*4）)
+         * （SNFT质押金额+交易所质押金额）/全网质押金额 * 599184  * （SNFT质押/（SNFT + 交易所））
+         * address: "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf"
+           balance: "155996997207323999550712"
+           code: null
+           createdTx: null
+           creator: null
+           exchangerAmount: "0"
+           name: null
+           rewardCoinCount: 0
+           rewardSNFTCount: 0
+           snftAmount: "0"
+           symbol: null
+           totalNFT: 0
+           totalSNFT: 0
+           transactionCount: 10
+           type: null
+           validatorAmount: "70000000000000000000000"
          */
-        // historyProfit.value = new BigNumber(totalprofit)
-        //   .multipliedBy(
-        //     new BigNumber(props.selectTotal).div(
-        //       new BigNumber(totalStr).div(7).multipliedBy(4)
-        //     )
-        //   )
-        //   .toFixed(6);
+
         console.warn("historyProfit", historyProfit.value);
         console.warn("myprofit", myprofit.value);
       } catch (err) {
-        console.log("4---------------------------", err);
+        console.log("4---------------------------++++++++", err);
       }
     };
     const gasFee = ref("");
     const calcGasFee = async () => {
       const { address } = state.account.accountInfo;
-      console.warn(
-        "calc gasfee -----------------------------------:",
-        props.selectList
-      );
-      console.warn(
-        "props.txtype -----------------------------------:",
-        props.txtype
-      );
-      console.warn(
-        "props.type -----------------------------------:",
-        props.type
-      );
-
       let list = [];
       let allsnftList = [];
       if (props.type == "2") {

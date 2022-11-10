@@ -231,6 +231,10 @@
   });
   </script>
   <style lang="scss" scoped>
+  .account-list {
+    max-height: 350px;
+    overflow-y: scroll;
+  }
   .btn-box {
      button {
       height: 58px;
@@ -297,7 +301,7 @@
       }
     }
     .account-name {
-      line-height: 24px;
+      line-height: 16px;
       font-size: 15px;
       justify-content: flex-start;
       font-weight: bold;
@@ -309,7 +313,7 @@
     }
   
     .account-info-box {
-      min-width: 160px;
+      min-width: 210px;
       &.half {
         width: 100px;
       }
@@ -337,8 +341,6 @@
     padding: 14px 0;
   }
   .account-list {
-    max-height: 70vh;
-    overflow-y: scroll;
     .bt.select {
       color: #037dd6;
       .account-value {

@@ -1223,7 +1223,7 @@ export default defineComponent({
 }
 .account-outBox {
   border-radius: 5px;
-  border: 1px solid #bbc0c5;
+  border: 1px solid #B3B3B3;
   margin: 15px 0;
 }
 .modif-acc .account-box {
@@ -1782,12 +1782,12 @@ export default defineComponent({
     .nodeIpt {
       :deep(.van-field__body) {
         background: #f1f3f4;
-        border: 1px solid #bbc0c5;
+        border: 1px solid #B3B3B3;
       }
     }
     .account-outBox {
       background: #f1f3f4;
-      border: 1px solid #bbc0c5;
+      border: 1px solid #B3B3B3;
       .rightIcon {
         display: none;
       }

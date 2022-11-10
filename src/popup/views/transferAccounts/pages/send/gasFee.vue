@@ -404,7 +404,7 @@ font-size: 12px;
   }
 }
 .userinfo {
-  border: 1px solid #bbc0c5;
+  border: 1px solid #B3B3B3;
   border-radius: 5px;
 }
 .slider-dian {

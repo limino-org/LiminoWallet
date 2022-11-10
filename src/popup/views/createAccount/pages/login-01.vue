@@ -268,13 +268,13 @@ export default {
     font-weight: bolder;
   }
   .tit-small {
-    color: #bbc0c5;
+    color: #B3B3B3;
   }
 }
 
 .create-new-password {
   .tit-small {
-    color: #bbc0c5;
+    color: #B3B3B3;
   }
   .right {
     color: #037cd6;

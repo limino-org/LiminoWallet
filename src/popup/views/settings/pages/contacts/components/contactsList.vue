@@ -5,7 +5,7 @@
         <van-index-anchor :index="item.label" />
         <div
           @click="handlerClick(child)"
-          class="contact-card flex pt-14 pb-14 van-hairline--bottom"
+          class="contact-card flex pt-14 pb-14 border-bottom"
           v-for="child in item.children"
           :key="child.address"
         >

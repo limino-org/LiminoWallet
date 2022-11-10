@@ -41,6 +41,8 @@ import { addressMask, transactionStatus } from "./utils/filters";
 import { guid } from '@/popup/utils/utils'
 import { useBroadCast } from '@/popup/utils/broadCost'
 import localforage from 'localforage'
+import { getAccountAddr } from "@/popup/http/modules/common";
+
 export default {
   components: {
     [Button.name]: Button,

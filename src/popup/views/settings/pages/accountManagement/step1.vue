@@ -12,7 +12,7 @@
         v-for="(item, index) in defaultlist"
         :key="item.value"
         :class="` clickActive ${
-            index < defaultlist.length - 1 ? 'van-hairline--bottom' : ''
+            index < defaultlist.length - 1 ? 'border-bottom' : ''
           }`"
         @click="handleAccountFun(item, index)"
       >
@@ -63,7 +63,7 @@
         v-for="(item, index) in importList"
         :key="item.value"
         :class="` clickActive ${
-            index < importList.length - 1 ? 'van-hairline--bottom' : ''
+            index < importList.length - 1 ? 'border-bottom' : ''
           }`"
         @click="handleAccountFun(item, index)"
       >
@@ -109,7 +109,7 @@
       </div>
     </div>
     <!-- Button group -->
-    <div class="flex between btn-group van-hairline--top pt-20">
+    <div class="flex between btn-group border-top pt-20">
       <div class="flex between btn-group-box">
         <div class="btn-box" @click="handleCreateAccount">
           <div class="btn flex center">

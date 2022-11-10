@@ -196,7 +196,7 @@ export default {
           const tx1 = {
             from: address,
             to: address,
-            value: ethers.utils.parseEther(280 + ""),
+            value: ethers.utils.parseEther(700 + ""),
             data: `0x${data3}`,
           };
 

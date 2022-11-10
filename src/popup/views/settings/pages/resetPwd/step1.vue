@@ -268,7 +268,7 @@ export default {
   }
   
   .tit-small {
-    color: #bbc0c5;
+    color: #B3B3B3;
   }
   .right {
     color: #037cd6;

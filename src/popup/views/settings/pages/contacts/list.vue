@@ -253,7 +253,7 @@ export default {
     overflow-y: scroll;
   }
   .search-box {
-    border: 1PX solid #BBC0C5;
+    border: 1PX solid #B3B3B3;
     border-radius: 5px;
     :deep(){
       .van-cell {

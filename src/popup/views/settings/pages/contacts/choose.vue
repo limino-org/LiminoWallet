@@ -518,7 +518,7 @@ export default {
     overflow-y: scroll;
   }
   .search-box {
-    border: 1px solid #bbc0c5;
+    border: 1px solid #B3B3B3;
     border-radius: 5px;
     &:hover {
       border-color: #037cd6;

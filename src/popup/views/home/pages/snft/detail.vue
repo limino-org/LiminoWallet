@@ -1215,20 +1215,13 @@ export default {
       &::after {
         border-color: #fff;
       }
-
       &:hover {
-        // background: rgba($color: #666, $alpha: 0.6);
         border: 1PX solid #037cd6;
       }
-
       &.disabled {
         backdrop-filter: saturate(80%) blur(0px);
         filter: grayscale(100%);
-        // background-image: linear-gradient(135deg,#f5f7fa,#c3cfe2);
-        // opacity: 0.5;
         cursor: no-drop;
-        // filter: grayscale(100%);
-        // filter: gray;
         &:hover {
           border: none;
         }
@@ -1258,6 +1251,7 @@ export default {
     &.selected {
       background: rgba($color: #037cd6, $alpha: 0.6);
     }
+
   }
 }
 </style>

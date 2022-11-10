@@ -1024,7 +1024,7 @@ export default {
     .line {
       height: 0;
       width: 46%;
-      border-bottom: 1px solid #bbc0c5;
+      border-bottom: 1px solid #B3B3B3;
     }
   }
   .userinfo {
@@ -1032,7 +1032,7 @@ export default {
     flex-direction: column;
     justify-content: space-around;
     background: #fff;
-    border: 1px solid #bbc0c5;
+    border: 1px solid #B3B3B3;
     border-radius: 5px;
     &.error {
       border-color: #d73a49;
@@ -1043,7 +1043,7 @@ export default {
     }
     &::after {
       border-radius: 5px;
-      border-color: #bbc0c5;
+      border-color: #B3B3B3;
     }
   }
   .btn-group {

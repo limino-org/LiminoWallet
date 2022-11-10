@@ -627,7 +627,7 @@ export default {
   justify-content: space-around;
   background: #fff;
   border-radius: 5px;
-  border: 1PX solid rgba($color: #bbc0c5, $alpha: 0.5);
+  border: 1PX solid rgba($color: #B3B3B3, $alpha: 0.5);
   &.error {
     border-color: #d73a49;
   }

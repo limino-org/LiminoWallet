@@ -105,7 +105,7 @@
         </div>
       </div>
       <!-- button set -->
-      <div class="flex between btn-group van-hairline--top pt-20">
+      <div class="flex between btn-group border-top pt-20">
         <div class="flex between btn-group-box">
           <div class="btn-box">
             <van-button

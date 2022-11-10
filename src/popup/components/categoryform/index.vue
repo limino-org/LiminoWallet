@@ -244,7 +244,7 @@ export default defineComponent({
 }
 .transfer {
   i {
-    color: #bbc0c5;
+    color: #B3B3B3;
     font-size: 14px;
   }
 }

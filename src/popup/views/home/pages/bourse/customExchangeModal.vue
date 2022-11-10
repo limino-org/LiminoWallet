@@ -275,7 +275,7 @@ export default defineComponent({
 .amount-box {
   box-sizing: border-box;
   border-radius: 5px;
-  border: 1px solid #bbc0c5;
+  border: 1px solid #B3B3B3;
   padding: 0 15px;
 }
 :deep(.van-button) {

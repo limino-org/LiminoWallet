@@ -13,7 +13,7 @@
       </div>
       <div class="languages-list">
         <div
-          class="language-card flex between van-hairline--top clickActive"
+          class="language-card flex between border-bottom clickActive"
           v-for="item in langs"
           :key="item.value"
           @click="setLanguage(item)"

@@ -196,8 +196,8 @@ img {
 }
 
 // .van-button--primary.van-button--disabled {
-//   background: #BBC0C5;
-//   border-color: #BBC0C5;
+//   background: #B3B3B3;
+//   border-color: #B3B3B3;
 // }
 
 // Agreement, terms Popup
@@ -647,5 +647,11 @@ img {
     height: 360px;
   }
   .transaction-modal {
-    height: 430px;
+    height: 436PX;
+  }
+  .cancel-modal {
+    max-height: 256PX;
+  }
+  .minus-pledge-dialog {
+    max-height: 450PX;
   }

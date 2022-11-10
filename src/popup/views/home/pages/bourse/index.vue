@@ -378,7 +378,7 @@
     <ModifPledgeModal
       v-model="showPledgeModal"
       :max="parseInt(exchangerBalance)"
-      :defaultValue="280"
+      :defaultValue="700"
       @confirm="handleConfirmMinus"
     />
   </div>
@@ -454,6 +454,7 @@ import Bignumber from "bignumber.js";
 import ModifPledgeModal from "@/popup/views/account/components/modifPledgeModal/index.vue";
 import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
 import { getAccount } from "@/popup/http/modules/nft";
+import { web3 } from "@/popup/utils/web3";
 interface Mark {
   style: CSSProperties;
   label: string;
@@ -602,7 +603,7 @@ export default defineComponent({
     const name = ref("");
     const store = useStore();
     const { dispatch } = store;
-    const amount = ref(280);
+    const amount = ref(700);
     const accountInfo = computed(() => store.state.account.accountInfo);
 
     let visible1 = computed(() => serverIndex.value === 0);
@@ -700,7 +701,7 @@ export default defineComponent({
           });
           await sendTo(
             name.value,
-            280,
+            700,
             serverIndex.value == 0 ? false : true,
             fee_rate
           );
@@ -712,7 +713,8 @@ export default defineComponent({
     };
 
     let changeexchangerName = (value: any) => {
-      return decode(value);
+      console.warn('value',value)
+      return value;
     };
     const ethAccountInfo = ref({ ExchangerBalance: 0 });
     const exchangerBalance = computed(() =>
@@ -776,7 +778,7 @@ export default defineComponent({
     const handleAddAmount = () => {
       const am = new BigNumber(accountInfo.value.amount);
       const addnum = new BigNumber(addAmount.value);
-      if (addnum.lt(280)) {
+      if (addnum.lt(700)) {
         isCloseDialog.value = true;
         return;
       }
