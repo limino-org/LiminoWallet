@@ -616,7 +616,7 @@ function toHex(str: string) {
     font-size: 12px;
   }
 }
-.custom-exchange-modal {
-}
+// .custom-exchange-modal {
+// }
 </style>
   
