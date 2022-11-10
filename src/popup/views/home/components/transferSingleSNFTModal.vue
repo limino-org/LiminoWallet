@@ -1,8 +1,9 @@
 <template>
-  <div class="transfer-NFT-modal transferSingleSNFTModal">
+  <div>
     <van-dialog
       v-model:show="showModal"
       teleport="#page-box"
+      :class="`transferSingleSNFTModal ${txtype}`"
       :showConfirmButton="false"
       :showCancelButton="false"
       closeOnClickOverlay
@@ -66,7 +67,7 @@
             <div class="border-bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.income") }}</div>
-              <div class="m-value">≈ {{myprofit}} ERB(≈ $1)</div>
+              <div class="m-value">≈ {{myprofit}} ERB(≈ ${{toUsd(myprofit,5)}})</div>
             </div>
             <div class="border-bottom"></div>
             <div class="m-card">
@@ -401,14 +402,16 @@ export default defineComponent({
         }
         console.warn('eth_getAllStakers',props.txtype)
         if(props.txtype === '3') {
-
-        const {Stakers} = await wallet.provider.send('eth_getAllStakers')
+          const {Stakers} = await wallet.provider.send('eth_getAllStakers')
         console.warn('pledgeTotal', Stakers)
-        const totalPledge = Stakers.map((item: any) => item.Balance).reduce((prev, total) => new BigNumber(prev).plus(prev))
-      
-        const am = new BigNumber(snftNum).plus(exchangeNum).div(totalPledge).multipliedBy(599184).multipliedBy(snftNum.div(new BigNumber(exchangeNum).plus(snftNum))).toFixed(5)
+        const totalPledge = Stakers.map((item: any) => item.Balance).reduce((prev, total) => new BigNumber(prev).plus(prev)).div(10000000000000000).toFixed(10)
+        console.warn('totalPledge', totalPledge)
+        const r = !Number(props.selectTotal) ? new BigNumber(0): new BigNumber(props.selectTotal).div(new BigNumber(exchangeNum).plus(props.selectTotal))
+        console.warn('r---', r.toNumber())
+        const am = new BigNumber(props.selectTotal).plus(exchangeNum).div(totalPledge).multipliedBy(599184).multipliedBy(r).toFixed(15)
         myprofit.value = am  
       }
+      
       
         /**
          * （SNFT质押金额+交易所质押金额）/全网质押金额 * 599184  * （SNFT质押/（SNFT + 交易所））

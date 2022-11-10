@@ -242,9 +242,9 @@ img {
 .van-field__error-message {
   line-height: 14px;
 }
-.van-popover {
-  background-color: rgba($color: #fff, $alpha: 0.7);
-}
+// .van-popover {
+//   background-color: rgba($color: #fff, $alpha: 0.7);
+// }
 .appendto1,
 .appendto2 {
   &.van-popover {
@@ -292,6 +292,237 @@ img {
     border: 1px solid #D73A49;
     background: #FBF2F3;
   }
+}
+
+
+
+
+// Interrupt boot Popup
+.closeGuideModal {
+  background: rgba($color: #000, $alpha: 0.8);
+  color: #fff;
+
+  .van-dialog__content {}
+
+  .van-dialog__footer {
+    &::after {
+      display: none;
+    }
+  }
+
+  .van-dialog__cancel {
+    margin: 25px;
+  }
+
+  .van-dialog__confirm {
+    background: #037cd6;
+    color: #fff;
+    margin: 25px;
+
+    &::after {
+      display: none;
+    }
+  }
+}
+
+// Toast component override
+.van-toast {
+  min-width: 150px;
+
+  &__text {
+    font-size: 15px;
+    line-height: 21px;
+  }
+
+  i {
+    font-size: 40px;
+  }
+}
+
+.van-hairline--surround:after {
+  border-width: 1PX;
+}
+
+.btn-groups {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 25px;
+}
+
+
+.exchange-popover {
+  max-width: 267px;
+
+  .van-popover__content {
+    background: #037cd6;
+  }
+
+  .van-popover__arrow {
+    color: #037cd6;
+  }
+
+}
+
+  // Fixed popover blur
+  .server-modal {
+    height: 610PX;
+  }
+  .add-pledge-modal {
+    height: 768PX;
+  }
+  .account-list-modal1 {
+    max-height: 508PX;
+  }
+  .account-list-modal2 {
+    max-height: 662PX;
+  }
+  .switch-network-modal {
+    min-height: 250px;
+  }
+  .send-confirm-modal {
+    height: 360px;
+  }
+  .transaction-modal {
+    height: 436PX;
+  }
+  .cancel-modal {
+    max-height: 256PX;
+  }
+  .minus-pledge-dialog {
+    max-height: 450PX;
+  }
+  .transfer-NFT-modal {
+    height: 502PX;
+    &.type3 {
+      height: 566PX;
+    }
+  }
+  .minerAdditionalModal {
+    height: 758PX;
+  }
+
+  
+// When the width is less than 750, control the pop-up window width to guide the user to operate
+@media screen and (max-width: 750px) {
+  .popover-btn-tip,.el-popper {
+    max-width: 160px;
+  }
+  .popover-dialog {
+    // max-width: 340px;
+    left: 18px !important;
+    right: 18px !important;
+
+    &.step1 {
+      .van-popover__arrow {
+        left: 90px;
+      }
+    }
+
+    &.step2 {
+      top: 130px !important;
+
+      .van-popover__arrow {
+        left: 164px;
+      }
+    }
+
+    &.step3 {
+      top: 130px !important;
+
+      .van-popover__arrow {
+        left: 198px;
+      }
+    }
+
+    &.step4 {
+      top: 174px !important;
+      right: 14px !important;
+      left: 14px !important;
+
+      .van-popover__arrow {
+        right: 140px;
+      }
+    }
+
+    &.step5 {
+      .van-popover__arrow {
+        right: 50% !important;
+        margin-right: -10px;
+      }
+    }
+
+    &.step6 {
+      top: 366px !important;
+
+      .van-popover__arrow {
+        left: 40px;
+      }
+    }
+
+    &.step7 {
+      top: 316px !important;
+
+      .van-popover__arrow {
+        left: 50%;
+      }
+    }
+
+    &.step8 {
+      top: 366px !important;
+
+      .van-popover__arrow {
+        right: 30px;
+        margin-left: -3px;
+      }
+    }
+
+    &.step9 {
+      bottom: 95px !important;
+      right: 14px !important;
+      left: 14px !important;
+      position: fixed;
+      top: inherit !important;
+
+      .van-popover__arrow {
+        right: 25px;
+      }
+    }
+
+    &.step11 {
+      top: 48px !important;
+
+      .van-popover__arrow {
+        left: 13px;
+      }
+    }
+
+    &.step12 {
+      top: 48px !important;
+    }
+
+    &.step13 {
+      top: 48px !important;
+
+      .van-popover__arrow {
+        right: 0px;
+      }
+    }
+
+    &.step13 {
+      bottom: 150px !important;
+      right: 14px !important;
+      left: 14px !important;
+      position: fixed;
+      top: inherit !important;
+      .van-popover__arrow {
+        right: 25px;
+      }
+    }
+  }
+.add-pledge-modal,.transfer-NFT-modal,.minerAdditionalModal {
+  height: auto;
+}
 }
 
 @media screen and (min-width: 750px) {                                                                                                                                 
@@ -440,218 +671,3 @@ img {
     }
   }
 }
-
-// When the width is less than 750, control the pop-up window width to guide the user to operate
-@media screen and (max-width: 750px) {
-  .popover-btn-tip,.el-popper {
-    max-width: 160px;
-  }
-  .popover-dialog {
-    // max-width: 340px;
-    left: 18px !important;
-    right: 18px !important;
-
-    &.step1 {
-      .van-popover__arrow {
-        left: 90px;
-      }
-    }
-
-    &.step2 {
-      top: 130px !important;
-
-      .van-popover__arrow {
-        left: 164px;
-      }
-    }
-
-    &.step3 {
-      top: 130px !important;
-
-      .van-popover__arrow {
-        left: 198px;
-      }
-    }
-
-    &.step4 {
-      top: 174px !important;
-      right: 14px !important;
-      left: 14px !important;
-
-      .van-popover__arrow {
-        right: 140px;
-      }
-    }
-
-    &.step5 {
-      .van-popover__arrow {
-        right: 50% !important;
-        margin-right: -10px;
-      }
-    }
-
-    &.step6 {
-      top: 366px !important;
-
-      .van-popover__arrow {
-        left: 40px;
-      }
-    }
-
-    &.step7 {
-      top: 316px !important;
-
-      .van-popover__arrow {
-        left: 50%;
-      }
-    }
-
-    &.step8 {
-      top: 366px !important;
-
-      .van-popover__arrow {
-        right: 30px;
-        margin-left: -3px;
-      }
-    }
-
-    &.step9 {
-      bottom: 95px !important;
-      right: 14px !important;
-      left: 14px !important;
-      position: fixed;
-      top: inherit !important;
-
-      .van-popover__arrow {
-        right: 25px;
-      }
-    }
-
-    &.step11 {
-      top: 48px !important;
-
-      .van-popover__arrow {
-        left: 13px;
-      }
-    }
-
-    &.step12 {
-      top: 48px !important;
-    }
-
-    &.step13 {
-      top: 48px !important;
-
-      .van-popover__arrow {
-        right: 0px;
-      }
-    }
-
-    &.step13 {
-      bottom: 150px !important;
-      right: 14px !important;
-      left: 14px !important;
-      position: fixed;
-      top: inherit !important;
-      .van-popover__arrow {
-        right: 25px;
-      }
-    }
-  }
-}
-
-// Interrupt boot Popup
-.closeGuideModal {
-  background: rgba($color: #000, $alpha: 0.8);
-  color: #fff;
-
-  .van-dialog__content {}
-
-  .van-dialog__footer {
-    &::after {
-      display: none;
-    }
-  }
-
-  .van-dialog__cancel {
-    margin: 25px;
-  }
-
-  .van-dialog__confirm {
-    background: #037cd6;
-    color: #fff;
-    margin: 25px;
-
-    &::after {
-      display: none;
-    }
-  }
-}
-
-// Toast component override
-.van-toast {
-  min-width: 150px;
-
-  &__text {
-    font-size: 15px;
-    line-height: 21px;
-  }
-
-  i {
-    font-size: 40px;
-  }
-}
-
-.van-hairline--surround:after {
-  border-width: 1PX;
-}
-
-.btn-groups {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 25px;
-}
-
-
-.exchange-popover {
-  max-width: 267px;
-
-  .van-popover__content {
-    background: #037cd6;
-  }
-
-  .van-popover__arrow {
-    color: #037cd6;
-  }
-
-}
-
-  // Fixed popover blur
-  .server-modal {
-    height: 610PX;
-  }
-  .add-pledge-modal {
-    height: 768PX;
-  }
-  .account-list-modal1 {
-    max-height: 508PX;
-  }
-  .account-list-modal2 {
-    max-height: 662PX;
-  }
-  .switch-network-modal {
-    min-height: 250px;
-  }
-  .send-confirm-modal {
-    height: 360px;
-  }
-  .transaction-modal {
-    height: 436PX;
-  }
-  .cancel-modal {
-    max-height: 256PX;
-  }
-  .minus-pledge-dialog {
-    max-height: 450PX;
-  }

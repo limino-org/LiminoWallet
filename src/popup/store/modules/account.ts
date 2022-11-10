@@ -786,6 +786,7 @@ async DEL_TXQUEUE(state: State, tx: any) {
     ) {
       try {
         const { phrase, pathIndex } = params;
+        console.warn('000', params )
         wallet = await createWalletByMnemonic({ phrase, pathIndex });
         return Promise.resolve(wallet);
       } catch ({ reason }) {

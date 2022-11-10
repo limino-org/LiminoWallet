@@ -131,7 +131,7 @@
         </el-tooltip>
       </div>
       <div class="t3" v-if="!isExchanger_flag">
-        280ERB <span>(≈${{ toUsd(280, 2) }})</span>
+        700ERB <span>(≈${{ toUsd(700, 2) }})</span>
       </div>
 
       <!-- Additional pledge amount -->
@@ -757,7 +757,7 @@ export default defineComponent({
 
       // Did not open
       if (!exchanger_flag && status != 2) {
-        if (am.lt(281)) {
+        if (am.lt(701)) {
           $toast.warn(t("createExchange.isPoor"));
           return;
         }

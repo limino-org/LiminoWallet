@@ -1,8 +1,9 @@
 <template>
-  <div class="transfer-NFT-modal">
+  <div>
     <van-dialog
       v-model:show="showModal"
       teleport="#page-box"
+      :class="`transfer-NFT-modal type${txtype}`"
       :showConfirmButton="false"
       :showCancelButton="false"
       closeOnClickOverlay
@@ -611,7 +612,10 @@ export default defineComponent({
         console.warn('addressInfo', addressInfo)
         const {rewardSNFTCount,exchangerAmount,snftAmount} = addressInfo
         const exchangeNum = ethers.utils.formatEther(exchangerAmount || '0')
+
         const snftNum = ethers.utils.formatEther(snftAmount || '0')
+        console.warn('exchangeNum', exchangeNum)
+        console.warn('snftNum', snftNum)
         if(props.txtype === '1') {
         
         const rio = new BigNumber(props.selectTotal).div(new BigNumber(exchangeNum).plus(snftNum))
@@ -619,12 +623,13 @@ export default defineComponent({
         }
         console.warn('eth_getAllStakers',props.txtype)
         if(props.txtype === '3') {
-
           const {Stakers} = await wallet.provider.send('eth_getAllStakers')
         console.warn('pledgeTotal', Stakers)
-        const totalPledge = Stakers.map((item: any) => item.Balance).reduce((prev, total) => new BigNumber(prev).plus(prev))
-      
-        const am = new BigNumber(snftNum).plus(exchangeNum).div(totalPledge).multipliedBy(599184).multipliedBy(snftNum.div(new BigNumber(exchangeNum).plus(snftNum))).toFixed(5)
+        const totalPledge = Stakers.map((item: any) => item.Balance).reduce((prev, total) => new BigNumber(prev).plus(prev)).div(10000000000000000).toFixed(10)
+        console.warn('totalPledge', totalPledge)
+        const r = !Number(props.selectTotal) ? new BigNumber(0): new BigNumber(props.selectTotal).div(new BigNumber(exchangeNum).plus(props.selectTotal))
+        console.warn('r---', r.toNumber())
+        const am = new BigNumber(props.selectTotal).plus(exchangeNum).div(totalPledge).multipliedBy(599184).multipliedBy(r).toFixed(15)
         myprofit.value = am  
       }
       

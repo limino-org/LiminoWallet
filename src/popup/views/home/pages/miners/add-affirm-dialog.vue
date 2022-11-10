@@ -3,6 +3,7 @@
     teleport="#page-box"
     :lockScroll="false"
     :showConfirmButton="false"
+    class="minerAdditionalModal"
     :showCancelButton="false"
     closeOnClickOverlay>
     <div class="custom-overlay">
@@ -147,6 +148,7 @@ import { getWallet, getGasFee } from "@/popup/store/modules/account";
 import { BigNumber } from "bignumber.js";
 import { web3 } from "@/popup/utils/web3";
 import { getAccount } from "@/popup/http/modules/nft";
+import { getAccountAddr } from '@/popup/http/modules/common';
 
 export default {
   components: {
@@ -215,6 +217,9 @@ export default {
     const calcProfit = async () => {
       const wallet = await getWallet();
       const blockNumber = await wallet.provider.getBlockNumber();
+      const addressInfo = await getAccountAddr(wallet.address)
+      const {rewardCoinCount} = addressInfo
+      historyProfit.value = new BigNumber(rewardCoinCount).multipliedBy(0.11).toString()
       const blockn = web3.utils.toHex(blockNumber.toString());
       const data = await wallet.provider.send("eth_getValidator", [blockn]);
       // const data2 = await getAccount(accountInfo.value.address)
@@ -229,9 +234,6 @@ export default {
       const totalPledge = new BigNumber(props.addNumber).plus(props.amount);
       myprofit.value = new BigNumber(totalprofit)
         .multipliedBy(totalPledge.div(totalStr))
-        .toFixed(6);
-      historyProfit.value = new BigNumber(totalprofit)
-        .multipliedBy(new BigNumber(props.amount).div(totalStr))
         .toFixed(6);
   
     };

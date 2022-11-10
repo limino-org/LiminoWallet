@@ -511,12 +511,13 @@ export default defineComponent({
 
     const selectSnftsLen = computed(() => {
       const {status} = props
-      if(status == '1' || status == '3') {
-        return getNumber.value * 16
-      }
-      if(status == '2') {
-        return getNumber.value
-      }
+      // if(status == '1' || status == '3') {
+      //   return getNumber.value
+      // }
+      // if(status == '2') {
+      //   return getNumber.value
+      // }
+      return getNumber.value
     })
     return {
       selectSnftsLen,

@@ -75,7 +75,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
   if (target == 'wormholes-popup') {
     const { method, response } = data
     if (method == 'update-wallet') {
-      initWallet()
+      // initWallet()
       return false
     }
     if (!handleRpcResponse[method] || !handleRpcResponse[method].sendResponse) {

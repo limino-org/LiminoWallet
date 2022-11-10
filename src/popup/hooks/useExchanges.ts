@@ -229,7 +229,7 @@ export const useExchanges = () => {
     
     try {
       const rate_str: number = fee_rate ? new BigNumber(fee_rate).multipliedBy(10).toNumber() : 100
-      // Send the exchange opening fee of 280ERB to the official company account connected to the company's own node
+      // Send the exchange opening fee of 700ERB to the official company account connected to the company's own node
       const str = `wormholes:{"version": "0","type": 11,"fee_rate": ${rate_str},"name":"${name}","url":""}`;
       const data3 = web3.utils.fromUtf8(str)
       console.warn('data3', data3)

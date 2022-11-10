@@ -89,7 +89,7 @@
 		"period": "Server Period Remaining",
 		"periodAdd": "Server Period Additional",
 		"addServeAmount": "You can rent our server for your exchange which has to pay 200ERB a year.After paying,you will be able to set up your exchange on our server.",
-		"minusStaking": "You have to stake at least 280ERB to keep your exchange open.And also,after your exchange closed,you will not have a chance to get rewards when a new block is created.",
+		"minusStaking": "You have to stake at least 700ERB to keep your exchange open.And also,after your exchange closed,you will not have a chance to get rewards when a new block is created.",
 		"tipname": "This is the name of your NFT exchange.",
 		"tipstake": "This is the total amount of ERB you have staked.",
 		"tipre": "This is the amout of ERB you want to redeem.",
@@ -1172,7 +1172,7 @@
 		right_and_interests:
 		"You need to pledge at least 70000ERB and you will become our pledge node after selecting the pledge and downloading our node program.  In the meantime, you need to keep your node program running at all times.  After becoming an equity pledge node, you will have the opportunity to be selected to participate in our blockchain consensus, with a high probability of being selected to distribute S-NFTs rewards.  The higher your pledge, the more likely you are to be selected.  ",
 		exchange_pledge:
-		"You need to pledge a minimum of 280ERB to open your exchange. After choosing the exchange pledge, you can choose to use your own server or we will provide the server (there will be an additional charge).  After successfully opening your exchange, you will have the opportunity to get block subsidy of blockchain. The higher your pledge amount, the higher the probability of being selected.  ",
+		"You need to pledge a minimum of 700ERB to open your exchange. After choosing the exchange pledge, you can choose to use your own server or we will provide the server (there will be an additional charge).  After successfully opening your exchange, you will have the opportunity to get block subsidy of blockchain. The higher your pledge amount, the higher the probability of being selected.  ",
 		no_data: "No Data",
 		mainNetwork: "Main Network",
 		save: "Save",

@@ -181,11 +181,20 @@ setup() {
               const keyStore = encryptPrivateKey(params)
               // Encrypt mnemonic storage according to password
               console.log('web3---------', web3)
+              // const mnemonicData = encryptPrivateKey({
+              //   privateKey: web3.utils.toHex(mnemonic.toString()),
+              //   password: password.value
+              // })
+              // commit('mnemonic/UPDATE_MNEMONIC', mnemonicData)
+
+                console.warn('mnemonic.toString()',mnemonic, mnemonic.value)
               const mnemonicData = encryptPrivateKey({
-                privateKey: web3.utils.toHex(mnemonic.toString()),
-                password: password.value
-              })
-              commit('mnemonic/UPDATE_MNEMONIC', mnemonicData)
+          privateKey: web3.utils.toHex(mnemonic.value.toString()),
+          password: password.value,
+        });
+        // await localforage.setItem("mnemonic", mnemonicData);
+        commit('mnemonic/UPDATE_MNEMONIC', mnemonicData)
+
               await dispatch('account/addAccount', {
                 keyStore,
                 mnemonic: mnemonicParams,

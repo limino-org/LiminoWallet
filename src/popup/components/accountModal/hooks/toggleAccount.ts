@@ -91,7 +91,6 @@ export const useToggleAccount = () => {
     const { pathIndex, path }: any = { ...store.state.account.mnemonic };
     const password: string = await getCookies("password") || "";
     let phrase: string = await parseMnemonic(password, store.state.mnemonic.keyStore);
-    console.warn('phrase', JSON.stringify(phrase))
     let mnemonic: CreateWalletByMnemonicParams = { pathIndex, phrase, path };
     let wallet = await dispatch("account/createWallet", mnemonic);
     let { privateKey, address } = wallet;
