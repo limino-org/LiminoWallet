@@ -634,7 +634,7 @@ export default defineComponent({
       }
       
         /**
-         * （SNFT质押金额+交易所质押金额）/全网质押金额 * 599184  * （SNFT质押/（SNFT + 交易所））
+         * 
          * address: "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf"
            balance: "155996997207323999550712"
            code: null

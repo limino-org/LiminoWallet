@@ -497,7 +497,7 @@ export default defineComponent({
         }
         res.children.forEach((item: any) => {
           if (getDisabled(item) == "") {
-            const {MergeLevel:level,total_hold} = item
+            const {MergeLevel:level,total_hold, MergeNumber} = item
             if(level === 1 && total_hold) {
               total += total_hold
             } else {

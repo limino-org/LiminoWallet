@@ -135,7 +135,7 @@
   </div>
   <!-- Transfer Erb -->
   <TransferNFTModal :selectNumber="selectText" :selectName="chooseName" :selectAddress="chooseAddress" :selectTotal="totalAmount" :selectList="selectList" txtype="2" type="1" :ratio="ratio" v-model="showModal" @success="reLoading" @fail="reLoading" />
-  <TransferSingleSNFTModal :txtype="actionType" :selectNumber="selectText" :ratio="ratio" :selectTotal="stakingTotalAmount" :selectList="selectStakingList" v-model="showStakingModal" @success="handleSuccess" />
+  <TransferSingleSNFTModal :txtype="actionType" :selectNumber="selectText" :ratio="ratio" :selectTotal="stakingTotalAmount" :selectList="selectStakingList" v-model="showStakingModal" @success="handleSuccess"  @fail="reLoading" />
 </template>
 <script lang="ts">
 import {
@@ -617,6 +617,10 @@ export default {
 
     // Event of successful redemption
     const reLoading = () => {
+      if (pageData.value.MergeLevel === 2) {
+        router.replace({name:"wallet"})
+        return
+      }
       onChange(swiperIdx.value);
     };
     // Optional quantity
@@ -625,9 +629,7 @@ export default {
       const { MergeLevel, disabled, Exchange, Chipcount, snfts, pledgestate } =
         pageData.value.children[swiperIdx.value];
       switch (actionType.value) {
-        // 赎回
         case "1":
-        // 质押
         case "3":
           if (pageData.value.MergeLevel === 2) {
             total = pageData.value.chipcount;
@@ -814,12 +816,6 @@ export default {
     const stakingTotalAmount = ref(0);
     const handleStaking = () => {
       if (pageData.value.MergeLevel === 2 && pageData.value.Chipcount) {
-        // const nft_address = pageData.value.address;
-        // sessionStorage.setItem(
-        //   "sendSnftList",
-        //   JSON.stringify([{ nft_address, MergeLevel: 2 }])
-        // );
-        // router.push({ name: "sendSnft-step2" });
         selectStakingList.value.push(pageData.value);
         stakingTotalAmount.value = new BigNumber(
           pageData.value.MergeNumber || 256
@@ -832,7 +828,7 @@ export default {
       // Check whether the SNFT is in the pledgeable state
       const data = chooseSnftData.value;
       console.log("data-----------------", data);
-      const { MergeLevel, snfts, pledgestate, selectFlag } = data;
+      const { MergeLevel, snfts, pledgestate, selectFlag, MergeNumber } = data;
       if (selectFlag) {
         selectStakingList.value.push(data);
         stakingTotalAmount.value = parseFloat(
