@@ -1,9 +1,10 @@
-const isProduct = process.env.NODE_ENV == 'production'
+const isProduct = process.env.VUE_APP_NODE_ENV == 'production'
+console.log('isProduct', isProduct)
 const path = require('path')
 const webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
-  productionSourceMap: false,
+  productionSourceMap: isProduct ? false : true,
   pages: {
     popup: {
       template: 'public/browser-extension.html',
@@ -52,19 +53,12 @@ module.exports = {
       }
     }
   },
+
   configureWebpack: config => {
     if (isProduct) {
       config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
     }
-    // config.outputDir = {
-    //   filename: "[name].js",
-    //   chunkFilename: "[name].js",
-    // }
-    config.devtool = 'source-map'
-    // config.output = {
-    //   filename: "[name].js",
-    //   chunkFilename: "[name].js",
-    // },
+    config.devtool = isProduct ? 'nosources-source-map' : 'source-map'
     config.node = {
       global: false
     }
@@ -81,6 +75,10 @@ module.exports = {
     ]))
   },
   chainWebpack: config => {
+    config.optimization.minimize(true);
+    // if(isProduct){
+    //   config.output.filename('assets/js/[name].[hash].js').chunkFilename('assets/js/[name].[hash].js').end()
+    // }
     // config.resolve.alias.set("vue-i18n",'vue-i18n/dist/vue-i18n.runtime.esm-bundler.js')
     config.module
     .rule("i18n")

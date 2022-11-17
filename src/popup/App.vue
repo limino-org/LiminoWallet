@@ -42,7 +42,6 @@ import { guid } from '@/popup/utils/utils'
 import { useBroadCast } from '@/popup/utils/broadCost'
 import localforage from 'localforage'
 import { getAccountAddr } from "@/popup/http/modules/common";
-
 export default {
   components: {
     [Button.name]: Button,
@@ -115,14 +114,13 @@ export default {
 </script>
 <style lang="scss">
 .page-container {
-  // scrollbar-width: none;
   position: relative;
   box-sizing: border-box;
   padding-bottom: 30px;
-  &::-webkit-scrollbar {
-    display: none;
-    /* Chrome Safari */
-  }
+  // &::-webkit-scrollbar {
+  //   display: none;
+  //   /* Chrome Safari */
+  // }
 }
 :deep(.van-popup) {
   position: absolute;
@@ -139,10 +137,10 @@ export default {
   overflow-y: hidden;
   background: #fff;
   box-sizing: border-box;
-  &::-webkit-scrollbar {
-    width: 0 !important;
-    display: none;
-  }
+  // &::-webkit-scrollbar {
+  //   width: 0 !important;
+  //   display: none;
+  // }
   :deep(.van-toast) {
     word-break: keep-all !important;
   }

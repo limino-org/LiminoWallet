@@ -46,7 +46,7 @@
                         <img src="@/popup/views/home/imgs/wakuang.png" alt />
                       </span>
                       <div class="tag-label flex center-v">
-                        <span>Validator</span>
+                        <span>{{t('common.validator')}}</span>
                       </div>
                     </div>
                   </template>
@@ -73,7 +73,7 @@
                         <img src="@/popup/views/home/imgs/smallhome.png" alt />
                       </span>
                       <div class="tag-label flex center-v">
-                        <span>Exchange</span>
+                        <span>{{t('common.marketplace')}}</span>
                       </div>
                     </div>
                   </template>

@@ -63,10 +63,7 @@
           </div>
         </div>
       </div>
-      <div class="tips flex">
-        <div class="flex center tips-icon"><van-icon name="question" /></div>
-        <div class="lh-16">{{ t("minerspledge.tip7") }}</div>
-      </div>
+      <Tip :message="t('minerspledge.tip7')" />
     </div>
     <div class="flex between btn-box">
       <van-button block plain class="mr-30" @click="handleCancel">{{
@@ -105,6 +102,7 @@ import { useI18n } from "vue-i18n";
 import BigNumber from "bignumber.js";
 import MinusStackDialog from "@/popup/views/home/pages/miners/miuns-stack-dialog.vue";
 import { useToast } from "@/popup/plugins/toast";
+import Tip from '@/popup/components/tip/index.vue'
 export default defineComponent({
   name: "modifPledgeModal",
   components: {
@@ -117,6 +115,7 @@ export default defineComponent({
     ElSlider,
     ElTooltip,
     MinusStackDialog,
+    Tip
   },
   emits: ["confirm", "update:modelValue"],
   props: {
@@ -256,7 +255,7 @@ export default defineComponent({
   color: #848484;
 }
 .btn-box {
-  padding: 12px 45px 25px;
+  padding: 0 45px 25px;
 }
 .tips-icon {
   i {

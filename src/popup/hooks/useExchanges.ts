@@ -429,7 +429,6 @@ export const useExchanges = () => {
         address: wallet.address,
         call: async (sigstr: string) => {
           const params = { ...newParams, sig: sigstr }
-          sessionStorage.setItem('params', JSON.stringify(params))
           setExchangeSig(wallet.address, params)
             .then((res) => {
               resolve(res);

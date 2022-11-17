@@ -523,6 +523,7 @@ export default {
     onMounted(() => {
       dispatch("system/getEthAccountInfo");
       dispatch("account/getExchangeStatus").then((res) => {
+        console.warn(111)
         if (res.status == 2 && res.exchanger_flag) {
           initExchangeData();
         }
@@ -544,10 +545,7 @@ export default {
       time = null
     });
 
-    // Update the current collection list every time you switch accounts
-    eventBus.on("changeAccount", (address) => {
-      dispatch("account/getExchangeStatus");
-    });
+
 
     // Purchase jump
     const handleToBuy = () => {

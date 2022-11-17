@@ -111,7 +111,7 @@
   <!-- Log in to create a new account -->
   <div class="btn-groups">
     <div class="container pl-22 pr-22 flex between f-12">
-      <van-button round block plain type="primary" class="mr-10" @click="tologin">
+      <van-button round block plain  class="mr-10" @click="tologin">
         {{
         t("createAccountpage.mnemonicBtn")
         }}

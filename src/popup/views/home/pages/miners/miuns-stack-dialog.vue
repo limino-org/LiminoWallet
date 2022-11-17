@@ -2,6 +2,7 @@
     <van-dialog v-model:show="dislogShow"     show-cancel-button
     teleport="#page-box"
     :lockScroll="false"
+    class="minus-miner-stack-dialog"
     :showConfirmButton="false"
     :showCancelButton="false"
     closeOnClickOverlay>

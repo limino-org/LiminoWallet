@@ -392,6 +392,9 @@ img {
   .minus-pledge-dialog {
     max-height: 450PX;
   }
+  .minus-miner-stack-dialog {
+    max-height: 758PX;
+  }
   .transfer-NFT-modal {
     height: 502PX;
     &.type3 {
@@ -520,7 +523,7 @@ img {
       }
     }
   }
-.add-pledge-modal,.transfer-NFT-modal,.minerAdditionalModal {
+.add-pledge-modal,.transfer-NFT-modal,.minerAdditionalModal,.minus-miner-stack-dialog {
   height: auto;
 }
 }

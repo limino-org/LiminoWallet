@@ -1,5 +1,5 @@
 import { httpGet, httpPost } from '../request'
-import { wormholesscanApi,wormholesApi,contractApi } from '@/popup/http/httpUrl'
+import { wormholesscanApi,wormholesApi,scanApi } from '@/popup/http/httpUrl'
 
 
 // One click to create an exchange
@@ -44,7 +44,7 @@ export const setExchangeSig = (address: string, params = {}) => {
 
 // 
 export const checkAuth = (address: string) => {
-    return httpGet(`${contractApi}/extra/checkAuth`,{address})
+    return httpGet(`${scanApi}/extra/checkAuth`,{address})
 }
 
 // Get the smart contract address
@@ -55,5 +55,5 @@ export const getContractAddress = () => {
 
 // Query the account information of the specified address
 export const getAccountAddr = (address: string) => {
-    return httpGet(`${contractApi}/account/${address}`,{})
+    return httpGet(`${scanApi}/account/${address}`,{})
 }

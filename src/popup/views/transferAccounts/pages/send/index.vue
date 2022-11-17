@@ -618,7 +618,7 @@ export default {
     const amountErr = ref(false);
     const handleAmountBlur = async () => {
       calcGasLimit();
-      if (isPoor.value) {
+      if (!Number(amount.value)) {
         amountErr.value = true;
       } else {
         amountErr.value = false;

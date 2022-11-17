@@ -1,26 +1,26 @@
 
 
 import { httpGet,httpPost } from '../request'
-import { wormholesscanApi,wormholesApi,snftUrl,snftUrl2,contractApi,snftUrl3,snftUrl4 } from '@/popup/http/httpUrl'
+import { scanApi,snftUrl4 } from '@/popup/http/httpUrl'
 
 
 // Get NFT according to owner
 export function getNftOwner(params = {}){
-    return httpGet(`${contractApi}/nft_meta/page`, params)
+    return httpGet(`${scanApi}/nft_meta/page`, params)
 }
 
 
 
 // Get snft by owner
 export function getSnftOwner(params = {}){
-    return httpGet(`${wormholesscanApi}/snft_meta/page`, params)
+    return httpGet(`${scanApi}/snft_meta/page`, params)
 }
 
 
 
 // Query collection
 export function collectionList(params = {}) {
-    return httpGet(`${wormholesscanApi}/collect/page`, params)
+    return httpGet(`${scanApi}/collect/page`, params)
 }
 
 
@@ -33,7 +33,7 @@ export function collectionList(params = {}) {
  */
 export function snftCollectionById(params = {}){
     const { id }: any = params
-    return httpGet(`${wormholesscanApi}/snft/collection/0x${id || ''}`)
+    return httpGet(`${scanApi}/snft/collection/0x${id || ''}`)
 }
 
 /**
@@ -45,7 +45,7 @@ export function snftCollectionById(params = {}){
  * @returns 
  */
 export function collectionListPage(params = {}) {
-    return httpGet(`${snftUrl}/snft/collection/page`, params)
+    return httpGet(`${scanApi}/snft/collection/page`, params)
 }
 
 /**
@@ -54,7 +54,7 @@ export function collectionListPage(params = {}) {
  * @returns 
  */
 export function snftGroup(id: string) {
-    return httpGet(`${wormholesscanApi}/snft/group/${id}`, {})
+    return httpGet(`${scanApi}/snft/group/${id}`, {})
 }
 
 
@@ -89,7 +89,7 @@ export function queryCollectionAllSnft(params ={}){
  * @returns 
  */
  export function queryOwnerSnftChipAmount(params ={}){
-    return httpPost(`${snftUrl}/v2/queryOwnerSnftChipAmount`, params)
+    return httpPost(`${snftUrl4}/v2/queryOwnerSnftChipAmount`, params)
 }
 
 
@@ -118,12 +118,12 @@ export function QuerySnftChip(params = {}){
 
 // Query automatically synthesized SNFT data
 export const snft_com_page = (params = {}) => {
-    return httpGet(`${contractApi}/snft_com/page`,params)
+    return httpGet(`${scanApi}/snft_com/page`,params)
    
   }
   // Example Query SNFT data
 export const getSnftList = (params = {}) => {
-   return httpGet(`${wormholesscanApi}/snft/page`,params)
+   return httpGet(`${scanApi}/snft/page`,params)
 }
   
 
@@ -133,6 +133,6 @@ export const queryArraySnft = (params = {}) => {
   }
   // Query the account information about the specified address
 export const getAccount = (address: string) => {
-    return httpGet(`${contractApi}/account/${address}`)
+    return httpGet(`${scanApi}/account/${address}`)
 }
 

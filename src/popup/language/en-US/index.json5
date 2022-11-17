@@ -31,9 +31,9 @@
 		transactionrecord: 'Transaction Record'
 	},
 	"bourse": {
-		"placename": "Please enter name of the exchange",
+		"placename": "Please enter the name of your NFT Marketplace",
 		"vainame": "The name cannot be empty",
-		"vainame2": "It is 4-20 in length and supports Chinese and English and numbers    ",
+		"vainame2": "It is 4-20 in length and supports Chinese and English and numbers ",
 		"placenode": "Please enter node",
 		"vainode": "Node is wrong",
 		"placeamount": "Please enter the additional amount",
@@ -87,8 +87,8 @@
 		"addTit": "Staking Additional",
 		"serverFee": "Server Fee",
 		"period": "Server Period Remaining",
-		"periodAdd": "Server Period Additional",
-		"addServeAmount": "You can rent our server for your exchange which has to pay 200ERB a year.After paying,you will be able to set up your exchange on our server.",
+		"periodAdd": "Additional Server Period ",
+		"addServeAmount": "You can rent our server to host your marketplace for 200 ERB a year. Afer paying, your marketplace will be hosted on our server.",
 		"minusStaking": "You have to stake at least 700ERB to keep your exchange open.And also,after your exchange closed,you will not have a chance to get rewards when a new block is created.",
 		"tipname": "This is the name of your NFT exchange.",
 		"tipstake": "This is the total amount of ERB you have staked.",
@@ -96,7 +96,7 @@
 		"tipprofit": "This is the total profit you have received by staking.",
 		"tipincome": "This is the estimated annual profit you will receive after redemption.",
 		"tipadd": "This is the additional amount of ERB you want to stake.",
-		"closeTip": "Sorry，the estimated closing time of the exchange is 1 year.",
+		"closeTip": "Sorry, you need to wait 365 days to close your marketplace and redeem your stake.",
 		"stakingPeriod": "Staking period"
 	},
 	"wallet": {

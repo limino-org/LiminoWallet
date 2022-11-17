@@ -1,7 +1,5 @@
 <template>
-<van-sticky>
       <NavHeader :title="t('receive.contants')" :hasRight="true"></NavHeader>
-    </van-sticky>
   <div class="contacts-list">
     <div class="list pt-16">
       <div
@@ -79,7 +77,7 @@
       </div>
         <div class="btn-groups">
           <div class="container pl-28 pr-28">
-          <van-button type="primary" @click="toAdd" plain block
+          <van-button  @click="toAdd" plain block
             >{{ t("contacts.newadd") }}</van-button
           >
         </div>

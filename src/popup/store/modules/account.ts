@@ -756,7 +756,7 @@ async DEL_TXQUEUE(state: State, tx: any) {
       const balance = await dispatch("getBalance");
       const { path, pathIndex }: any = mnemonic;
       const account = {
-        name: `Account ${len + 1}`,
+        name: `Account${len + 1}`,
         keyStore,
         address,
         icon,
