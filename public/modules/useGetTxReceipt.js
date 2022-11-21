@@ -7,12 +7,9 @@ export const useGetTxReceipt = () => {
     const local = await localforage.getItem("vuex") || null
     const { id } = local.account.currentNetwork
     const queuekey = `txQueue-${id}`
-    console.warn('queuekey', queuekey)
     return new Promise(async(resolve, reject) => {
         const list  = await localforage.getItem(queuekey)
-        console.warn('list----', list)
         const txQueue = list && list.length ? list : []
-        console.log('txQueue', txQueue)
         if (!txQueue.length) {
           resolve(true)
         }
@@ -40,12 +37,10 @@ export const useGetTxReceipt = () => {
                 }
                 
                 const blocknum = ethers.utils.hexValue(data1.blockNumber - 1)
-                console.warn('blocknum', blocknum)
                 const nftAccountInfo = await newWallet.provider.send(
                   "eth_getAccountInfo",
                   [nft_address,  blocknum]
                 );
-                console.warn('nftAccountInfo', nftAccountInfo)
                 const {MergeLevel, MergeNumber} = nftAccountInfo
                 if(MergeLevel === 0) {
                   convertAmount = new BigNumber(MergeNumber).multipliedBy(0.095).toNumber()

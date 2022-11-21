@@ -29,7 +29,6 @@ export const handleRpcResponse = {
         sendResponse: async (data, sendResponse, sender) => {
             const method = handleType.waitTxQueueResponse
             try {
-                console.log('handleType.waitTxQueueResponse', handleType.waitTxQueueResponse, sender)
                 await waitTxQueueResponse()
                 const bgMsg = { ...errorCode['200'], data: null }
                 const sendBgMsg = createBgMsg(bgMsg, method)
@@ -227,7 +226,6 @@ export const handleRpcResponse = {
         status: 'close',
         sendResponse: async (v, sendResponse, sender) => {
             const { data } = v;
-            console.log('eth_sendTransaction', data)
             const errMsg = { ...errorCode['200'], data: data.hash }
             const method = handleType.eth_sendTransaction
             const senderParams = await getLocalParams(method)

@@ -1,3 +1,4 @@
+console.warn('process.env.VUE_APP_NODE_ENV ', process.env.VUE_APP_NODE_ENV)
 const isProduct = process.env.VUE_APP_NODE_ENV == 'production'
 console.log('isProduct', isProduct)
 const path = require('path')
@@ -55,9 +56,7 @@ module.exports = {
   },
 
   configureWebpack: config => {
-    if (isProduct) {
-      config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
-    }
+
     config.devtool = isProduct ? 'nosources-source-map' : 'source-map'
     config.node = {
       global: false
@@ -67,12 +66,21 @@ module.exports = {
     }))
     config.plugins.push(new CopyWebpackPlugin([
       {
-        from:path.resolve(__dirname,'src/scripts/inject-script.js') ,
-        to:path.resolve(__dirname,'dist/js/inject-script.js'), 
+        from: path.resolve(__dirname, 'src/scripts/inject-script.js'),
+        to: path.resolve(__dirname, 'dist/js/inject-script.js'),
         toType: "file",
-     }
- 
+      }
+
     ]))
+    if (isProduct) {
+      config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
+      config.optimization.minimizer[0].options.terserOptions.compress.warnings = false;
+      config.optimization.minimizer[0].options.terserOptions.compress.drop_debugger = true;
+      config.optimization.minimizer[0].options.terserOptions.compress.pure_funcs = [
+        "console.log"
+      ];
+
+    }
   },
   chainWebpack: config => {
     config.optimization.minimize(true);
@@ -81,16 +89,16 @@ module.exports = {
     // }
     // config.resolve.alias.set("vue-i18n",'vue-i18n/dist/vue-i18n.runtime.esm-bundler.js')
     config.module
-    .rule("i18n")
-    .test(/\.(json5?|ya?ml)$/)
-    .include.add(path.resolve(__dirname, "src/popup/language"))
-    .end()
-    .type("javascript/auto")
-    .use("i18n")
-    .loader("@intlify/vue-i18n-loader")
-    .end();
+      .rule("i18n")
+      .test(/\.(json5?|ya?ml)$/)
+      .include.add(path.resolve(__dirname, "src/popup/language"))
+      .end()
+      .type("javascript/auto")
+      .use("i18n")
+      .loader("@intlify/vue-i18n-loader")
+      .end();
 
 
   }
-  
+
 }

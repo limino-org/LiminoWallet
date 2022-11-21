@@ -1,2 +1,2 @@
 // Version number, used to update user data
-export const version = '2.1.9'
+export const version = '1.0.0'

@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service build --mode dev --watch",
     "build": "vue-cli-service build --mode prod",
+    "build:test": "vue-cli-service build --mode test",
     "lint": "vue-cli-service lint",
     "build-storybook": "build-storybook",
     "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/locales/**/*.json\"",

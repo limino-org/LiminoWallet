@@ -224,7 +224,6 @@ export async function initWallet() {
     newwallet = await createWalletByJson(params);
     let provider = ethers.getDefaultProvider(URL);
     newwallet = newwallet.connect(provider);
-    console.log('newwallet', newwallet)
     // wallet = newwallet
     return newwallet
   } catch (err) {

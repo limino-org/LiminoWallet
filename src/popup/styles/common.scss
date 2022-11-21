@@ -404,6 +404,9 @@ img {
   .minerAdditionalModal {
     height: 758PX;
   }
+  .toggleSnftListModal {
+    height: 340PX;
+  }
 
   
 // When the width is less than 750, control the pop-up window width to guide the user to operate
@@ -523,7 +526,7 @@ img {
       }
     }
   }
-.add-pledge-modal,.transfer-NFT-modal,.minerAdditionalModal,.minus-miner-stack-dialog {
+.add-pledge-modal,.transfer-NFT-modal,.minerAdditionalModal,.minus-miner-stack-dialog,.toggleSnftListModal {
   height: auto;
 }
 }
