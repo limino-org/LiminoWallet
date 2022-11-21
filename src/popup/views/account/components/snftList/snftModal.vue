@@ -6,6 +6,7 @@
     teleport="#page-box"
     :showConfirmButton="false"
     :showCancelButton="false"
+    class="toggleSnftListModal"
     closeOnClickOverlay
   >
     <div class="sheet-header">

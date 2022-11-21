@@ -2,6 +2,7 @@
   <div class="custom-exchange-modal">
     <van-dialog
       v-model:show="showModal"
+      class="custom-setAmount-modal"
       teleport="#page-box"
       :showConfirmButton="false"
       :showCancelButton="false"

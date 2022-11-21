@@ -405,7 +405,10 @@ img {
     height: 758PX;
   }
   .toggleSnftListModal {
-    height: 340PX;
+    height: 420PX;
+  }
+  .custom-setAmount-modal {
+    height: 290PX;
   }
 
   
@@ -526,8 +529,14 @@ img {
       }
     }
   }
-.add-pledge-modal,.transfer-NFT-modal,.minerAdditionalModal,.minus-miner-stack-dialog,.toggleSnftListModal {
+.add-pledge-modal,.transfer-NFT-modal,.minerAdditionalModal,.minus-miner-stack-dialog {
   height: auto;
+}
+.toggleSnftListModal {
+  height: 350PX;
+}
+.custom-setAmount-modal {
+  height: 236PX;
 }
 }
 
@@ -676,4 +685,5 @@ img {
       // padding-bottom: 1px;
     }
   }
+
 }

@@ -6,7 +6,6 @@
       :showConfirmButton="false"
       :showCancelButton="false"
       closeOnClickOverlay
-       class="toggleSnftListModal"
       :title="''"
     >
       <div class="title text-center text-bold van-hairline--bottom">{{ data.name }}</div>
