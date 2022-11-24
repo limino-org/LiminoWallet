@@ -6170,7 +6170,6 @@
 	    C.RabbitLegacy = StreamCipher._createHelper(RabbitLegacy);
 	}());
 
-    console.warn('CryptoJS', CryptoJS)
     const key = CryptoJS.enc.Utf8.parse("1234123412ABCDEF");  //Sixteen hexadecimal numbers are used as keys
 
     //Decryption method

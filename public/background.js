@@ -28,7 +28,6 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
   if (!target) {
     return false
   }
-  console.log('request', request)
   if (target != 'wormholes-inpage' && target != 'wormholes-popup' && (!data || !data.method)) {
     const errMsg = errorCode['4100']
     sendMessage(createMsg(errMsg, data.method || 'unknow'), {}, sender)
