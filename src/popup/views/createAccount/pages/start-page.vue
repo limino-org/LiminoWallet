@@ -18,7 +18,7 @@ onMounted(() => {
   let time = setTimeout(() => {
     router.replace({ name: "wallet" });
     clearTimeout(time);
-  }, 4010);
+  }, 4000);
 });
 </script>
   <style lang="scss" scoped>

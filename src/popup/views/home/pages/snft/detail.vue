@@ -317,8 +317,7 @@ export default {
         if (NFTPledgedBlockNumber && blockNumber - NFTPledgedBlockNumber > 72) {
           canRedeem.value = true;
         }
-      }
-      if (network.value.chainId === 51891) {
+      } else {
         if (
           NFTPledgedBlockNumber &&
           blockNumber - NFTPledgedBlockNumber > 6307200
@@ -326,7 +325,6 @@ export default {
           canRedeem.value = true;
         }
       }
-
       console.warn("res", res, blockNumber);
     };
 

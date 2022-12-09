@@ -521,6 +521,9 @@ export default {
     };
 
     onMounted(() => {
+      eventBus.on('changeAccount',() => {
+        showModal.value = false
+      })
       dispatch("system/getEthAccountInfo");
       dispatch("account/getExchangeStatus").then((res) => {
         console.warn(111)
@@ -537,6 +540,7 @@ export default {
     });
 
     onUnmounted(() => {
+      eventBus.off('changeAccount')
       clearInterval(time);
       time = null
     });
