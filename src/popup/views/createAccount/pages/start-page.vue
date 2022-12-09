@@ -18,7 +18,7 @@ onMounted(() => {
   let time = setTimeout(() => {
     router.replace({ name: "wallet" });
     clearTimeout(time);
-  }, 8010);
+  }, 4010);
 });
 </script>
   <style lang="scss" scoped>
@@ -28,7 +28,7 @@ onMounted(() => {
   .startcotop {
     width: 250px;
     height: 180px;
-    animation: startcontop_img 8s linear;
+    animation: startcontop_img 4s linear;
     .startcontop_img {
       img {
         height: 60px;
@@ -49,11 +49,11 @@ onMounted(() => {
     opacity: .1;
   }
   50% {
-    transform: scale(2);
+    transform: scale(1.5);
     opacity: 1;
   }
   100% {
-    transform: scale(3);
+    transform: scale(2);
     opacity: 0;
   }
 }

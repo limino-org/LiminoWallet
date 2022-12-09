@@ -9,14 +9,15 @@
     <van-sticky :offset-top="91">
       <div>
         <div class="flex between nfttransfer-box center-v pl-14 pr-14">
-          <span class="tit lh-30 f-12 hover text-bold" @click="handleShowModal">
+          <span class="tit lh-30 f-12 hover text-bold">
             {{ t("createNft.converttoERB") }} {{ chooseType.label }}
-            <i
+            <!-- <i
               :class="`iconfont ${
                 showModal ? 'icon-shangjiantou' : 'icon-xiajiantou'
               }`"
             ></i
-          ></span>
+          > -->
+        </span>
           <van-switch
             v-model="showConvert"
             size="17"
