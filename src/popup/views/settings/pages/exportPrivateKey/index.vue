@@ -71,7 +71,7 @@
     
       <div :class="`pwd-ipt pl-14 pr-14 ${isError ? 'error' : ''}`" v-if="!check">
         <div class="flex between pwd-tit">
-          <span>{{t('exportprivatekey.password')}}</span>
+          <span class="text-bold mb-4">{{t('exportprivatekey.password')}}</span>
           <span>
             <i @click="mask = !mask" :class="`iconfont hover  ${mask ? 'icon-yanjing':'icon-yanjing1'} `"></i>
           </span>

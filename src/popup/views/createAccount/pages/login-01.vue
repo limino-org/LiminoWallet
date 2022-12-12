@@ -36,14 +36,13 @@
           <van-field
             v-model="password"
             name="password"
+            :class="`text ${pwdErr ? 'error' : ''}`"
             :type="`${switchPassType ? 'text' : 'password'}`"
             @click-right-icon="switchPassType = !switchPassType"
             :placeholder="$t('createAccountpage.passwordPlaceholder')"
-            :rules="[
-              { required: true, message: t('createAccountpage.pwdRequired') },
-              { validator: asynPwd, message: t('createAccountpage.pwdWorng') },
-              { validator: checkPwd, message: t('createAccountpage.pwdError') },
-            ]"
+            :rules="[{ validator: asynPwd }]"
+
+    
           />
         </van-cell-group>
         <div class="btn-box">
@@ -145,6 +144,7 @@ export default {
     const { keyStore } = accountInfo;
     const onSubmit = async (value: object) => {
       loading.value = true;
+      pwdErr.value = false
       checkPwd();
     };
     const toggleMask = () => {
@@ -162,6 +162,7 @@ export default {
       let errBool = true;
       try {
         await dispatch("account/createWalletByJson", data);
+        pwdErr.value = false
         await setCookies("password", password.value);
         dispatch("account/updateAccount", currentNetwork);
         dispatch("account/updateBalance");
@@ -174,18 +175,33 @@ export default {
         }
       } catch (err) {
         errBool = false;
+        pwdErr.value = true
       } finally {
         loading.value = false;
       }
       return errBool;
     };
     // cryptographic check
-
-    const asynPwd = (val: string) => {
-      if (regPassword1.test(password.value)) {
-        return true;
+    const pwdErr = ref(false)
+    const asynPwd = async (val: string) => {
+      pwdErr.value = false;
+      if (!val) {
+        pwdErr.value = true;
+        return t("createAccountpage.pwdRequired");
       }
-      return false;
+      try {
+        const accountInfo = state.account.accountInfo;
+        const { keyStore } = accountInfo;
+        const data: CreateWalletByJsonParams = {
+          password: password.value,
+          json: keyStore,
+        };
+        await createWalletByJson(data);
+      } catch (err) {
+        pwdErr.value = true;
+        return t("loginwithpassword.wrong_password");
+      }
+      return true;
     };
 
     const resetmodule = ref(false);
@@ -246,6 +262,7 @@ export default {
       switchPassType,
       toggleMask,
       checkPwd,
+      pwdErr,
       reset,
       resetmodule,
     };
@@ -298,15 +315,12 @@ export default {
   }
   :deep(.van-field__body) {
     height: 42px;
-    border: 1px solid #adb8c5;
     margin-bottom: 10px;
     padding: 0 10px;
     border-radius: 5px;
     transition: ease 0.3s;
     font-size: 12px;
-    &:hover {
-      border: 1px solid #1989fa;
-    }
+  
   }
 }
 .tool {

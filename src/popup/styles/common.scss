@@ -295,7 +295,12 @@ img {
 }
 
 
-
+.error {
+  :deep(.van-field__body) {
+    border: 1px solid #d73a49 !important;
+    background: #fbf2f3;
+  }
+}
 
 // Interrupt boot Popup
 .closeGuideModal {

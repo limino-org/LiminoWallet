@@ -58,7 +58,7 @@
         </div>
     </div>
     <div v-else>
-      <div class="pwd-tit lh-30 f-12">{{t('createAccountpage.password')}}</div>
+      <div class="pwd-tit lh-20 mb-4 f-12 text-bold">{{t('createAccountpage.password')}}</div>
       <div :class="`ipt ${pwdErr ? 'error' : ''}`">
         <van-field
           v-model="password"
@@ -212,18 +212,17 @@ export default {
 
 <style lang="scss" scoped>
 .pwd-tit {
-  padding: 0 26px 0;
+  padding: 0 14px 0;
 }
 .ipt-message {
   color: #D73A49;
-  margin: 0 15px;
+  margin: 8px 15px 0;
 }
 .ipt {
   min-height: 44px;
   background: #ffffff;
   margin: 0 15px 0;
   border-radius: 5px;
-  padding: 10px 0 5px;
   //border: 1px solid #B3B3B3;
   &.error {
     :deep(){
