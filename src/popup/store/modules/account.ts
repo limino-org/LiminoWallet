@@ -448,6 +448,11 @@ export default {
     // Update account information
     UPDATE_ACCOUNTINFO(state: State, value: AccountInfo) {
       state.accountInfo = value;
+      state.accountList.forEach(item => {
+        if(item.address.toUpperCase() == value.address.toUpperCase()) {
+          item = value
+        }
+      })
     },
     // Transaction list pushed to current account
     async PUSH_TRANSACTION(state: State, value: TransactionReceipt) {
@@ -753,7 +758,7 @@ async DEL_TXQUEUE(state: State, tx: any) {
       let list = state.accountList;
       const len = list.length;
       const icon = getRandomIcon();
-      const balance = await dispatch("getBalance");
+      let balance = '0.000000'
       const { path, pathIndex }: any = mnemonic;
       const account = {
         name: `Account${len + 1}`,
@@ -775,8 +780,9 @@ async DEL_TXQUEUE(state: State, tx: any) {
       }
       dispatch("getProviderWallet");
       commit("UPDATE_ACCOUNTINFO", account);
-      dispatch("updateAccount");
       commit("ADD_ACCOUNT", list);
+      dispatch("updateAccount");
+      dispatch('updateBalance')
       return Promise.resolve()
     },
     // Creating wallets with mnemonics

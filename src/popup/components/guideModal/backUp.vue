@@ -1,6 +1,7 @@
 <template>
       <van-dialog
         v-model:show="showModal"
+        class="guideBackupModal"
         teleport="#page-box"
         :showConfirmButton="false"
         :showCancelButton="false"

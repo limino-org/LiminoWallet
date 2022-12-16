@@ -135,7 +135,7 @@
       </div>
 
       <!-- Additional pledge amount -->
-      <div class="bourse-container-meaning bt mt-14" v-if="isExchanger_flag">
+      <!-- <div class="bourse-container-meaning bt mt-14" v-if="isExchanger_flag">
         <span>{{ t("createExchange.addPl") }} </span>
         <el-tooltip
           popper-class="tooltip3"
@@ -161,7 +161,7 @@
         <div class="mt-16">
           <van-field type="number" v-model="addAmount" @change="handleAdd" />
         </div>
-      </div>
+      </div>-->
       <div class="bourse-container-meaning bt mt-14" v-if="!isExchanger_flag">
         <span>{{ t("bourse.marketServer") }} </span>
         <el-tooltip
@@ -310,6 +310,7 @@
                 type="primary"
                 >{{ t("bourse.saveExchange") }}</van-button
               >
+              <!--
               <van-button
                 v-else
                 class="b1"
@@ -317,7 +318,7 @@
                 block
                 type="primary"
                 >{{ t("bourse.saveExchange") }}</van-button
-              >
+              >-->
             </template>
           </template>
         </div>

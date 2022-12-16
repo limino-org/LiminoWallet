@@ -153,6 +153,7 @@ import { decimal } from "@/popup/utils/filters";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
 import ModifNameModal from "@/popup/components/modifNameModal/index.vue";
+import { AccountInfo } from "@/popup/store/modules/account";
 export default defineComponent({
   name: "accountModal",
   components: {
@@ -182,15 +183,24 @@ export default defineComponent({
     const showModal: Ref<boolean> = ref(false);
     // Balance display type
     const amountType = computed(() => store.state.system.amountType);
-
+  // Imported accounts
+  const importList = computed(() => {
+    return store.state.account.accountList.filter(
+      (item: AccountInfo) => item.imported
+    );
+  });
+  // Non-imported accounts
+  const defaultlist = computed(() => {
+    return store.state.account.accountList.filter(
+      (item: AccountInfo) => !item.imported
+    );
+  });
     const {
       toggleAccount,
       handleAccount,
       createAccount,
       createLoading,
       accountLoading,
-      importList,
-      defaultlist,
     } = useToggleAccount();
     const clickAccountIdx = ref(null);
     const clickAccountIdx2 = ref(null);

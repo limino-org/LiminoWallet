@@ -6,6 +6,7 @@
         teleport="#page-box"
         :showConfirmButton="false"
         :showCancelButton="false"
+        class="guideModalGetStart"
         closeOnClickOverlay
         :before-close="beforeClose"
         :title="''"
