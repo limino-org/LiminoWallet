@@ -43,7 +43,7 @@ export const useGetTxReceipt = () => {
                 );
                 const {MergeLevel, MergeNumber} = nftAccountInfo
                 if(MergeLevel === 0) {
-                  convertAmount = new BigNumber(MergeNumber).multipliedBy(0.095).toNumber()
+                  convertAmount = new BigNumber(MergeNumber).multipliedBy(0.03).toNumber()
                 }else if(MergeLevel === 1) {
                   convertAmount = new BigNumber(MergeNumber).multipliedBy(0.143).toNumber()
                 } else if(MergeLevel === 2) {

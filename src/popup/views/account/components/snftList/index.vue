@@ -450,7 +450,7 @@ export default defineComponent({
             switch (MergeLevel) {
               case 0:
                 add = new BigNumber(snfts.length)
-                  .multipliedBy(0.095)
+                  .multipliedBy(0.03)
                   .plus(add)
                   .toNumber();
                 break;
@@ -645,7 +645,7 @@ export default defineComponent({
               am += 0.143
                 break;
               case 0:
-              am += 0.095
+              am += 0.03
                 break;
             }
           })

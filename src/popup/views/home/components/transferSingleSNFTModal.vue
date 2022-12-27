@@ -398,7 +398,7 @@ export default defineComponent({
         if(props.txtype === '1') {
         
         const rio = new BigNumber(props.selectTotal).div(new BigNumber(exchangeNum).plus(snftNum))
-        historyProfit.value = new BigNumber(rewardSNFTCount).multipliedBy(0.095).multipliedBy(rio).toFixed(5)
+        historyProfit.value = new BigNumber(rewardSNFTCount).multipliedBy(0.03).multipliedBy(rio).toFixed(5)
         }
         console.warn('eth_getAllStakers',props.txtype)
         if(props.txtype === '3') {
@@ -516,7 +516,7 @@ export default defineComponent({
           const len = add.length;
           if (len == 42) {
             countNum += 1;
-            count = parseFloat(new BigNumber(count).plus(0.095).toFixed(8));
+            count = parseFloat(new BigNumber(count).plus(0.03).toFixed(8));
           }
           if (len == 41) {
             countNum += 16;

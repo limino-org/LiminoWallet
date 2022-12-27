@@ -219,7 +219,7 @@ export default defineComponent({
     },
     ratio:{
       type: Number,
-      default: 0.095
+      default: 0.03
     }
   },
   setup(props: any, context: SetupContext) {
@@ -619,7 +619,7 @@ export default defineComponent({
         if(props.txtype === '1') {
         
         const rio = new BigNumber(props.selectTotal).div(new BigNumber(exchangeNum).plus(snftNum))
-        historyProfit.value = new BigNumber(rewardSNFTCount).multipliedBy(0.095).multipliedBy(rio).toFixed(5)
+        historyProfit.value = new BigNumber(rewardSNFTCount).multipliedBy(0.03).multipliedBy(rio).toFixed(5)
         }
         console.warn('eth_getAllStakers',props.txtype)
         if(props.txtype === '3') {
