@@ -9,7 +9,8 @@
     "background",
     "storage",
     "alarms",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "tabs"
   ],
   "host_permissions":[
     "*://*/*",

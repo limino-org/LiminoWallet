@@ -11,7 +11,8 @@ import {
     openTabPopup,
     globalPath,
     getWallet,
-    getConnectList
+    getConnectList,
+    eventTypes
 } from './common.js'
 import { ethers } from './ethers.js';
 import { localforage } from './localforage.js'
@@ -31,22 +32,18 @@ export const handleRpcRequest = {
         } catch (err) {
             console.error('err-', err || 'error...')
         }
-
+        console.log('local----',local)
         if (local && !local.account.accountInfo.address) {
-            let time = setTimeout(async () => {
-                try {
-                    await closeTabs()
-                    const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The wallet has not been initialized. Please initialize the wallet first" }
-                    const sendMsg = createMsg(errMsg, method)
-                    await sendMessage(sendMsg, {}, sender)
-                    const url = `chrome-extension://${chrome.runtime.id}/popup.html#/guide/step1`
-                    await openTabPopup(method, url, sendResponse, sender, 'tab')
-                    clearTimeout(time)
-                } catch (err) {
-                    console.error('err-2', err)
-                }
-            }, 600)
-
+            console.log('before open tab popup -2...')
+            await closeTabs()
+            console.log('before open tab popup -1...')
+            const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The wallet has not been initialized. Please initialize the wallet first" }
+            const sendMsg = createMsg(errMsg, method)
+            console.log('before open tab popup 0...')
+            await sendMessage(sendMsg, {}, sender)
+            const url = `chrome-extension://${chrome.runtime.id}/popup.html#/guide/step1`
+            console.log('before open tab popup...')
+            await openTabPopup(method, url, sendResponse, sender)
             return
         }
     },

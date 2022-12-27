@@ -183,7 +183,8 @@ export async function getPwd() {
 export const eventTypes = {
   // Password failure event
   pwdExpired: "password-expired-event",
-  initWallet: "init-wallet"
+  initWallet: "init-wallet",
+  openTabPopup: "open-tabPopup"
 }
 
 
@@ -346,7 +347,7 @@ export function sendMessage(msg = {}, opt = {}, sender) {
           // send to sender
           for (const tab of tabs) {
             if (sender) {
-              if (tab.url.includes(sender.origin)) {
+              if (tab.url && tab.url.includes(sender.origin)) {
                 const { origin } = sender
                 chrome.tabs.sendMessage(tab.id, { ...msg, origin });
                 resolve()
@@ -395,7 +396,8 @@ export function closeTabs() {
       {
       }, async (tabs) => {
         for await (const win of tabs) {
-          if (win.url.includes(globalPath) || win.url.includes(globalHomePath)) {
+          console.warn('win',win)
+          if (win.url && (win.url.includes(globalPath) || win.url.includes(globalHomePath))) {
             await chrome.tabs.remove(win.id)
           }
         }
@@ -412,7 +414,6 @@ export async function openPopup(
   url,
   handleResponse,
   sender,
-  type = 'popup'
 ) {
   await closeTabs()
   const senderParams = await getLocalParams(method)
@@ -454,24 +455,35 @@ export async function openTabPopup(
   url,
   handleResponse,
   sender,
-  type = 'popup'
 ) {
   await closeTabs()
   return new Promise(resolve => {
-    const currentWindow = chrome.tabs.create({ url: url })
-    // const currentWindow = window.open(url)
-    chrome.windows.getCurrent(async function (e) {
+    console.log('=============open tab url')
+    chrome.tabs.create({ url: url }, async(e) => {
+      console.log('ee',e)
       await chrome.storage.local.set({
         [method]: {
           sender,
           window: e,
           handleResponse: handleResponse || null,
-          currentWindow,
           pupupType: 'tab'
         }
       })
       resolve(e)
     })
+    // const currentWindow = window.open(url)
+    // chrome.windows.getCurrent(async function (e) {
+    //   await chrome.storage.local.set({
+    //     [method]: {
+    //       sender,
+    //       window: e,
+    //       handleResponse: handleResponse || null,
+    //       currentWindow,
+    //       pupupType: 'tab'
+    //     }
+    //   })
+    //   resolve(e)
+    // })
   })
 
 }
