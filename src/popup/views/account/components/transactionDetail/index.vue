@@ -3,13 +3,19 @@
     <div class="title f-16 text-center">{{t('transactionDetails.transationHistoryDetails')}}</div>
     <div class="tran-form  mt-20">
       <div class="form-box ml-14 mr-14">
-        <div class="card flex between border-bottom">
-          <div class="label">{{t('transactionDetails.status')}}</div>
-          <div :class="`value flex right center-v status${data.status}`">
-            <span>{{ transactionStatus(data.status) }}</span>
+        <div class="card flex between card-border">
+          <div class="label flex between label-full">
+            <span>{{t('transactionDetails.status')}}</span>
+            <div class="speed-box" v-if="data.sendStatus == 'pendding'">
+              <span @click="handleSpeed">{{t('common.speedUp')}}</span>
+              <span @click="handleCancel">{{t('common.cancel')}}</span>
+            </div>
+          </div>
+          <div :class="`value flex right center-v status ${transactionStatusClass(data)}`">
+            <span>{{ transactionStatus(data) }}</span>
           </div>
         </div>
-        <div class="card flex between border-bottom">
+        <div class="card flex between card-border">
           <div class="label">{{t('transactionDetails.date')}}</div>
           <div class="value">
             {{ formatDate(data.date, "MM/DD") }}
@@ -21,22 +27,21 @@
           <div class="label">{{t('transactionDetails.from')}}</div>
           <div class="value">{{ addressMask(data.from) }}</div>
         </div>
-        <div class="card flex between  border-bottom smallpad2">
+        <div class="card flex between  card-border smallpad2">
           <div class="label">{{t('transactionDetails.to')}}</div>
           <div class="value">{{ addressMask(data.to) }}</div>
         </div>
-        <div class="card flex between border-bottom">
+        <div class="card flex between  card-border">
           <div class="label">{{t('transactionDetails.nonce')}}</div>
-          <div class="value">#{{ data.nonce }}</div>
+          <div class="value">#{{ data.sendData.nonce }}</div>
         </div>
         <div class="card flex between card-sml pt-10">
           <div class="label">{{data.transitionType == '6' ? t('common.convertAmount') : t('transactionDetails.transferAmount')}}</div>
-          <div class="value">{{ transferAmount(data) }} {{currentNetwork.currencySymbol}}</div>
-
+          <div class="value">{{ transferAmountText(data) }}</div>
         </div>
         <div class="card flex between card-sml">
           <div class="label">{{t('transactionDetails.gasfee')}}
-                      <van-popover v-model:show="showPopover" theme="dark" placement="top" class="popover-btn-tip" >
+                      <van-popover v-model:show="showPopover" theme="dark" placement="top-start" >
               <div class="f-12 pl-10 pr-10 pt-10 pb-10" @click="showPopover = false">{{t('common.gasFee')}}</div>
               <template #reference>
                 <van-icon name="question hover" @mouseover="showPopover = true" @mouseout="showPopover = false" />
@@ -63,16 +68,31 @@ import { SetupContext, Ref, ref, reactive, onMounted, defineComponent, computed 
 import { Icon, Toast, Button,Popover } from 'vant'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { transactionTarget, formatDate, addressMask, formatEther, transactionStatus, parseEther, transferAmount } from '@/popup/utils/filters'
 import { utils } from 'ethers'
 import { copy } from '@/popup/utils/utils'
 import { useI18n } from 'vue-i18n'
 import BigNumber from 'bignumber.js'
 import { useToast } from '@/popup/plugins/toast'
 import {VUE_APP_SCAN_URL} from '@/popup/enum/env'
+import {
+  transactionTarget,
+  formatDate,
+  addressMask,
+  toUsdSymbol,
+  transactionStatus,
+  formatEther,
+  parseEther,
+  transactiontxType,
+  transferAmountText,
+  handleSendStatus,
+  txTypeToIcon,
+  handleTxType,
+  transactionStatusClass,
+  
+} from "@/popup/utils/filters";
 export default defineComponent({
   name: 'transactionDetail',
-  emits: ['handleClose'],
+  emits: ['handleClose','handleSpeed','handleCancel'],
   components: {
     [Icon.name]: Icon,
     [Button.name]: Button,
@@ -105,23 +125,49 @@ export default defineComponent({
     const showPopover = ref(false)
     // aggregate amount
     const totalAmount = computed(() => {
-      const am = gasFee.value.plus(utils.formatEther(props.data.value)).toString()
+      const {amount, value, tokenAddress} = props.data
+      if(!tokenAddress) {
+        const am = gasFee.value.plus(utils.formatEther(value)).toString()
       return am
+      } else {
+        return gasFee.value.plus(amount)
+      }
+
     })
 
     // gas= gasLimit * gasPrice
     const gasFee = computed(() => {
-      const price = new BigNumber(utils.formatEther(props.data.effectiveGasPrice)).multipliedBy(1000000000)
-      const gasuse = new BigNumber(utils.formatEther(props.data.gasUsed)).multipliedBy(1000000000)
+      console.warn('props.data--------', props.data)
+      const {sendStatus,receipt, sendData} = props.data
+      if(sendStatus === 'pendding') {
+        return new BigNumber('0')
+      }
+      const {effectiveGasPrice, gasUsed} = receipt
+      if(effectiveGasPrice && gasUsed) {
+        const price = new BigNumber(utils.formatEther(effectiveGasPrice)).multipliedBy(1000000000)
+      const gasuse = new BigNumber(utils.formatEther(gasUsed)).multipliedBy(1000000000)
       return gasuse.multipliedBy(price)
+      } else {
+        return new BigNumber('0')
+      }
+
     })
     const view = () => {
-      window.open(`${VUE_APP_SCAN_URL}TradeDetail/${props.data.hash}`)
+      window.open(`${VUE_APP_SCAN_URL}TradeDetail/${props.data.sendData.hash}`)
     }
     const cancel = () => {
       emit('handleClose')
     }
+
+    const handleSpeed = () => {
+      emit('handleSpeed', props.data)
+    }
+    const handleCancel = () => {
+      emit('handleCancel', props.data)
+    }
     return {
+      handleSpeed,
+      handleCancel,
       t,
       cancel,
       view,
@@ -140,7 +186,12 @@ export default defineComponent({
       totalAmount,
       transactionStatus,
       gasFee,
-      transferAmount
+      transactiontxType,
+  transferAmountText,
+  handleSendStatus,
+  txTypeToIcon,
+  handleTxType,
+  transactionStatusClass,
     }
   }
 })

@@ -4,9 +4,11 @@ import { localforage } from './localforage.js'
 import BigNumber from './bignumber.js'
 export const useGetTxReceipt = () => {
   async function waitTxQueueResponse() {
+    
     const local = await localforage.getItem("vuex") || null
     const { id } = local.account.currentNetwork
-    const queuekey = `txQueue-${id}`
+    const from = local.account.accountInfo.address
+    const queuekey = `txQueue-${id}-${from.toUpperCase()}`
     return new Promise(async(resolve, reject) => {
         const list  = await localforage.getItem(queuekey)
         const txQueue = list && list.length ? list : []
@@ -16,7 +18,7 @@ export const useGetTxReceipt = () => {
         try {
           const newWallet = await getWallet()
           for await (const iterator of txQueue) {
-            let {hash, transitionType, nft_address, blockNumber, network, txType} = iterator
+            let {hash, transitionType, nft_address, blockNumber, network, txType, txId} = iterator
             const data1 = await newWallet.provider.waitForTransaction(hash);
             let convertAmount = ''
             if(nft_address) {
@@ -51,18 +53,10 @@ export const useGetTxReceipt = () => {
                 } else if(MergeLevel === 3) {
                   convertAmount = new BigNumber(MergeNumber).multipliedBy(0.65).toNumber()
                 }
-                
               }
             }
-
-            const rep = handleGetTranactionReceipt(
-              txType || 'other',
-              data1,
-              {...iterator, convertAmount},
-              network
-            );
-            DEL_TXQUEUE({ ...iterator });
-            PUSH_TRANSACTION({ ...rep });
+            DEL_TXQUEUE({ ...iterator,txId });
+            UPDATE_TRANSACTION({ ...iterator,txId, receipt: data1 });
           }
           resolve(true)
         } catch (err) {
@@ -74,41 +68,66 @@ export const useGetTxReceipt = () => {
 
   // Delete data from a queue
   async function DEL_TXQUEUE(tx) {
-    const {network:{id}} = tx
-    const queueKey = `txQueue-${id}`
+    const {network:{id}, txId, from} = tx
+    const queueKey = `txQueue-${id}-${from.toUpperCase()}`
     const list = await localforage.getItem(queueKey)
     const txQueue = list && list.length ? list : []
-    const newList = txQueue.filter((item) => item.hash.toUpperCase() != tx.hash.toUpperCase())
+    const newList = txQueue.filter((item) => item.txId.toUpperCase() != txId.toUpperCase())
     await localforage.setItem(queueKey, newList)
 
   }
 
 
-  async function PUSH_TRANSACTION(value) {
-    const { from, network } = value;
-      const txNetwork = {...network};
-      const {id, currencySymbol} = txNetwork
-      const formAdd = from.toUpperCase();
-      const txListKey = `txlist-${id}`
-      let txList = await localforage.getItem(txListKey)
-      if(txList && typeof txList == 'object') {
-        const receipt = {...value,symbol:currencySymbol}
-        if(txList[formAdd] && txList[formAdd].length) {
-          const hasHash = txList[formAdd].find((tx) => tx.hash.toUpperCase() == value.hash.toUpperCase())
-          !hasHash ? txList[formAdd].unshift(clone(receipt)) : ''
-        } else {
-          txList[formAdd] = [clone(receipt)]
-        }
-      } else {
-        const receipt = {...value,symbol:currencySymbol}
-        txList = {
-          [formAdd]:[clone(receipt)]
+  async function UPDATE_TRANSACTION(da) {
+    console.warn('UPDATE_TRANSACTION----', da)
+    const { receipt, sendData, txType, network, transitionType, type, data , value, gasPrice, gasLimit, txId, tokenAddress, amount, isCancel} = da
+    const {hash, nonce, from, to } = sendData
+    const { id, currencySymbol } = network
+    const date = new Date()
+    const newReceipt = clone({
+      date,
+      hash,
+      from,
+      gasLimit,
+      gasPrice,
+      nonce,
+      to,
+      type,
+      value,
+      transitionType: transitionType || null,
+      txType,
+      network: clone(network),
+      data,
+      sendStatus: receipt ? 'success': 'pendding',
+      sendData: clone(sendData),
+      receipt: clone(receipt),
+      tokenAddress,
+      amount,
+      isCancel: isCancel || null,
+      txId
+    })
+    const formAdd = from.toUpperCase();
+    const txListKey = `txlist-${id}-${formAdd}`
+    let txList= await localforage.getItem(txListKey)
+    if(txList && txList.length) {
+      if(txList && txList.length) {
+        for(let i=0;i< txList.length;i++){
+          const item = txList[i]
+          if(item.txId === txId){
+            txList[i] = newReceipt
+          }
         }
       }
-      DEL_TXQUEUE(value)
-      // save txlist
-      localforage.setItem(txListKey, clone(txList))
+    }
+    await localforage.setItem(txListKey, txList)
+    DEL_TXQUEUE(da)
+    // let time = setTimeout(() => {
+    //   eventBus.emit('txUpdate', newReceipt)
+    //   clearTimeout(time)
+    // },0)
   }
+
+
   return {
     waitTxQueueResponse
   }

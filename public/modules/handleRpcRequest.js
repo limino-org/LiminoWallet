@@ -33,19 +33,16 @@ export const handleRpcRequest = {
         }
 
         if (local && !local.account.accountInfo.address) {
-            let time = setTimeout(async () => {
-                try {
-                    await closeTabs()
-                    const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The wallet has not been initialized. Please initialize the wallet first" }
-                    const sendMsg = createMsg(errMsg, method)
-                    await sendMessage(sendMsg, {}, sender)
-                    const url = `chrome-extension://${chrome.runtime.id}/popup.html#/guide/step1`
-                    await openTabPopup(method, url, sendResponse, sender, 'tab')
-                    clearTimeout(time)
-                } catch (err) {
-                    console.error('err-2', err)
-                }
-            }, 600)
+            try {
+                await closeTabs()
+                const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The wallet has not been initialized. Please initialize the wallet first" }
+                const sendMsg = createMsg(errMsg, method)
+                await sendMessage(sendMsg, {}, sender)
+                const url = `chrome-extension://${chrome.runtime.id}/popup.html#/guide/step1`
+                await openTabPopup(method, url, sendResponse, sender, 'tab')
+            } catch (err) {
+                console.error('err-2', err)
+            }
 
             return
         }

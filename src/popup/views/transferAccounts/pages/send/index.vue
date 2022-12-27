@@ -509,6 +509,7 @@ export default {
 
     // Control button disabled
     const btnDisabled = computed(() => {
+      if(!Number(gasPriceNum.value))return true
       return false;
     });
 

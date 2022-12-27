@@ -389,7 +389,10 @@ img {
     height: 360px;
   }
   .transaction-modal {
-    height: 436PX;
+    height: 522PX;
+  }
+  .transactionDetailsModal {
+    height: 710PX;
   }
   .cancel-modal {
     max-height: 256PX;
@@ -542,7 +545,7 @@ img {
       }
     }
   }
-.add-pledge-modal,.transfer-NFT-modal,.minerAdditionalModal,.minus-miner-stack-dialog {
+.add-pledge-modal,.transfer-NFT-modal,.minerAdditionalModal,.minus-miner-stack-dialog,.transaction-modal,.transactionDetailsModal {
   height: auto;
 }
 .toggleSnftListModal {

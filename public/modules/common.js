@@ -394,8 +394,10 @@ export function closeTabs() {
     chrome.tabs.query(
       {
       }, async (tabs) => {
+        console.warn('tabs--', tabs)
         for await (const win of tabs) {
-          if (win.url.includes(globalPath) || win.url.includes(globalHomePath)) {
+          console.log('win', win)
+          if (win.url && (win.url.includes(globalPath) || win.url.includes(globalHomePath))) {
             await chrome.tabs.remove(win.id)
           }
         }
@@ -458,8 +460,10 @@ export async function openTabPopup(
 ) {
   await closeTabs()
   return new Promise(resolve => {
-    const currentWindow = chrome.tabs.create({ url: url })
-    // const currentWindow = window.open(url)
+    console.warn('openTabPopup...')
+    const currentWindow = chrome.tabs.create({ url: url }, async(e)=>{
+      
+    })
     chrome.windows.getCurrent(async function (e) {
       await chrome.storage.local.set({
         [method]: {

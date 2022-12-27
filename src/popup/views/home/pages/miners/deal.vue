@@ -71,6 +71,85 @@
         <span>{{ t("minerspledge.isPoor") }}</span>
       </div>
       <div class="bourse-container-name" style="margin-top: 20px" v-if="isOpen">
+        <span class="card-tit">{{t('minerspledge.credibility')}} </span>
+      </div>
+      <div
+        class="maxBalance flex center-v between modif-acc pb-12"
+        v-if="isModif"
+      >
+        <div class="flex center-v">
+          <span :class="`mr-10 lh-12 f-16 text-bold ${expresionClass}`"
+            >{{ Coefficient }}
+          </span>
+          <van-popover
+            v-model:show="showExpresion"
+            theme="dark"
+            :close-on-click-outside="false"
+            z-index="1"
+            placement="right"
+            trigger="manual"
+            :class="`popover-btn-tip ${expresionClass}bg`"
+          >
+            <div :class="`${expresionClass}box popover-expresion p-10 hover`">
+              <div v-if="expresionClass == 'smile'">
+                {{ t("minerspledge.smileTip", { value: Coefficient }) }}
+              </div>
+              <div v-if="expresionClass == 'sad'">
+                {{ t("minerspledge.sadTip", { value: Coefficient }) }}
+              </div>
+              <div v-if="expresionClass == 'neutral'">
+                {{ t("minerspledge.neutralTip", { value: Coefficient }) }}
+              </div>
+            </div>
+            <template #reference>
+              <div
+                class="hover"
+                @mouseenter="showExpresion = true"
+                @mouseout="showExpresion = false"
+              >
+                <img
+                  :class="`expresion `"
+                  src="@/popup/assets/smile.png"
+                  v-if="expresionClass == 'smile'"
+                  alt=""
+                />
+                <img
+                  :class="`expresion `"
+                  src="@/popup/assets/sad.png"
+                  v-if="expresionClass == 'sad'"
+                  alt=""
+                />
+                <img
+                  :class="`expresion`"
+                  src="@/popup/assets/neutral.png"
+                  alt=""
+                  v-if="expresionClass == 'neutral'"
+                />
+              </div>
+            </template>
+          </van-popover>
+        </div>
+        <div v-if="Coefficient < 70">
+        <!-- <div> -->
+          <el-tooltip
+            popper-class="reset-tooltip"
+            class="reset-tip"
+            effect="dark"
+            :content="t('minerspledge.resetBtnTip')"
+            placement="top-end"
+            trigger="hover"
+          >
+            <div
+              class="add-btn flex center-v hover"
+              @click="handleShowReconveryModal"
+            >
+              <i class="iconfont icon-plus mr-4"></i>
+              <span> {{t('common.recovery')}} </span>
+            </div>
+          </el-tooltip>
+        </div>
+      </div>
+      <div class="bourse-container-name" style="margin-top: 20px" v-if="isOpen">
         <span class="card-tit">{{ t("minerspledge.addTit") }} </span>
         <el-tooltip
           popper-class="tooltip4"
@@ -379,6 +458,15 @@
         :minusNumber="minusNumber"
         :amount="formatValueNumber || PledgedAmount"
       />
+      
+      <!-- reconvery modal -->
+      <CommonModal v-model="showReconveryModal" title="Credibility Recovery">
+        <ReconveryDetail
+          @cancel="handleReCancel"
+          @confirm="handleReConfirm"
+          :data="reconveryDetail"
+        />
+      </CommonModal>
     </div>
     <div class="loading-box flex center" v-else>
       <div class="p-30">
@@ -412,7 +500,7 @@ import MinusStackDialog from "@/popup/views/home/pages/miners/miuns-stack-dialog
 import Tip from '@/popup/components/tip/index.vue'
 import { useExchanges } from "@/popup/hooks/useExchanges";
 import BigNumber from "bignumber.js";
-import { AccountInfo, ExchangeStatus } from "@/popup/store/modules/account";
+import { AccountInfo, ExchangeStatus, getGasFee } from "@/popup/store/modules/account";
 import {
   Dialog,
   Form,
@@ -448,7 +536,8 @@ import { ElTooltip, ElSlider } from "element-plus";
 import dialogWarning from "@/popup/components/dialogWarning/index.vue";
 import affirmDialog from "./affirm-dialog.vue";
 import addAffirmDialog from "./add-affirm-dialog.vue";
-
+import { TradeStatus } from "@/popup/plugins/tradeConfirmationsModal/tradeConfirm";
+import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
 import closeDialog from "./close-dialog.vue";
 import close1 from "./close1.vue";
 import closeSubmitDialog from "./close-submit.vue";
@@ -459,6 +548,10 @@ import { useDialog } from "@/popup/plugins/dialog";
 import AccountModal from "@/popup/views/home/components/action-sheet.vue";
 import AccountList from "@/popup/views/home/pages/miners/components/accountList.vue";
 import ModifPledgeModal from "@/popup/views/account/components/modifPledgeModal/index.vue";
+import closeAffirmDialog from "./close-affirm-dialog.vue";
+import CommonModal from "@/popup/components/commonModal/index.vue";
+import ReconveryDetail from "./components/reconveryDetail.vue";
+
 import { debug } from "console";
 import { toHex } from "@/popup/utils/utils";
 import { getRandomIcon } from "@/popup/utils";
@@ -483,7 +576,7 @@ export default defineComponent({
     [Circle.name]: Circle,
     [Checkbox.name]: Checkbox,
     [Loading.name]: Loading,
-    [Popover.name]:Popover,
+    [Popover.name]: Popover,
     MinusStackDialog,
     [Icon.name]: Icon,
     [AmountView.name]: AmountView,
@@ -493,15 +586,17 @@ export default defineComponent({
     SwitchNetwork,
     "dialog-warning": dialogWarning,
     "close-dialog": closeDialog,
-
+    "affirm-close": closeAffirmDialog,
     "close-home": closeHome,
     "add-affirm-dialog": addAffirmDialog,
     ElSlider,
     AccountIcon,
     NavHeader,
     AccountList,
+    CommonModal,
     ModifPledgeModal,
-    Tip
+    ReconveryDetail,
+    Tip,
   },
   props: {
     show: {
@@ -524,23 +619,26 @@ export default defineComponent({
     //  Is it an append
     const isModif = ref(true);
     const showCloseBtn = ref(false);
-
+    const network = ref({
+      chainId: null
+    })
     //  const { state } = store;
     onMounted(async () => {
       try {
         const wallet = await getWallet();
         const { address } = wallet;
+        network.value = await wallet.provider.getNetwork()
         blockNumber.value = await wallet.provider.getBlockNumber();
         ethAccountInfo.value = await wallet.provider.send(
           "eth_getAccountInfo",
           [address, "latest"]
         );
-        const blockn = web3.utils.toHex(blockNumber.value.toString());
         debugger
+        const blockn = web3.utils.toHex(blockNumber.value.toString());
         // Amount of the first pledge/total amount of the pledge *36 (start time of the second cancellation of the pledge calculation)+ Amount of the second pledge/total amount *72=54 = (time when the second cancellation of the pledge can be revoked)
         showCloseBtn.value = new BigNumber(blockNumber.value)
           .minus(ethAccountInfo.value.PledgedBlockNumber)
-          .gt(72);
+          .gt(network.value.chainId == 51888 ? 72 : 6307200);
         const pledgeList = await wallet.provider.send("eth_getValidator", [
           `${blockn}`,
         ]);
@@ -562,7 +660,6 @@ export default defineComponent({
               (item: any) =>
                 item.address.toUpperCase() == pledge.Proxy.toUpperCase()
             );
-            debugger;
             selectAccount.value = selectAcc
               ? { ...selectAcc }
               : { address: pledge.Addr, name: "", icon: getRandomIcon() };
@@ -578,7 +675,9 @@ export default defineComponent({
       }
     });
     const isTimeQualified = computed(
-      () => blockNumber.value - accountInfoBlockNumber.value >= 72
+      () =>
+        blockNumber.value - accountInfoBlockNumber.value >=
+        (currentNetwork.value.chainId == 51888 ? 72 : 6307200)
     );
     const {
       netWorkList,
@@ -606,6 +705,9 @@ export default defineComponent({
     } = useExchanges();
     const name = ref("");
     const handleNameBlur = () => {};
+    console.log("===========");
+    console.log("===========");
+
     const { dispatch } = store;
     const amount = ref(200);
 
@@ -615,7 +717,7 @@ export default defineComponent({
     );
     const maxBalance = computed(() => {
       const v = parseInt(store.state.account.accountInfo.amount);
-      const bigAmount = new BigNumber(v).minus(1)
+      const bigAmount = new BigNumber(v).minus(1);
       return bigAmount.gte(0) ? bigAmount.toNumber() : 0;
     });
     const sliderDisabled = computed(() => {
@@ -629,7 +731,7 @@ export default defineComponent({
       return true;
     });
     const isWarningText = ref(false);
-    //Disable the status of the Submit one-click exchange button
+    // Disable the status of the Submit one-click exchange button
     const openDisabled = computed(() => {
       const v = parseFloat(store.state.account.accountInfo.amount);
       // @ts-ignore
@@ -637,14 +739,14 @@ export default defineComponent({
         exchangeStatus.value.exchanger_flag == true &&
         exchangeStatus.value.status != 2
       ) {
-        //The first fee was paid and the second one was not paid
+        // The first fee was paid and the second one was not paid
         if (v < 200) {
           return true;
         } else {
           return false;
         }
       }
-      //I didn't pay the first and I didn't pay the second
+      // I didn't pay the first and I didn't pay the second
       // @ts-ignore
       if (
         exchangeStatus.value.exchanger_flag == false &&
@@ -671,7 +773,6 @@ export default defineComponent({
       console.log(isAddAffirmDialog.value);
     };
 
-
     const addNumber = ref();
 
     const PledgedAmount = computed(() => {
@@ -683,7 +784,9 @@ export default defineComponent({
       try {
         isLoading.value = true;
         // An additional amount greater than 0 is an additional pledge, otherwise it is the first pledge
+
         // If the selected address is not the current account address, take the selected address -> proxy address
+
         const proxy_address =
           selectAccount.value.address.toUpperCase() ==
           accountInfo.value.address.toUpperCase()
@@ -705,14 +808,14 @@ export default defineComponent({
     const toCancel = () => {
       showCreateExchange.value = false;
     };
+
     const value = ref(50);
- 
+
     const toGo = () => {
       showExchange.value = false;
+
       showExchange1.value = true;
     };
-
-
 
     const isClose = ref(false);
     const isClosePladge = ref(false);
@@ -734,7 +837,6 @@ export default defineComponent({
       initData();
     };
 
-    // Close the deal
     watch(
       () => props.show,
       (n) => {
@@ -764,7 +866,7 @@ export default defineComponent({
         }
       }
     );
-    // Server selection
+    // server
     let serverIndex = ref(0);
     let money = ref(0);
     let moneyMin = ref(0);
@@ -804,37 +906,49 @@ export default defineComponent({
       successDialog.value = false;
       showCreateExchange.value = false;
     };
+    const networkList = computed(() => store.state.account.netWorkList);
+    const mainNetwork = computed(() =>
+      networkList.value.find((item: any) => item.id == "wormholes-network-1")
+    );
     const asynPwd2 = async (val: string) => {
       isError.value = false;
       if (!name.value) {
-        return true;
+        return t("minerspledge.nodeErr");
       }
       if (RegUrl.test(name.value)) {
-        // Verify node chainId
+        //Verify node chainId
         Toast.loading({
           message: t("common.veriPwd"),
         });
         try {
           const provider = ethers.getDefaultProvider(name.value);
           const { chainId } = await provider.getNetwork();
-          if (chainId != 51888 && chainId != 51889) {
+          debugger;
+          const mainProvider = ethers.getDefaultProvider(mainNetwork.value.URL);
+          debugger;
+          const { chainId: mainChainId } = await mainProvider.getNetwork();
+          console.warn("mainChainId", mainChainId);
+          console.warn("chainId", chainId);
+          if (chainId != mainChainId) {
             isError.value = true;
-            return `Invalid chainId ${chainId}`;
+            return t("minerspledge.invalidChainId", { chainId });
           }
           return true;
         } catch (err) {
           isError.value = true;
-          return "Invalid node";
+          return t("minerspledge.invalidNode");
         } finally {
           Toast.clear();
         }
       } else {
         isError.value = true;
-        return "Node format incorrect";
+        return t("minerspledge.nodeErr");
       }
     };
-   
+
+    // Disable the node input box
     const isOpen = ref(false);
+
     onMounted(async () => {
       await initData();
     });
@@ -879,6 +993,15 @@ export default defineComponent({
       () => store.state.account.exchangeStatus.exchanger_flag
     );
 
+    const Coefficient = computed(() => {
+      return ethAccountInfo.value.Coefficient;
+    });
+    const expresionClass = computed(() => {
+      const num = Number(Coefficient.value)
+      if (num < 40) return "sad";
+      if (num >= 40 && num <= 50) return "neutral";
+      if (num > 50) return "smile";
+    });
     console.log(isExchanger_flag);
     console.log("===============================11111111111==========");
 
@@ -894,6 +1017,7 @@ export default defineComponent({
     const isWarning = ref(false);
     const isError = ref(false);
     const formDom = ref();
+    const formDom2 = ref();
     const router = useRouter();
     const back = () => {
       router.back();
@@ -908,19 +1032,28 @@ export default defineComponent({
         onSubmitAddNumber();
         return;
       }
-      openConfirmInfoModal()
+      // The pledge amount
+      try {
+        // await formDom2.value.validate();
+        openConfirmInfoModal();
+      } catch (err) {
+        console.error(err);
+        // @ts-ignore
+        const [data] = err;
+        const { message } = data;
+        $toast.warn(message);
+      }
     };
 
-    const openConfirmInfoModal = async() => {
+    const openConfirmInfoModal = async () => {
       try {
-        // await formDom.value.validate();
         isError.value = false;
         isAffirmDialog.value = true;
       } catch (error) {
         isError.value = true;
         console.log(error);
       }
-    }
+    };
     const gradientColor = {
       "0%": "#C1E2F7",
       "100%": "#087ED7",
@@ -1021,18 +1154,17 @@ export default defineComponent({
       addNumber.value = addNumber2.value;
     };
     const handleAddBlur = () => {
-      debugger
+      debugger;
       const addNum = new BigNumber(addNumber.value);
       if (addNum.gte(accountInfo.value.amount)) {
         $toast.warn(t("createExchange.ispoor"));
         addNumber.value = maxBalance.value;
         return;
-      }else{
+      } else {
         nextTick(() => {
-          addNumber2.value = parseFloat(addNumber.value)
-        })
+          addNumber2.value = parseFloat(addNumber.value);
+        });
       }
-      
     };
 
     const showMinusModal = ref(false);
@@ -1041,8 +1173,82 @@ export default defineComponent({
       showMinusModal.value = true;
       minusNumber.value = v;
     };
-    const showClose = ref(true)
+    const showClose = ref(true);
+    const showExpresion = ref(false);
+
+    const showReconveryModal = ref(false);
+    const reconveryDetail = ref({});
+    const handleShowReconveryModal = async () => {
+      const sendAmount = (70 - Coefficient.value)/10;
+      if (
+        new BigNumber(accountInfo.value.amount).minus(1).lt(sendAmount)
+      ) {
+        $toast.warn(t("common.noMoney"));
+        return;
+      }
+      try {
+        Toast.loading({ duration: 0,forbidClick: true });
+        const tx = {
+          to: accountInfo.value.address,
+          value: ethers.utils.parseEther(sendAmount.toString()),
+          data: web3.utils.fromUtf8(`wormholes:{"type":26,"version":"v0.0.1"}`),
+        };
+        const gasFee = await getGasFee(tx);
+        reconveryDetail.value = {
+          address: accountInfo.value.address,
+          Coefficient: Coefficient.value,
+          amount: sendAmount,
+          gasFee,
+        };
+        showReconveryModal.value = true;
+      }catch(err: any){
+        $toast.warn(err.reason)
+      } finally {
+        Toast.clear();
+      }
+    };
+
+    const handleReCancel = () => {
+      showReconveryModal.value = false;
+    };
+
+    const {$tradeConfirm} = useTradeConfirm()
+    
+    const handleReConfirm = async() => {
+      console.warn(reconveryDetail.value)
+      const {amount}: any = reconveryDetail.value
+      const str = `wormholes:{"type":26,"version":"v0.0.1"}`;
+      const tx = {
+        value: amount,
+        data: web3.utils.fromUtf8(str),
+        to: accountInfo.value.address,
+        transitionType:'26'
+      }
+      const callBack = () => {
+        router.replace({name:'wallet'})
+      }
+      
+      $tradeConfirm.open({
+        disabled:[TradeStatus.pendding, TradeStatus.approve],
+        callBack
+      })
+      try {
+        const data = await dispatch('account/transaction', tx)
+        $tradeConfirm.update({status:"approve",callBack})
+        const receipt = await data.wallet.provider.waitForTransaction(data.hash)
+        $tradeConfirm.update({status:"success",callBack})
+        dispatch('account/waitTxQueueResponse')
+      }catch(err){
+        console.error(err)
+      }
+    };
     return {
+      showExpresion,
+      handleReCancel,
+      handleReConfirm,
+      reconveryDetail,
+      showReconveryModal,
+      handleShowReconveryModal,
       showClose,
       showMinusModal,
       handleMinusConfirm,
@@ -1057,10 +1263,12 @@ export default defineComponent({
       handleAccount,
       handleAddBlur,
       selectAccount,
+      formDom2,
       formatValueNumber,
       closeDialogSubmit,
       closeDialogTime,
       isDelegate,
+      expresionClass,
       selectChange,
       selectIcon,
       selectValueNam,
@@ -1077,6 +1285,7 @@ export default defineComponent({
       isAffirmDialog,
       isClose,
       ethAccountInfo,
+      Coefficient,
       isClosePladge,
       asynPwd2,
       back,
@@ -1150,6 +1359,7 @@ export default defineComponent({
   },
 });
 </script>
+
 <style lang="scss" scoped>
   .border-top {
     border-top: 1px solid #e4e7e8;
@@ -1394,6 +1604,65 @@ export default defineComponent({
 }
 </style>
 
+<style>
+.add-btn {
+  background: #3aae55;
+  line-height: 36px;
+  border-radius: 18px;
+  color: #fff;
+  padding: 0 10px;
+  margin-top: -10px;
+}
+.reset-tip,
+.reset-tooltip {
+  background: #85e19b !important;
+  border-color: #85e19b !important;
+}
+.reset-tooltip .el-popper__arrow::before {
+  background: #85e19b !important;
+  border-color: #85e19b !important;
+}
+.add-btn i {
+  font-size: 18px;
+}
+.smile {
+  color: #3aae55;
+}
+.smilebox {
+  background: #3aae55;
+}
+.sad {
+  color: #d73a49;
+}
+.sadbox {
+  background: #d73a49;
+}
+.sadbg .van-popover__arrow {
+  color: #d73a49;
+}
+.smilebg .van-popover__arrow {
+  color: #3aae55;
+}
+.neutral {
+  color: #f7bf03;
+}
+.neutralbox {
+  background: #f7bf03;
+}
+.neutralbg .van-popover__arrow {
+  color: #f7bf03;
+}
+.expresion {
+  width: 22px;
+  display: block;
+}
+.popover-expresion {
+  width: 160px;
+}
+.dialog-c {
+  top: 50% !important;
+}
+</style>
 <style scoped lang="scss">
 .btns {
   width: 100%;

@@ -60,12 +60,12 @@
       <!-- Transactions -->
       <CollectionCard
         @handleClick="handleView(item)"
-        v-for="item in transactionList"
+        v-for="item in txList"
         :key="item.address"
         :data="item"
       />
 
-      <no-data v-if="!transactionList.length" />
+      <no-data v-if="!txList.length" />
 
       <!-- View transaction details -->
       <van-dialog
@@ -93,7 +93,7 @@ import {
   toRefs,
   onBeforeMount,
 } from "vue";
-import { Icon, Popup, Empty, Dialog } from "vant";
+import { Icon, Popup, Empty, Dialog, Toast } from "vant";
 import CollectionCard from "@/popup/views/account/components/collectionCard/index.vue";
 import { addressMask, decimal } from "@/popup/utils/filters";
 import AcceptCode from "@/popup/views/account/components/acceptCode/index.vue";
@@ -101,6 +101,9 @@ import TransactionDetail from "@/popup/views/account/components/transactionDetai
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { hexValue } from "@ethersproject/bytes";
+import localforage from "localforage";
+import eventBus from "@/popup/utils/bus";
+
 import { useI18n } from "vue-i18n";
 export default {
   components: {
@@ -152,6 +155,49 @@ export default {
     const handleClose = () => {
       showTransactionModal.value = false;
     };
+    const txList = ref([]);
+    const getPageList = async () => {
+      console.warn('getPageList')
+      Toast.loading({ duration: 0 });
+      let time = setTimeout(async() => {
+        try {
+        txList.value = [];
+        const id = currentNetwork.value.id;
+        const targetAddress = accountInfo.value.address.toUpperCase();
+        const tx: any = await localforage.getItem(`txlist-${id}-${targetAddress}`);
+        if (tx && tx.length) {
+          const list = tx || [];
+          if (tokenContractAddress) {
+            txList.value = list.filter(
+              (item: any) =>
+                item.tokenAddress &&
+                item.tokenAddress.toUpperCase() ==
+                  tokenContractAddress.toString().toUpperCase()
+            );
+          } else {
+            txList.value = list.filter((item: any) => !item.tokenAddress);
+          }
+          console.warn('txList.value', txList.value)
+        }
+      } finally {
+        Toast.clear();
+      }
+      clearTimeout(time)
+      },50)
+    };
+    onMounted(async () => {
+      getPageList()
+      store.dispatch("account/waitTxQueueResponse", {time: null, callback(e: any){
+        console.warn('e', e)
+  
+      }}).then(res => {
+        if(res !== true){
+          eventBus.off('txPush')
+          eventBus.off('txupdate')
+        getPageList()
+        }
+      });
+    });
     return {
       t,
       accountInfo,
@@ -166,6 +212,7 @@ export default {
       currentNetwork,
       transactionList,
       pageData,
+      txList
     };
   },
 };

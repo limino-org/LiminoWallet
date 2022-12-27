@@ -57,6 +57,8 @@
   </div>
 </template>
 <script lang="ts">
+import { TradeStatus } from '@/popup/plugins/tradeConfirmationsModal/tradeConfirm'
+
 import { defineComponent, ref, Ref, watch, SetupContext, reactive, computed } from 'vue'
 import { Dialog, Button, Field, NumberKeyboard, Toast, Icon, Popover } from 'vant'
 import { addressMask, decimal } from '@/popup/utils/filters'
@@ -154,7 +156,7 @@ export default defineComponent({
     const callBack = () => {
             router.replace({name:'wallet'})
           }
-    const handleComfirm = () => {
+    const handleComfirm = async() => {
       showModal.value = false
        const params = {
         ...props.data,
@@ -171,17 +173,22 @@ export default defineComponent({
       const { value } = props.data
       // !value ? token Transaction: ordinary transaction
       nextLoading.value = true
-      $tradeConfirm.open({status:"pendding"})
-      store
+      $tradeConfirm.open({status:"pendding",disabled: [TradeStatus.pendding],})
+      try {
+        const txData = await store
         .dispatch(value ? 'account/transaction' : 'account/tokenTransaction', params)
-        .then(() => {
-          $tradeConfirm.update({status:"approve"})
-        })
-        .catch((err: any) => {
-          $tradeConfirm.update({status:"fail",callBack})
-          Toast(err.reason)
-        })
-        .finally(() => (nextLoading.value = false))
+        $tradeConfirm.update({status:"approve",callBack})
+
+        await store.dispatch('account/waitTxQueueResponse')
+        $tradeConfirm.update({status:"success",callBack})
+      }catch(err: any){
+        console.warn('err', err)
+          $tradeConfirm.update({status:"fail",failMessage: err.reason,callBack})
+          // $tradeConfirm.hide()
+          // $toast.warn(err.reason)
+      }finally{
+        nextLoading.value = false
+      }
     }
     const totalAmount = computed(() => {
       const { amount, value, gasPrice } = props.data
