@@ -64,7 +64,7 @@
     </div>
     <!-- 3.speed of progress -->
     <div class="progress-box pl-10 pr-10 mt-10">
-      <ProgressBar :value="hasChooseNum" :own="hasChooseNum" :total="totalChip" :ratio="ratio" :maxRadio="0.143" />
+      <ProgressBar :value="hasChooseNum" :own="hasChooseNum" :total="totalChip" :ratio="ratio" :maxRadio="t2Ratio" />
     </div>
     <!-- snft- info -->
     <div class="snft-form van-hairline--surround m-14">
@@ -703,6 +703,9 @@ export default {
     const chooseSnftData = computed(
       () => pageData.value.children[swiperIdx.value]
     );
+    const t2Ratio = computed(() => {
+      return state.configuration.setting.conversion.t2
+    })
     const showModal = ref(false);
 
     // Total amount
@@ -836,7 +839,7 @@ export default {
       if (selectFlag) {
         selectStakingList.value.push(data);
         stakingTotalAmount.value = parseFloat(
-          new BigNumber(snfts.length).multipliedBy(0.143).toFixed(6)
+          new BigNumber(snfts.length).multipliedBy(t1).toFixed(6)
         );
         showStakingModal.value = true;
       } else {
@@ -869,9 +872,8 @@ export default {
       if (selectFlag) {
         selectStakingList.value.push(chooseSnftData.value);
         stakingTotalAmount.value = parseFloat(
-          new BigNumber(snfts.length).multipliedBy(0.143).toFixed(6)
+          new BigNumber(snfts.length).multipliedBy(t1).toFixed(6)
         );
-        // stakingTotalAmount.value = new BigNumber(snfts.length).multipliedBy(0.143).toFixed(6)
         showStakingModal.value = true;
       } else {
         Toast(t("sendSNFT.notselected"));
@@ -918,6 +920,7 @@ export default {
       showReStakingBtn,
       showSendBtn,
       hasDisabled,
+      t2Ratio,
       handleStaking,
       handleSuccess,
       showStakingModal,

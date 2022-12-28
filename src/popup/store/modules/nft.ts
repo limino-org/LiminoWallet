@@ -56,9 +56,9 @@ export default {
       sessionStorage.setItem("blockNumber", blockNumber)
       // const data = await wallet.sendTransaction(tx1)
       const data = await store.dispatch('account/transaction',tx1)
-      const receipt = await data.wallet.provider.waitForTransaction(data.hash)
-      await store.dispatch('account/waitTxQueueResponse')
-      return receipt
+      // const receipt = await data.wallet.provider.waitForTransaction(data.hash)
+      // await store.dispatch('account/waitTxQueueResponse')
+      return data
     },
     // Personal casting NFT
     async nftCreate({ commit, state }: any, nft_data: any) {
