@@ -271,7 +271,7 @@ export default defineComponent({
                 total = new BigNumber(MergeNumber).multipliedBy(0.143).plus(total).toNumber();
                 break;
               case 0:
-                total = new BigNumber(snfts.length).multipliedBy(0.095).plus(total).toNumber();
+                total = new BigNumber(snfts.length).multipliedBy(0.03).plus(total).toNumber();
                 break;
             }
           }
@@ -450,7 +450,7 @@ export default defineComponent({
             const len = add.length
             if(len == 42) {
               countNum += 1
-              count = parseFloat(new BigNumber(count).plus(0.095).toFixed(8))
+              count = parseFloat(new BigNumber(count).plus(0.03).toFixed(8))
             }
             if(len == 41) {
               countNum += 16

@@ -314,19 +314,23 @@ export default defineComponent({
             break;
         }
         //debugger;
+        let transitionType = ''
         try {
           let str = "";
           switch (props.txtype) {
             // transfer
             case "2":
+              transitionType = '6'
               str = `wormholes:{"type":6,"nft_address":"${nftAdd}","version":"v0.0.1"}`;
               break;
             // pledge
             case "3":
+              transitionType = '7'
               str = `wormholes:{"type":7,"nft_address":"${nftAdd}","version":"0.0.1"}`;
               break;
             // redemption
             case "1":
+              transitionType = '8'
               str = `wormholes:{"type":8,"nft_address":"${nftAdd}","version":"0.0.1"}`;
               break;
           }
@@ -336,23 +340,12 @@ export default defineComponent({
             from: address,
             to: address,
             data: `0x${data3}`,
-          };
-          const receipt: any = await wallet.sendTransaction(tx1);
-          const { from, gasLimit, gasPrice, hash, nonce, to, type, value } =
-            receipt;
-          commit("account/PUSH_TXQUEUE", {
-            hash,
-            from,
-            gasLimit,
-            gasPrice,
-            nonce,
-            to,
-            type,
-            value,
+            transitionType,
             nft_address: nftAdd,
-            network: clone(currentNetwork),
             txType: TransactionTypes.other,
-          });
+            checkTxQueue: false
+          };
+          const receipt: any = await dispatch('account/transaction', tx1);
           $tradeConfirm.update({
             status: "approve",
           });
@@ -398,7 +391,7 @@ export default defineComponent({
         if(props.txtype === '1') {
         
         const rio = new BigNumber(props.selectTotal).div(new BigNumber(exchangeNum).plus(snftNum))
-        historyProfit.value = new BigNumber(rewardSNFTCount).multipliedBy(0.095).multipliedBy(rio).toFixed(5)
+        historyProfit.value = new BigNumber(rewardSNFTCount).multipliedBy(0.03).multipliedBy(rio).toFixed(5)
         }
         console.warn('eth_getAllStakers',props.txtype)
         if(props.txtype === '3') {
@@ -516,7 +509,7 @@ export default defineComponent({
           const len = add.length;
           if (len == 42) {
             countNum += 1;
-            count = parseFloat(new BigNumber(count).plus(0.095).toFixed(8));
+            count = parseFloat(new BigNumber(count).plus(0.03).toFixed(8));
           }
           if (len == 41) {
             countNum += 16;

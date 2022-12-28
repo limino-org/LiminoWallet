@@ -18,7 +18,7 @@ export const useGetTxReceipt = () => {
         try {
           const newWallet = await getWallet()
           for await (const iterator of txQueue) {
-            let {hash, transitionType, nft_address, blockNumber, network, txType, txId} = iterator
+            let {hash, transitionType, nft_address, blockNumber, network, txType, txId, sendData} = iterator
             const data1 = await newWallet.provider.waitForTransaction(hash);
             let convertAmount = ''
             if(nft_address) {
@@ -45,7 +45,7 @@ export const useGetTxReceipt = () => {
                 );
                 const {MergeLevel, MergeNumber} = nftAccountInfo
                 if(MergeLevel === 0) {
-                  convertAmount = new BigNumber(MergeNumber).multipliedBy(0.095).toNumber()
+                  convertAmount = new BigNumber(MergeNumber).multipliedBy(0.03).toNumber()
                 }else if(MergeLevel === 1) {
                   convertAmount = new BigNumber(MergeNumber).multipliedBy(0.143).toNumber()
                 } else if(MergeLevel === 2) {
@@ -56,7 +56,7 @@ export const useGetTxReceipt = () => {
               }
             }
             DEL_TXQUEUE({ ...iterator,txId });
-            UPDATE_TRANSACTION({ ...iterator,txId, receipt: data1 });
+            UPDATE_TRANSACTION({ ...iterator,txId, receipt: data1,sendData:{...sendData,convertAmount} });
           }
           resolve(true)
         } catch (err) {

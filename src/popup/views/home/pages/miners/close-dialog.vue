@@ -121,7 +121,7 @@ export default {
   setup(props: any, context: SetupContext) {
     const {t} = useI18n()
     let Time = ref(3);
-    const {commit} = useStore()
+    const {commit,dispatch} = useStore()
     nextTick(() => {
       let setIntervalValue = setInterval(() => {
         Time.value -= 1;
@@ -167,33 +167,11 @@ export default {
           from: accountInfo.value.address,
           to: accountInfo.value.address,
           data: `0x${data3}`,
+          transitionType:'25'
         };
-        console.log(tx1);
-
-        const wallet = await getWallet();
-        const data: any = await wallet.sendTransaction(tx1);
-        const { from, gasLimit, gasPrice, nonce,  type, value, hash, to } = data;
-      commit("account/PUSH_TXQUEUE", {
-              hash,
-              from,
-              gasLimit,
-              gasPrice,
-              nonce,
-              to,
-              type,
-              value,
-              transitionType: '25',
-              network: clone(store.state.account.currentNetwork),
-              txType: TransactionTypes.other
-            });
-        const receipt = await wallet.provider.waitForTransaction(hash)
-    //         const rep = handleGetTranactionReceipt(
-    //   TransactionTypes.contract,
-    //   receipt,
-    //   data,
-    //   clone(store.state.account.currentNetwork)
-    // );
-    // commit("account/PUSH_TRANSACTION", rep);
+        // const data: any = await wallet.sendTransaction(tx1);
+        const data: any = await dispatch('account/transaction', tx1);
+        const receipt = await data.wallet.provider.waitForTransaction(data.hash)
     await store.dispatch('account/waitTxQueueResponse')
         console.log(receipt);
         console.log("receiptreceiptreceiptreceiptreceipt");

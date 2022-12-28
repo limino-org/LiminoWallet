@@ -52,32 +52,10 @@ export default {
       };
       sessionStorage.setItem('nft_address', nft_address)
       sessionStorage.setItem("blockNumber", blockNumber)
-      const data = await wallet.sendTransaction(tx1)
-      const { from, gasLimit, gasPrice, nonce, to, type, value, hash } =data;
-      commit("account/PUSH_TXQUEUE", {
-              hash,
-              from,
-              gasLimit,
-              gasPrice,
-              nonce,
-              to,
-              type,
-              value,
-              network: clone(store.state.account.currentNetwork),
-              txType: TransactionTypes.other,
-              transitionType: '6',
-            });
-      const receipt = await wallet.provider.waitForTransaction(data.hash)
-      // const symbol = store.state.account.currentNetwork.currencySymbol
-      // const rep: TransactionReceipt = handleGetTranactionReceipt(
-      //   TransactionTypes.other,
-      //   receipt,
-      //   data,
-      //   clone(store.state.account.currentNetwork)
-      // );
-      // // Add to transaction
-      // store.commit("account/PUSH_TRANSACTION", rep);
-      store.dispatch('account/waitTxQueueResponse')
+      // const data = await wallet.sendTransaction(tx1)
+      const data = await store.dispatch('account/transaction',tx1)
+      const receipt = await data.wallet.provider.waitForTransaction(data.hash)
+      await store.dispatch('account/waitTxQueueResponse')
       return receipt
     },
     // Personal casting NFT
@@ -158,16 +136,6 @@ export default {
               txType: TransactionTypes.other
             });
       console.log('11111', hash);
-      // const receipt = await wallet.provider.waitForTransaction(hash)
-      //   const symbol = store.state.account.currentNetwork.currencySymbol
-      //   const rep: TransactionReceipt = handleGetTranactionReceipt(
-      //     TransactionTypes.other,
-      //     receipt,
-      //     data,
-      //     clone(store.state.account.currentNetwork)
-      //   );
-      //   // Add to transaction
-      //   store.commit("account/PUSH_TRANSACTION", rep);
       return data
     },
     // Get asset list according to owner

@@ -728,8 +728,7 @@ export default {
     // New trades are pushed to the trade queue
     async PUSH_TXQUEUE(state: State, tx: any) {
       const { network: { id }, from } = tx
-      const date = new Date()
-      debugger
+      console.warn('push_tx', tx)
       const queuekey = `txQueue-${id}-${from.toUpperCase()}`
       const list: any = await localforage.getItem(queuekey)
       const txQueue = list && list.length ? list : []

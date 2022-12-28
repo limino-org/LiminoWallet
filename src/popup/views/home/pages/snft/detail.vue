@@ -728,7 +728,7 @@ export default {
         console.log('---222', len)
         if (len) {
           return parseFloat(
-            new BigNumber(len).multipliedBy(0.095).toFixed(6)
+            new BigNumber(len).multipliedBy(0.03).toFixed(6)
           );
         }
 
@@ -788,7 +788,7 @@ export default {
             total = 0.143;
             break;
           }
-          total = 0.095;
+          total = 0.03;
           break;
         case "2":
           if (pageData.value.MergeLevel === 2 && pageData.value.Chipcount) {
@@ -800,10 +800,10 @@ export default {
             break;
           }
           if (MergeLevel === 0) {
-            total = 0.095;
+            total = 0.03;
             break;
           }
-          total = 0.095;
+          total = 0.03;
           break;
       }
       return total;

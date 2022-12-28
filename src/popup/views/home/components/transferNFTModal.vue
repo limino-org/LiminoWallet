@@ -219,7 +219,7 @@ export default defineComponent({
     },
     ratio:{
       type: Number,
-      default: 0.095
+      default: 0.03
     }
   },
   setup(props: any, context: SetupContext) {
@@ -367,25 +367,13 @@ export default defineComponent({
                 from: address,
                 to: address,
                 data: `0x${data3}`,
-              };
-              const receipt: any = await wallet.sendTransaction(tx1);
-              txQueue.push(receipt);
-              const { from, gasLimit, gasPrice, hash, nonce, to, type, value } =
-                receipt;
-              commit("account/PUSH_TXQUEUE", {
-                hash,
-                from,
-                gasLimit,
-                gasPrice,
-                nonce,
-                to,
-                type,
-                value,
                 transitionType,
                 nft_address: iterator,
-                network: clone(currentNetwork),
                 txType: TransactionTypes.other,
-              });
+                checkTxQueue: false
+
+              };
+              const receipt: any = await dispatch('account/transaction', tx1);
             }
             $tradeConfirm.update({
               status: "approve",
@@ -447,33 +435,14 @@ export default defineComponent({
                   to: address,
                   data: `0x${data3}`,
                   value: ethers.utils.parseEther("0"),
-                };
-                const receipt: any = await wallet.sendTransaction(tx1);
-                txQueue.push(receipt);
-                const {
-                  from,
-                  gasLimit,
-                  gasPrice,
-                  hash,
-                  nonce,
-                  to,
-                  type,
-                  value,
-                } = receipt;
-                commit("account/PUSH_TXQUEUE", {
-                  hash,
-                  from,
-                  gasLimit,
-                  gasPrice,
-                  nonce,
-                  to,
-                  type,
-                  value,
                   transitionType: "6",
                   nft_address: nft_address,
                   network: clone(currentNetwork),
                   txType: TransactionTypes.other,
-                });
+                  checkTxQueue: false
+
+                };
+                const receipt: any = await dispatch('account/transaction', tx1);
               }
             }
             $tradeConfirm.update({ status: "approve" });
@@ -513,25 +482,13 @@ export default defineComponent({
                 to: address,
                 data: `0x${data3}`,
                 value: ethers.utils.parseEther("0"),
-              };
-              const receipt: any = await wallet.sendTransaction(tx1);
-              txQueue.push(receipt);
-              const { from, gasLimit, gasPrice, hash, nonce, to, type, value } =
-                receipt;
-              commit("account/PUSH_TXQUEUE", {
-                hash,
-                from,
-                gasLimit,
-                gasPrice,
-                nonce,
-                to,
-                transitionType: "6",
-                type,
-                value,
-                network: clone(currentNetwork),
                 nft_address,
                 txType: TransactionTypes.other,
-              });
+                transitionType: "6",
+                checkTxQueue: false
+
+              };
+              const receipt: any = await dispatch('account/transaction', tx1);
             }
           }
           $tradeConfirm.update({ status: "approve" });
@@ -619,7 +576,7 @@ export default defineComponent({
         if(props.txtype === '1') {
         
         const rio = new BigNumber(props.selectTotal).div(new BigNumber(exchangeNum).plus(snftNum))
-        historyProfit.value = new BigNumber(rewardSNFTCount).multipliedBy(0.095).multipliedBy(rio).toFixed(5)
+        historyProfit.value = new BigNumber(rewardSNFTCount).multipliedBy(0.03).multipliedBy(rio).toFixed(5)
         }
         console.warn('eth_getAllStakers',props.txtype)
         if(props.txtype === '3') {
