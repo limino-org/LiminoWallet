@@ -422,7 +422,7 @@ img {
     height: 422PX;
   }
   .modifNameModal {
-    height: 298PX;
+    min-height: 298PX;
   }
   
 // When the width is less than 750, control the pop-up window width to guide the user to operate
@@ -558,7 +558,7 @@ img {
   height: 422PX;
 }
 .modifNameModal {
-  height: 248PX;
+  min-height: 248PX;
 }
 }
 
