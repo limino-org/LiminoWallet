@@ -12,7 +12,7 @@ import transfer from './modules/transfer'
 import mnemonic from './modules/mnemonic'
 import nft from './modules/nft'
 import VuexPersistence from 'vuex-persist';
-
+import configuration from './modules/configuration'
 const vuexLocal = new VuexPersistence({
   storage: localforage,
   asyncStorage: true,
@@ -24,7 +24,8 @@ const vuexLocal = new VuexPersistence({
       price,
       system,
       transfer,
-      mnemonic
+      mnemonic,
+      configuration
     } = store
     const {
       amountType,
@@ -88,7 +89,8 @@ const vuexLocal = new VuexPersistence({
         show16,
         wallet_token
       },
-      mnemonic
+      mnemonic,
+      configuration
     }))
   },
 });
@@ -107,7 +109,8 @@ const store = createStore({
     common,
     transfer,
     nft,
-    mnemonic
+    mnemonic,
+    configuration
   },
   plugins: [
     vuexLocal.plugin

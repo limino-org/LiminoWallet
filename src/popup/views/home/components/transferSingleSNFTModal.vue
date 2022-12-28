@@ -486,8 +486,10 @@ export default defineComponent({
 
     // cacl ratio
     const ratio = computed(() => {
+            //  @ts-ignore
+            const {t0,t1,t2,t3} = state.configuration.setting.conversion
       if (props.txtype == "1" || props.txtype == "3") {
-        return 0.143;
+        return t1;
       }
       if (props.txtype == "2") {
         const list = [];
@@ -509,13 +511,13 @@ export default defineComponent({
           const len = add.length;
           if (len == 42) {
             countNum += 1;
-            count = parseFloat(new BigNumber(count).plus(0.03).toFixed(8));
+            count = parseFloat(new BigNumber(count).plus(t0).toFixed(8));
           }
           if (len == 41) {
             countNum += 16;
             count = parseFloat(
               new BigNumber(count)
-                .plus(new BigNumber(16).multipliedBy(0.143))
+                .plus(new BigNumber(16).multipliedBy(t1))
                 .toFixed(8)
             );
           }
@@ -523,7 +525,7 @@ export default defineComponent({
             countNum += 256;
             count = parseFloat(
               new BigNumber(count)
-                .plus(new BigNumber(256).multipliedBy(0.271))
+                .plus(new BigNumber(256).multipliedBy(t2))
                 .toFixed(8)
             );
           }

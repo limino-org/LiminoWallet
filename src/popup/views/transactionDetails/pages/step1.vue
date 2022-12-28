@@ -372,6 +372,7 @@ export default {
         sessionStorage.setItem("new tx", JSON.stringify(data));
         const receipt = await wallet.provider.waitForTransaction(data.hash, null, 60000);
         await store.dispatch('account/waitTxQueueResponse')
+        getPageList()
       } catch (err) {
         console.error(err);
         Toast(err.reason)
@@ -449,6 +450,7 @@ export default {
         sessionStorage.setItem("new tx", JSON.stringify(data));
         const receipt = await wallet.provider.waitForTransaction(data.hash, null, 60000);
         await store.dispatch('account/waitTxQueueResponse')
+        getPageList()
       } catch (err) {
         console.error(err);
         Toast(err.reason)
@@ -486,6 +488,7 @@ export default {
       pageData,
       toBrowser,
       toUsdSymbol,
+      reloading,
       txList,
     };
   },

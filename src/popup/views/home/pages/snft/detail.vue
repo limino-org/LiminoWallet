@@ -707,12 +707,14 @@ export default {
 
     // Total amount
     const totalAmount = computed(() => {
+                  //  @ts-ignore
+                  const {t0,t1,t2,t3} = state.configuration.setting.conversion
       if (
         pageData.value.MergeLevel === 2 &&
         pageData.value.Chipcount
       ) {
         return new BigNumber(pageData.value.MergeNumber || 1)
-          .multipliedBy(0.271)
+          .multipliedBy(t2)
           .toNumber();
       }
       console.log('---000')
@@ -720,7 +722,7 @@ export default {
         const { MergeLevel, snfts, pledgestate, Chipcount, selectFlag } = data;
         if (MergeLevel === 1 && Chipcount && selectFlag) {
           return parseFloat(
-            new BigNumber(Chipcount).multipliedBy(0.143).toFixed(6)
+            new BigNumber(Chipcount).multipliedBy(t1).toFixed(6)
           );
         }
   
@@ -728,7 +730,7 @@ export default {
         console.log('---222', len)
         if (len) {
           return parseFloat(
-            new BigNumber(len).multipliedBy(0.03).toFixed(6)
+            new BigNumber(len).multipliedBy(t0).toFixed(6)
           );
         }
 
@@ -767,6 +769,8 @@ export default {
 
     // Exchange rate by selected quantity 256 by single snft
     const ratio = computed(() => {
+                       //  @ts-ignore
+                       const {t0,t1,t2,t3} = state.configuration.setting.conversion
       let total = 0;
       const {
         MergeLevel,
@@ -781,29 +785,29 @@ export default {
         case "1":
         case "3":
           if (pageData.value.MergeLevel === 2 && pageData.value.Chipcount) {
-            total = 0.271;
+            total = t2;
             break;
           }
           if (MergeLevel === 1) {
-            total = 0.143;
+            total = t1;
             break;
           }
-          total = 0.03;
+          total = t0;
           break;
         case "2":
           if (pageData.value.MergeLevel === 2 && pageData.value.Chipcount) {
-            total = 0.271;
+            total = t2;
             break;
           }
           if (MergeLevel === 1) {
-            total = 0.143;
+            total = t1;
             break;
           }
           if (MergeLevel === 0) {
-            total = 0.03;
+            total = t0;
             break;
           }
-          total = 0.03;
+          total = t0;
           break;
       }
       return total;
@@ -813,12 +817,14 @@ export default {
     const showStakingModal = ref(false);
     const stakingTotalAmount = ref(0);
     const handleStaking = () => {
+                             //  @ts-ignore
+                             const {t0,t1,t2,t3} = state.configuration.setting.conversion
       if (pageData.value.MergeLevel === 2 && pageData.value.Chipcount) {
         selectStakingList.value.push(pageData.value);
         stakingTotalAmount.value = new BigNumber(
           pageData.value.MergeNumber || 256
         )
-          .multipliedBy(0.271)
+          .multipliedBy(t2)
           .toNumber();
         showStakingModal.value = true;
         return;
@@ -840,6 +846,8 @@ export default {
     };
 
     const handleReStaking = () => {
+      //  @ts-ignore
+      const {t0,t1,t2,t3} = state.configuration.setting.conversion
       if (
         pageData.value.MergeLevel === 2 &&
         pageData.value.Chipcount &&
@@ -849,7 +857,7 @@ export default {
         stakingTotalAmount.value = new BigNumber(
           pageData.value.MergeNumber || 256
         )
-          .multipliedBy(0.271)
+          .multipliedBy(t2)
           .toNumber();
         showStakingModal.value = true;
         return;

@@ -52,6 +52,10 @@ export const getContractAddress = () => {
     return httpGet(`${wormholesscanApi}/ERBPay.json?${new Date().getTime()}`)
 }
 
+export const getConfiguration = () => {
+    return httpGet(`https://www.wormholes.com/upload/configuration.json?${new Date().getTime()}`)
+}
+
 
 // Query the account information of the specified address
 export const getAccountAddr = (address: string) => {

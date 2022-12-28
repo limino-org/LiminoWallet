@@ -97,6 +97,7 @@ export default {
     onBeforeMount(async () => {
       initWallet();
       dispatch("account/getContractAddress");
+      dispatch('configuration/getConfiguration');
       useEvent();
     });
 

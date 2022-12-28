@@ -49,6 +49,8 @@ export default {
         to: address,
         data: `0x${data3}`,
         value: utils.parseEther("0"),
+        transitionType:'6',
+        checkTxQueue: false
       };
       sessionStorage.setItem('nft_address', nft_address)
       sessionStorage.setItem("blockNumber", blockNumber)
@@ -72,6 +74,7 @@ export default {
         to: address,
         data: `0x${data3}`,
         value: utils.parseEther("0"),
+        checkTxQueue: false
       };
       const data = await wallet.sendTransaction(tx)
       const { from, gasLimit, gasPrice, nonce, to, type, value, hash } =data;
@@ -90,17 +93,7 @@ export default {
 
             });
       const receipt = await wallet.provider.waitForTransaction(data.hash)
-      // ts-ignore
-      // const symbol = store.state.account.currentNetwork.currencySymbol
-      // const rep: TransactionReceipt = handleGetTranactionReceipt(
-      //   TransactionTypes.other,
-      //   receipt,
-      //   data,
-      //   clone(store.state.account.currentNetwork)
-      // );
-      // // Add to transaction
-      // store.commit("account/PUSH_TRANSACTION", rep);
-      store.dispatch('account/waitTxQueueResponse')
+      await store.dispatch('account/waitTxQueueResponse')
       return receipt
     },
     // Transfer NFT
@@ -116,26 +109,12 @@ export default {
       const tx = {
         from: address,
         to,
-        data: `0x${data3}`
+        data: `0x${data3}`,
+        transitionType:'1',
+
       };
       console.warn('tx', tx)
-      const data = await wallet
-      .sendTransaction(tx)
-      const { from, gasLimit, gasPrice, nonce,  type, value, hash } =data;
-      store.commit("account/PUSH_TXQUEUE", {
-              hash,
-              from,
-              gasLimit,
-              gasPrice,
-              nonce,
-              to,
-              type,
-              value,
-              transitionType: '1',
-              network: clone(store.state.account.currentNetwork),
-              txType: TransactionTypes.other
-            });
-      console.log('11111', hash);
+      const data = await store.dispatch('account/transaction', tx)
       return data
     },
     // Get asset list according to owner

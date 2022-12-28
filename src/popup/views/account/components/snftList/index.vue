@@ -434,6 +434,9 @@ export default defineComponent({
       //   return 0;
       // }
       let add = 0;
+      //  @ts-ignore
+      const {t0,t1,t2,t3} = store.state.configuration.setting.conversion
+
       // According to the number of each collection selected, 16 all selected according to 0.225, otherwise according to 0.15 fragments 0.1
       Object.keys(checkObjs.data).forEach((key) => {
         const len = checkObjs.data[key].length;
@@ -441,28 +444,22 @@ export default defineComponent({
           // If the collection is not full
           checkObjs.data[key].forEach((item: any) => {
             const { Chipcount, MergeLevel, MergeNumber,snfts } = item;
-            // if(MergeLevel === 2) {
-            //   add += new BigNumber(MergeNumber)
-            //  .multipliedBy(0.271)
-            //   .plus(add)
-            //   .toNumber();
-            // }
             switch (MergeLevel) {
               case 0:
                 add = new BigNumber(snfts.length)
-                  .multipliedBy(0.03)
+                  .multipliedBy(t0)
                   .plus(add)
                   .toNumber();
                 break;
               case 1:
                 add = new BigNumber(MergeNumber)
-                  .multipliedBy(0.143)
+                  .multipliedBy(t1)
                   .plus(add)
                   .toNumber();
                 break;
               case 2:
                 add = new BigNumber(MergeNumber)
-                  .multipliedBy(0.271)
+                  .multipliedBy(t2)
                   .plus(add)
                   .toNumber();
                 break;
@@ -628,6 +625,9 @@ export default defineComponent({
 
         // Exchange rate by selected quantity 256 by single snft
     const ratio = computed(() => {
+      //  @ts-ignore
+      const {t0,t1,t2,t3} = store.state.configuration.setting.conversion
+
       let total = 0
       let am = 0
       const selectAddrs = checkObjs.data
@@ -639,13 +639,13 @@ export default defineComponent({
             const { MergeLevel } = item
             switch(MergeLevel){
               case 2:
-              am += 0.271
+              am += t2
                 break;
               case 1:
-              am += 0.143
+              am += t1
                 break;
               case 0:
-              am += 0.03
+              am += t0
                 break;
             }
           })
