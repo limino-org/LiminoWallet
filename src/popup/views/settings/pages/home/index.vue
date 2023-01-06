@@ -49,11 +49,16 @@
       </template>
       <setting-card :label="t('setting.wormHolesIntroduction')" />
     </SettingClass> -->
+    <div class="btn-groups">
+      <div class="container flex center  pl-26 pr-26">
+        <van-button type="primary" block :loading="loading" @click="handleClearCanche">{{ t('common.clearCanche') }}</van-button>
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts">
 import Vue, { computed, ref } from 'vue'
-import { Icon, Toast, Button, Sticky, Field } from 'vant'
+import { Icon, Toast, Button, Sticky, Field, } from 'vant'
 import { useRoute, useRouter } from 'vue-router'
 import SettingCard from '@/popup/views/settings/components/settingCard.vue'
 import SettingClass from '@/popup/views/settings/components/settingClass.vue'
@@ -63,12 +68,15 @@ import NavHeader from '@/popup/components/navHeader/index.vue'
 import { Language, languages } from '@/popup/enum/language'
 import ToggleLanguageModal from '@/popup/views/settings/components/toggleLanguage.vue'
 import ToggleCurrencyModal from '@/popup/views/settings/components/toggleCurrency.vue'
+import { useToast } from '@/popup/plugins/toast'
+import localforage from "localforage";
 export default {
   name: 'settings',
   components: {
     NavHeader,
     [Icon.name]: Icon,
     [Sticky.name]:Sticky,
+    [Button.name]: Button,
     SettingClass,
     SettingCard,
     ToggleLanguageModal,
@@ -79,6 +87,7 @@ export default {
     const route = useRoute()
     const router = useRouter()
     const store = useStore()
+    const {state} = store
     const clickLeft = () => {}
     const lang = computed(() => {
       const language = (navigator.language ? navigator.language : navigator.language).toLowerCase() // @ts-ignore // @ts-ignore
@@ -103,14 +112,39 @@ export default {
     const handleToggleCurrency = () => {
       showCurrency.value = true
     }
-    
+    const {$toast} = useToast()
 
     const towebsite = () => {
       window.open('https://www.wormholes.com/')
     }
+    const loading = ref(false)
+    const handleClearCanche = async () => {
+      loading.value = true
+      try {
+        const accountList = state.account.accountList
+        const netWorkList = state.account.netWorkList
+      for await (const network of netWorkList) {
+        for await (const accountInfo of accountList) {
+          const { id } = network
+          const { address } = accountInfo
+          const addrUp = address.toUpperCase()
+          const key1 = `txlist-${id}-${addrUp}`
+          const key2 = `txQueue-${id}-${addrUp}`
+          await localforage.removeItem(key1)
+          await localforage.removeItem(key2)
+          //'txQueue' 'txlist'
+        }
+      }
+      $toast.success(t('common.clearCancheSuccess'))
+      }finally{
+        loading.value = false
+      }
+    }
 
     return {
       t,
+      loading,
+      handleClearCanche,
       clickLeft,
       routerPush,
       languages,

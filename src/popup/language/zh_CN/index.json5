@@ -1167,6 +1167,7 @@
 
 	},
 	"common": {
+		clearCanche:"清除缓存",
 		commingsoon: "即将来临",
 		setting: '设置',
 		failedtoload: '加载钱包失败',

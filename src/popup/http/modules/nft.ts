@@ -110,8 +110,8 @@ export function querySnftByCollection(params ={}){
  * @param params count
  * @returns 
  */
-export function QuerySnftChip(params = {}){
-    return httpPost(`${snftUrl4}/v2/querySnftChip`, params)
+export function QuerySnftChip(params = {}, cancelToken = null){
+    return httpPost(`${snftUrl4}/v2/querySnftChip`, params, null , cancelToken)
 }
 
 

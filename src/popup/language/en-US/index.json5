@@ -1155,6 +1155,7 @@
 		network: 'Network'
 	},
 	"common": {
+		clearCanche:"Clear Cache",
 		commingsoon: "Coming Soon!",
 		setting: 'Setting',
 		failedtoload: 'Failed to load wallet',
