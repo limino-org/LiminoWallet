@@ -139,7 +139,7 @@
 		access: 'Access',
 		cmsandExchange: 'CMS & Exchange',
 		back: 'Back',
-		toBrowser: "View full history on Wormholesscan.",
+    	toBrowser: "View full history on {link}",
 		scanLink: "Wormholesscan",
 		convertComplete: "For complete",
 		selectSNFT: "You have not selected any S-NFTs",
@@ -722,16 +722,21 @@
 		transitionHistory: "Transaction History"
 	},
 	"transationHistory": {
-		transationHistory: "Transation History",
-		all: "All",
-		receive: "Receive",
-		send: "Send",
-		swap: "Swap",
-		other: "Other",
-		confirmed: 'confirmed',
-		failed: 'failed',
-		contract: 'Contract',
-		pendding:"pendding"
+    transationHistory: "Transation History",
+    all: "All",
+    receive: "Receive",
+    send: "Send",
+    swap: "Swap",
+    other: "Other",
+    confirmed: 'confirmed',
+    failed: 'Failed',
+    contract: 'Contract',
+    successly: "Success",
+    pendding: "Waiting",
+    cancelTx: "Are you sure to cancel the transaction with #{nonce}?",
+    cancelDealTit: "Cancel transaction",
+    canceled:'Canceled',
+    accelerated:'Accelerated'
 	},
 	"currencyConversion": {
 		"currencyConversion": "Currency Conversion",
@@ -1018,6 +1023,7 @@
 		"downQR": "Save QR Code to album"
 	},
 	"createExchange": {
+		commission: "This is the {value}% fee your marketplace will charge sellers who transact on your marketplace.",
 		"welcometo": "Welcome",
 		"takesabout": "Takes about 1 day to get ≈",
 		"max": "Max",
@@ -1103,7 +1109,6 @@
 		close_success: "The pledge has been successfully unfrozen for you, the pledged amount has been returned to your account, you can also view the details of the transaction through the transaction history",
 		close_wrong: "I'm very sorry, because of some accident, the operation failed, you can go to the transaction history to check the specific information of the transaction",
 		formCharge: "Commission Charge",
-		commission: "This is the % fee your marketplace will charge sellers who transact on your marketplace.",
 		placeholder: "Enter {min}～{max}",
 		ispoor: "Please make sure the balance is sufficient",
 		addPl: "Stake Additional Tokens",
@@ -1128,7 +1133,9 @@
 		addStaking:"The transaction will help you stake addtional ERBs into your accounts.Your chance of getting rewards will be increased.Your additional ERBs will also can be redeemed after months。",
 		redeem:"This is the amount of ERB you want to redeem",
 		convert:"Convert",
-		desc3:"This the button that you can convert your S-NFT to ERB with Wormholes Blockchain."
+		desc3:"This the button that you can convert your S-NFT to ERB with Wormholes Blockchain.",
+		    insufficientMoney:"After staking ,your balance will be less than 201 ERB wihich is not enough to set up your market on our server.You will need to get extra {value} ERB."
+
 	},
 	"createExchangeSuccess": {
 		"congratulations": "Congratulations",
@@ -1155,6 +1162,7 @@
 		network: 'Network'
 	},
 	"common": {
+		clearCancheSuccess:"Cache cleared successfully",
 		clearCanche:"Clear Cache",
 		commingsoon: "Coming Soon!",
 		setting: 'Setting',
@@ -1224,6 +1232,11 @@
 		unisUnfreeze:"The pledge has not been unfrozen",
 		marketplace:"Marketplace",
 		validator:"Validator",
+		noMoney: "Your account is short of assets. Please make sure you have enough money in your wallet",
+    recovery: "Recovery",
+    gasSpeedUp: "Gas Speed Up",
+    sendTipPendding: "There is an uncompleted transaction in the current transaction queue, please try again after completion!",
+    speedUp: "Speed Up",
 
 	},
 	"categoryform": {
@@ -1320,6 +1333,16 @@
 		etherscan: "WormholesScan"
 	},
 	"minerspledge": {
+    smileTip: "Your credibility is good, {value}, please keep it and get more income. {btn}",
+    sadTip: "Your credibility is lower than 70, click the button on the right to recovery it. {btn}",
+    neutralTip: "Your credibility is lower than 70, click the button on the right to recovery it. {btn}",
+    homeTip: "Your Credibility is lower than 70, increase your Credibility to gain higher income. {btn}",
+    noMoney: "Please make sure your account balance is over {value} so that you can recover credibility successfully.",
+    resetSendTip: "By credibility recovery，your credibility can be recovered to maximum.One credibility will cost one ERB.",
+    gotIt: "Got it >",
+    resetBtnTip: "With this button，you can recover your credibility to 70 credibility will cost {value} ERB. The ERB cost will be burnt by Wormholes block chain.",
+    credibility: "Credibility",
+    upCredibility: "Credibility will be increased",
 		minerspledge: 'MINERS PLEDGE',
 		miners_pledge: 'Miners pledge',
 		unfortunately: 'Unfortunately,the node is wrong',
@@ -1456,5 +1479,9 @@
 		noreceiptyet: 'No Data',
 		returnsuccess: 'Return data from the chain succeeded',
 		addressErrMsg: "The receiving address and the sending address cannot be the same",
+	},
+	error:{
+    	500:"Parameter is invalid.",
+    	timeout:"Network is busy at this moment.The transaction has been put into the queue,please wait for a moment and do not send same tranactions.",
 	}
 }

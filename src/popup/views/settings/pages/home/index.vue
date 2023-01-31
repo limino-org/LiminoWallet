@@ -119,27 +119,22 @@ export default {
     }
     const loading = ref(false)
     const handleClearCanche = async () => {
-      loading.value = true
+      loading.value = true;
       try {
-        const accountList = state.account.accountList
-        const netWorkList = state.account.netWorkList
-      for await (const network of netWorkList) {
-        for await (const accountInfo of accountList) {
-          const { id } = network
-          const { address } = accountInfo
-          const addrUp = address.toUpperCase()
-          const key1 = `txlist-${id}-${addrUp}`
-          const key2 = `txQueue-${id}-${addrUp}`
-          await localforage.removeItem(key1)
-          await localforage.removeItem(key2)
-          //'txQueue' 'txlist'
-        }
+        localforage.iterate((value, key, iterationNumber) => {
+          console.log('clear cancel', key)
+          if (key !== "vuex") {
+            console.log('clear cancel', key)
+            localforage.removeItem(key);
+          } else {
+            [key, value]
+          }
+        });
+        $toast.success(t("common.clearCancheSuccess"));
+      } finally {
+        loading.value = false;
       }
-      $toast.success(t('common.clearCancheSuccess'))
-      }finally{
-        loading.value = false
-      }
-    }
+    };
 
     return {
       t,

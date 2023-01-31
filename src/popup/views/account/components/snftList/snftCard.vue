@@ -256,6 +256,8 @@ export default defineComponent({
     });
     //The total amount selected
     const totalAmount = computed(() => {
+      const { t0, t1, t2, t3 } = store.state.configuration.setting.conversion
+
       // @ts-ignore
       if(compData.value.select && compData.value.MergeLevel == 2) {
         // @ts-ignore
@@ -268,10 +270,10 @@ export default defineComponent({
           if(select) {
             switch(MergeLevel){
               case 1:
-                total = new BigNumber(MergeNumber).multipliedBy(0.143).plus(total).toNumber();
+                total = new BigNumber(MergeNumber).multipliedBy(t1).plus(total).toNumber();
                 break;
               case 0:
-                total = new BigNumber(snfts.length).multipliedBy(0.03).plus(total).toNumber();
+                total = new BigNumber(snfts.length).multipliedBy(t0).plus(total).toNumber();
                 break;
             }
           }
@@ -415,6 +417,8 @@ export default defineComponent({
     // The conversion rate is calculated according to the number of SNFT selected
        // cacl ratio
        const ratio = computed(() => {
+        const { t0, t1, t2, t3 } = store.state.configuration.setting.conversion
+
         const { status, data } = props;
         const {MergeLevel} = data
 
@@ -450,19 +454,19 @@ export default defineComponent({
             const len = add.length
             if(len == 42) {
               countNum += 1
-              count = parseFloat(new BigNumber(count).plus(0.03).toFixed(8))
+              count = parseFloat(new BigNumber(count).plus(t0).toFixed(8))
             }
             if(len == 41) {
               countNum += 16
-              count = parseFloat(new BigNumber(count).plus(new BigNumber(16).multipliedBy(0.143)).toFixed(8))
+              count = parseFloat(new BigNumber(count).plus(new BigNumber(16).multipliedBy(t1)).toFixed(8))
             }
             if(len == 40) {
               countNum += 256
-              count = parseFloat(new BigNumber(count).plus(new BigNumber(256).multipliedBy(0.271)).toFixed(8))
+              count = parseFloat(new BigNumber(count).plus(new BigNumber(256).multipliedBy(t2)).toFixed(8))
             }
           })
           if(MergeLevel == 2) {
-            return countNum ? 0.271 : 0
+            return countNum ? t2 : 0
         }
           return isNaN(new BigNumber(count).div(countNum).toNumber()) ? 0 : new BigNumber(count).div(countNum).toFixed(3)
         }

@@ -1,392 +1,477 @@
 <template>
-  <div :class="`miner-page ${isModif ? 'modif' : ''}`">
-    <NavHeader
-      :title="
-        isModif
-          ? t('minerspledge.modifValidator')
-          : t('minerspledge.beValidator')
-      "
-    >
-      <template v-slot:left>
-        <span class="back" @click="appProvide.back">{{
-          t("common.back")
-        }}</span>
-      </template>
-      <template v-slot:right>
-        <cancel-btn />
-      </template>
-    </NavHeader>
-
-    <div class="bourse-container" v-if="!pageLoading">
-      <div :class="`bourse-container-meaning}`">
-        <span class="card-tit">{{ t("minerspledge.stackTit") }} </span>
-        <el-tooltip
-          popper-class="tooltip2"
-          class="box-item"
-          effect="dark"
-          :content="t('minerspledge.stackTip')"
-          placement="bottom"
-          trigger="hover"
-        >
-          <van-icon name="question" color="#9A9A9A" />
-        </el-tooltip>
-      </div>
-      <div class="t3">
-        {{ PledgedBalance }}ERB <span>(≈{{ toUsd(PledgedBalance, 2) }})</span>
-      </div>
-
-      <div v-if="isModif">
-        <div class="bourse-container-meaning bt" style="margin-bottom: 10px">
-          <span class="card-tit">{{ t("minerspledge.Delegatetit") }}</span>
-          <el-tooltip
-            popper-class="tooltip2"
-            class="box-item"
-            effect="dark"
-            :content="t('minerspledge.proxyAccountTip')"
-            placement="top"
-            trigger="hover"
-          >
-            <van-icon name="question" color="#9A9A9A" />
-          </el-tooltip>
-        </div>
-        <div class="flex modif-acc pb-12">
-          <div class="userIcon">
-            <AccountIcon :data="selectAccount.icon" size="small" />
-          </div>
-          <div
-            :class="`value  flex  account-box ${
-              selectAccount.name ? ' column between' : 'center-v'
-            }`"
-          >
-            <div class="name" v-if="selectAccount.name">
-              {{ selectAccount.name }}
-            </div>
-            <div class="val">{{ selectAccount.address }}</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="bourse-container-warning" v-if="isWarning">
-        <van-icon name="warning" color="#F7BF03" size="20" />
-        <span>{{ t("minerspledge.isPoor") }}</span>
-      </div>
-      <div class="bourse-container-name" style="margin-top: 20px" v-if="isOpen">
-        <span class="card-tit">{{ t("minerspledge.addTit") }} </span>
-        <el-tooltip
-          popper-class="tooltip4"
-          class="box-item"
-          effect="dark"
-          :content="t('minerspledge.addTip')"
-          placement="top"
-          trigger="hover"
-        >
-          <van-icon name="question" color="#9A9A9A" />
-        </el-tooltip>
-      </div>
-      <div class="maxBalance" v-if="isModif">{{ addNumber2 || 0 }}ERB</div>
-      <el-slider
-        v-if="isModif"
-        class="slider-ipt"
-        v-model="addNumber2"
-        :min="0"
-        :max="maxBalance"
-        :marks="marks"
-        @input="handleChangeSlider"
-      />
-      <div class="create-new-password" v-if="isOpen">
-        <van-form @submit="onSubmitAddNumber" ref="formDom">
-          <div
-            :class="
-              isError
-                ? 'error-field'
-                : isSuccess
-                ? 'success-field'
-                : ''
-            "
-          >
-            <van-field
-              maxlength="25"
-              v-model="addNumber"
-              class="text"
-              @blur="handleAddBlur"
-              type="number"
-              :placeholder="t('bourse.placeamount')"
-            >
-              <template #right-icon>
-                <span style="font-weight: bold; font-size: 16px; color: #000"
-                  >ERB</span
-                >
-              </template>
-            </van-field>
-          </div>
-        </van-form>
-      </div>
-
-      <div
-        class="bourse-container-meaning bt"
-        v-if="!isModif"
-        style="margin-bottom: 10px"
-      >
-        <span class="card-tit">{{
-          isDelegate
-            ? t("minerspledge.Stackingtit")
-            : t("minerspledge.Delegatetit")
-        }}</span>
-        <el-tooltip
-          popper-class="tooltip2"
-          class="box-item"
-          effect="dark"
-          :content="t('minerspledge.proxyAccountTip')"
-          placement="top"
-          trigger="hover"
-        >
-          <van-icon name="question" color="#9A9A9A" />
-        </el-tooltip>
-      </div>
-      <div
-        class="flex between pl-14 pr-14 pt-20 pb-20 account-outBox hover"
-        @click="openModal"
-        v-if="!isModif"
-      >
-        <div class="flex account-info-box">
-          <div class="userIcon">
-            <AccountIcon :data="selectAccount.icon" size="small" />
-          </div>
-          <div
-            :class="`value  flex  account-box ${
-              selectAccount.name ? ' column between' : 'center-v'
-            }`"
-          >
-            <div class="name" v-if="selectAccount.name">
-              {{ selectAccount.name }}
-            </div>
-            <div class="val van-ellipsis">{{ selectAccount.address }}</div>
-          </div>
-        </div>
-        <div class="rightIcon flex center">
-          <van-icon name="arrow-up" v-if="showAccountModal" />
-          <van-icon name="arrow-down" v-else />
-        </div>
-        <AccountList v-model="showAccountModal" @on-change="handleAccount" />
-        <!-- <AccountModal v-model:actionSheetShow="showAccountModal" :hasBtn="false" :showAmount="false" /> -->
-      </div>
-
-<!--      <div class="bourse-container-name pt-14 border-top" v-if="!isModif">-->
-<!--        <span class="card-tit">{{ t("minerspledge.node") }} </span>-->
-<!--        <el-tooltip-->
-<!--          popper-class="tooltip4"-->
-<!--          class="box-item"-->
-<!--          effect="dark"-->
-<!--          :content="t('minerspledge.nodeTip')"-->
-<!--          placement="right"-->
-<!--          trigger="hover"-->
-<!--        >-->
-<!--          <van-icon name="question" color="#9A9A9A" />-->
-<!--        </el-tooltip>-->
-<!--      </div>-->
-<!--      <div class="create-new-password nodeIpt" v-if="!isModif">-->
-<!--&lt;!&ndash;        <van-form @submit="onSubmit" ref="formDom">&ndash;&gt;-->
-<!--&lt;!&ndash;          <div&ndash;&gt;-->
-<!--&lt;!&ndash;            :class="&ndash;&gt;-->
-<!--&lt;!&ndash;              isError&ndash;&gt;-->
-<!--&lt;!&ndash;                ? 'error-field'&ndash;&gt;-->
-<!--&lt;!&ndash;                : isSuccess&ndash;&gt;-->
-<!--&lt;!&ndash;                ? 'success-field'&ndash;&gt;-->
-<!--&lt;!&ndash;                : ''&ndash;&gt;-->
-<!--&lt;!&ndash;            "&ndash;&gt;-->
-<!--&lt;!&ndash;          >&ndash;&gt;-->
-<!--&lt;!&ndash;            <van-field&ndash;&gt;-->
-<!--&lt;!&ndash;              :disabled="isOpen"&ndash;&gt;-->
-<!--&lt;!&ndash;              maxlength="100"&ndash;&gt;-->
-<!--&lt;!&ndash;              validate-trigger="onChange"&ndash;&gt;-->
-<!--&lt;!&ndash;              v-model="name"&ndash;&gt;-->
-<!--&lt;!&ndash;              class="text"&ndash;&gt;-->
-<!--&lt;!&ndash;              type="text"&ndash;&gt;-->
-<!--&lt;!&ndash;              :placeholder="t('bourse.placenode')"&ndash;&gt;-->
-<!--&lt;!&ndash;              :rules="[{ validator: asynPwd2, message: t('bourse.vainode') }]"&ndash;&gt;-->
-<!--&lt;!&ndash;            />&ndash;&gt;-->
-<!--&lt;!&ndash;          </div>&ndash;&gt;-->
-<!--&lt;!&ndash;        </van-form>&ndash;&gt;-->
-<!--      </div>-->
-      <div class="bourse-container-btns">
-        <div class="container pl-28 pr-28">
-
-          <Tip  :message="t('minerspledge.tip4')" v-if="!isModif" />
-       
-          <div class="btns flex between">
-            <van-popover
-            v-model:show="showClose"
-            v-if="!showCloseBtn && isModif"
-            theme="dark"
-            :close-on-click-outside="false"
-            placement="top"
-            trigger="manual"
-            class="popover-btn-tip popover-btn-tip-disabled"
-          >
-            <div class="f-12 pl-10 pr-10 pt-10 pb-10 " style="background: #9A9A9A;z-index: 10" >
-              {{ t("minerspledge.closeTip2") }}
-            </div>
-            <template #reference>
-              <van-button
-              :disabled="showCloseBtn ? false : true"
-              plain
-              @click="closeDialogTime = true"
-              >{{ t("minerspledge.stackinglabel") }}</van-button
-            >
-            </template>
-          </van-popover>
-          <van-button
-              v-if="isModif && showCloseBtn"
-              :disabled="showCloseBtn ? false : true"
-              plain
-              @click="closeDialogTime = true"
-              >{{ t("minerspledge.stackinglabel") }}</van-button
-            >
-
-            <van-button
-              :loading="isLoading"
-              @click="onSubmit"
-              type="primary"
-              :style="{width:isModif ? '48%' : '100%'}"
-              >{{
-                !isModif ? t("common.confirm") : t("bourse.saveExchange")
-              }}</van-button
-            >
-          </div>
-        </div>
-      </div>
-
-      <agreement-view
-        v-model:check="checked"
-        v-if="showAgreement"
-        v-model:show="showAgreement"
-        @submitCheck="submitCheck"
-      ></agreement-view>
-      <amount-view
-        v-if="showAcount"
-        :moneyMinF="moneyMin"
-        :moneyMax="moneyMax"
-        v-model:show="showAcount"
-        v-model:minersMoney="money"
-      ></amount-view>
-
-      <van-dialog
-        v-model:show="showExchange1"
-        z-index="9999"
-        show-cancel-button
-        teleport="#page-box"
-        :showConfirmButton="false"
-        :showCancelButton="false"
-      >
-        <div class="miners-success" v-if="isClose">
-          <div class="miners-header">
-            <span>{{ t("minerspledge.stackinglabel") }}</span>
-          </div>
-          <div class="flex center">
-            <img
-              class="exchange-welcome-icon"
-              src="@/assets/exchange/SketchPng6487f59e1a3e4adec886c6b63f8c41c4aa0d61ebfe43fcaad735b3ff5ca97e8d.png"
-            />
-          </div>
-          <div class="flex center">
-            <span class="text-s">{{ t("bourse.closeSuccess") }}</span>
-          </div>
-          <div class="container-btn flex center">
-            <van-button type="primary" class="btn" round @click="tohome">{{
-              $t("createExchange.gohome")
-            }}</van-button>
-          </div>
-        </div>
-        <div class="miners-success" v-else-if="isOne">
-          <div class="miners-header">
-            <span>{{ $t("createExchange.open_exchange") }}</span>
-          </div>
-          <div class="flex center">
-            <img
-              class="exchange-welcome-icon"
-              src="@/assets/exchange/SketchPng6487f59e1a3e4adec886c6b63f8c41c4aa0d61ebfe43fcaad735b3ff5ca97e8d.png"
-            />
-          </div>
-          <div class="flex center">
-            <span class="text-s">{{ $t("createExchange.openyourself") }}</span>
-          </div>
-          <div class="container-btn flex center">
-            <van-button type="primary" class="btn" round @click="tohome">{{
-              $t("createExchange.gohome")
-            }}</van-button>
-          </div>
-        </div>
-      </van-dialog>
-
-      <affirm-dialog
-        @open="sendToPledgeHttp"
-        :name="name"
-        :address="selectAccount.address"
-        :amount="PledgedAmount"
-        v-model:show="isAffirmDialog"
-        v-if="isAffirmDialog"
-      ></affirm-dialog>
-      <add-affirm-dialog
-        @open="sendToPledgeHttp"
-        :name="name"
-        :address="selectAccount.address"
-        :amount="PledgedBalance"
-        :addNumber="PledgedAmount"
-        v-model:show="isAddAffirmDialog"
-      >
-      </add-affirm-dialog>
-      <SwitchNetwork
-        v-model:show="showModalNetwork"
-        @close="showModalNetwork = false"
-      />
-      <close-dialog
-        @warningSuccess="isCloseAffirm = true"
-        v-model:isWarning="isCloseDialog"
-        v-if="isCloseDialog"
-      ></close-dialog>
-      <close-submit-dialog
-        @open="submitOpen"
-        :formatValueNumber="PledgedBalance"
-        v-model:show="closeDialogSubmit"
-        :address="accountInfo.address"
-      ></close-submit-dialog>
-      <!-- <close-dialog-time
-        @affirmClose="closeDialogSubmit = true"
-        v-model:show="closeDialogTime"
-      ></close-dialog-time> -->
-      <affirm-close
-        name="name"
-        :serverIndex="serverIndex"
-        :money="money"
-        v-model:show="isCloseAffirm"
-        @affirmClose="affirmClose"
-        v-if="isCloseAffirm"
-      ></affirm-close>
-      <close-home
-        v-model:isWarning="isCloseHome"
-        v-if="isCloseHome"
-      ></close-home>
-      <!-- Adjust the amount of pledge -->
-      <ModifPledgeModal
-        v-model="closeDialogTime"
-        :max="formatValueNumber || PledgedAmount"
-        @confirm="handleMinusConfirm"
-      />
-
-      <!-- Reduce the pledge pop-up window -->
-      <MinusStackDialog
-        v-model:show="showMinusModal"
-        :minusNumber="minusNumber"
-        :amount="formatValueNumber || PledgedAmount"
-      />
-    </div>
-    <div class="loading-box flex center" v-else>
-      <div class="p-30">
-        <van-loading color="#037CD6" />
-      </div>
-    </div>
+  <div>
+   <div :class="`bourse ${isModif ? 'modif' : ''}`">
+     <NavHeader
+       :title="
+         isModif
+           ? t('minerspledge.modifValidator')
+           : t('minerspledge.beValidator')
+       "
+     >
+       <template v-slot:left>
+         <span class="back" @click="appProvide.back">{{
+           t("common.back")
+         }}</span>
+       </template>
+       <template v-slot:right>
+         <cancel-btn />
+       </template>
+     </NavHeader>
+ 
+     <div class="bourse-container" v-if="!pageLoading">
+       <div :class="`bourse-container-meaning}`">
+         <span class="card-tit">{{ t("minerspledge.stackTit") }} </span>
+         <el-tooltip
+           popper-class="tooltip2"
+           class="box-item"
+           effect="dark"
+           :content="t('minerspledge.stackTip')"
+           placement="right"
+           trigger="hover"
+         >
+           <van-icon name="question" color="#9A9A9A" />
+         </el-tooltip>
+       </div>
+       <div class="t3">
+         {{ PledgedBalance }}ERB <span>(≈{{ toUsd(PledgedBalance, 2) }})</span>
+       </div>
+ 
+       <div v-if="isModif">
+         <div class="bourse-container-meaning bt" style="margin-bottom: 10px">
+           <span class="card-tit">{{ t("minerspledge.Delegatetit") }}</span>
+           <el-tooltip
+             popper-class="tooltip2"
+             class="box-item"
+             effect="dark"
+             :content="t('minerspledge.proxyAccountTip')"
+             placement="right"
+             trigger="hover"
+           >
+             <van-icon name="question" color="#9A9A9A" />
+           </el-tooltip>
+         </div>
+         <div class="flex modif-acc pb-12">
+           <div class="userIcon">
+             <AccountIcon :data="selectAccount.icon" size="small" />
+           </div>
+           <div
+             :class="`value  flex  account-box ${
+               selectAccount.name ? ' column between' : 'center-v'
+             }`"
+           >
+             <div class="name" v-if="selectAccount.name">
+               {{ selectAccount.name }}
+             </div>
+             <div class="val">{{ selectAccount.address }}</div>
+           </div>
+         </div>
+       </div>
+ 
+       <div class="bourse-container-warning" v-if="isWarning">
+         <van-icon name="warning" color="#F7BF03" size="20" />
+         <span>{{ t("minerspledge.isPoor") }}</span>
+       </div>
+ 
+       <div class="bourse-container-name" style="margin-top: 20px" v-if="isOpen">
+         <span class="card-tit">{{t('minerspledge.credibility')}} </span>
+       </div>
+       <div
+         class="maxBalance flex center-v between modif-acc pb-12"
+         v-if="isModif"
+       >
+         <div class="flex center-v">
+           <span :class="`mr-10 lh-12 f-16 text-bold ${expresionClass}`"
+             >{{ Coefficient }}
+           </span>
+           <van-popover
+             v-model:show="showExpresion"
+             theme="dark"
+             :close-on-click-outside="false"
+             z-index="1"
+             placement="right"
+             trigger="manual"
+             :class="`popover-btn-tip ${expresionClass}bg`"
+           >
+             <div :class="`${expresionClass}box popover-expresion p-10 hover`">
+               <div v-if="expresionClass == 'smile'">
+                 {{ t("minerspledge.smileTip", { value: Coefficient }) }}
+               </div>
+               <div v-if="expresionClass == 'sad'">
+                 {{ t("minerspledge.sadTip", { value: Coefficient }) }}
+               </div>
+               <div v-if="expresionClass == 'neutral'">
+                 {{ t("minerspledge.neutralTip", { value: Coefficient }) }}
+               </div>
+             </div>
+             <template #reference>
+               <div
+                 class="hover"
+                 @mouseenter="showExpresion = true"
+                 @mouseout="showExpresion = false"
+               >
+                 <img
+                   :class="`expresion `"
+                   src="@/assets/smile.png"
+                   v-if="expresionClass == 'smile'"
+                   alt=""
+                 />
+                 <img
+                   :class="`expresion `"
+                   src="@/assets/sad.png"
+                   v-if="expresionClass == 'sad'"
+                   alt=""
+                 />
+                 <img
+                   :class="`expresion`"
+                   src="@/assets/neutral.png"
+                   alt=""
+                   v-if="expresionClass == 'neutral'"
+                 />
+               </div>
+             </template>
+           </van-popover>
+         </div>
+         <div v-if="Coefficient < 70">
+         <!-- <div> -->
+           <el-tooltip
+             popper-class="reset-tooltip"
+             class="reset-tip"
+             effect="dark"
+             :content="t('minerspledge.resetBtnTip', {value: payErb})"
+             placement="top-end"
+             trigger="hover"
+           >
+             <div
+               class="add-btn flex center-v hover"
+               @click="handleShowReconveryModal"
+             >
+               <i class="iconfont icon-icplus mr-4"></i>
+               <span> {{t('common.recovery')}} </span>
+             </div>
+           </el-tooltip>
+         </div>
+       </div>
+ 
+       <div class="bourse-container-name" style="margin-top: 20px" v-if="isOpen">
+         <span class="card-tit">{{ t("minerspledge.addTit") }} </span>
+         <el-tooltip
+           popper-class="tooltip4"
+           class="box-item"
+           effect="dark"
+           :content="t('minerspledge.addTip')"
+           placement="right"
+           trigger="hover"
+         >
+           <van-icon name="question" color="#9A9A9A" />
+         </el-tooltip>
+       </div>
+       <div class="maxBalance" v-if="isModif">{{ addNumber2 || 0 }}ERB</div>
+       <el-slider
+         v-if="isModif"
+         class="slider-ipt"
+         v-model="addNumber2"
+         :min="0"
+         :max="maxBalance"
+         :marks="marks"
+         @input="handleChangeSlider"
+       />
+       <div class="create-new-password" v-if="isOpen">
+         <van-form @submit="onSubmitAddNumber" ref="formDom">
+           <div
+             :class="isError ? 'error-field' : isSuccess ? 'success-field' : ''"
+           >
+             <van-field
+               maxlength="25"
+               v-model="addNumber"
+               class="text"
+               @blur="handleAddBlur"
+               type="number"
+               :placeholder="t('bourse.placeamount')"
+             >
+               <template #right-icon>
+                 <span style="font-weight: bold; font-size: 16px; color: #000"
+                   >ERB</span
+                 >
+               </template>
+             </van-field>
+           </div>
+         </van-form>
+       </div>
+ 
+       <div
+         class="bourse-container-meaning bt"
+         v-if="!isModif"
+         style="margin-bottom: 10px"
+       >
+         <span class="card-tit">{{
+           isDelegate
+             ? t("minerspledge.Stackingtit")
+             : t("minerspledge.Delegatetit")
+         }}</span>
+         <el-tooltip
+           popper-class="tooltip2"
+           class="box-item"
+           effect="dark"
+           :content="t('minerspledge.proxyAccountTip')"
+           placement="right"
+           trigger="hover"
+         >
+           <van-icon name="question" color="#9A9A9A" />
+         </el-tooltip>
+       </div>
+       <div
+         class="flex between pl-14 pr-14 pt-20 pb-20 account-outBox hover"
+         @click="openModal"
+         v-if="!isModif"
+       >
+         <div class="flex account-info-box">
+           <div class="userIcon">
+             <AccountIcon :data="selectAccount.icon" size="small" />
+           </div>
+           <div
+             :class="`value  flex  account-box ${
+               selectAccount.name ? ' column between' : 'center-v'
+             }`"
+           >
+             <div class="name" v-if="selectAccount.name">
+               {{ selectAccount.name }}
+             </div>
+             <div class="val van-ellipsis">{{ selectAccount.address }}</div>
+           </div>
+         </div>
+         <div class="rightIcon flex center">
+           <van-icon name="arrow-up" v-if="showAccountModal" />
+           <van-icon name="arrow-down" v-else />
+         </div>
+         <AccountList v-model="showAccountModal" @on-change="handleAccount" />
+         <!-- <AccountModal v-model:actionSheetShow="showAccountModal" :hasBtn="false" :showAmount="false" /> -->
+       </div>
+ 
+       <!-- <div class="bourse-container-name pt-14 border-top" v-if="!isModif">
+         <span class="card-tit">{{ t("minerspledge.node") }} </span>
+         <el-tooltip
+           popper-class="tooltip4"
+           class="box-item"
+           effect="dark"
+           :content="t('minerspledge.nodeTip')"
+           placement="right"
+           trigger="hover"
+         >
+           <van-icon name="question" color="#9A9A9A" />
+         </el-tooltip>
+       </div>
+       <div class="create-new-password nodeIpt" v-if="!isModif">
+         <van-form @submit="onSubmit" ref="formDom2">
+           <div
+             :class="
+               isError
+                 ? 'error-field'
+                 : isSuccess
+                 ? 'success-field'
+                 : ''
+             "
+           >
+             <van-field
+               :disabled="isOpen"
+               maxlength="100"
+               validate-trigger="onChange"
+               v-model="name"
+               class="text"
+               type="text"
+               :placeholder="t('bourse.placenode')"
+               :rules="[{ validator: asynPwd2, message: t('bourse.vainode') }]"
+             />
+           </div>
+         </van-form>
+       </div> -->
+       <div class="bourse-container-btns">
+         <div class="container pl-28 pr-28">
+           <Tip :message="t('minerspledge.tip4')" v-if="!isModif" />
+ 
+           <div class="btns flex between">
+             <van-popover
+               v-model:show="showClose"
+               v-if="!showCloseBtn && isModif"
+               theme="dark"
+               :close-on-click-outside="false"
+               z-index="1"
+               placement="top"
+               trigger="manual"
+               class="popover-btn-tip"
+             >
+               <div class="f-12 pl-10 pr-10 pt-10 pb-10">
+                 {{ t("minerspledge.closeTip2") }}
+               </div>
+               <template #reference>
+                 <van-button
+                   :disabled="showCloseBtn ? false : true"
+                   plain
+                   @click="closeDialogTime = true"
+                   >{{ t("minerspledge.stackinglabel") }}</van-button
+                 >
+               </template>
+             </van-popover>
+             <van-button
+               v-if="isModif && showCloseBtn"
+               :disabled="showCloseBtn ? false : true"
+               plain
+               @click="closeDialogTime = true"
+               >{{ t("minerspledge.stackinglabel") }}</van-button
+             >
+ 
+             <van-button
+               :loading="isLoading"
+               @click="onSubmit"
+               type="primary"
+               :style="{ width: isModif ? '48%' : '100%' }"
+               >{{
+                 !isModif ? t("common.confirm") : t("bourse.saveExchange")
+               }}</van-button
+             >
+           </div>
+         </div>
+       </div>
+ 
+       <agreement-view
+         v-model:check="checked"
+         v-if="showAgreement"
+         v-model:show="showAgreement"
+         @submitCheck="submitCheck"
+       ></agreement-view>
+       <amount-view
+         v-if="showAcount"
+         :moneyMinF="moneyMin"
+         :moneyMax="moneyMax"
+         v-model:show="showAcount"
+         v-model:minersMoney="money"
+       ></amount-view>
+ 
+       <van-dialog
+         v-model:show="showExchange1"
+         z-index="9999"
+         show-cancel-button
+         teleport="#page-box"
+         :showConfirmButton="false"
+       >
+         <div class="miners-success" v-if="isClose">
+           <div class="miners-header">
+             <span>{{ t("minerspledge.stackinglabel") }}</span>
+           </div>
+           <div class="flex center">
+             <img
+               class="exchange-welcome-icon"
+               src="@/assets/exchange/SketchPng6487f59e1a3e4adec886c6b63f8c41c4aa0d61ebfe43fcaad735b3ff5ca97e8d.png"
+             />
+           </div>
+           <div class="flex center">
+             <span class="text-s">{{ t("bourse.closeSuccess") }}</span>
+           </div>
+           <div class="container-btn flex center">
+             <van-button type="primary" class="btn" round @click="tohome">{{
+               $t("createExchange.gohome")
+             }}</van-button>
+           </div>
+         </div>
+         <div class="miners-success" v-else-if="isOne">
+           <div class="miners-header">
+             <span>{{ $t("createExchange.open_exchange") }}</span>
+           </div>
+           <div class="flex center">
+             <img
+               class="exchange-welcome-icon"
+               src="@/assets/exchange/SketchPng6487f59e1a3e4adec886c6b63f8c41c4aa0d61ebfe43fcaad735b3ff5ca97e8d.png"
+             />
+           </div>
+           <div class="flex center">
+             <span class="text-s">{{ $t("createExchange.openyourself") }}</span>
+           </div>
+           <div class="container-btn flex center">
+             <van-button type="primary" class="btn" round @click="tohome">{{
+               $t("createExchange.gohome")
+             }}</van-button>
+           </div>
+         </div>
+       </van-dialog>
+ 
+       <affirm-dialog
+         @open="sendToPledgeHttp"
+         :name="name"
+         :address="selectAccount.address"
+         :amount="PledgedAmount"
+         v-model:show="isAffirmDialog"
+         v-if="isAffirmDialog"
+       ></affirm-dialog>
+       <add-affirm-dialog
+         @open="sendToPledgeHttp"
+         :name="name"
+         :address="selectAccount.address"
+         :amount="PledgedBalance"
+         :addNumber="PledgedAmount"
+         v-model:show="isAddAffirmDialog"
+       >
+       </add-affirm-dialog>
+       <SwitchNetwork
+         v-model:show="showModalNetwork"
+         @close="showModalNetwork = false"
+       />
+       <close-dialog
+         @warningSuccess="isCloseAffirm = true"
+         v-model:isWarning="isCloseDialog"
+         v-if="isCloseDialog"
+       ></close-dialog>
+       <close-submit-dialog
+         @open="submitOpen"
+         :formatValueNumber="PledgedBalance"
+         v-model:show="closeDialogSubmit"
+         :address="accountInfo.address"
+       ></close-submit-dialog>
+       <!-- <close-dialog-time
+         @affirmClose="closeDialogSubmit = true"
+         v-model:show="closeDialogTime"
+       ></close-dialog-time> -->
+       <affirm-close
+         name="name"
+         :serverIndex="serverIndex"
+         :money="money"
+         v-model:show="isCloseAffirm"
+         @affirmClose="affirmClose"
+         v-if="isCloseAffirm"
+       ></affirm-close>
+       <close-home
+         v-model:isWarning="isCloseHome"
+         v-if="isCloseHome"
+       ></close-home>
+       <!-- Adjust the amount of pledge -->
+       <ModifPledgeModal
+         v-model="closeDialogTime"
+         :max="Number(PledgedBalance)"
+         @confirm="handleMinusConfirm"
+       />
+ 
+       <!-- Reduce the pledge pop-up window -->
+       <MinusStackDialog
+         v-model:show="showMinusModal"
+         :minusNumber="minusNumber"
+         :amount="formatValueNumber || PledgedAmount"
+       />
+ 
+       <!-- reconvery modal -->
+       <CommonModal v-model="showReconveryModal" title="Credibility Recovery">
+         <ReconveryDetail
+           @cancel="handleReCancel"
+           @confirm="handleReConfirm"
+           :data="reconveryDetail"
+         />
+       </CommonModal>
+     </div>
+     <div class="loading-box flex center" v-else>
+       <div class="p-30">
+         <van-loading color="#037CD6" />
+       </div>
+     </div>
+   </div>
   </div>
-</template>
+ </template>
 <script lang="ts">
 import {
   defineComponent,
@@ -413,6 +498,8 @@ import Tip from '@/popup/components/tip/index.vue'
 import { useExchanges } from "@/popup/hooks/useExchanges";
 import BigNumber from "bignumber.js";
 import { AccountInfo, ExchangeStatus } from "@/popup/store/modules/account";
+import CommonModal from "@/popup/components/commonModal/index.vue";
+
 import {
   Dialog,
   Form,
@@ -430,7 +517,7 @@ import {
   Popover
 } from "vant";
 import useClipboard from "vue-clipboard3";
-import { getWallet, wallet } from "@/popup/store/modules/account";
+import { getWallet, wallet, getGasFee } from "@/popup/store/modules/account";
 import { useI18n } from "vue-i18n";
 import AmountView from "@/popup/views/account/exchange/amount.vue";
 import AgreementView from "@/popup/views/account/exchange/agreement.vue";
@@ -463,6 +550,11 @@ import { debug } from "console";
 import { toHex } from "@/popup/utils/utils";
 import { getRandomIcon } from "@/popup/utils";
 import { useToast } from "@/popup/plugins/toast";
+import { TradeStatus } from "@/popup/plugins/tradeConfirmationsModal/tradeConfirm";
+import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
+import ReconveryDetail from "./components/reconveryDetail.vue";
+import closeAffirmDialog from "./close-affirm-dialog.vue";
+
 export default defineComponent({
   name: "createExchange",
   components: {
@@ -493,6 +585,7 @@ export default defineComponent({
     SwitchNetwork,
     "dialog-warning": dialogWarning,
     "close-dialog": closeDialog,
+    "affirm-close": closeAffirmDialog,
 
     "close-home": closeHome,
     "add-affirm-dialog": addAffirmDialog,
@@ -501,7 +594,9 @@ export default defineComponent({
     NavHeader,
     AccountList,
     ModifPledgeModal,
-    Tip
+    Tip,
+    CommonModal,
+    ReconveryDetail
   },
   props: {
     show: {
@@ -524,23 +619,30 @@ export default defineComponent({
     //  Is it an append
     const isModif = ref(true);
     const showCloseBtn = ref(false);
-
+    const network = ref({
+      chainId: null
+    })
+    const payErb = computed(() => {
+      return (70 - Coefficient.value)/10
+    })
     //  const { state } = store;
     onMounted(async () => {
+      debugger
       try {
         const wallet = await getWallet();
         const { address } = wallet;
+        network.value = await wallet.provider.getNetwork()
         blockNumber.value = await wallet.provider.getBlockNumber();
         ethAccountInfo.value = await wallet.provider.send(
           "eth_getAccountInfo",
           [address, "latest"]
         );
-        const blockn = web3.utils.toHex(blockNumber.value.toString());
         debugger
+        const blockn = web3.utils.toHex(blockNumber.value.toString());
         // Amount of the first pledge/total amount of the pledge *36 (start time of the second cancellation of the pledge calculation)+ Amount of the second pledge/total amount *72=54 = (time when the second cancellation of the pledge can be revoked)
         showCloseBtn.value = new BigNumber(blockNumber.value)
           .minus(ethAccountInfo.value.PledgedBlockNumber)
-          .gt(72);
+          .gt(network.value.chainId == 51888 ? 72 : 6307200);
         const pledgeList = await wallet.provider.send("eth_getValidator", [
           `${blockn}`,
         ]);
@@ -548,7 +650,7 @@ export default defineComponent({
 
         if (!ethAccountInfo.value.PledgedBalance) {
           isModif.value = false;
-          // $dialog.open({title:t('minerspledge.beValidator'),message:t("minerspledge.warn"),type:'warn'});
+          // $wdialog.open({title:t('minerspledge.beValidator'),message:t("minerspledge.warn"),type:'warn'});
         } else {
           isModif.value = true;
           try {
@@ -557,6 +659,7 @@ export default defineComponent({
                 item.Addr.toUpperCase() ==
                 accountInfo.value.address.toUpperCase()
             );
+            debugger
             console.warn("pledge", pledge);
             const selectAcc = accountList.value.find(
               (item: any) =>
@@ -578,7 +681,9 @@ export default defineComponent({
       }
     });
     const isTimeQualified = computed(
-      () => blockNumber.value - accountInfoBlockNumber.value >= 72
+      () =>
+        blockNumber.value - accountInfoBlockNumber.value >=
+        (currentNetwork.value.chainId == 51888 ? 72 : 6307200)
     );
     const {
       netWorkList,
@@ -606,6 +711,9 @@ export default defineComponent({
     } = useExchanges();
     const name = ref("");
     const handleNameBlur = () => {};
+    console.log("===========");
+    console.log("===========");
+
     const { dispatch } = store;
     const amount = ref(200);
 
@@ -615,7 +723,7 @@ export default defineComponent({
     );
     const maxBalance = computed(() => {
       const v = parseInt(store.state.account.accountInfo.amount);
-      const bigAmount = new BigNumber(v).minus(1)
+      const bigAmount = new BigNumber(v).minus(1);
       return bigAmount.gte(0) ? bigAmount.toNumber() : 0;
     });
     const sliderDisabled = computed(() => {
@@ -629,7 +737,7 @@ export default defineComponent({
       return true;
     });
     const isWarningText = ref(false);
-    //Disable the status of the Submit one-click exchange button
+    // Disable the status of the Submit one-click exchange button
     const openDisabled = computed(() => {
       const v = parseFloat(store.state.account.accountInfo.amount);
       // @ts-ignore
@@ -637,14 +745,14 @@ export default defineComponent({
         exchangeStatus.value.exchanger_flag == true &&
         exchangeStatus.value.status != 2
       ) {
-        //The first fee was paid and the second one was not paid
+        // The first fee was paid and the second one was not paid
         if (v < 200) {
           return true;
         } else {
           return false;
         }
       }
-      //I didn't pay the first and I didn't pay the second
+      // I didn't pay the first and I didn't pay the second
       // @ts-ignore
       if (
         exchangeStatus.value.exchanger_flag == false &&
@@ -671,7 +779,6 @@ export default defineComponent({
       console.log(isAddAffirmDialog.value);
     };
 
-
     const addNumber = ref();
 
     const PledgedAmount = computed(() => {
@@ -683,7 +790,9 @@ export default defineComponent({
       try {
         isLoading.value = true;
         // An additional amount greater than 0 is an additional pledge, otherwise it is the first pledge
+
         // If the selected address is not the current account address, take the selected address -> proxy address
+
         const proxy_address =
           selectAccount.value.address.toUpperCase() ==
           accountInfo.value.address.toUpperCase()
@@ -705,14 +814,14 @@ export default defineComponent({
     const toCancel = () => {
       showCreateExchange.value = false;
     };
+
     const value = ref(50);
- 
+
     const toGo = () => {
       showExchange.value = false;
+
       showExchange1.value = true;
     };
-
-
 
     const isClose = ref(false);
     const isClosePladge = ref(false);
@@ -734,7 +843,6 @@ export default defineComponent({
       initData();
     };
 
-    // Close the deal
     watch(
       () => props.show,
       (n) => {
@@ -764,7 +872,7 @@ export default defineComponent({
         }
       }
     );
-    // Server selection
+    // server
     let serverIndex = ref(0);
     let money = ref(0);
     let moneyMin = ref(0);
@@ -804,37 +912,49 @@ export default defineComponent({
       successDialog.value = false;
       showCreateExchange.value = false;
     };
+    const networkList = computed(() => store.state.account.netWorkList);
+    const mainNetwork = computed(() =>
+      networkList.value.find((item: any) => item.id == "wormholes-network-1")
+    );
     const asynPwd2 = async (val: string) => {
       isError.value = false;
       if (!name.value) {
-        return true;
+        return t("minerspledge.nodeErr");
       }
       if (RegUrl.test(name.value)) {
-        // Verify node chainId
+        //Verify node chainId
         Toast.loading({
           message: t("common.veriPwd"),
         });
         try {
           const provider = ethers.getDefaultProvider(name.value);
           const { chainId } = await provider.getNetwork();
-          if (chainId != 51888 && chainId != 51889) {
+          debugger;
+          const mainProvider = ethers.getDefaultProvider(mainNetwork.value.URL);
+          debugger;
+          const { chainId: mainChainId } = await mainProvider.getNetwork();
+          console.warn("mainChainId", mainChainId);
+          console.warn("chainId", chainId);
+          if (chainId != mainChainId) {
             isError.value = true;
-            return `Invalid chainId ${chainId}`;
+            return t("minerspledge.invalidChainId", { chainId });
           }
           return true;
         } catch (err) {
           isError.value = true;
-          return "Invalid node";
+          return t("minerspledge.invalidNode");
         } finally {
           Toast.clear();
         }
       } else {
         isError.value = true;
-        return "Node format incorrect";
+        return t("minerspledge.nodeErr");
       }
     };
-   
+
+    // Disable the node input box
     const isOpen = ref(false);
+
     onMounted(async () => {
       await initData();
     });
@@ -879,6 +999,15 @@ export default defineComponent({
       () => store.state.account.exchangeStatus.exchanger_flag
     );
 
+    const Coefficient = computed(() => {
+      return ethAccountInfo.value.Coefficient;
+    });
+    const expresionClass = computed(() => {
+      const num = Number(Coefficient.value)
+      if (num < 40) return "sad";
+      if (num >= 40 && num <= 50) return "neutral";
+      if (num > 50) return "smile";
+    });
     console.log(isExchanger_flag);
     console.log("===============================11111111111==========");
 
@@ -894,6 +1023,7 @@ export default defineComponent({
     const isWarning = ref(false);
     const isError = ref(false);
     const formDom = ref();
+    const formDom2 = ref();
     const router = useRouter();
     const back = () => {
       router.back();
@@ -908,19 +1038,28 @@ export default defineComponent({
         onSubmitAddNumber();
         return;
       }
-      openConfirmInfoModal()
+      // The pledge amount
+      try {
+        // await formDom2.value.validate();
+        openConfirmInfoModal();
+      } catch (err) {
+        console.error(err);
+        // @ts-ignore
+        const [data] = err;
+        const { message } = data;
+        $toast.warn(message);
+      }
     };
 
-    const openConfirmInfoModal = async() => {
+    const openConfirmInfoModal = async () => {
       try {
-        // await formDom.value.validate();
         isError.value = false;
         isAffirmDialog.value = true;
       } catch (error) {
         isError.value = true;
         console.log(error);
       }
-    }
+    };
     const gradientColor = {
       "0%": "#C1E2F7",
       "100%": "#087ED7",
@@ -1021,18 +1160,21 @@ export default defineComponent({
       addNumber.value = addNumber2.value;
     };
     const handleAddBlur = () => {
-      debugger
-      const addNum = new BigNumber(addNumber.value);
+      if(addNumber.value) {
+        const addNum = new BigNumber(addNumber.value);
       if (addNum.gte(accountInfo.value.amount)) {
         $toast.warn(t("createExchange.ispoor"));
-        addNumber.value = maxBalance.value;
+        addNumber.value = addNumber2.value.toString();
         return;
-      }else{
+      } else {
         nextTick(() => {
-          addNumber2.value = parseFloat(addNumber.value)
-        })
+          addNumber2.value = parseFloat(addNumber.value);
+        });
       }
-      
+      } else {
+        addNumber2.value = 0
+      }
+
     };
 
     const showMinusModal = ref(false);
@@ -1041,8 +1183,101 @@ export default defineComponent({
       showMinusModal.value = true;
       minusNumber.value = v;
     };
-    const showClose = ref(true)
+    const showClose = ref(true);
+    const showExpresion = ref(false);
+
+    const showReconveryModal = ref(false);
+    const reconveryDetail = ref({});
+    const handleShowReconveryModal = async () => {
+      const sendAmount = (70 - Coefficient.value)/10 ;
+      if (
+        new BigNumber(accountInfo.value.amount).lt(sendAmount+ 1)
+      ) {
+        $toast.warn(t("minerspledge.noMoney", {value: sendAmount+ 1}));
+        return;
+      }
+      try {
+        Toast.loading({ duration: 0,forbidClick: true });
+        const tx = {
+          to: accountInfo.value.address,
+          value: ethers.utils.parseEther(sendAmount.toString()),
+          data: web3.utils.fromUtf8(`wormholes:{"type":26,"version":"v0.0.1"}`),
+        };
+        const gasFee = await getGasFee(tx);
+        reconveryDetail.value = {
+          address: accountInfo.value.address,
+          Coefficient: Coefficient.value,
+          amount: sendAmount,
+          gasFee,
+        };
+        showReconveryModal.value = true;
+      }catch(err: any){
+        $toast.warn(err.reason)
+      } finally {
+        Toast.clear();
+      }
+    };
+
+    const handleReCancel = () => {
+      showReconveryModal.value = false;
+    };
+
+    const {$tradeConfirm} = useTradeConfirm()
+    
+    const handleReConfirm = async() => {
+      console.warn(reconveryDetail.value)
+      const {amount}: any = reconveryDetail.value
+      const str = `wormholes:{"type":26,"version":"v0.0.1"}`;
+      const tx = {
+        value: amount,
+        data: web3.utils.fromUtf8(str),
+        to: accountInfo.value.address,
+        transitionType:'26'
+      }
+      const callBack = () => {
+        router.replace({name:'wallet'})
+      }
+      
+      $tradeConfirm.open({
+        disabled:[TradeStatus.pendding, TradeStatus.approve],
+        callBack
+      })
+      try {
+        const data = await dispatch('account/transaction', tx)
+        $tradeConfirm.update({status:"approve",callBack})
+        const receipt = await data.wallet.provider.waitForTransaction(data.hash)
+        const {status} = receipt
+        if(!status) {
+          $tradeConfirm.update({status:"fail",callBack, hash: data.hash})
+        } else {
+          $tradeConfirm.update({status:"success",callBack, hash: data.hash})
+        }
+        dispatch('account/waitTxQueueResponse')
+      }catch(err: any){
+        if (err.toString().indexOf("timeout") > -1) {
+          $tradeConfirm.update({
+            status: "warn",
+            failMessage: t("error.timeout"),
+            callBack
+          });
+        } else {
+          $tradeConfirm.update({
+            status: "fail",
+            failMessage: err.reason,
+            callBack
+          });
+        }
+        console.error(err)
+      }
+    };
     return {
+      showExpresion,
+      handleReCancel,
+      handleReConfirm,
+      reconveryDetail,
+      showReconveryModal,
+      handleShowReconveryModal,
+      payErb,
       showClose,
       showMinusModal,
       handleMinusConfirm,
@@ -1057,10 +1292,12 @@ export default defineComponent({
       handleAccount,
       handleAddBlur,
       selectAccount,
+      formDom2,
       formatValueNumber,
       closeDialogSubmit,
       closeDialogTime,
       isDelegate,
+      expresionClass,
       selectChange,
       selectIcon,
       selectValueNam,
@@ -1077,6 +1314,7 @@ export default defineComponent({
       isAffirmDialog,
       isClose,
       ethAccountInfo,
+      Coefficient,
       isClosePladge,
       asynPwd2,
       back,
@@ -1151,16 +1389,16 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
-  .border-top {
-    border-top: 1px solid #e4e7e8;
-  }
+.border-top {
+  border-top: 1px solid #e4e7e8;
+}
 .maxBalance {
   font-size: 15px;
   font-weight: bold;
   margin-top: 6px;
   margin-bottom: 10px;
 }
-:deep {
+:deep() {
   .wormholes-tip {
     margin: 0 0 20px;
   }
@@ -1223,7 +1461,7 @@ export default defineComponent({
 }
 .account-outBox {
   border-radius: 5px;
-  border: 1px solid #B3B3B3;
+  border: 1px solid #bbc0c5;
   margin: 15px 0;
 }
 .modif-acc .account-box {
@@ -1254,6 +1492,7 @@ export default defineComponent({
   width: 35px;
   height: 35px;
   border-radius: 50%;
+  border: 1px solid #979797;
   background: rgb(234, 234, 234);
   overflow: hidden;
   display: flex;
@@ -1401,12 +1640,12 @@ export default defineComponent({
     width: 48%;
   }
   :deep(.van-popover__wrapper) {
-            position: relative;
-            width: 48%;
-            button {
-              width: 100%;
-            }
-        }
+    position: relative;
+    width: 48%;
+    button {
+      width: 100%;
+    }
+  }
 }
 .miners {
   width: 341px;
@@ -1425,7 +1664,6 @@ export default defineComponent({
   }
   .miners-container {
     ::-webkit-input-placeholder {
-      /* WebKit browsers，webkit */
       color: #232323;
       font-size: 12px;
     }
@@ -1604,7 +1842,61 @@ export default defineComponent({
   width: calc(100% - 60px);
 }
 </style>
-<style scoped>
+<style>
+.add-btn {
+  background: #3aae55;
+  line-height: 36px;
+  border-radius: 18px;
+  color: #fff;
+  padding: 0 10px;
+  margin-top: -10px;
+}
+.reset-tip,
+.reset-tooltip {
+  background: #85e19b !important;
+  border-color: #85e19b !important;
+}
+.reset-tooltip .el-popper__arrow::before {
+  background: #85e19b !important;
+  border-color: #85e19b !important;
+}
+.add-btn i {
+  font-size: 18px;
+}
+.smile {
+  color: #3aae55;
+}
+.smilebox {
+  background: #3aae55;
+}
+.sad {
+  color: #d73a49;
+}
+.sadbox {
+  background: #d73a49;
+}
+.sadbg .van-popover__arrow {
+  color: #d73a49;
+}
+.smilebg .van-popover__arrow {
+  color: #3aae55;
+}
+.neutral {
+  color: #f7bf03;
+}
+.neutralbox {
+  background: #f7bf03;
+}
+.neutralbg .van-popover__arrow {
+  color: #f7bf03;
+}
+.expresion {
+  width: 22px;
+  display: block;
+}
+.popover-expresion {
+  width: 160px;
+}
 .dialog-c {
   top: 50% !important;
 }
@@ -1775,19 +2067,18 @@ export default defineComponent({
 }
 </style>
 <style  lang="scss" scoped>
-.miner-page {
+.bourse {
   height: 100%;
-
   &.modif {
     .nodeIpt {
       :deep(.van-field__body) {
         background: #f1f3f4;
-        border: 1px solid #B3B3B3;
+        border: 1px solid #bbc0c5;
       }
     }
     .account-outBox {
       background: #f1f3f4;
-      border: 1px solid #B3B3B3;
+      border: 1px solid #bbc0c5;
       .rightIcon {
         display: none;
       }
@@ -1919,12 +2210,6 @@ export default defineComponent({
       font-size: 12px;
     }
   }
- .popover-btn-tip {
-    z-index: 99!important;
-   width: 100px;
-   white-space: break-spaces;
-   background: #9A9A9A;
-  }
   .bourse-container-error-text-warning {
     width: 100%;
     margin-bottom: 20px;
@@ -1968,7 +2253,7 @@ export default defineComponent({
       color: #037cd6;
       text-decoration: underline;
     }
-    .icon-yanjing1 {
+    .icon-yanjing {
       color: #037dd6;
     }
     :deep(.van-field__label) {
@@ -2016,12 +2301,9 @@ export default defineComponent({
 .bt {
   border-top: 1px solid #e4e7e8;
 }
-.account-outBox {
-  :deep(.van-icon-arrow-down) {
+:deep(.van-icon-arrow-down) {
   margin-top: 13px !important;
 }
-}
-
 :deep(.van-cell-group) {
   border: 1px solid #e4e7e8;
 }
@@ -2038,7 +2320,7 @@ export default defineComponent({
   color: #037cd6 !important;
 }
 </style>
-<style scoped>
+<style>
 .appendto1,
 .appendto2 {
   background-color: #1989fa !important;

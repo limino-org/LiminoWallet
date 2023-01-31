@@ -190,6 +190,7 @@
       margin-left: 14px;
       .tag-user {
         height: 12px;
+        min-width: 47px;
         .user {
           width: 14px;
           height: 14px;
@@ -211,12 +212,13 @@
         .tag-label {
           line-height: 14px;
           border-radius: 7px;
-          padding-left: 6px;
+          padding-left: 12px;
           span {
             font-size: 12px;
           transform: scale(.6);
           transform-origin:center center;
           display: inline-block;
+          color: #fff;
           }
         }
         &.type1 {

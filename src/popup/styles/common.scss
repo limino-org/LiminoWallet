@@ -283,7 +283,7 @@ img {
   cursor: pointer;
   margin-left: 5px !important;
   color: #848484;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 
@@ -391,11 +391,23 @@ img {
   .transaction-modal {
     height: 520PX;
   }
+  .transactionDetailsModal {
+    max-height: 710PX;
+  }
   .cancel-modal {
     max-height: 256PX;
   }
+
   .minus-pledge-dialog {
-    max-height: 450PX;
+    max-height: 438PX;
+    overflow: initial;
+    .van-dialog__content {
+      overflow: inherit;
+    }
+    .sheet-header {
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
   }
   .minus-miner-stack-dialog {
     max-height: 758PX;
@@ -708,4 +720,21 @@ img {
     }
   }
 
+}
+
+
+.slider-enter-active {
+  animation: slider-in 0.3s ease-in-out;
+}
+.slider-leave-active {
+  animation: slider-in 0.3s reverse ease-in-out;
+}
+@keyframes slider-in {
+  0% {
+    transform: translateY(90px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
 }

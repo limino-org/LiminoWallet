@@ -1,5 +1,8 @@
-import { defaultAbiCoder } from 'ethers/lib/utils'
+
 import useClipboard from 'vue-clipboard3'
+import { VUE_APP_SCAN_URL } from "@/popup/enum/env";
+import store from '@/popup/store';
+
 const { toClipboard } = useClipboard()
 
 export const copy = async (v: string) => {
@@ -144,4 +147,60 @@ export function guid() {
     return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
   }
   return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+}
+
+export const viewTransactionByHash = (hash:string | null) => {
+  if(hash) {
+    if(store.state.account.currentNetwork.id === 'wormholes-network-1') {
+      window.open(`${VUE_APP_SCAN_URL}TradeDetail/${hash}`);
+    } else {
+      const defaultUrl = store.state.account.currentNetwork.browser
+      if(defaultUrl) {
+        window.open(`${defaultUrl}`);
+      } else {
+        window.open(`${VUE_APP_SCAN_URL}TradeDetail/${hash}`);
+      }
+    }
+  } else {
+    throw Error('The hash cannot be empty')
+  }
+}
+
+export const viewAccountByAddress = (address:string ) => {
+  if(address) {
+    if(store.state.account.currentNetwork.id === 'wormholes-network-1') {
+      window.open(`${VUE_APP_SCAN_URL}AccountDetail/${address}`);
+    } else {
+      const defaultUrl = store.state.account.currentNetwork.browser
+      if(defaultUrl) {
+        window.open(`${defaultUrl}`);
+      } else {
+        window.open(`${VUE_APP_SCAN_URL}AccountDetail/${address}`);
+      }
+    }
+  } else {
+    throw Error('The address cannot be empty')
+  }
+}
+
+
+export function throttle(fn: Function, delay = 200) {
+  let timer: any = null
+  return function () {
+      if(timer) return
+      timer = setTimeout(() => {
+        // @ts-ignore
+        fn.apply(this, arguments)
+        timer = null
+      })
+  }
+}
+
+
+export function debounce(fn: Function, wait = 500) {
+  let timeout: any = null;
+  return function() {
+      if(timeout !== null) clearTimeout(timeout);
+      timeout = setTimeout(fn, wait);
+  }
 }

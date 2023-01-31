@@ -26,7 +26,7 @@
                   class="account-pop MR-10"
                   placement="bottom-start"
                 >
-                  <div class="lh-14 pt-8 pb-8 pl-16 pr-16 f-12">
+                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12">
                     {{ t("common.right_and_interests") }}
                   </div>
                   <template #reference>
@@ -57,7 +57,7 @@
                   class="account-pop"
                   placement="bottom-start"
                 >
-                  <div class="lh-14 pt-8 pb-8 pl-16 pr-16 f-12">
+                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12">
                     {{ t("common.exchange_pledge") }}
                   </div>
                   <template #reference>

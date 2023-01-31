@@ -77,7 +77,7 @@
           </span>
         </div>
         <van-field
-
+         @keydown.enter="handleConfirm"
           v-model="password"
           :placeholder="t('loginwithpassword.pleaseinput')"
           :type="mask ? 'password' : 'text'"

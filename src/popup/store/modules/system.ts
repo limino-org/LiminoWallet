@@ -225,9 +225,9 @@ export default {
     },
     // Get account details
     async getEthAccountInfo({commit, state}: any){
-      const wallet = await getWallet()
-      const { address } = wallet
-      wallet.provider.send('eth_getAccountInfo',[address, "latest"]).then((res:any)=>{
+      const wall = await getWallet()
+      const { address } = wall
+      wall.provider.send('eth_getAccountInfo',[address, "latest"]).then((res:any)=>{
         sessionStorage.setItem('eth_addountInfo', JSON.stringify(res))
         commit('UPDATA_ACCOUNTINFO', res)
       })

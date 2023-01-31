@@ -605,6 +605,8 @@ export default defineComponent({
     const myprofit = ref("");
     const historyProfit = ref("");
     const calcProfit = async () => {
+      const { t0, t1, t2, t3 } = state.configuration.setting.conversion
+
       try {
         console.log("1---------------------------");
         const wallet = await getWallet();
@@ -619,7 +621,7 @@ export default defineComponent({
         if(props.txtype === '1') {
         
         const rio = new BigNumber(props.selectTotal).div(new BigNumber(exchangeNum).plus(snftNum))
-        historyProfit.value = new BigNumber(rewardSNFTCount).multipliedBy(0.03).multipliedBy(rio).toFixed(5)
+        historyProfit.value = new BigNumber(rewardSNFTCount).multipliedBy(t0).multipliedBy(rio).toFixed(5)
         }
         console.warn('eth_getAllStakers',props.txtype)
         if(props.txtype === '3') {

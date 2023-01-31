@@ -5,8 +5,9 @@ import BigNumber from './bignumber.js'
 export const useGetTxReceipt = () => {
   async function waitTxQueueResponse() {
     const local = await localforage.getItem("vuex") || null
-    const { id } = local.account.currentNetwork
-    const queuekey = `txQueue-${id}`
+    const { id, chainId } = local.account.currentNetwork
+    const { address } = local.account.accountInfo
+    const queuekey = `txQueue-${id}-${chainId}-${address.toUpperCase()}`
     return new Promise(async(resolve, reject) => {
         const list  = await localforage.getItem(queuekey)
         const txQueue = list && list.length ? list : []

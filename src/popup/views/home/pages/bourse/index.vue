@@ -1,22 +1,22 @@
 <template>
-      <NavHeader :title="!isExchanger_flag ? t('createExchange.headerTitle') : t('sidebar.exchangemanagement')">
+  <div class="bourse">
+    <NavHeader :title="!isExchanger_flag ? t('createExchange.headerTitle') : t('sidebar.exchangemanagement')">
       <template v-slot:left>
-        <span class="back" @click="back">{{ t("wallet.back") }}</span>
+        <span class="back" @click="back">{{ t("common.back") }}</span>
       </template>
       <template v-slot:right>
         <cancel-btn />
       </template>
     </NavHeader>
-  <div class="bourse">
     <div class="bourse-container" id="bourse-page" v-if="!loading">
       <div class="bourse-container-name">
-        <span>{{ t("bourse.name") }}({{ name.length }}/20)</span>
+        <span>{{ t("bourse.name") }} ({{ name.length }}/20)</span>
         <el-tooltip
           popper-class="tooltip4"
           class="box-item"
           effect="dark"
           :content="t('bourse.tip5')"
-          placement="top"
+          placement="right"
           trigger="hover"
         >
           <van-icon name="question" class="ml-4" color="#9A9A9A" />
@@ -52,8 +52,8 @@
           popper-class="tooltip4"
           class="box-item"
           effect="dark"
-          :content="t('createExchange.commission')"
-          placement="top"
+          :content="feilvstr"
+          placement="right"
           trigger="hover"
         >
           <van-icon class="ml-6" name="question" color="#9A9A9A" />
@@ -70,7 +70,7 @@
           class="box-item"
           effect="dark"
           :content="t('bourse.tip3')"
-          placement="top"
+          placement="right"
           trigger="hover"
         >
           <van-icon class="ml-6" name="question" color="#9A9A9A" />
@@ -78,17 +78,17 @@
       </div>
       <div v-if="isExchanger_flag" class="f-14 text-bold mt-8">
         {{ exchangerBalance }} ERB
-        <span>≈{{ toUsd(exchangerBalance, 2) }}</span>
+        <span>≈${{ toUsd(exchangerBalance, 2) }}</span>
       </div>
-
+    
       <div class="bourse-container-meaning bt mt-14" v-if="!isExchanger_flag">
         <span>{{ t("bourse.marketCom") }}</span>
         <el-tooltip
           popper-class="tooltip1"
           class="box-item"
           effect="dark"
-          :content="t('createExchange.commission')"
-          placement="top"
+          :content="feilvstr"
+          placement="right"
           trigger="hover"
         >
           <van-icon class="ml-4" name="question" color="#9A9A9A" />
@@ -117,6 +117,7 @@
           @change="handleMoney"
         />
       </div>
+   
       <div class="bourse-container-meaning bt mt-14" v-if="!isExchanger_flag">
         <span>{{ t("bourse.stakingFee") }}</span>
         <el-tooltip
@@ -124,7 +125,7 @@
           class="box-item"
           effect="dark"
           :content="t('bourse.tip3')"
-          placement="top"
+          placement="right"
           trigger="hover"
         >
           <van-icon name="question" class="ml-4" color="#9A9A9A" />
@@ -134,34 +135,35 @@
         700ERB <span>(≈${{ toUsd(700, 2) }})</span>
       </div>
 
-      <!-- Additional pledge amount -->
-      <!-- <div class="bourse-container-meaning bt mt-14" v-if="isExchanger_flag">
-        <span>{{ t("createExchange.addPl") }} </span>
-        <el-tooltip
-          popper-class="tooltip3"
-          class="box-item"
-          effect="dark"
-          :content="t('bourse.tip4')"
-          placement="top"
-          trigger="hover"
-        >
-          <van-icon name="question" class="ml-4" color="#9A9A9A" />
-        </el-tooltip>
-        <div class="add-amount f-14 text-bold mt-6 mb-14">
-          {{ addAmount || 0 }} ERB
-        </div>
-        <el-slider
-          v-model="addAmount"
-          :min="minBalance"
-          :max="maxBalance"
-          @input="changeAdd"
-          :marks="marks2"
-          :step="1"
-        />
-        <div class="mt-16">
-          <van-field type="number" v-model="addAmount" @change="handleAdd" />
-        </div>
-      </div>-->
+     <!--
+       // <div class="bourse-container-meaning bt mt-14" v-if="isExchanger_flag">
+      //   <span>{{ t("createExchange.addPl") }} </span>
+      //   <el-tooltip
+      //     popper-class="tooltip3"
+      //     class="box-item"
+      //     effect="dark"
+      //     :content="t('bourse.tip4')"
+      //     placement="right"
+      //     trigger="hover"
+      //   >
+      //     <van-icon name="question" class="ml-4" color="#9A9A9A" />
+      //   </el-tooltip>
+      //   <div class="add-amount f-14 text-bold mt-6 mb-14">
+      //     {{ addAmount || 0 }} ERB
+      //   </div>
+      //   <el-slider
+      //     v-model="addAmount"
+      //     :min="minBalance"
+      //     :max="maxBalance"
+      //     @input="changeAdd"
+      //     :marks="marks2"
+      //     :step="1"
+      //   />
+      //   <div class="mt-16">
+      //     <van-field type="number" v-model="addAmount" @change="handleAdd" />
+      //   </div>
+      // </div>
+      -->
       <div class="bourse-container-meaning bt mt-14" v-if="!isExchanger_flag">
         <span>{{ t("bourse.marketServer") }} </span>
         <el-tooltip
@@ -169,12 +171,14 @@
           class="box-item"
           effect="dark"
           :content="t('bourse.tip4')"
-          placement="top"
+          placement="right"
           trigger="hover"
         >
           <van-icon name="question" class="ml-4" color="#9A9A9A" />
         </el-tooltip>
       </div>
+      <p v-show="insufficientMoney && !isExchanger_flag" class="insufficientMoney-tip">{{ insufficientMoney ? t('createExchange.insufficientMoney', {value: addBalance}) : '' }}</p>
+
       <div
         v-if="!isExchanger_flag"
         :class="[
@@ -196,9 +200,9 @@
               :class="`${
                 serverIndex === 0 && !isExchangeStatusStatus
                   ? 'active'
-                  : !isExchangeStatusStatus
+                  : (!isExchangeStatusStatus
                   ? 'active-d'
-                  : ''
+                  : '')
               }`"
               @click="changeServerIndex(0)"
             >
@@ -207,7 +211,7 @@
                 ><span class="flex right">None</span>
                 <i
                   :class="`iconfont ${
-                    serverIndex == 0 ? 'icon-duihao2' : 'icon-check_line'
+                    serverIndex == 0 ? 'icon-duigouxiao' : 'icon-dui'
                   }`"
                 ></i
               ></span>
@@ -226,9 +230,9 @@
               :class="
                 serverIndex === 1 && !isExchangeStatusStatus
                   ? 'active'
-                  : isExchangeStatusStatus
+                  : (isExchangeStatusStatus
                   ? 'active-d'
-                  : ''
+                  : '') + (insufficientMoney === true ? 'disabled' : '')
               "
               @click="changeServerIndex(1)"
             >
@@ -238,7 +242,7 @@
                 ><span>Best</span>
                 <i
                   :class="`iconfont ${
-                    serverIndex == 1 ? 'icon-duihao2' : 'icon-check_line'
+                    serverIndex == 1 ? 'icon-duigouxiao' : 'icon-dui'
                   }`"
                 ></i
               ></span>
@@ -276,7 +280,7 @@
                 :close-on-click-outside="false"
                 placement="top"
                 trigger="manual"
-                class="popover-btn-tip popover-btn-tip-disabled"
+                class="popover-btn-tip"
               >
                 <div class="f-12 pl-10 pr-10 pt-10 pb-10">
                   {{ t("bourse.closeTip") }}
@@ -317,15 +321,15 @@
                 @click="addSubmit"
                 block
                 type="primary"
-                >{{ t("bourse.saveExchange") }}</van-button
-              >-->
+                >{{ t("bourse.saveExchange") }}</van-button>
+              -->
             </template>
           </template>
         </div>
       </div>
     </div>
     <div class="flex center loading-page" v-else>
-      <van-loading color="#037CD6" />
+    <van-loading color="#037CD6" />
     </div>
     <CustomExchangeModal
       v-model="showAcount"
@@ -496,16 +500,6 @@ export default defineComponent({
     ModifPledgeModal,
 
   },
-  beforeRouteEnter:(to,form,next)=>{
-    next((vm:any )=> {
-      let arr1 = vm;
-      let arr = toRaw(arr1);
-      // console.log("vm",arr.serverIndex)
-      arr.serverIndex = 1
-      // vm.visible2 = false;
-      // vm.visible1 = false;
-    })
-  },
   setup(props: any, context: SetupContext) {
     const blockNumber = ref(0);
     const accountInfoBlockNumber = ref(0);
@@ -649,6 +643,9 @@ export default defineComponent({
     // servr selection
     let serverIndex = ref(1);
     const changeServerIndex = (value: number) => {
+      if(value && insufficientMoney.value) {
+        return
+      }
       if (exchangeStatus.value.exchanger_flag) {
         return;
       }
@@ -712,7 +709,9 @@ export default defineComponent({
       }
       showCreateExchange.value = false;
     };
-
+    const insufficientMoney = computed(() => {
+      return new Bignumber(accountInfo.value.amount).lt(901) ? true : false
+    })
     let changeexchangerName = (value: any) => {
       console.warn('value',value)
       return value;
@@ -728,6 +727,11 @@ export default defineComponent({
 
     onMounted(() => {
       initPageData();
+      console.warn('insufficientMoney.value', insufficientMoney.value, isExchangeStatusStatus.value)
+      if(insufficientMoney.value) {
+        serverIndex.value = 0
+        console.warn('serverIndex.value---', serverIndex.value)
+      }
     });
     const isExchanger_flag = computed(
       () => store.state.account.exchangeStatus.exchanger_flag
@@ -836,6 +840,12 @@ export default defineComponent({
       }
     );
 
+    watch(() => serverIndex.value, n => {
+      console.log('serverIndex:', n)
+    },{
+      deep: true,
+      immediate: true
+    })
     const addAmount = ref();
     const minBalance = computed(() => 0);
     const maxBalance = computed(() =>
@@ -893,8 +903,19 @@ export default defineComponent({
       showMinusModal.value = true;
     };
     const showClose = ref(true);
+
+    const feilvstr = computed(() => {
+      console.warn('moneyStr.value', t('createExchange.commission',{value: moneyStr.value}))
+      return t('createExchange.commission',{value: moneyStr.value})
+    })
+    const addBalance = computed(() => {
+      return new Bignumber(901).minus(accountInfo.value.amount).toFixed(6)
+    })
     return {
+      addBalance,
+      feilvstr,
       showClose,
+      insufficientMoney,
       handleClose,
       minusAmount,
       handleConfirmMinus,

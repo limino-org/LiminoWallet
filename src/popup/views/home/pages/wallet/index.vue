@@ -54,7 +54,7 @@
                       class="account-pop"
                       placement="bottom-end"
                     >
-                      <div class="lh-14 pt-8 pb-8 pl-16 pr-16 f-12">
+                      <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12">
                         {{ t("common.right_and_interests") }}
                       </div>
                       <template #reference>
@@ -73,7 +73,6 @@
                           <span class="user">
                             <img
                               src="@/popup/views/home/imgs/wakuang.png"
-                              alt
                             />
                           </span>
                           <div class="tag-label flex center-v">
@@ -88,7 +87,7 @@
                       class="account-pop"
                       placement="bottom-end"
                     >
-                      <div class="lh-14 pt-8 pb-8 pl-16 pr-16 f-12">
+                      <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12">
                         {{ t("common.exchange_pledge") }}
                       </div>
                       <template #reference>
@@ -105,7 +104,6 @@
                           <span class="user">
                             <img
                               src="@/popup/views/home/imgs/smallhome.png"
-                              alt
                             />
                           </span>
                           <div class="tag-label flex center-v">

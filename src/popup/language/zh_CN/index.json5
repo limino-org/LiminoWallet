@@ -155,8 +155,8 @@
 		access: '使用权',
 		cmsandExchange: '内容管理系统&交易所',
 		back: '返回',
-		toBrowser: "在Wormholesscan上查看完整历史记录",
-		scanLink: "区块浏览器",
+        toBrowser: "在{link}上查看完整历史记录",
+        scanLink: "区块浏览器",
 		convertComplete: "转换完成",
 		selectSNFT: "您还未选择任何S-NFTs",
 		buySnft: "你有 S-NFT 吗？ {link}",
@@ -715,16 +715,21 @@
 		transitionHistory: "交易历史"
 	},
 	"transationHistory": {
-		transationHistory: "交易记录",
-		all: "全部",
-		receive: "收到",
-		send: "发送",
-		swap: "交换",
-		other: "其他",
-		confirmed: '确认的',
-		failed: '失败的',
-		contract: '合约',
-		pendding:"确认中"
+        transationHistory: "交易记录",
+        all: "全部",
+        receive: "收到",
+        send: "发送",
+        swap: "交换",
+        other: "其他",
+        confirmed: '确认的',
+        failed: '失败的',
+        contract: '合约',
+        successly: "成功",
+        pendding: "等待",
+        cancelTx: "确定取消nonce为#{nonce}的交易吗?",
+        cancelDealTit: "取消交易",
+        canceled:'已取消',
+        accelerated:'已加速'
 	},
 	"currencyConversion": {
 		"currencyConversion": "货币转换",
@@ -1030,6 +1035,7 @@
 		"downQR": "下载二维码"
 	},
 	"createExchange": {
+		commission: "这是{value}%的费用，你的市场将收取谁在你的市场交易的卖家。",
 		"exchangeTit": "我的交易所",
 		"welcometo": "欢迎",
 		"takesabout": "大约需要1天才能得到≈",
@@ -1115,7 +1121,6 @@
 		create_wrong: "非常抱歉，因为某些意外，操作失败，您可以去交易历史里查看交易的具体信息",
 		formCharge: "佣金",
 
-		commission: "这是%的费用，你的市场将收取谁在你的市场交易的卖家。",
 		placeholder: "输入 {min}～{max}",
 		ispoor: "请确保余额充足",
 		addPl: "追加质押",
@@ -1139,7 +1144,9 @@
 		serveTip3:"这是您为本次交易购买的我们服务器的使用时间",
 		addStaking:"该交易将帮助您将额外的ERB存入您的账户。您获得奖励的机会将增加。您的额外ERB也可以在几个月后赎回。",
 		redeem:"这是您要赎回的 ERB 数量",
-		convert:"转换"
+		convert:"转换",
+		        insufficientMoney:"在质押后，您的余额将低于201ERB，这不足以在我们的服务器上建立您的交易所。你需要支付额外的{value}ERB。"
+
 	},
 	"createExchangeSuccess": {
 		"congratulations": "恭喜",
@@ -1167,6 +1174,7 @@
 
 	},
 	"common": {
+		clearCancheSuccess:"缓存清除成功",
 		clearCanche:"清除缓存",
 		commingsoon: "即将来临",
 		setting: '设置',
@@ -1235,6 +1243,11 @@
 		unisUnfreeze:"质押未解冻",
 		marketplace:"交易所",
 		validator:"矿工",
+		        noMoney: "你的账户缺少资产。请确保钱包里有足够的钱",
+        recovery: "恢复",
+        gasSpeedUp: "汽油加速",
+        sendTipPendding: "当前交易队列存在未完成交易，请完成后重试！",
+        speedUp: "加速",
 	},
 	"categoryform": {
 		"categoryform": "您还未选择任何数据"
@@ -1335,6 +1348,16 @@
 		etherscan: "在 Wormholesscan 上"
 	},
 	"minerspledge": {
+		        smileTip: "你的信誉很好，{value}，请保留它，获得更多的收入 {btn}",
+        sadTip: "您的信誉度低于70，请单击右侧的按钮恢复 {btn}",
+        neutralTip: "您的信誉度低于70，请单击右侧的按钮恢复 {btn}",
+        resetBtnTip: "有了这个按钮，你可以恢复你的信誉到70信誉将花费 {value} ERB。ERB成本将被虫洞区块链烧毁。",
+        noMoney: "请保证账户余额大于{value}ERB以成功恢复权重！",
+        resetSendTip: "通过信誉恢复，可以最大程度恢复您的信誉。 一个信誉将花费一个 ERB。",
+        homeTip: "您的信誉度低于70，恢复你的信誉度以获得更高收入。{btn}",
+        gotIt: "知道了>",
+        credibility: "权重",
+        upCredibility: "权重提高",
 		minerspledge: '矿工质押',
 		miners_pledge: '矿工质押',
 		unfortunately: '遗憾地告知您，节点是错误的',
@@ -1452,5 +1475,9 @@
 	customExchangeModal: {
 		exceededmaximumamount: "超过最大金额",
 		amountcannotbelessthan: '金额不能小于{props}',
-	}
+	},
+	error:{
+        500:"参数有误",
+        timeout:"此时网络繁忙。交易已放入队列，请稍等，不要再发送相同的交易。",
+    }
 }

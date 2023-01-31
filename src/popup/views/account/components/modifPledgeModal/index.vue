@@ -317,7 +317,7 @@ export default defineComponent({
     border-radius: 3.5px;
   }
   .el-slider__marks-text {
-    z-index: 999;
+    z-index: 9999;
     margin-top: -40px;
     line-height: 25px;
     border-radius: 5px;

@@ -137,24 +137,6 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
-  {
-    path: "/currency",
-    name: "currency",
-    redirect: {
-      name: "currencyHome",
-    },
-    component:() =>  import("@/popup/views/currency/index.vue"),
-    children: [
-      {
-        path: "/currency/home",
-        name: "currencyHome",
-        component:() =>  import("@/popup/views/currency/home/index.vue"),
-        meta: {
-          auth: true,
-        },
-      },
-    ],
-  },
   // Single signature
   {
     path: "/sign",
