@@ -323,6 +323,7 @@ export default {
     };
     let waitTime: any = ref(null);
     onMounted(async () => {
+      store.dispatch('account/clearWaitTime')
       window.addEventListener('scroll', deFun)
       console.warn('onMounted')
       try {
@@ -337,10 +338,6 @@ export default {
       }
       store.dispatch("account/waitTxQueueResponse", {
         time: null,
-        callback(e: any) {
-          console.warn("e", e);
-          waitTime.value = e;
-        },
       });
     });
     const toSend = () => {
@@ -408,11 +405,7 @@ export default {
         loading.value = false
       }
       store.dispatch("account/waitTxQueueResponse", {
-        time: null,
-        callback(e: any) {
-          console.warn("e", e);
-          waitTime.value = e;
-        },
+        time: null
       });
     })
     eventBus.on("loopTxListUpdata", () => {
@@ -481,6 +474,8 @@ export default {
       eventBus.off("delTxQueue");
       eventBus.off('waitTxEnd')
       window.removeEventListener('scroll', deFun)
+      store.dispatch('account/clearWaitTime')
+
 
     });
     const cancelSend = async () => {
@@ -532,11 +527,6 @@ export default {
         } else {
           txType = !newData ? 'normal' : (newData.indexOf('wormholes') > -1 ? 'wormholes' : 'contract')
         }
-        // let data = await wallet.sendTransaction(tx);
-        // const data = await store.dispatch('account/transaction', {
-        //     ...tx,
-        //     checkTxQueue: false
-        //   })
         const { hash, from, type, value: newVal, contractAddress } = data;
         const txInfo =  {
           ...sendTx.value,
@@ -572,6 +562,7 @@ export default {
           null,
           60000
         );
+        store.dispatch('account/clearWaitTime')
         await store.dispatch("account/waitTxQueueResponse");
         handleAsyncTxList()
       } catch (err) {
@@ -672,6 +663,7 @@ export default {
         }
         await PUSH_TRANSACTION(newres)
         const receipt = await data.wallet.provider.waitForTransaction(data.hash);
+        store.dispatch('account/clearWaitTime')
         await store.dispatch("account/waitTxQueueResponse");
         handleAsyncTxList()
       } catch (err) {

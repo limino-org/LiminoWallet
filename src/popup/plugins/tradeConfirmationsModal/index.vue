@@ -214,7 +214,7 @@ const toHistory = (hash: string | null | undefined) => {
     defaultData.value.historyCallBack()
   } else {
     if(hash) {
-    router.replace({name:'transactionList', query: {hash}})
+    router.replace({name:'transaction-history', query: {hash}})
   }
   }
 

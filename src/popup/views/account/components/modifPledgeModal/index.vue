@@ -211,7 +211,8 @@ export default defineComponent({
     };
 
     const submit = async () => {
-      if (value.value <= 0) {
+      console.log('value.value', value.value, sliderValue.value)
+      if (Number(value.value) <= 0) {
         $toast.warn(t("sendto.no"));
         return;
       }

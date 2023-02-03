@@ -5,6 +5,9 @@ import { addressMask, decimal } from "@/popup/utils/filters";
 import { erb_price } from '@/popup/http/modules/price'
 import { getWallet } from '@/popup/store/modules/account'
 import { useBroadCast } from '@/popup/utils/broadCost'
+import localforage from 'localforage';
+import store from '../index'
+
 const { handleUpdate } = useBroadCast()
 type WalletToken = {
   seconds: number
@@ -44,12 +47,14 @@ interface State {
   transferCNYRate: number
   conversationId: string
   wallet_token: WalletToken;
+  chainVersion: string;
 }
 export default {
   state: {
     language: "",
     // Homepage NFT, list display method card list
     layoutType: "card",
+    chainVersion:'',
     layoutList: [
       // Arrangement method list: list, card
       { value: "list", name: "list" },
@@ -99,6 +104,9 @@ export default {
     },
   },
   mutations: {
+    UPDATE_CHAINVERSION(state: State, value: string) {
+      state.chainVersion = value
+    },
     UPDATE_LANGUAGE(state: State, value: string) {
       state.language = value;
     },
@@ -234,7 +242,34 @@ export default {
     },
     setConversationid({commit, state}: any, id: string) {
       commit('UPDATA_CONVERSATIONID',id)
-    }
+    },
+    async getChainVersion({commit, state}: any, wallet: any){
+      const version =  await wallet.provider.send('eth_version')
+      const { chainId } =  await wallet.provider.getNetwork()
+      const { id } = store.state.account.currentNetwork
+      const queryList = [
+        `async-${id}-${chainId}`,
+        `txQueue-${id}-${chainId}`,
+        `txlist-${id}-${chainId}`
+      ]
+      
+      const oldVersion = state.chainVersion
+      if(oldVersion && version != oldVersion) {
+        localforage.iterate((value, key, iterationNumber) => {
+          console.log('clear cancel', key)
+          if (key !== "vuex") {
+            const flag = queryList.some(str => key.indexOf(str) > -1)
+            console.log('clear cancel', key)
+            if(flag){
+              localforage.removeItem(key);
+            }
+          } else {
+            [key, value]
+          }
+        });
+      }
+      commit('UPDATE_CHAINVERSION', version)
+    },
   },
   namespaced: true,
 };

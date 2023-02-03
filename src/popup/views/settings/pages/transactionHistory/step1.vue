@@ -1,6 +1,5 @@
 <template>
-  <NavHeader :hasRight="false" :title="t('setting.transitionHistory')"></NavHeader>
-  <div class="transaction-history">
+      <NavHeader :hasRight="false" :title="t('setting.transitionHistory')"></NavHeader>
     <van-sticky offset-top="48">
       <div class="flex center tabs-box pt-14">
         <div class="tabs flex between center-v hover van-hairline--surround">
@@ -13,6 +12,7 @@
         </div>
       </div>
     </van-sticky>
+  <div class="transaction-history">
     <div class="all" v-show="chooseTabdata.value == 1">
       <!-- Transactions -->
       <div v-if="transactionList.length">
@@ -27,7 +27,7 @@
           :active="route.query.hash?.toString() === item.hash"
         />
       </div>
-      <no-data v-else />
+      <no-data v-if="!loading && !transactionList.length" />
     </div>
     <div class="receive" v-show="chooseTabdata.value == 2"></div>
     <div class="send" v-show="chooseTabdata.value == 3">
@@ -43,7 +43,7 @@
           :active="route.query.hash?.toString() === item.hash"
         />
       </div>
-      <no-data v-else />
+      <no-data v-if="!loading && !sendList.length" />
     </div>
     <div class="swap" v-show="chooseTabdata.value == 4">
       <div v-if="swapList.length">
@@ -58,7 +58,7 @@
           :active="route.query.hash?.toString() === item.hash"
         />
       </div>
-      <no-data v-else />
+      <no-data v-if="!loading && !swapList.length" />
     </div>
 
     <div class="other" v-show="chooseTabdata.value == 5">
@@ -74,10 +74,14 @@
           :active="route.query.hash?.toString() === item.hash"
         />
       </div>
-      <no-data v-else />
+      <no-data v-if="!loading && !otherList.length" />
     </div>
   </div>
-
+  <div class="loading-list-con" v-show="loading">
+      <div class="loading-list-card" v-for="item in 18" :key="item">
+        <van-skeleton avatar :row="2" />
+      </div>
+    </div>
     <!-- View transaction details -->
     <van-dialog
     v-model:show="showTransactionModal"
@@ -375,11 +379,7 @@ export default {
         loading.value = false
       }
       store.dispatch("account/waitTxQueueResponse", {
-        time: null,
-        callback(e: any) {
-          console.warn("e", e);
-          waitTime.value = e;
-        },
+        time: null
       });
     })
 
@@ -387,6 +387,8 @@ export default {
     let tlist: any = ref([]);
     const waitTime: any = ref(null);
     onMounted(async () => {
+
+      store.dispatch('account/clearWaitTime')
       window.addEventListener('scroll', deFun)
 
       try {
@@ -398,11 +400,9 @@ export default {
       }
       store.dispatch("account/waitTxQueueResponse", {
         time: null,
-        callback(e: any) {
-          console.warn("e", e);
-          waitTime.value = e;
-        },
       });
+
+
     });
     const loading = ref(true);
     const getPageList = async () => {
@@ -437,11 +437,11 @@ export default {
           if(tx) {
             transactionData.data = tx
             showTransactionModal.value = true;
-            let time = setTimeout(() => {
-              const ele = document.getElementById(hash?.toString())
-             ele ? ele.scrollIntoView() : ''
-             clearTimeout(time)
-            })
+            // let time = setTimeout(() => {
+            //   const ele = document.getElementById(hash?.toString())
+            //  ele ? ele.scrollIntoView() : ''
+            //  clearTimeout(time)
+            // })
           }
         }
     };
@@ -533,6 +533,8 @@ export default {
       eventBus.off("delTxQueue");
       eventBus.off('waitTxEnd')
       window.removeEventListener('scroll', deFun)
+      store.dispatch('account/clearWaitTime')
+
 
     });
     const cancelSend = async () => {
@@ -584,12 +586,6 @@ export default {
         } else {
           txType = !newData ? 'normal' : (newData.indexOf('wormholes') > -1 ? 'wormholes' : 'contract')
         }
-
-        // let data = await wallet.sendTransaction(tx);
-        // const data = await store.dispatch('account/transaction', {
-        //     ...tx,
-        //     checkTxQueue: false
-        //   })
         const { hash, from, type, value: newVal, contractAddress } = data;
         const txInfo =  {
           ...transactionData.data,
@@ -625,6 +621,7 @@ export default {
           null,
           60000
         );
+        store.dispatch('account/clearWaitTime')
         await store.dispatch("account/waitTxQueueResponse");
         handleAsyncTxList()
       } catch (err) {
@@ -728,6 +725,7 @@ export default {
         // store.commit("account/PUSH_TRANSACTION",newres);
         sessionStorage.setItem("new tx", JSON.stringify(data));
         const receipt = await data.wallet.provider.waitForTransaction(data.hash);
+        store.dispatch('account/clearWaitTime')
         await store.dispatch("account/waitTxQueueResponse");
         handleAsyncTxList()
       } catch (err) {
@@ -847,6 +845,7 @@ export default {
 }
 .transaction-history {
   overflow-y: scroll;
+  // height: calc(100vh - 48PX - 48PX);
 }
 .tabs-box {
   background: #fff;

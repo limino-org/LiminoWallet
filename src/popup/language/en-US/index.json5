@@ -144,7 +144,12 @@
 		convertComplete: "For complete",
 		selectSNFT: "You have not selected any S-NFTs",
 		buySnft: "Do you have S-NFT? {link}",
-		findMore: "Find More"
+		findMore: "Find More",
+		conver_approve: "The request is approved.The convert tansaction will be started.Please wait for seconds.",
+    	conver_waiting: "{count} <span style='color:#037CD6;'>S-NFT{countstr}</span> are being exchanged. You will receive {amount}<span style='color:#037CD6;'>ERB</span> if you are successfully exchanged. You can also check the exchange details in the history of the Personal Center",
+    	conver_success: "{count} <span style='color:#037CD6;'>S-NFT</span> have been successfully exchanged and you have obtained {amount}<span style='color:#037CD6;'>ERB</span>. You can also check the exchange details in the history of the Personal center",
+    	conver_wrong: "{count} S-NFT failed to exchange, you can check the exchange details in the Personal center history",
+
 
 	},
 	"addtokens": {
@@ -1237,6 +1242,9 @@
     gasSpeedUp: "Gas Speed Up",
     sendTipPendding: "There is an uncompleted transaction in the current transaction queue, please try again after completion!",
     speedUp: "Speed Up",
+	    hsitory: "History",
+		    converTip:"Tips: After the S-NFT exchange is successful, it will disappear from the wallet. You can view the exchange record in the wallet's transaction history or browser.",
+
 
 	},
 	"categoryform": {
@@ -1483,5 +1491,6 @@
 	error:{
     	500:"Parameter is invalid.",
     	timeout:"Network is busy at this moment.The transaction has been put into the queue,please wait for a moment and do not send same tranactions.",
+		netErr:"Network connection failure"
 	}
 }

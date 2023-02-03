@@ -47,6 +47,8 @@
             </div>
           </div>
         </div>
+        <Tip :message="t('common.converTip')" type="warn" />
+
       </div>
       <div class="list pl-12 pr-12 mt-20 mb-20" v-if="txtype == '3'">
         <div class="card">
@@ -67,7 +69,9 @@
             <div class="border-bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.income") }}</div>
-              <div class="m-value">≈ {{myprofit}} ERB(≈ ${{toUsd(myprofit, 5)}})</div>
+              <div class="m-value">
+                ≈ {{ myprofit }} ERB(≈ ${{ toUsd(myprofit, 5) }})
+              </div>
             </div>
             <div class="border-bottom"></div>
             <div class="m-card">
@@ -172,6 +176,8 @@ import { ethers } from "ethers";
 import { web3 } from "@/popup/utils/web3";
 import { clone } from "pouchdb-utils";
 import { getAccountAddr } from "@/popup/http/modules/common";
+import { useRouter } from "vue-router";
+import Tip from '@/popup/components/tip/index.vue'
 export default defineComponent({
   name: "transfer-NFT-modal",
   components: {
@@ -180,6 +186,7 @@ export default defineComponent({
     [Field.name]: Field,
     [NumberKeyboard.name]: NumberKeyboard,
     [Popover.name]: Popover,
+    Tip
   },
   emits: ["success", "update:modelValue", "fail"],
   props: {
@@ -217,16 +224,17 @@ export default defineComponent({
       type: String,
       default: "3",
     },
-    ratio:{
+    ratio: {
       type: Number,
-      default: 0.03
-    }
+      default: 0.03,
+    },
   },
   setup(props: any, context: SetupContext) {
     const { t } = useI18n();
     const { emit }: any = context;
     // count down
     const time = ref(3);
+    const router = useRouter();
     const { $tradeConfirm } = useTradeConfirm();
     const showModal: Ref<boolean> = ref(false);
     const { dispatch, commit, state } = useStore();
@@ -270,6 +278,9 @@ export default defineComponent({
       showModal.value = false;
     };
 
+    const historyCallBack = () => {
+      router.push({ name: "transaction-history" });
+    };
     const loading = ref(false);
     const handleComfirm = async () => {
       emit("update:modelValue", false);
@@ -282,6 +293,14 @@ export default defineComponent({
       let successMessage = "";
       let wattingMessage = "";
       let failMessage = "";
+      let amount = new BigNumber(0);
+      let pstr = 0;
+      let cstr = 0;
+      let nstr = 0;
+      let fstr = 0;
+      let numstr = "";
+      let count = 0;
+      console.warn("props.txtype", props.txtype);
       switch (props.txtype) {
         case "1":
           approveMessage = t("minerspledge.close_approve");
@@ -296,10 +315,100 @@ export default defineComponent({
           failMessage = t("minerspledge.create_wrong");
           break;
         case "2":
-          approveMessage = t("minerspledge.transfer_approve");
-          wattingMessage = t("minerspledge.transfer_waiting");
-          successMessage = t("minerspledge.transfer_success");
-          failMessage = t("minerspledge.transfer_wrong");
+          const { t0, t1, t2, t3 } = state.configuration.setting.conversion;
+
+          // coll conver
+          if (props.type == "2") {
+            console.warn('props.selectList', props.selectList)
+            let newCount = 0;
+            Object.keys(props.selectList).forEach((key) => {
+              if (
+                key != "undefined" &&
+                props.selectList[key] &&
+                props.selectList[key].length
+              ) {
+                props.selectList[key].forEach((item) => {
+                  newCount = newCount + item.snfts.length;
+                  const { MergeLevel, MergeNumber } = item;
+                  if (MergeLevel == 0) {
+                    amount = amount.plus(t0);
+                    fstr++;
+                  }
+                  if (MergeLevel == 1) {
+                    amount = amount.plus(
+                      new BigNumber(MergeNumber).multipliedBy(t1)
+                    );
+                    nstr++;
+                  }
+                  if (MergeLevel == 2) {
+                    amount = amount.plus(
+                      new BigNumber(MergeNumber).multipliedBy(t2)
+                    );
+                    cstr++;
+                  }
+                  if (MergeLevel == 3) {
+                    amount = amount.plus(
+                      new BigNumber(MergeNumber).multipliedBy(t3)
+                    );
+                    pstr++;
+                  }
+                });
+              }
+            });
+            count = newCount;
+          }
+          // chip conver
+          if (props.type == "1") {
+            count = props.selectList.length;
+            props.selectList.forEach((item: any) => {
+              const { MergeLevel, MergeNumber } = item;
+              if (MergeLevel == 0) {
+                amount = amount.plus(t0);
+                fstr++;
+              }
+              if (MergeLevel == 1) {
+                amount = amount.plus(
+                  new BigNumber(MergeNumber).multipliedBy(t1)
+                );
+                nstr++;
+              }
+              if (MergeLevel == 2) {
+                amount = amount.plus(
+                  new BigNumber(MergeNumber).multipliedBy(t2)
+                );
+                cstr++;
+              }
+              if (MergeLevel == 3) {
+                amount = amount.plus(
+                  new BigNumber(MergeNumber).multipliedBy(t3)
+                );
+                pstr++;
+              }
+            });
+
+            pstr ? (numstr = numstr + `(L3*${pstr})` + "、") : "";
+            cstr ? (numstr = numstr + `(L2*${cstr})` + "、") : "";
+            nstr ? (numstr = numstr + `(L1*${nstr})` + "、") : "";
+            fstr ? (numstr = numstr + `(L0*${fstr})` + "、") : "";
+          }
+
+          numstr = numstr.slice(0, numstr.length - 1);
+          console.warn("numstr pstr", pstr);
+          console.warn("numstr cstr", cstr);
+          console.warn("numstr nstr", nstr);
+          console.warn("numstr fstr", fstr);
+
+          console.warn("numstr", numstr);
+          approveMessage = t("wallet.conver_approve");
+          wattingMessage = t("wallet.conver_waiting", {
+            count: `<span style='color:#037CD6;'>${count}</span>`,
+            amount: `<span style='color:#037CD6;'>${amount.toNumber()}</span>`,
+            countstr: numstr,
+          });
+          // wattingMessageType:"html",
+          // successMessage = t("minerspledge.transfer_success");
+          // failMessage = t("minerspledge.transfer_wrong");
+
           break;
       }
       $tradeConfirm.open({
@@ -307,6 +416,7 @@ export default defineComponent({
         successMessage,
         wattingMessage,
         failMessage,
+        wattingMessageType: "html",
         disabled: [TradeStatus.pendding],
         callBack: () => {
           emit("success");
@@ -315,8 +425,8 @@ export default defineComponent({
           emit("fail");
         },
       });
-      console.log('props.type', props.type)
-      console.log('props.txtype', props.txtype)
+      console.log("props.type", props.type);
+      console.log("props.txtype", props.txtype);
       // coll transfer
       if (props.type == "2") {
         if (props.txtype == "1" || props.txtype == "3") {
@@ -368,37 +478,34 @@ export default defineComponent({
                 to: address,
                 data: `0x${data3}`,
               };
-              const receipt: any = await wallet.sendTransaction(tx1);
+              const receipt = await dispatch("account/transaction", tx1);
               txQueue.push(receipt);
-              const { from, gasLimit, gasPrice, hash, nonce, to, type, value } =
-                receipt;
-              commit("account/PUSH_TXQUEUE", {
-                hash,
-                from,
-                gasLimit,
-                gasPrice,
-                nonce,
-                to,
-                type,
-                value,
-                transitionType,
-                nft_address: iterator,
-                network: clone(currentNetwork),
-                txType: TransactionTypes.other,
-              });
             }
             $tradeConfirm.update({
               status: "approve",
             });
             await dispatch("account/waitTxQueueResponse");
-            $tradeConfirm.update({
-              status: "success",
-            });
-
+            if (props.txtype == 2) {
+              $tradeConfirm.update({
+                status: "success",
+                successMessage: t("wallet.conver_success", {
+                  count: `<span style='color:#037CD6;'>${count}</span>`,
+                  amount: `<span style='color:#037CD6;'>${amount.toNumber()}</span>`,
+                }),
+                successMessageType: "html",
+                historyCallBack,
+              });
+            } else {
+              $tradeConfirm.update({
+                status: "success",
+                historyCallBack,
+              });
+            }
           } catch (err) {
             console.error(err);
             $tradeConfirm.update({
               status: "fail",
+              historyCallBack,
             });
           }
         }
@@ -421,12 +528,12 @@ export default defineComponent({
                   snfts,
                   nft_address,
                 } = child;
-                switch(MergeLevel){
+                switch (MergeLevel) {
                   case 2:
-                  list.push(nft_address.substr(0, 40));
+                    list.push(nft_address.substr(0, 40));
                     break;
                   case 1:
-                   list.push(nft_address.substr(0, 41));
+                    list.push(nft_address.substr(0, 41));
                     break;
                   case 0:
                     list.push(...snfts);
@@ -436,7 +543,7 @@ export default defineComponent({
             }
           }
           //debugger
-          console.log('list', list)
+          console.log("list------------", list);
           try {
             for await (let nft_address of list) {
               if (nft_address) {
@@ -447,40 +554,43 @@ export default defineComponent({
                   to: address,
                   data: `0x${data3}`,
                   value: ethers.utils.parseEther("0"),
+                  checkTxQueue: false,
                 };
-                const receipt: any = await wallet.sendTransaction(tx1);
+                const receipt = await dispatch("account/transaction", tx1);
                 txQueue.push(receipt);
-                const {
-                  from,
-                  gasLimit,
-                  gasPrice,
-                  hash,
-                  nonce,
-                  to,
-                  type,
-                  value,
-                } = receipt;
-                commit("account/PUSH_TXQUEUE", {
-                  hash,
-                  from,
-                  gasLimit,
-                  gasPrice,
-                  nonce,
-                  to,
-                  type,
-                  value,
-                  transitionType: "6",
-                  nft_address: nft_address,
-                  network: clone(currentNetwork),
-                  txType: TransactionTypes.other,
-                });
               }
             }
             $tradeConfirm.update({ status: "approve" });
-            await dispatch("account/waitTxQueueResponse");
-            $tradeConfirm.update({ status: "success" });
+            const receiptList = await dispatch("account/waitTxQueueResponse");
+            const successList = receiptList.map((item: any) => item.status);
+            if (successList.length == count) {
+              $tradeConfirm.update({
+                status: "success",
+                successMessage: t("wallet.conver_success", {
+                  count: `<span style='color:#037CD6;'>${count}</span>`,
+                  amount: `<span style='color:#037CD6;'>${amount.toNumber()}</span>`,
+                }),
+                successMessageType: "html",
+                historyCallBack,
+              });
+            } else {
+              console.error('conver fail 1', successList, receiptList, count)
+              $tradeConfirm.update({
+                status: "fail",
+                failMessage: t("wallet.conver_wrong", {
+                  count: count - successList.length,
+                }),
+                successMessageType: "html",
+              });
+            }
           } catch (err) {
-            $tradeConfirm.update({ status: "fail" });
+            console.error('conver fail 2', err)
+
+            $tradeConfirm.update({
+              status: "fail",
+              failMessage: t("createExchange.create_wrong"),
+              historyCallBack,
+            });
             console.error(err);
           }
         }
@@ -490,19 +600,19 @@ export default defineComponent({
         const list = [];
         props.selectList.forEach((item: any) => {
           let { nft_address, MergeLevel } = item;
-              switch (MergeLevel) {
-                case 0:
-                  break;
-                case 1:
-                  nft_address = nft_address.substr(0, 41);
-                  break;
-                case 2:
-                  nft_address = nft_address.substr(0, 40);
-                  break;
-              }
-              list.push(nft_address);
-        })
-        console.log('list----2', list)
+          switch (MergeLevel) {
+            case 0:
+              break;
+            case 1:
+              nft_address = nft_address.substr(0, 41);
+              break;
+            case 2:
+              nft_address = nft_address.substr(0, 40);
+              break;
+          }
+          list.push(nft_address);
+        });
+        console.log("list----2", list);
         try {
           for await (let nft_address of list) {
             if (nft_address) {
@@ -513,30 +623,35 @@ export default defineComponent({
                 to: address,
                 data: `0x${data3}`,
                 value: ethers.utils.parseEther("0"),
+                checkTxQueue: false,
               };
-              const receipt: any = await wallet.sendTransaction(tx1);
+              const receipt = await dispatch("account/transaction", tx1);
               txQueue.push(receipt);
-              const { from, gasLimit, gasPrice, hash, nonce, to, type, value } =
-                receipt;
-              commit("account/PUSH_TXQUEUE", {
-                hash,
-                from,
-                gasLimit,
-                gasPrice,
-                nonce,
-                to,
-                transitionType: "6",
-                type,
-                value,
-                network: clone(currentNetwork),
-                nft_address,
-                txType: TransactionTypes.other,
-              });
             }
           }
           $tradeConfirm.update({ status: "approve" });
-          await dispatch("account/waitTxQueueResponse");
-          $tradeConfirm.update({ status: "success" });
+          const receiptList = await dispatch("account/waitTxQueueResponse");
+          const successList = receiptList.map((item: any) => item.status);
+          if (successList.length == count) {
+            $tradeConfirm.update({
+              status: "success",
+              successMessage: t("wallet.conver_success", {
+                count: `<span style='color:#037CD6;'>${count}</span>`,
+                amount: `<span style='color:#037CD6;'>${amount.toNumber()}</span>`,
+              }),
+              successMessageType: "html",
+            });
+          } else {
+            console.error('conver fail 3', successList, count)
+
+            $tradeConfirm.update({
+              status: "fail",
+              failMessage: t("wallet.conver_wrong", {
+                count: successList.length,
+              }),
+              successMessageType: "html",
+            });
+          }
         } catch (err) {
           $tradeConfirm.update({ status: "fail" });
           console.error(err);
@@ -605,36 +720,52 @@ export default defineComponent({
     const myprofit = ref("");
     const historyProfit = ref("");
     const calcProfit = async () => {
-      const { t0, t1, t2, t3 } = state.configuration.setting.conversion
+      const { t0, t1, t2, t3 } = state.configuration.setting.conversion;
 
       try {
         console.log("1---------------------------");
         const wallet = await getWallet();
-        const addressInfo = await getAccountAddr(wallet.address)
-        console.warn('addressInfo', addressInfo)
-        const {rewardSNFTCount,exchangerAmount,snftAmount} = addressInfo
-        const exchangeNum = ethers.utils.formatEther(exchangerAmount || '0')
+        const addressInfo = await getAccountAddr(wallet.address);
+        console.warn("addressInfo", addressInfo);
+        const { rewardSNFTCount, exchangerAmount, snftAmount } = addressInfo;
+        const exchangeNum = ethers.utils.formatEther(exchangerAmount || "0");
 
-        const snftNum = ethers.utils.formatEther(snftAmount || '0')
-        console.warn('exchangeNum', exchangeNum)
-        console.warn('snftNum', snftNum)
-        if(props.txtype === '1') {
-        
-        const rio = new BigNumber(props.selectTotal).div(new BigNumber(exchangeNum).plus(snftNum))
-        historyProfit.value = new BigNumber(rewardSNFTCount).multipliedBy(t0).multipliedBy(rio).toFixed(5)
+        const snftNum = ethers.utils.formatEther(snftAmount || "0");
+        console.warn("exchangeNum", exchangeNum);
+        console.warn("snftNum", snftNum);
+        if (props.txtype === "1") {
+          const rio = new BigNumber(props.selectTotal).div(
+            new BigNumber(exchangeNum).plus(snftNum)
+          );
+          historyProfit.value = new BigNumber(rewardSNFTCount)
+            .multipliedBy(t0)
+            .multipliedBy(rio)
+            .toFixed(5);
         }
-        console.warn('eth_getAllStakers',props.txtype)
-        if(props.txtype === '3') {
-          const {Stakers} = await wallet.provider.send('eth_getAllStakers')
-        console.warn('pledgeTotal', Stakers)
-        const totalPledge = Stakers.map((item: any) => item.Balance).reduce((prev, total) => new BigNumber(prev).plus(prev)).div(10000000000000000).toFixed(10)
-        console.warn('totalPledge', totalPledge)
-        const r = !Number(props.selectTotal) ? new BigNumber(0): new BigNumber(props.selectTotal).div(new BigNumber(exchangeNum).plus(props.selectTotal))
-        console.warn('r---', r.toNumber())
-        const am = new BigNumber(props.selectTotal).plus(exchangeNum).div(totalPledge).multipliedBy(599184).multipliedBy(r).toFixed(15)
-        myprofit.value = am  
-      }
-      
+        console.warn("eth_getAllStakers", props.txtype);
+        if (props.txtype === "3") {
+          const { Stakers } = await wallet.provider.send("eth_getAllStakers");
+          console.warn("pledgeTotal", Stakers);
+          const totalPledge = Stakers.map((item: any) => item.Balance)
+            .reduce((prev, total) => new BigNumber(prev).plus(prev))
+            .div(10000000000000000)
+            .toFixed(10);
+          console.warn("totalPledge", totalPledge);
+          const r = !Number(props.selectTotal)
+            ? new BigNumber(0)
+            : new BigNumber(props.selectTotal).div(
+                new BigNumber(exchangeNum).plus(props.selectTotal)
+              );
+          console.warn("r---", r.toNumber());
+          const am = new BigNumber(props.selectTotal)
+            .plus(exchangeNum)
+            .div(totalPledge)
+            .multipliedBy(599184)
+            .multipliedBy(r)
+            .toFixed(15);
+          myprofit.value = am;
+        }
+
         /**
          * 
          * address: "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf"
@@ -663,7 +794,8 @@ export default defineComponent({
     };
     const gasFee = ref("");
     const calcGasFee = async () => {
-      const { address } = state.account.accountInfo;
+      try {
+        const { address } = state.account.accountInfo;
       let list = [];
       let allsnftList = [];
       if (props.type == "2") {
@@ -709,13 +841,13 @@ export default defineComponent({
                 }
                 if (MergeLevel > 0 && Chipcount && pledgestate == "NoPledge") {
                   console.warn("未质押", nft_address, snfts);
-                  let newNftAddr = nft_address
-                  switch(MergeLevel){
+                  let newNftAddr = nft_address;
+                  switch (MergeLevel) {
                     case 2:
-                    newNftAddr = nft_address.substr(0,40)
+                      newNftAddr = nft_address.substr(0, 40);
                       break;
                     case 1:
-                    newNftAddr = nft_address.substr(0,41)
+                      newNftAddr = nft_address.substr(0, 41);
                       break;
                     case 0:
                       break;
@@ -730,55 +862,49 @@ export default defineComponent({
       }
       // chip transfer
       if (props.type == "1") {
-        if(props.txtype == '2') {
+        if (props.txtype == "2") {
           props.selectList.forEach((item: any) => {
-            let {
-            MergeLevel,
-            Chipcount,
-            pledgestate,
-            snfts,
-            nft_address,
-          } = item;
-          switch(MergeLevel){
-            case 0:
-              break;
-            case 1:
-            nft_address = nft_address.substr(0,41)
-              break;
-            case 2:
-            nft_address = nft_address.substr(0,40)
-              break;
-          }
-          list.push(nft_address);
-    
-          })
+            let { MergeLevel, Chipcount, pledgestate, snfts, nft_address } =
+              item;
+            switch (MergeLevel) {
+              case 0:
+                break;
+              case 1:
+                nft_address = nft_address.substr(0, 41);
+                break;
+              case 2:
+                nft_address = nft_address.substr(0, 40);
+                break;
+            }
+            list.push(nft_address);
+          });
           allsnftList = [...list];
-        }else {
+        } else {
           props.selectList.forEach((item: any) => {
-          const {
-            MergeLevel,
-            Chipcount,
-            pledgestate,
-            snfts,
-            nft_address,
-            isUnfreeze,
-            DeletedAt,
-          } = item;
-          if (
-            MergeLevel == 1 &&
-            pledgestate == "Pledge" &&
-            typeof isUnfreeze !== "undefined" &&
-            isUnfreeze &&
-            !DeletedAt
-          ) {
-            list.push(nft_address);
-            allsnftList = [...list];
-          }
-          if (MergeLevel == 0 && pledgestate == "NoPledge") {
-            list.push(nft_address);
-            allsnftList = [...list];
-          }
-        });
+            const {
+              MergeLevel,
+              Chipcount,
+              pledgestate,
+              snfts,
+              nft_address,
+              isUnfreeze,
+              DeletedAt,
+            } = item;
+            if (
+              MergeLevel == 1 &&
+              pledgestate == "Pledge" &&
+              typeof isUnfreeze !== "undefined" &&
+              isUnfreeze &&
+              !DeletedAt
+            ) {
+              list.push(nft_address);
+              allsnftList = [...list];
+            }
+            if (MergeLevel == 0 && pledgestate == "NoPledge") {
+              list.push(nft_address);
+              allsnftList = [...list];
+            }
+          });
         }
       }
       console.warn(
@@ -829,8 +955,10 @@ export default defineComponent({
       };
       const gas = await getGasFee(tx1);
       gasFee.value = new BigNumber(gas).multipliedBy(len).toFixed(6);
+      }catch(err){
+        console.warn('err---', err)
+      }
     };
-
 
     return {
       t,
@@ -860,6 +988,12 @@ function toHex(str: string) {
 }
 </script>
 <style lang="scss" scoped>
+:deep(){
+  .wormholes-tip {
+    margin-left:0;
+    margin-right:0;
+  }
+}
 .card-form {
   border: 1px solid #e4e7e8;
   border-radius: 5px;

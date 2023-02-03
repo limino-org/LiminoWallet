@@ -522,6 +522,7 @@ export default {
       eventBus.on('changeAccount',() => {
         showModal.value = false
       })
+      
       dispatch("system/getEthAccountInfo");
       dispatch("account/getExchangeStatus").then((res) => {
         console.warn(111)
@@ -531,6 +532,7 @@ export default {
       });
       dispatch("transfer/clearTx");
       handleLoopBalance();
+      dispatch("account/updateBalance");
     });
 
     onActivated(() => {
@@ -539,6 +541,7 @@ export default {
 
     onUnmounted(() => {
       eventBus.off('changeAccount')
+      eventBus.off('walletReady')
       clearInterval(time);
       time = null
     });

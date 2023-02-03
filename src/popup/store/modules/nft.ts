@@ -52,31 +52,8 @@ export default {
       };
       sessionStorage.setItem('nft_address', nft_address)
       sessionStorage.setItem("blockNumber", blockNumber)
-      const data = await wallet.sendTransaction(tx1)
-      const { from, gasLimit, gasPrice, nonce, to, type, value, hash } =data;
-      commit("account/PUSH_TXQUEUE", {
-              hash,
-              from,
-              gasLimit,
-              gasPrice,
-              nonce,
-              to,
-              type,
-              value,
-              network: clone(store.state.account.currentNetwork),
-              txType: TransactionTypes.other,
-              transitionType: '6',
-            });
+      const data = await store.dispatch('account/transaction', tx1)
       const receipt = await wallet.provider.waitForTransaction(data.hash)
-      // const symbol = store.state.account.currentNetwork.currencySymbol
-      // const rep: TransactionReceipt = handleGetTranactionReceipt(
-      //   TransactionTypes.other,
-      //   receipt,
-      //   data,
-      //   clone(store.state.account.currentNetwork)
-      // );
-      // // Add to transaction
-      // store.commit("account/PUSH_TRANSACTION", rep);
       store.dispatch('account/waitTxQueueResponse')
       return receipt
     },
@@ -95,33 +72,8 @@ export default {
         data: `0x${data3}`,
         value: utils.parseEther("0"),
       };
-      const data = await wallet.sendTransaction(tx)
-      const { from, gasLimit, gasPrice, nonce, to, type, value, hash } =data;
-      commit("account/PUSH_TXQUEUE", {
-              hash,
-              from,
-              gasLimit,
-              gasPrice,
-              nonce,
-              to,
-              type,
-              value,
-              network: clone(store.state.account.currentNetwork),
-              txType: TransactionTypes.other,
-              transitionType: '0',
-
-            });
+      const data = await store.dispatch('account/transaction', tx)
       const receipt = await wallet.provider.waitForTransaction(data.hash)
-      // ts-ignore
-      // const symbol = store.state.account.currentNetwork.currencySymbol
-      // const rep: TransactionReceipt = handleGetTranactionReceipt(
-      //   TransactionTypes.other,
-      //   receipt,
-      //   data,
-      //   clone(store.state.account.currentNetwork)
-      // );
-      // // Add to transaction
-      // store.commit("account/PUSH_TRANSACTION", rep);
       store.dispatch('account/waitTxQueueResponse')
       return receipt
     },
@@ -141,33 +93,7 @@ export default {
         data: `0x${data3}`
       };
       console.warn('tx', tx)
-      const data = await wallet
-      .sendTransaction(tx)
-      const { from, gasLimit, gasPrice, nonce,  type, value, hash } =data;
-      store.commit("account/PUSH_TXQUEUE", {
-              hash,
-              from,
-              gasLimit,
-              gasPrice,
-              nonce,
-              to,
-              type,
-              value,
-              transitionType: '1',
-              network: clone(store.state.account.currentNetwork),
-              txType: TransactionTypes.other
-            });
-      console.log('11111', hash);
-      // const receipt = await wallet.provider.waitForTransaction(hash)
-      //   const symbol = store.state.account.currentNetwork.currencySymbol
-      //   const rep: TransactionReceipt = handleGetTranactionReceipt(
-      //     TransactionTypes.other,
-      //     receipt,
-      //     data,
-      //     clone(store.state.account.currentNetwork)
-      //   );
-      //   // Add to transaction
-      //   store.commit("account/PUSH_TRANSACTION", rep);
+      const data = await store.dispatch('account/transaction', tx)
       return data
     },
     // Get asset list according to owner

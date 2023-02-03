@@ -27,7 +27,7 @@
         </div>
       </div>
     </van-sticky>
-    <div class="nft-list-box">
+    <div :class="`nft-list-box ${!loadNft && pageData.nftList.length ? 'mb-90' : ''}`">
       <div
         :class="`nft-list ${layoutType} ${showConvert ? 'pb' : ''}`"
         v-show="pageData.nftList.length"
@@ -65,6 +65,13 @@
     </div>
   </van-list>
   <!-- </van-pull-refresh> -->
+  <Transition name="slider">
+    <div :class="`flex center buySnft pb-30 pt-30 ${bugTipClass}`" v-if="showBuyTip">
+      <i18n-t keypath="wallet.buySnft" tag="div" class="text-center f-12">
+        <template v-slot:link><a :href="VUE_APP_OFFICIAL_EXCHANGE" target="__blank">{{ t('wallet.findMore') }}</a></template>
+      </i18n-t>
+    </div>
+  </Transition>
   <!-- nft snft -->
   <TransferNFT
     v-model="showConvert"
@@ -120,6 +127,7 @@ import {
   onDeactivated,
   toRaw,
   nextTick,
+  onUnmounted,
 } from "vue";
 import TransferNFT from "@/popup/views/home/components/transferNft.vue";
 import TransferNFTModal from "@/popup/views/home/components/transferNFTModal.vue";
@@ -131,6 +139,8 @@ import { emit } from "process";
 import { getWallet } from "@/popup/store/modules/account";
 import axios from "axios";
 import { guid } from "@/popup/utils";
+import { VUE_APP_OFFICIAL_EXCHANGE } from "@/popup/enum/env";
+import { debounce } from "@/popup/utils/utils";
 export default defineComponent({
   name: "snft-list",
   components: {
@@ -236,7 +246,6 @@ export default defineComponent({
           console.warn("snftList", snftList);
           data.forEach((child: any, idx: number) => {
             const snfts = snftList[idx];
-            console.log("snfts--------", snfts);
             snfts.forEach((item: any, index: number) => {
               const { nft_contract_addr, nft_token_id, Exchange, MergeLevel } =
                 item;
@@ -600,7 +609,7 @@ export default defineComponent({
             });
           }
         });
-        return `${totalColl}(C)/${totalSnft}(N)/${totalChip}(F)`;
+        return `${totalColl}(L2)/${totalSnft}(L1)/${totalChip}(L0)`;
       }
     });
     // List of selections
@@ -715,8 +724,51 @@ export default defineComponent({
       return parseFloat(new BigNumber(am).div(total).toFixed(5));
     });
 
+    const showBuyTip = ref(true)
+    let oldScrollTop = 0
+    const scrolling = () => {
+      if(pageData.nftList.length < 3) {
+        return
+      }
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+      let scrollStep = scrollTop - oldScrollTop;
+      oldScrollTop = scrollTop;
+      if (scrollStep < 0) {
+        console.log("scroll up.")
+        if(!showBuyTip.value)showBuyTip.value = true
+      } else {
+        if(showBuyTip.value)showBuyTip.value = false
+        console.log("scroll down.")
+      }
+    }
+    
+    const deFun = debounce(scrolling, 300)
+    const bugTipClass = ref('')
+    const watchList = (val: any) => {
+      if(val && val.length > 2) {
+        !bugTipClass.value ? bugTipClass.value = 'fixed' : ''
+        // if(showBuyTip.value)showBuyTip.value = false 
+      } else {
+        bugTipClass.value ? bugTipClass.value = '' :''
+        // if(!showBuyTip.value)showBuyTip.value = true 
+      }
+    }
+    
+    watch(()=> pageData.nftList, watchList , {
+      deep: true,
+      immediate: true
+    })
+    onMounted(() => {
+      window.addEventListener('scroll', deFun)
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener('scroll', deFun)
+    })
     return {
       ratio,
+      showBuyTip,
+      bugTipClass,
       handleChoose,
       chooseType,
       selectedText,
@@ -744,6 +796,7 @@ export default defineComponent({
       selectList,
       categoryList,
       checkObjs,
+      VUE_APP_OFFICIAL_EXCHANGE,
       t,
     };
   },
@@ -751,7 +804,31 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .nft-list-box {
-  margin-bottom: 70px;
+  &.mb-90 {
+    margin-bottom: 70px;
+  }
+}
+.buySnft {
+  color: #848484;
+    background: #fff;
+   &.fixed {
+    z-index: 1;
+    position: fixed;
+    width: 190px;
+    bottom: 10px;
+    line-height: 14px;
+    left: 50%;
+    margin-left: -95px;
+    padding: 3px 5px;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+   }
+  a {
+    color: #037cd6;
+    &:hover{
+      text-decoration: underline;
+    }
+  }
 }
 :deep() {
   .van-switch {

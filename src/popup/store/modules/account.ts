@@ -48,6 +48,7 @@ import { getContractAddress } from "@/popup/http/modules/common";
 import Bignumber from 'bignumber.js'
 import { sendBackground } from "@/popup/utils/sendBackground";
 import localforage from "localforage";
+import { Wallet } from "ethers";
 export interface State {
   // Mnemonic words
   mnemonic: Mnemonic;
@@ -226,6 +227,9 @@ export type TransactionReceipt = {
   //  convert amount
   convertAmount?: string
 };
+
+let waitTime = null;
+
 export let wallet: any = null;
 export const getWallet = () => {
   if (!wallet || !wallet.provider) {
@@ -982,8 +986,8 @@ export default {
       return wallet.provider.getBalance(address);
     },
     // Update balance in current account currency
-    async updateBalance({ commit, state, dispatch }: any) {
-      const newwallet = wallet && wallet.provider && wallet.provider.connection.url === state.currentNetwork.URL ? wallet : await dispatch("getProviderWallet");
+    async updateBalance({ commit, state, dispatch }: any, wall: any) {
+      const newwallet = wall || wallet && wallet.provider && wallet.provider.connection.url === state.currentNetwork.URL ? wallet : await dispatch("getProviderWallet");
       try {
         if (newwallet) {
           const balance = await newwallet.getBalance();
@@ -1002,7 +1006,9 @@ export default {
     async getProviderWallet({ commit, state, dispatch }: any) {
       let provider = null
       const { URL } = state.currentNetwork;
-
+      if(wallet && wallet.provider && (wallet.provider.connection.url == URL)){
+        return wallet
+      }
       if (!wallet || !wallet.provider || (wallet.provider.connection.url != URL)) {
         provider = ethers.getDefaultProvider(URL)
       }
@@ -1011,7 +1017,7 @@ export default {
           const { accountInfo } = state;
           const { keyStore } = accountInfo;
           const json = toRaw(keyStore)
-          const password: string = getCookies("password") || "";
+          const password: string = await getCookies("password") || "";
           const wall = await dispatch("createWalletByJson", { password, json });
           const newWallet = wall.connect(provider)
           const res = await newWallet.provider.getNetwork()
@@ -1047,7 +1053,12 @@ export default {
           return newWallet
         }
       } catch (err: any) {
+        console.warn('showNotify', Notify)
         console.error('err:----2', err)
+        // if(JSON.stringify(err).indexOf('could not detect network') > -1) {
+        //   Notify({ type: 'danger', message: i18n.global.t('error.netErr'),duration: 5000 })
+        // }
+        Notify({ type: 'danger', message: i18n.global.t('error.netErr'),duration: 5000, position: 'bottom' })
         commit('UPDATE_NETSTATUS', NetStatus.fail)
         return Promise.reject(err);
       }
@@ -1510,6 +1521,14 @@ export default {
     //   // // The service worker performs
     //   return sendBackground({ method: 'waitTxQueueResponse' })
     // }
+    //  Stop polling
+    clearWaitTime({ commit }){
+      clearTimeout(waitTime)
+      waitTime = null
+      if(wallet && wallet.provider) {
+        wallet.provider.removeAllListeners()
+      }
+    },
     // The result of polling the transaction queue
     async waitTxQueueResponse({ commit, state, dispatch }: any, opt?: Object) {
       console.warn('waitTxQueueResponse---')
@@ -1522,13 +1541,13 @@ export default {
       const from = state.accountInfo.address
       // @ts-ignore
       const queuekey = `txQueue-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
-      let t: any = null;
       return new Promise((resolve, reject) => {
-        t = setTimeout(async () => {
+        waitTime = setTimeout(async () => {
           const list: any = await localforage.getItem(queuekey)
           const txQueue = list && list.length ? list : []
           if (!txQueue.length) {
             resolve(true)
+            return
           }
           const receiptList = []
           //  const newWallet = await getWallet()
@@ -1612,11 +1631,11 @@ export default {
               resolve([])
             }
           } finally {
-            clearTimeout(t)
+            clearTimeout(waitTime)
           }
         }, 1000)
 
-        _opt.callback(t)
+        _opt.callback(waitTime)
       })
     },
   },
@@ -1942,7 +1961,6 @@ export const UPDATE_TRANSACTION = async (da: any) => {
     if (txList && txList.list.length) {
       for (let i = 0; i < txList.list.length; i++) {
         const item = txList.list[i]
-        console.warn('----------', item, txId)
         if (item.txId.toUpperCase() === txId.toUpperCase()) {
           txList.list[i] = newReceipt
         }
@@ -1954,7 +1972,6 @@ export const UPDATE_TRANSACTION = async (da: any) => {
       if (txList && txList.length) {
         for (let i = 0; i < txList.length; i++) {
           const item = txList[i]
-          console.warn('----------', item, txId)
           if (item.txId.toUpperCase() === txId.toUpperCase()) {
             txList[i] = newReceipt
           }

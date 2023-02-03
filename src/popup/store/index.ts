@@ -56,7 +56,8 @@ const vuexLocal = new VuexPersistence({
       show14,
       show15,
       show16,
-      wallet_token
+      wallet_token,
+      chainVersion
     } = system
     return clone(({
       account,
@@ -66,6 +67,7 @@ const vuexLocal = new VuexPersistence({
       transfer,
       system: {
         amountType,
+        chainVersion,
         ethAccountInfo,
         exchangeBtnStatus,
         finishedGuide,

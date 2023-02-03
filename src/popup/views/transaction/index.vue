@@ -188,22 +188,8 @@ export default {
         tx1["data"] = `0x${newStr}`;
       }
       localStorage.setItem('sendData', JSON.stringify(tx1))
-      wallet.sendTransaction(tx1).then((transactionTX: any) => {
+      store.dispatch('account/transaction', tx1).then((transactionTX: any) => {
         const { from, gasLimit, gasPrice, nonce,  type, value, hash, to } = transactionTX;
-      store.commit("account/PUSH_TXQUEUE", {
-              hash,
-              from,
-              gasLimit,
-              gasPrice,
-              nonce,
-              to,
-              type,
-              value,
-              transitionType: '11',
-              network: clone(store.state.account.currentNetwork),
-              txType: TransactionTypes.default
-            });
-   
         transactiontx.value = transactionTX;
         wallet.provider.waitForTransaction(hash).then((res: any) => {
           receipt.value = res;

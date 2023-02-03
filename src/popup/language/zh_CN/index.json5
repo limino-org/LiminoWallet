@@ -159,8 +159,13 @@
         scanLink: "区块浏览器",
 		convertComplete: "转换完成",
 		selectSNFT: "您还未选择任何S-NFTs",
-		buySnft: "你有 S-NFT 吗？ {link}",
-		findMore: "寻找更多"
+		buySnft: "你有S-NFT吗？{link}",
+		findMore: "寻找更多",
+		conver_approve: "请求被批准了。转换事务将被启动。请稍等。",
+        conver_waiting: "{count}<span style='color:#037CD6;'>个S-NFT{countstr}</span>正在兑换，兑换成功，将获得{amount}<span style='color:#037CD6;'>ERB</span>，您也可以在个人中心的历史记录查看兑换详情",
+        conver_success: "{count}<span style='color:#037CD6;'>个S-NFT</span>兑换成功，已获得{amount}<span style='color:#037CD6;'>ERB</span>，您也可以在个人中心的历史记录查看兑换详情",
+        conver_wrong: "{count}个S-NFT兑换失败，您可以在个人中心历史记录查看兑换详情",
+
 	},
 	converSnft: {
 		converTit: "转换为 ERB",
@@ -1199,7 +1204,7 @@
 		save: "保存",
 		closed: "关闭",
 		welcome: "欢迎",
-		server: '服务器:',
+		server: '服务器',
 		year: '/年',
 		aftertheexchangeisclosed: '交易所关闭后所有数据将被清除',
 		yes: '同意',
@@ -1243,11 +1248,14 @@
 		unisUnfreeze:"质押未解冻",
 		marketplace:"交易所",
 		validator:"矿工",
-		        noMoney: "你的账户缺少资产。请确保钱包里有足够的钱",
+		noMoney: "你的账户缺少资产。请确保钱包里有足够的钱",
         recovery: "恢复",
         gasSpeedUp: "汽油加速",
         sendTipPendding: "当前交易队列存在未完成交易，请完成后重试！",
         speedUp: "加速",
+		hsitory: "交易历史",
+		converTip:"提示: S-NFT交换成功后，将从钱包中消失。您可以在钱包的交易历史记录或浏览器中查看交易记录。",
+
 	},
 	"categoryform": {
 		"categoryform": "您还未选择任何数据"
@@ -1423,7 +1431,7 @@
 		closeTip2:"对不起，质押物在一年后可赎回。",
 		addzhiya: "追加质押",
 		stackFee: "质押金额",
-		tip7:"阈值是指您仍然可以作为验证者的情况下可以赎回的最大 VERB 数量。如果您输入的金额大于此数量，您将赎回您的所有 ERB。",
+		tip7:"阈值是指您仍然可以作为验证者的情况下可以赎回的最大ERB数量。如果您输入的金额大于此数量，您将赎回您的所有ERB。",
 		redemingAmount:"赎回金额",
 		redemingAmountTip:"赎回金额",
 		minus_approve: "我们正在批准您的股份赎回请求。您可能需要等待几秒钟。您也可以在交易记录中找到详细信息。",
@@ -1479,5 +1487,7 @@
 	error:{
         500:"参数有误",
         timeout:"此时网络繁忙。交易已放入队列，请稍等，不要再发送相同的交易。",
+		netErr:"网络连接失败"
+
     }
 }

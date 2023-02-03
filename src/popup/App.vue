@@ -33,6 +33,8 @@ import { Button, Loading } from "vant";
 import { utils } from "ethers";
 import { useWallet } from "@/popup/hooks/useWallet";
 import { useI18n } from "vue-i18n";
+import eventBus from "@/popup/utils/bus";
+
 import { getWallet } from "./store/modules/account";
 import { version } from "@/popup/enum/version";
 import { useEvent } from "@/popup/hooks/useEvent";
@@ -100,7 +102,10 @@ export default {
       dispatch("configuration/getConfiguration");
       useEvent();
     });
-
+    
+    eventBus.on('walletReady',newwallet => {
+      dispatch('system/getChainVersion', newwallet);
+    })
     const animation = ref("slide");
     return {
       t,

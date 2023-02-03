@@ -135,7 +135,7 @@ export default {
       nextLoading.value = true;
       try {
         const { from,to,value,data} = newtx
-        const receipt = await dispatch("account/sendTransaction", {from,to: utils.getAddress(to),value,data});
+        const receipt = await dispatch("account/transaction", {from,to: utils.getAddress(to),value,data});
    
           sendBackground({method:handleType.eth_sendTransaction,response:{code:"200",data: receipt}})
       } catch (err: any) {

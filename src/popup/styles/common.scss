@@ -371,10 +371,10 @@ img {
 
   // Fixed popover blur
   .server-modal {
-    height: 610PX;
+    max-height: 610PX;
   }
   .add-pledge-modal {
-    height: 768PX;
+    max-height: 768PX;
   }
   .account-list-modal1 {
     max-height: 508PX;
@@ -386,10 +386,10 @@ img {
     min-height: 250px;
   }
   .send-confirm-modal {
-    height: 360px;
+    max-height: 360px;
   }
   .transaction-modal {
-    height: 520PX;
+    max-height: 520PX;
   }
   .transactionDetailsModal {
     max-height: 710PX;
@@ -399,7 +399,7 @@ img {
   }
 
   .minus-pledge-dialog {
-    max-height: 438PX;
+    max-height: 452PX;
     overflow: initial;
     .van-dialog__content {
       overflow: inherit;
@@ -413,10 +413,10 @@ img {
     max-height: 758PX;
   }
   .transfer-NFT-modal {
-    height: 502PX;
-    &.type3 {
-      height: 566PX;
-    }
+    max-height: 606PX;
+    // &.type3 {
+    //   height: 566PX;
+    // }
   }
   .minerAdditionalModal {
     height: 758PX;

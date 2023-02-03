@@ -205,22 +205,7 @@ export default {
           value: ethers.utils.parseEther(amount + ""),
           data: `0x${data}`,
         };
-
-        const data1 = await wallet.sendTransaction(tx1);
-        const { from, gasLimit, gasPrice, nonce,  type, value, hash, to } = data1;
-      commit("account/PUSH_TXQUEUE", {
-              hash,
-              from,
-              gasLimit,
-              gasPrice,
-              nonce,
-              to,
-              type,
-              value,
-              transitionType: '10',
-              network,
-              txType: TransactionTypes.other
-            });
+        const data1 = await dispatch("account/transaction", tx1)
         $tradeConfirm.update({ status: "approve" });
         const receipt1 = await wallet.provider.waitForTransaction(data1.hash);
         if (receipt1.status == 1) {
@@ -228,12 +213,6 @@ export default {
         } else {
           $tradeConfirm.update({ status: "fail" });
         }
-        // const rep = handleGetTranactionReceipt(
-        //   TransactionTypes.other,
-        //   receipt1,
-        //   data1,
-        //   network
-        // );
         dispatch("account/updateAllBalance");
         await store.dispatch('account/waitTxQueueResponse')
         // commit("account/PUSH_TRANSACTION", rep);
