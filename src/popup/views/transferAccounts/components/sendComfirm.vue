@@ -1,11 +1,11 @@
 <template>
-  <div class="send-confirm-modal">
     <van-dialog
       v-model:show="showModal"
       teleport="#page-box"
       :showConfirmButton="false"
       :showCancelButton="false"
       closeOnClickOverlay
+      class="send-confirm-modal"
       :title="''"
     >
       <div class="title text-center f-16 bold van-hairline--bottom">
@@ -74,7 +74,6 @@
         >
       </div>
     </van-dialog>
-  </div>
 </template>
 <script lang="ts">
 import {
@@ -201,6 +200,7 @@ export default defineComponent({
     const handleComfirm = async () => {
       showModal.value = false;
       const { value } = props.data;
+      let txData = null
       // !value ? token Transaction: ordinary transaction
       const callBack = () => {
         router.replace({ name: "wallet" });
@@ -213,19 +213,20 @@ export default defineComponent({
         disabled: [TradeStatus.pendding],
       });
       try {
-        const txData = await store.dispatch(
+        txData = await store.dispatch(
           value ? "account/transaction" : "account/tokenTransaction",
           params
         );
         $tradeConfirm.update({ status: "approve" });
         eventBus.emit('sendComfirm')
    
+
+        const receipt = await txData.wallet.provider.waitForTransaction(txData.hash, null, 60000)
         await store.dispatch("account/waitTxQueueResponse", {
           callback(e: any) {
             waitTime.value = e;
           },
         });
-        const receipt = await txData.wallet.provider.waitForTransaction(txData.hash, null, 60000)
         if(receipt.status) {
           $tradeConfirm.update({ status: "success", hash:txData.hash });
         } else {
@@ -236,10 +237,12 @@ export default defineComponent({
         console.log('err:===', err)
         console.log('t("error.timeout")', t("error.timeout"))
         if (err.toString().indexOf("timeout") > -1) {
-          $tradeConfirm.update({
-            status: "warn",
-            failMessage: t("error.timeout"),
-          });
+          if(await store.dispatch('account/checkIsTxHash', txData.hash)) {
+            $tradeConfirm.update({
+              status: "warn",
+              failMessage: t("error.timeout"),
+            });
+          }
         } else {
           $tradeConfirm.update({
             status: "fail",
@@ -308,8 +311,6 @@ export default defineComponent({
 
 :deep(.van-button) {
   width: 100px !important;
-}
-.send-confirm-modal {
 }
 .icon-box {
   width: 35px;

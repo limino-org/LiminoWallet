@@ -9,7 +9,7 @@ import { utils } from 'ethers'
 import { web3 } from '@/popup/utils/web3'
 console.warn('web3', web3)
 import BigNumber from 'bignumber.js'
-import { guid } from '@/popup/utils/utils'
+import { guid } from '@/popup/utils'
 
 const page_size = '30'
 const page_size_int = Number(page_size)
@@ -137,7 +137,8 @@ export default {
                 }
                 const { total, transactions } = await getTransitionsPage(params)
                 if(transactions && transactions.length) {
-                    transactions.forEach((item) => {
+                    for(let i =0;i<transactions.length;i++){
+                        const item = transactions[i]
                         item.txId = guid()
                         if(item.input == '0x') {
                             item.txType = 'normal'
@@ -150,7 +151,7 @@ export default {
                                 item.txType = 'contract'
                             }
                         }
-                    })
+                    }
                 }
                     
                 if (transactions && transactions.length > page_size_int) {
@@ -206,12 +207,11 @@ export default {
                 const txInfo = await localforage.getItem(asyncRecordKey)
                 const hashList = txInfo.list.map(item => item.hash.toUpperCase())
                 const { total, transactions } = await getTransitionsPage(params)
+                const { id, chainId } = store.state.account.currentNetwork
+                // Clear the transaction history of the current account
+                const qstr1 = `async-${id}-${chainId}-${addr.toUpperCase()}`
+                const qstr2 = `txQueue-${id}-${chainId}-${addr.toUpperCase()}`
                 if(!total && txInfo.list && txInfo.list.length) {
-                    const addr = store.state.account.accountInfo.address.toUpperCase()
-                    const { id, chainId } = store.state.account.currentNetwork
-                    // Clear the transaction history of the current account
-                    const qstr1 = `async-${id}-${chainId}-${addr.toUpperCase()}`
-                    const qstr2 = `txQueue-${id}-${chainId}-${addr.toUpperCase()}`
                     await localforage.iterate(async(value, key, iterationNumber) => {
                         console.log('clear cancel', key)
                         if (key !== "vuex") {
@@ -226,7 +226,9 @@ export default {
                     return false
                 }
                 if(transactions && transactions.length) {
-                    transactions.forEach((item) => {
+
+                    for(let i=0;i<transactions.length;i++){
+                        const item = transactions[i]
                         item.txId = guid()
                         if(item.input == '0x') {
                             item.txType = 'normal'
@@ -239,8 +241,25 @@ export default {
                                 item.txType = 'contract'
                             }
                         }
-                        
-                    })
+                        let diffList = txInfo.list && txInfo.list.length ? txInfo.list.slice(0, 10) : txInfo.list
+                        const txQueue = await localforage.getItem(qstr2) || []
+                        for await (let [sameIdx,child] of diffList.entries()) {
+                            console.log('sameIdx', sameIdx, child)
+                            if(child.hash.toUpperCase() == item.hash.toUpperCase() && item.status != child.status){
+                                if(sameIdx > -1) {
+                                    txInfo.list[sameIdx] = item
+                                    await localforage.setItem(qstr1, txInfo)
+                                    eventBus.emit('sameNonce', child.hash)
+                                    for await (const [idx,iterator] of txQueue.entries()) {
+                                        if(iterator.nonce === diffList[sameIdx].nonce) {
+                                            txQueue.splice(idx,1)
+                                            await localforage.setItem(qstr2, txQueue)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 let newList = []
                 if(transactions && transactions.length) {

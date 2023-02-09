@@ -220,7 +220,6 @@ export function transactionStatus(txData: any){
     if(bigTo !== bigFrom || bigTo === bigFrom) return 'icon-arrowTop'
   }
   export const handleTxType = (item: any) => {
-    console.log('item', item)
   const { to, from, contractAddress, sendStatus , txType, input} = item
   const myAddr = store.state.account.accountInfo.address.toUpperCase()
   if(txType === 'wormholes') {
@@ -250,7 +249,6 @@ export function transactionStatus(txData: any){
   }
 
   export const handleTxTypeString = (item: any) => {
-    console.log('item', item)
   const { to, from, contractAddress, sendStatus , txType, input} = item
   const myAddr = store.state.account.accountInfo.address.toUpperCase()
   if(txType === 'wormholes') {

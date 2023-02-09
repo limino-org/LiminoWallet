@@ -49,12 +49,14 @@ export const checkAuth = (address: string) => {
 
 // Get the smart contract address
 export const getContractAddress = () => {
-    return httpGet(`${wormholesscanApi}/ERBPay.json?${new Date().getTime()}`)
+    return httpGet(`https://www.wormholes.com/upload/ERBPay.json?${new Date().getTime()}`)
 }
 export const getConfiguration = () => {
     return httpGet(`https://www.wormholes.com/upload/configuration.json?${new Date().getTime()}`)
 }
-
+export const getRedemption = () => {
+    return httpGet(`https://www.limino.com/wallet_conf/wallet.json?${new Date().getTime()}`)
+}
 
 // Query the account information of the specified address
 export const getAccountAddr = (address: string) => {

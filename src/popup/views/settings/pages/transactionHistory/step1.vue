@@ -348,7 +348,10 @@ export default {
       //   clearTimeout(time)
       // },300)
     });
-    
+    eventBus.on('sameNonce', () => {
+      showSpeedModal.value = false
+      getPageList();
+    })
     eventBus.on("txUpdate", (data: any) => {
       console.warn("txUpdate----", data);
       getPageList();
@@ -532,6 +535,7 @@ export default {
       eventBus.off("txQueuePush");
       eventBus.off("delTxQueue");
       eventBus.off('waitTxEnd')
+      eventBus.off('sameNonce')
       window.removeEventListener('scroll', deFun)
       store.dispatch('account/clearWaitTime')
 

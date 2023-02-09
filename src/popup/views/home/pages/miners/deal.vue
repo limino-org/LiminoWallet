@@ -145,7 +145,7 @@
                class="add-btn flex center-v hover"
                @click="handleShowReconveryModal"
              >
-               <i class="iconfont icon-icplus mr-4"></i>
+               <i class="iconfont icon-plus mr-4"></i>
                <span> {{t('common.recovery')}} </span>
              </div>
            </el-tooltip>
@@ -680,10 +680,11 @@ export default defineComponent({
         pageLoading.value = false;
       }
     });
+    const validator_redemption_number = computed(() => store.state.configuration.setting.redemption.validator_redemption_number)
     const isTimeQualified = computed(
       () =>
         blockNumber.value - accountInfoBlockNumber.value >=
-        (currentNetwork.value.chainId == 51888 ? 72 : 6307200)
+        validator_redemption_number.value
     );
     const {
       netWorkList,
@@ -2302,7 +2303,7 @@ export default defineComponent({
   border-top: 1px solid #e4e7e8;
 }
 :deep(.van-icon-arrow-down) {
-  margin-top: 13px !important;
+
 }
 :deep(.van-cell-group) {
   border: 1px solid #e4e7e8;

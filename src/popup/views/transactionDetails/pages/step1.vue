@@ -324,7 +324,6 @@ export default {
     let waitTime: any = ref(null);
     onMounted(async () => {
       store.dispatch('account/clearWaitTime')
-      window.addEventListener('scroll', deFun)
       console.warn('onMounted')
       try {
        const { total, asyncRecordKey} = await handleAsyncTxList();
@@ -339,6 +338,8 @@ export default {
       store.dispatch("account/waitTxQueueResponse", {
         time: null,
       });
+      window.addEventListener('scroll', deFun)
+
     });
     const toSend = () => {
       router.push({ name: "send", query });
@@ -411,6 +412,10 @@ export default {
     eventBus.on("loopTxListUpdata", () => {
       getPageList();
     });
+    eventBus.on('sameNonce', () => {
+      showSpeedModal.value = false
+      getPageList();
+    })
     eventBus.on("txPush", (data: any) => {
       getPageList()
       // const tx = txList.value.find((item: any) => item.txId.toUpperCase() == data.txId.toUpperCase())
@@ -473,6 +478,7 @@ export default {
       eventBus.off("txQueuePush");
       eventBus.off("delTxQueue");
       eventBus.off('waitTxEnd')
+      eventBus.off('sameNonce')
       window.removeEventListener('scroll', deFun)
       store.dispatch('account/clearWaitTime')
 
@@ -668,6 +674,7 @@ export default {
         handleAsyncTxList()
       } catch (err) {
         console.error(err);
+        // store.dispatch('account/clearWaitTime')
         Toast(err.reason);
       } finally {
         showSpeedModal.value = false;

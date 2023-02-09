@@ -566,9 +566,10 @@ export default defineComponent({
       initPageData();
     });
 
-    const isTimeQualified = computed(
-      () => blockNumber.value - accountInfoBlockNumber.value >= 72
-    );
+    const nftminer_redemption_number = computed(() => store.state.configuration.setting.redemption.nftminer_redemption_number)
+
+    const isTimeQualified = computed(() => blockNumber.value - accountInfoBlockNumber.value >= nftminer_redemption_number.value);
+
 
     const minusDisabled = computed(() => !isTimeQualified.value);
     const {

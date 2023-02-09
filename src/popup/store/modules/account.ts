@@ -1522,15 +1522,17 @@ export default {
     //   return sendBackground({ method: 'waitTxQueueResponse' })
     // }
     //  Stop polling
-    clearWaitTime({ commit }){
+    //  Stop polling
+    clearWaitTime(){
       clearTimeout(waitTime)
       waitTime = null
       if(wallet && wallet.provider) {
-        wallet.provider.removeAllListeners()
+         wallet.provider.removeAllListeners()
       }
     },
     // The result of polling the transaction queue
-    async waitTxQueueResponse({ commit, state, dispatch }: any, opt?: Object) {
+    // The result of polling the transaction queue
+    async waitTxQueueResponse({ commit, state }: any, opt?: Object) {
       console.warn('waitTxQueueResponse---')
       const _opt = {
         time: 60000,
@@ -1541,26 +1543,41 @@ export default {
       const from = state.accountInfo.address
       // @ts-ignore
       const queuekey = `txQueue-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
+      let txkey = ''
+      if(id === 'wormholes-network-1') {
+        txkey = `async-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
+      }else {
+        txkey = `txlist-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
+      }
+      let data1 = null
       return new Promise((resolve, reject) => {
         waitTime = setTimeout(async () => {
           const list: any = await localforage.getItem(queuekey)
           const txQueue = list && list.length ? list : []
           if (!txQueue.length) {
             resolve(true)
-            return
           }
           const receiptList = []
           //  const newWallet = await getWallet()
-          let nowHash = ''
           try {
             for await (const iterator of txQueue) {
-              let { hash, transitionType, nft_address, blockNumber, network, txType, txId, amount, isCancel, sendData, date, value } = iterator
-              nowHash = hash
-              let data1 = null
+              let { hash, transitionType, nft_address, blockNumber, network, txType, txId, amount, isCancel, sendData, date, value, nonce } = iterator
+              const txInfo: any = await localforage.getItem(txkey)
+              let txList: any = []
+              if(id === 'wormholes-network-1') {
+                txList = txInfo.list
+              }else {
+                txList = txInfo
+              }
+              const sameNonceTx = txList.find((item: any) => item.nonce === nonce)
+              const hashArr = !sameNonceTx ? [hash] : [hash, sameNonceTx.hash]
               if (_opt.time != null) {
-                data1 = await wallet.provider.waitForTransaction(hash, null, _opt.time);
+                data1 = await waitForTransactions(hashArr, _opt.time)
+                // data1 = await wallet.provider.waitForTransaction(hash, null, _opt.time);
               } else {
-                data1 = await wallet.provider.waitForTransaction(hash);
+                data1 = await waitForTransactions(hashArr)
+                // data1 = await wallet.provider.waitForTransaction(hash);
+
               }
               receiptList.push(data1)
               let convertAmount: any = ''
@@ -1597,12 +1614,7 @@ export default {
                   convertAmount = new BigNumber(MergeNumber).multipliedBy(t3).toNumber()
                 }
               }
-              // const rep: TransactionReceipt = handleGetTranactionReceipt(
-              //   txType || TransactionTypes.other,
-              //   data1,
-              //   { ...iterator, convertAmount, transitionType },
-              //   network
-              // );
+
 
               await DEL_TXQUEUE({ ...iterator, txId, txType })
               const newtx = {
@@ -1613,23 +1625,17 @@ export default {
                 date,
                 value
               }
-              if (id === 'wormholes-network-1') {
+              if(id === 'wormholes-network-1') {
                 await UPDATE_TRANSACTION(newtx)
-              } else {
-                await PUSH_TRANSACTION({ ...newtx, txId: guid() })
+              }else {
+                await PUSH_TRANSACTION({...newtx, txId: guid()})
               }
-
+              
             }
             eventBus.emit('waitTxEnd')
             resolve(receiptList)
           } catch (err) {
-            console.error(err)
-            const isExits = await dispatch('checkHashHasQueue', nowHash)
-            if(isExits) {
-              reject(err)
-            } else {
-              resolve([])
-            }
+            reject(err)
           } finally {
             clearTimeout(waitTime)
           }
@@ -1638,6 +1644,17 @@ export default {
         _opt.callback(waitTime)
       })
     },
+    // Indicates that the current transaction exists in the transaction queue
+    async checkIsTxHash({commit, state}: any, hash: string) {
+      const { id } = state.currentNetwork
+      const from = state.accountInfo.address
+      const queuekey = `txQueue-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
+      const list: any = await localforage.getItem(queuekey)
+      if(!list || !list.length) {
+        return false
+      }
+      return list.some((item: any) => item.hash.toUpperCase() == hash.toUpperCase())
+    }
   },
   namespaced: true,
 };
@@ -1986,4 +2003,29 @@ export const UPDATE_TRANSACTION = async (da: any) => {
   }
   eventBus.emit('txUpdate', newReceipt)
   return newReceipt
+}
+
+export function waitForTransactions(hashs: Array<any>, time: number | null = null):Promise<TransactionReceipt>{
+  return new Promise((resolve, reject) => {
+    if(hashs.length) {
+      hashs.forEach((hash) => {
+        if(time != null) {
+          wallet.provider.waitForTransaction(hash, null, time).then((res: TransactionReceipt) => {
+            resolve(res)
+            wallet.provider.removeAllListeners()
+          }).catch((err: any) => {
+            reject(err)
+          })
+        } else {
+          wallet.provider.waitForTransaction(hash).then((res: TransactionReceipt) => {
+            resolve(res)
+            wallet.provider.removeAllListeners()
+          }).catch((err: any) => {
+            reject(err)
+          })
+        }
+
+      })
+    }
+  })
 }

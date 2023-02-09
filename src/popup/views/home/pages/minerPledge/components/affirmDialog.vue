@@ -67,7 +67,7 @@ export default {
 
   .miners {
     width: 341px;
-    height: 427px;
+    height: 410px;
     background: #fff;
     margin: auto;
     border-radius: 8px;

@@ -97,7 +97,7 @@ onMounted(async () => {
 .account-list {
   max-height: 40vh;
   overflow-y: scroll;
-  padding: 20px 0 48px 0;
+  padding: 20px 0 0 0;
   .card {
     padding: 16px 15px;
     border-bottom: 1px solid #ecedef;
