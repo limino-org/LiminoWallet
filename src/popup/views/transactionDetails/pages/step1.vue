@@ -65,7 +65,6 @@
 
       <van-dialog
         v-model:show="showTransactionModal"
-        title
         :showCancelButton="false"
         :showConfirmButton="false"
         closeOnClickOverlay

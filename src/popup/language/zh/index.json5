@@ -1,12 +1,12 @@
 {
-	"copy": {
+	copy: {
 		"copySuccess": "助记词已复制到剪贴板",
 		copy: '已复制到剪贴板',
 		title: '地址已复制到剪贴板',
 		titlekyc: '私钥已复制到剪贴板',
 		titlehash: '交易hash已复制到剪贴板'
 	},
-	"nftCategory": {
+	nftCategory: {
 		"art": "艺术",
 		"music": "音乐",
 		"domain": "域名",
@@ -16,7 +16,7 @@
 		"sports": "体育",
 		"utility": "实用"
 	},
-	"loginwithpassword": {
+	loginwithpassword: {
 		"welcome": "欢迎再次使用Wormholes钱包",
 		"login": "登录",
 		"input": "输入密码",
@@ -46,7 +46,7 @@
 		accessExchange: '访问交易所',
 		accessCMS: '访问CMS'
 	},
-	"bourse": {
+	bourse: {
 		"placename": "请输入名称",
 		"vainame": "名称不能为空",
 		"vainame2": "4-20个长度,支持中英文、数字",
@@ -115,7 +115,7 @@
 		"closeTip": "抱歉，交易所预计关闭时间为 1 年。",
 		"stakingPeriod": "质押期限"
 	},
-	"wallet": {
+	wallet: {
 		"openexchange": "开设交易所",
 		"helpCenter": "帮助中心",
 		"exchangemanagement": "我的交易所",
@@ -180,7 +180,7 @@
 		periodTip:"在此期间，您将无法赎回您的 S-NFT"
 
 	},
-	"internet": {
+	internet: {
 		title: '网络',
 		othertitle: '其他网络',
 		sure: '确认',
@@ -188,7 +188,7 @@
 		checknetwork: '请选择一个网络',
 		selectNet: "选择网络"
 	},
-	"addtokens": {
+	addtokens: {
 		title: '可以创建现有的版本代币。访问虫洞以进一步了解。',
 		contractAdd: '代币合约添加',
 		contractAddeg: '例如 0x…',
@@ -213,7 +213,7 @@
 		title: '请检查地址是否正确，然后重新输入。',
 
 	},
-	"introductorypage": {
+	introductorypage: {
 		bootstrap1: "欢迎来到虫洞",
 		bootstrap2: "最信任",
 		bootstrap3: "跟踪支出",
@@ -225,7 +225,7 @@
 		login: "登录",
 		create: "创建账号"
 	},
-	"createAccountpage": {
+	createAccountpage: {
 		"headerTitle": "一键交易所",
 		"passwordrequirement": "密码应包含字母和数字，最少 8 个字符",
 		cantLogin: "无法登录？ {reset}",
@@ -280,7 +280,7 @@
 		link1: "Terms of Use",
 		link2: "Privacy Notice"
 	},
-	"sign": {
+	sign: {
 		"sign": "签名",
 		"pleaseConfirm": "请确认签名信息",
 		"content": "内容：",
@@ -302,7 +302,7 @@
 		title: "签名"
 
 	},
-	"mnemonic": {
+	mnemonic: {
 		recoveryPhrase: "恢复短语",
 		hint: "你的钱包没有备份！",
 		tips: "如果您在使用钱包之前不进行备份，您的资金将面临风险。 确保立即备份。",
@@ -332,7 +332,7 @@
 		backupyourQRcodeinasafeenvironment:'请在安全的环境中备份您的二维码 不建议截图',
 		errorMonic:"无效的助记词"
 	},
-	"exchange": {
+	exchange: {
 		"autoExchange": "一键创建交易所",
 		"welcome": "欢迎",
 		"withUs": "加入我们",
@@ -358,7 +358,7 @@
 		"successfullyadded": "追加质押金额成功！",
 		"closedsuccessfully": "交易所关闭成功！"
 	},
-	"castingnft": {
+	castingnft: {
 		"createNFT": "创建 NFT",
 		"upload": "上传",
 		"information": "信息",
@@ -392,7 +392,7 @@
 		"royaltypopover": "添加版税~",
 		"categorypopover": "选择类别~"
 	},
-	"sendNFT": {
+	sendNFT: {
 		sendNFT: "发送NFT",
 		name: "名称",
 		address: "地址",
@@ -427,7 +427,7 @@
 		recent: '最近',
 		contacts: '联系'
 	},
-	"sendSNFT": {
+	sendSNFT: {
 		"sendSNFT": "发送S-NFTs",
 		"selected": "已选中",
 		"name": "名称",
@@ -458,7 +458,7 @@
 		"loadchip": "数据正在准备中，请稍后",
 		"collTit": "合集"
 	},
-	"importToken": {
+	importToken: {
 		"search": "搜索",
 		"custom": "自定义",
 		"message": "以太坊主网上提供了改进的令牌检测作为实验功能。",
@@ -479,7 +479,7 @@
 		"customPopUps": "导入成功",
 		"warn": "当前网络不支持该代币"
 	},
-	"transactionDetails": {
+	transactionDetails: {
 		"recive": "接收",
 		"send": "发送",
 		"swap": "交换",
@@ -497,7 +497,7 @@
 		"at": "的",
 
 	},
-	"send": {
+	send: {
 		title: '接收',
 		sendtitle: '扫描地址以接收付款',
 		sendbutton: '请求付款',
@@ -544,7 +544,7 @@
 		wattingMessage: "正在为您转账，此过程将可能花费十几秒",
 		failMessage: "非常抱歉，因为某些意外，操作失败，您可以去交易历史里查看交易的具体信息"
 	},
-	"sendto": {
+	sendto: {
 		"comfirm": "确认",
 		"chargetip": "交易费率",
 		"feetip": "交易所质押金额",
@@ -591,7 +591,7 @@
 		offline: '您已离线',
 		checkthenetwork: '检查您的互联网连接,然后重试'
 	},
-	"returnreceipt": {
+	returnreceipt: {
 		returnreceipt: "交易返回",
 		send: "发送",
 		confirmation: "确认",
@@ -600,8 +600,7 @@
 		status: "状态",
 		pending: '待办的'
 	},
-	"receive": {
-
+	receive: {
 		receive: "接收",
 		search: "搜索代币",
 		transfer: "扫描地址二维码进行转账",
@@ -622,7 +621,7 @@
 		sendTip: "您的请求链接已经准备好发送!将此链接发送给一个朋友",
 		contants: "联系人"
 	},
-	"network": {
+	network: {
 		"QRCode": "我的二维码",
 		"copy": "复制",
 		"share": "分享",
@@ -648,7 +647,7 @@
 		"forexample": "例如.3a1076bf45ab87712ad64ccb3b10217737faacbf2872e88fdd9a537d8fe266",
 		"importSucceeded": "Import Succeeded"
 	},
-	"sidebar": {
+	sidebar: {
 		"recive": "接收",
 		"shareMyPublicAddress": "分享我的公共地址",
 		"transationHistory": "交易记录",
@@ -681,7 +680,7 @@
 		logoutTip:"确定登出吗？"
 
 	},
-	"importByMnemonic": {
+	importByMnemonic: {
 		importfrommnemonic: '从助记词导入',
 		import: '导入',
 		mnemonic: '助记词',
@@ -693,7 +692,7 @@
 		backUpDesc:"助记词备份，导出",
 		unlock:"请输入密码以解锁助记词"
 	},
-	"setting": {
+	setting: {
 		close: '关闭',
 		general: "常规",
 		generaltltle: '货币换算，主要货币，语言和搜索引擎',
@@ -719,7 +718,7 @@
 		accountManagement: "账户管理",
 		transitionHistory: "交易历史"
 	},
-	"transationHistory": {
+	transationHistory: {
         transationHistory: "交易记录",
         all: "全部",
         receive: "收到",
@@ -736,22 +735,22 @@
         canceled:'已取消',
         accelerated:'已加速'
 	},
-	"currencyConversion": {
+	currencyConversion: {
 		"currencyConversion": "货币转换",
 		"popular": "受欢迎的",
 		"all": "全部",
 		"closed": "关闭"
 	},
-	"languageSelection": {
+	languageSelection: {
 		"languageSelection": "语言选择",
 		"popular": "受欢迎的",
 		"all": "全部",
 		"closed": "关闭"
 	},
-	"restPasswords": {
+	restPasswords: {
 		
 	},
-	"bootstrapwindow": {
+	bootstrapwindow: {
 		"help": "帮助中心",
 		"helpMsg": "产品使用文档",
 		welcome: "Welcome",
@@ -795,7 +794,7 @@
 		watting: "等待中...",
 		approve: "通过"
 	},
-	"transactiondetails": {
+	transactiondetails: {
 		status: '状态',
 		send: '发送',
 		confirm: '确认',
@@ -827,7 +826,7 @@
 		fail: "失败",
 		tradeTit: "信息确认"
 	},
-	"other": {
+	other: {
 		"youareOffline": "您已离线",
 		"tryAgaintitle": " 检查您的网络链接,然后重试",
 		"tryAgain": "再试一次",
@@ -835,7 +834,7 @@
 		"plaeseTryAgain": "请刷新并重试",
 		"refresh": "刷新"
 	},
-	"backup": {
+	backup: {
 		safetyTips: "安全提示",
 		warn: "你的钱包没有备份！",
 		warn1:
@@ -873,7 +872,7 @@
 
 
 	},
-	"account": {
+	account: {
 		"import": "导入",
 		"create": "创建",
 		"accountname": "账户名称",
@@ -886,7 +885,7 @@
 		importaccount: '导入账户',
 		importerror: '导入失败'
 	},
-	"import": {
+	import: {
 		"input": "输入私钥",
 		"scan": "扫描二维码",
 		"hint": "改进后的帐户可以在您的钱包中查看，但您的 WormHoles 秘密恢复短语无法恢复您的帐户 {a}",
@@ -901,19 +900,19 @@
 		empty: '私钥不能为空',
 		wronglength: '私钥长度为66位hash字符串'
 	},
-	"importerror": {
+	importerror: {
 		"inputofprivatekey": "仅支持输入私钥方式",
 		oops: '糟糕!出问题了…',
 		cannotenter: '我们无法导入该私钥,请确保输入正确',
 		sure: 'OK'
 	},
-	"importsuccess": {
+	importsuccess: {
 		"success": "账户导入成功!",
 		"check": "您现在将能够在Wormholes查看您导入的账户。",
 		"scanning": "正在扫描…",
 
 	},
-	"resetPwd": {
+	resetPwd: {
 		"confirmpasswords": "确认密码",
 		"authentication": "请输入验证密码",
 		"password": "密码",
@@ -927,7 +926,7 @@
 		"failedtochange": "修改密码失败",
 		"enternewpassword": "请输入新密码"
 	},
-	"exportprivatekey": {
+	exportprivatekey: {
 		"saveQRcode": "将二维码保存到相册",
 		"copytext": "复制文本",
 		"unlockP": "输入密码以解锁私钥",
@@ -947,10 +946,10 @@
 		saveText: "保存二维码到相册",
 		copyText: "复制到剪贴板"
 	},
-	"recoveryPhrase": {
+	recoveryPhrase: {
 		"warn": "不要和任何人分享这个短语!这些词可以用来窃取你所有的账户。把它们保存在安全秘密的地方。"
 	},
-	"addNetwork": {
+	addNetwork: {
 		newnetwork: "新的 RPC 网络",
 		newRpcPlaceholder:"新的 RPC 网络URL",
 		rpcNet: "RPC 网络",
@@ -982,7 +981,7 @@
 		addednetworksuccessfully: '新增网络成功',
 		chainIdDiff: "目标节点使用不同的链id {chainId}"
 	},
-	"contacts": {
+	contacts: {
 		name: "名字",
 		address: "地址",
 		confirmAdd:"确认新增",
@@ -1006,7 +1005,7 @@
 		addedsuccessfully: '联系人添加成功',
 		alreadyexists: '通讯录已经存在'
 	},
-	"createNft": {
+	createNft: {
 		"createNFTs": "创造收藏品",
 		"findMore": "寻找更多",
 		"pullagain": "拉取数据失败请重新拉取",
@@ -1014,8 +1013,8 @@
 		"converttoERB": "S-NFTs",
 		"cancel": "取消"
 	},
-	"transferNft": {
-				"radioTip":"这是您的 S-NFT 的转换率，您可以为每个 S-NFT 转换多少 ERB。",
+	transferNft: {
+		"radioTip":"这是您的 S-NFT 的转换率，您可以为每个 S-NFT 转换多少 ERB。",
 		"converttoERB": "转换为 ERB",
 		"conversionconfirmation": "一经转换不可逆，请确认是否转换",
 		"stakingconfirmation": "S-NFT 质押：一旦您质押您的 S-NFT，至少一年内您将不能赎回您的 S-NFT。请确保您要质押 S-NFT",
@@ -1039,7 +1038,7 @@
 		"copy": "复制到剪切板",
 		"downQR": "下载二维码"
 	},
-	"createExchange": {
+	createExchange: {
 		commission: "这是{value}%的费用，你的市场将收取谁在你的市场交易的卖家。",
 		"exchangeTit": "我的交易所",
 		"welcometo": "欢迎",
@@ -1073,7 +1072,6 @@
 		"nameTit1": "虫洞交换",
 		"nameTit2": "虫洞 CMS",
 		"desc3": "这是您可以使用 Wormholes Blockchain 将 S-NFT 转换为 ERB 的按钮。",
-
 		wattingTitle:"配置",
 		headerTitle: "一键交易所",
 		openexchange: '开启交易所',
@@ -1150,10 +1148,10 @@
 		addStaking:"该交易将帮助您将额外的ERB存入您的账户。您获得奖励的机会将增加。您的额外ERB也可以在几个月后赎回。",
 		redeem:"这是您要赎回的 ERB 数量",
 		convert:"转换",
-		        insufficientMoney:"在质押后，您的余额将低于201ERB，这不足以在我们的服务器上建立您的交易所。你需要支付额外的{value}ERB。"
+		insufficientMoney:"在质押后，您的余额将低于201ERB，这不足以在我们的服务器上建立您的交易所。你需要支付额外的{value}ERB。"
 
 	},
-	"createExchangeSuccess": {
+	createExchangeSuccess: {
 		"congratulations": "恭喜",
 		"openSuccessfully": "成功打开",
 		"toaccess": "直接点击链接即可访问！ 复制此链接或与能够访问该链接的朋友分享。",
@@ -1161,7 +1159,7 @@
 		"accesscms": "访问CMS",
 		"exchangeBtn": "交易所已开设成功，请自行部署服务器"
 	},
-	"transactionConfirmComponent": {
+	transactionConfirmComponent: {
 		"amount": "数量",
 		"estimatedgassfree": "估计无气体",
 		"inSecnds": "就像在 30 秒内",
@@ -1169,7 +1167,7 @@
 		"maxfee": "最大费用:",
 		"maxaccount": "最大账户:"
 	},
-	"networklist": {
+	networklist: {
 		wormholes: "Wormholes 网络",
 		rinkeby: 'rinkeby 测试网络',
 		homestead: 'homestead 主网',
@@ -1178,7 +1176,7 @@
 		network: '网络'
 
 	},
-	"common": {
+	common: {
 		clearCancheSuccess:"缓存清除成功",
 		clearCanche:"清除缓存",
 		commingsoon: "即将来临",
@@ -1257,17 +1255,13 @@
 		converTip:"提示: S-NFT交换成功后，将从钱包中消失。您可以在钱包的交易历史记录或浏览器中查看交易记录。",
 
 	},
-	"categoryform": {
+	categoryform: {
 		"categoryform": "您还未选择任何数据"
 	},
-	"customExchangeModal": {
-		"exceededmaximumamount": "超过最大金额",
-		"amountcannotbelessthan": "金额不能小于{props}"
-	},
-	"transferNFTModal": {
+	transferNFTModal: {
 		"exchangesuccessfully": "兑换成功!"
 	},
-	"userexchange": {
+	userexchange: {
 		warn: '交易所欠费，请速缴费',
 		ready: '准备中,请稍后',
 		transferfailed: '转账失败',
@@ -1295,7 +1289,7 @@
 		addressErrMsg: "接收地址与发送地址不能一样",
 
 	},
-	"snftclassificationcategory": {
+	snftclassificationcategory: {
 		"art": "艺术",
 		"music": "音乐",
 		"domainNames": "域名",
@@ -1305,7 +1299,7 @@
 		"sports": "体育",
 		"utility": "实用"
 	},
-	"restWallet": {
+	restWallet: {
 		restWallet: '重置钱包',
 		areyousure: '你确定吗',
 		eraseyourwallet: '你想抹掉你的钱包吗？',
@@ -1346,7 +1340,7 @@
 		toWallet: "去钱包"
 
 	},
-	"currencyList": {
+	currencyList: {
 		"importerror": "代币合约错误",
 		"addressalreadyexists": "当前地址该代币已存在",
 		sure: '确定导入代币 {tokenName} 吗？',
@@ -1355,8 +1349,8 @@
 		tip: "查看完整历史记录 {link}",
 		etherscan: "在 Wormholesscan 上"
 	},
-	"minerspledge": {
-		        smileTip: "你的信誉很好，{value}，请保留它，获得更多的收入 {btn}",
+	minerspledge: {
+		smileTip: "你的信誉很好，{value}，请保留它，获得更多的收入 {btn}",
         sadTip: "您的信誉度低于70，请单击右侧的按钮恢复 {btn}",
         neutralTip: "您的信誉度低于70，请单击右侧的按钮恢复 {btn}",
         resetBtnTip: "有了这个按钮，你可以恢复你的信誉到70信誉将花费 {value} ERB。ERB成本将被虫洞区块链烧毁。",
@@ -1439,7 +1433,7 @@
 		minus_success: "您的股份赎回已完成。您可以在交易记录中找到详细信息。",
 		minus_wrong: "非常抱歉，由于一些意外，操作失败，您可以到交易记录查看交易的具体信息"
 	},
-	"createminerspledge": {
+	createminerspledge: {
 		openexchange: '开启交易所',
 		hi: '你好',
 		welcome: "欢迎来到矿工质押",
@@ -1458,14 +1452,14 @@
 		addStake: "挖矿收益",
 		addStakeTip: "这是将要添加的质押金额"
 	},
-	"amountreminder": {
+	amountreminder: {
 		pleaseenter: '请输入金额',
 		minimum: '金额最低${data}',
 		maximum: '金额最大70000',
 		my: '金额不能大于当前账户余额',
 		minValue: "服务费最小是0"
 	},
-	"createwallet": {
+	createwallet: {
 		createwallet: '创建钱包',
 		title: '此密码仅限于在该设备上解锁您的 Wormholes 钱包',
 		password: '新密码',

@@ -1,7 +1,7 @@
 
 //@ts-nocheck
-import en from './en-US/index.json5'
-import zh from './zh_CN/index.json5'
+import en from './en/index.json5'
+import zh from './zh/index.json5'
 import { createI18n } from 'vue-i18n'
 import { Locale } from 'vant';
 import enUS from 'vant/es/locale/lang/en-US';

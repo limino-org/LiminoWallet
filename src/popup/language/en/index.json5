@@ -1,12 +1,12 @@
 {
-	"copy": {
+	copy: {
 		copy: 'Has been copied to clipboard',
 		title: 'Address has been copied to clipboard',
 		titlekyc: 'Private key has been copied to clipboard',
 		titlehash: 'Transaction hash has been copied to clipboard',
-		"copySuccess": "Secret Recovery Phrase Copy Success",
+		copySuccess: "Secret Recovery Phrase Copy Success",
 	},
-	"nftCategory": {
+	nftCategory: {
 		"art": "Art",
 		"music": "Music",
 		"domain": "Domain Names",
@@ -16,7 +16,7 @@
 		"sports": "Sports",
 		"utility": "Utility"
 	},
-	"loginwithpassword": {
+	loginwithpassword: {
 
 		welcome: 'Welcome to Wormholes wallet again',
 		login: 'Log in',
@@ -30,7 +30,7 @@
 	transactionList: {
 		transactionrecord: 'Transaction Record'
 	},
-	"bourse": {
+	bourse: {
 		"placename": "Please enter the name of your NFT Marketplace",
 		"vainame": "The name cannot be empty",
 		"vainame2": "It is 4-20 in length and supports Chinese and English and numbers ",
@@ -99,7 +99,7 @@
 		"closeTip": "Sorry, you need to wait 365 days to close your marketplace and redeem your stake.",
 		"stakingPeriod": "Staking period"
 	},
-	"wallet": {
+	wallet: {
 		"openexchange": "One-Click NFT Marketplace",
 		"helpCenter": "Help Center",
 		"exchangemanagement": "Exchange Management",
@@ -152,7 +152,7 @@
 
 
 	},
-	"addtokens": {
+	addtokens: {
 		title: 'Be careful of fake versions of existing tokens. Visit{wormholesLink}to learn more.',
 		contractAdd: 'Token Contract Address',
 		contractAddeg: 'E.g., 0X...',
@@ -175,7 +175,7 @@
 		send: 'Send',
 		title: 'Please check whether the receiving address is correct and retype it.'
 	},
-	"introductorypage": {
+	introductorypage: {
 		bootstrap1: "Welcome to Wormholes",
 		bootstrap2: "Trusted and Secure",
 		bootstrap3: "Earn Through NFTs",
@@ -202,7 +202,7 @@
 		iconmeTip:"This is the estimated annual profit you will get after S-NFT staking",
 		periodTip:"During this period,you will not be allowed redeeming your S-NFT back"
 	},
-	"createAccountpage": {
+	createAccountpage: {
 		cantLogin: "Can't log in? {reset}",
 		"pwdError": "Wrong password",
 		createAccount: "Create an Account",
@@ -287,7 +287,7 @@
 		visit: 'You can click to visit the site or copy to the browser for access!',
 		share: 'You can also copy the link to share with friends, invite friends to come to visit ~',
 	},
-	"sign": {
+	sign: {
 		"sign": "sign",
 		"pleaseConfirm": " Please confirm the signature informations",
 		"content": "Content:",
@@ -308,7 +308,7 @@
 		signatureIdentification: 'Signature Identification',
 		title: "Signature"
 	},
-	"mnemonic": {
+	mnemonic: {
 		recoveryPhrase: "Recovery Phrase",
 		hint: "Your wallet is not backed up!",
 		tips: "Your funds will be at risk if you do not backup before using your wallet. Make sure to backup now.",
@@ -339,7 +339,7 @@
 		checkthemnemonic:'Please check the mnemonic',
 		backupyourQRcodeinasafeenvironment:'Please back up your QR code in a safe environment Screenshot is not advised'
 	},
-	"exchange": {
+	exchange: {
 		"autoExchange": "Auto Exchange",
 		"welcome": "Welcome",
 		"withUs": "Let’s Join With Us",
@@ -365,7 +365,7 @@
 		"successfullyadded": "The additional pledge amount was successful!",
 		"closedsuccessfully": "The exchange closed successfully!"
 	},
-	"castingnft": {
+	castingnft: {
 		"createNFT": "Create NFT",
 		"upload": "Upload",
 		"information": "Information",
@@ -399,7 +399,7 @@
 		"royaltypopover": "Add Royalty~",
 		"categorypopover": "Select Category~"
 	},
-	"sendNFT": {
+	sendNFT: {
 		sendNFT: "sendNFT",
 		name: "Name",
 		address: "Address",
@@ -434,7 +434,7 @@
 		recent: 'Recent',
 		contacts: 'Contacts'
 	},
-	"sendSNFT": {
+	sendSNFT: {
 		"sendSNFT": "Send S-NFT",
 		"selected": "Selected",
 		"name": "Name",
@@ -465,7 +465,7 @@
 		"loadchip": "Data is being prepared, please wait",
 		"collTit": "Collection"
 	},
-	"importToken": {
+	importToken: {
 		"search": "Search",
 		"custom": "Custom",
 		"message": "Improved token detection is available on Ethereum Mainnet as an experimental feature.",
@@ -486,7 +486,7 @@
 		"customPopUps": "Import Succeeded",
 		"warn": "The current network does not support the token"
 	},
-	"transactionDetails": {
+	transactionDetails: {
 		recive: "Receive",
 		send: "Send",
 		swap: "Swap",
@@ -503,7 +503,7 @@
 		viewDetails: "View Details",
 		at: 'at'
 	},
-	"send": {
+	send: {
 		title: 'Send',
 		sendtitle: 'Scan the QR Code to send payment to user',
 		sendbutton: 'Request Payment',
@@ -551,7 +551,7 @@
 		wattingMessage: "Transfer is in progress. This process may take more than ten seconds",
 		failMessage: "I'm very sorry that the operation failed due to some accidents. You can check the specific information of the transaction in the transaction history",
 	},
-	"sendto": {
+	sendto: {
 		"comfirm": "Comfirm",
 		"nametip": "Name",
 		"chargetip": "Commission Charge ",
@@ -595,7 +595,7 @@
 		wrongaddressformat: 'Wrong address format',
 		lessthan: "Can't be less than 21000"
 	},
-	"returnreceipt": {
+	returnreceipt: {
 		returnreceipt: "Return Receipt",
 		send: "Send",
 		confirmation: "Confirmation",
@@ -604,7 +604,7 @@
 		status: "Status",
 		pending: 'pending'
 	},
-	"receive": {
+	receive: {
 		receive: "Receive",
 		search: "Search Tokens",
 		transfer: " Scan the address QR Code to transfer",
@@ -625,7 +625,7 @@
 		sendTip: "Your request link is ready to send! Send this link to a friend.",
 		contants: "Contacts"
 	},
-	"network": {
+	network: {
 		"QRCode": "My QR Code",
 		"copy": "Copy",
 		"share": "Share",
@@ -655,7 +655,7 @@
 		offline: 'you are offline',
 		checkthenetwork: 'Check your internet connection and try again'
 	},
-	"sidebar": {
+	sidebar: {
 		"recive": "Receive",
 		"shareMyPublicAddress": "Share My Public Address",
 		"transationHistory": "Transation History",
@@ -687,7 +687,7 @@
 		help: 'Help Center',
 		logoutTip:"Are you sure to cancel?"
 	},
-	"importByMnemonic": {
+	importByMnemonic: {
 		importfrommnemonic: 'Import from the mnemonic',
 		import: 'import',
 		mnemonic: 'mnemonic',
@@ -700,7 +700,7 @@
 		unlock:"Please enter a password to unlock the mnemonic",
 		errorMonic:"Invalid mnemonic"
 	},
-	"setting": {
+	setting: {
 		close: 'Close',
 		general: "General",
 		generaltltle: 'Currency conversion,primary currency,language and search engine',
@@ -726,30 +726,30 @@
 		accountManagement: "Account Management",
 		transitionHistory: "Transaction History"
 	},
-	"transationHistory": {
-    transationHistory: "Transation History",
-    all: "All",
-    receive: "Receive",
-    send: "Send",
-    swap: "Swap",
-    other: "Other",
-    confirmed: 'confirmed',
-    failed: 'Failed',
-    contract: 'Contract',
-    successly: "Success",
-    pendding: "Waiting",
-    cancelTx: "Are you sure to cancel the transaction with #{nonce}?",
-    cancelDealTit: "Cancel transaction",
-    canceled:'Canceled',
-    accelerated:'Accelerated'
+	transationHistory: {
+    	transationHistory: "Transation History",
+    	all: "All",
+    	receive: "Receive",
+    	send: "Send",
+    	swap: "Swap",
+    	other: "Other",
+    	confirmed: 'confirmed',
+    	failed: 'Failed',
+    	contract: 'Contract',
+    	successly: "Success",
+    	pendding: "Waiting",
+    	cancelTx: "Are you sure to cancel the transaction with #{nonce}?",
+    	cancelDealTit: "Cancel transaction",
+    	canceled:'Canceled',
+    	accelerated:'Accelerated'
 	},
-	"currencyConversion": {
+	currencyConversion: {
 		"currencyConversion": "Currency Conversion",
 		"popular": "Popular",
 		"all": "All",
 		"closed": "Closed"
 	},
-	"languageSelection": {
+	languageSelection: {
 		"languageSelection": "Language Selection",
 		"popular": "Popular",
 		"all": "All",
@@ -758,7 +758,7 @@
 	"restPasswords": {
 		
 	},
-	"bootstrapwindow": {
+	bootstrapwindow: {
 		"help": "Help Center",
 		"helpMsg": "Product usage document",
 		techniqueAssistant: "Technique Assistant",
@@ -804,7 +804,7 @@
 		watting: "Waitting",
 		approve: "Approval"
 	},
-	"transactiondetails": {
+	transactiondetails: {
 		status: 'Status',
 		send: 'send',
 		confirm: 'confirm',
@@ -837,7 +837,7 @@
 		tradeTit: "Confirm Information"
 
 	},
-	"other": {
+	other: {
 		"youareOffline": "You are Offline",
 		"tryAgaintitle": " Check your Internet link and  try again",
 		"tryAgain": "Try Again",
@@ -845,7 +845,7 @@
 		"plaeseTryAgain": "Please refresh and try again",
 		"refresh": "Refresh"
 	},
-	"backup": {
+	backup: {
 		safetyTips: "Safety Tips",
 		warn: "Your wallet is not backed up!",
 		warn1:
@@ -853,7 +853,7 @@
 		remindMeLater: "Remind Me Later",
 		backup: "Backup"
 	},
-	"account": {
+	account: {
 		"import": "Import",
 		"create": "Create",
 		"accountname": "Account Name",
@@ -866,7 +866,7 @@
 		importaccount: 'Import Your Account',
 		importerror: 'The import failed'
 	},
-	"import": {
+	import: {
 		"input": "Input Private Key",
 		"scan": "Scan QR Code",
 		"hint": " Improved accounts are viewable in your wallet buare not recoverable with your WormHoles Secret Recovery Phrase {a}",
@@ -881,18 +881,18 @@
 		empty: 'Private key cannot be empty',
 		wronglength: 'The length of the private key is a 66-bit hash string'
 	},
-	"importerror": {
+	importerror: {
 		"inputofprivatekey": "Only supports input of private key",
 		oops: 'Oops! there is a problem…',
 		cannotenter: 'We could not import the private key, please make sure you enter it correctly',
 		sure: 'OK'
 	},
-	"importsuccess": {
+	importsuccess: {
 		success: 'The account is imported successfully !',
 		check: 'You can now view your imported account at Wormholes.',
 		scanning: 'Scanning…'
 	},
-	"resetPwd": {
+	resetPwd: {
 		"confirmpasswords": "Confirm New Passwords",
 		"authentication": "Please enter the password for authentication",
 		"password": "Password",
@@ -906,7 +906,7 @@
 		"failedtochange": "Failed to change password",
 		"enternewpassword": "Please enter new password"
 	},
-	"exportprivatekey": {
+	exportprivatekey: {
 		"saveQRcode": "Save QR Code to album",
 		"copytext": "Copy Text",
 		"unlockP": "Enter your password…",
@@ -926,10 +926,10 @@
 		saveText: "Save QR Code to album",
 		copyText: "Copy to Clipboard"
 	},
-	"recoveryPhrase": {
+	recoveryPhrase: {
 		"warn": "DO NOT share this phrase with anyone! These words can be used to steal all your accounts. Save them somewhere safe and secret."
 	},
-	"addNetwork": {
+	addNetwork: {
 		newnetwork: "New RPC Network",
 		newRpcPlaceholder:"New RPC Network URL",
 		rpcNet: "RPC Network",
@@ -962,7 +962,7 @@
 		addednetworksuccessfully: 'Added network successfully',
 		chainIdDiff: "The target node uses a different chain ID {chainId}"
 	},
-	"contacts": {
+	contacts: {
 		name: "Name",
 		address: "Address",
 		memo: "Memo",
@@ -986,7 +986,7 @@
 		addedsuccessfully: 'Contact added successfully',
 		alreadyexists: 'The address book already exists'
 	},
-	"internet": {
+	internet: {
 		title: 'Network',
 		othertitle: 'Other Networks',
 		sure: 'Confirm',
@@ -994,7 +994,7 @@
 		checknetwork: 'Please select a network',
 		selectNet: "Select Network"
 	},
-	"createNft": {
+	createNft: {
 		"createNFTs": "NFTs Create",
 		"findMore": "Find More",
 		"pullagain": "Failed to pull data, please pull again",
@@ -1002,7 +1002,7 @@
 		"converttoERB": "S-NFTs",
 		"cancel": "Cancel"
 	},
-	"transferNft": {
+	transferNft: {
 		"converttoERB": "S-NFTs",
 		"radioTip":"This is the convert rate of your S-NFT which how much ERB you can convert for each S-NFT.",
 		"conversionconfirmation": "Once converted, it is irreversible,please confirm whether toconvert it",
@@ -1027,7 +1027,7 @@
 		"copy": "Copy to Clipboard",
 		"downQR": "Save QR Code to album"
 	},
-	"createExchange": {
+	createExchange: {
 		commission: "This is the {value}% fee your marketplace will charge sellers who transact on your marketplace.",
 		"welcometo": "Welcome",
 		"takesabout": "Takes about 1 day to get ≈",
@@ -1142,7 +1142,7 @@
 		    insufficientMoney:"After staking ,your balance will be less than 201 ERB wihich is not enough to set up your market on our server.You will need to get extra {value} ERB."
 
 	},
-	"createExchangeSuccess": {
+	createExchangeSuccess: {
 		"congratulations": "Congratulations",
 		"openSuccessfully": "Open Successfully",
 		"toaccess": "  Directly click the link to access! Copy or share this link with a friend who will be able to access it.",
@@ -1150,7 +1150,7 @@
 		"accesscms": "Access CMS",
 		"exchangeBtn": "The exchange has been successfully opened, please deploy the server yourself"
 	},
-	"transactionConfirmComponent": {
+	transactionConfirmComponent: {
 		"amount": "AMOUNT",
 		"estimatedgassfree": "Estimated gass free",
 		"inSecnds": "Like in 30 Secnds",
@@ -1158,7 +1158,7 @@
 		"maxfee": "Max fee:",
 		"maxaccount": "Max Accpunt:"
 	},
-	"networklist": {
+	networklist: {
 		wormholes: "Wormholes Testnet",
 		rinkeby: 'Rinkeby Test Network',
 		homestead: 'Homestead Mainnet',
@@ -1166,7 +1166,7 @@
 		goerli: 'Goerli Test Network',
 		network: 'Network'
 	},
-	"common": {
+	common: {
 		clearCancheSuccess:"Cache cleared successfully",
 		clearCanche:"Clear Cache",
 		commingsoon: "Coming Soon!",
@@ -1238,16 +1238,14 @@
 		marketplace:"Marketplace",
 		validator:"Validator",
 		noMoney: "Your account is short of assets. Please make sure you have enough money in your wallet",
-    recovery: "Recovery",
-    gasSpeedUp: "Gas Speed Up",
-    sendTipPendding: "There is an uncompleted transaction in the current transaction queue, please try again after completion!",
-    speedUp: "Speed Up",
+    	recovery: "Recovery",
+    	gasSpeedUp: "Gas Speed Up",
+    	sendTipPendding: "There is an uncompleted transaction in the current transaction queue, please try again after completion!",
+    	speedUp: "Speed Up",
 	    hsitory: "History",
-		    converTip:"Tips: After the S-NFT exchange is successful, it will disappear from the wallet. You can view the exchange record in the wallet's transaction history or browser.",
-
-
+		converTip:"Tips: After the S-NFT exchange is successful, it will disappear from the wallet. You can view the exchange record in the wallet's transaction history or browser.",
 	},
-	"categoryform": {
+	categoryform: {
 		"categoryform": "You have not selected any data"
 	},
 	closeexchange: {
@@ -1265,14 +1263,10 @@
 		accessExchange: 'Access Exchange',
 		accessCMS: 'Access CMS'
 	},
-	"customExchangeModal": {
-		"exceededmaximumamount": "Exceeded maximum amount",
-		"amountcannotbelessthan": "Amount cannot be less than{props}"
-	},
-	"transferNFTModal": {
+	transferNFTModal: {
 		"exchangesuccessfully": "Exchange successfully!"
 	},
-	"userexchange": {
+	userexchange: {
 		warn: 'The exchange is overdue, please pay for the fees  immediately.',
 		ready: 'Preparing, please hold on',
 		transferfailed: 'The transfer failed',
@@ -1281,7 +1275,7 @@
 		loading: 'Loading...',
 		success: 'The Exchange is created successfully!'
 	},
-	"snftclassificationcategory": {
+	snftclassificationcategory: {
 		"art": "Art",
 		"music": "Music",
 		"domainNames": "Domain Names",
@@ -1315,7 +1309,7 @@
 		toExchange: "To NFT Exchange",
 		toWallet: "To Wallet"
 	},
-	"restWallet": {
+	restWallet: {
 		restWallet: 'Reset Wallet',
 		areyousure: 'Are you sure',
 		eraseyourwallet: 'you want to erase your wallet?',
@@ -1331,7 +1325,7 @@
 		cancel: 'Cancel',
 		confirm: 'Confirm'
 	},
-	"currencyList": {
+	currencyList: {
 		"importerror": "Token contract error",
 		"addressalreadyexists": "The token already exists at the current address",
 		sure: 'Determine to import tokens {tokenName} ?',
@@ -1340,17 +1334,17 @@
 		tip: "View full history on {link}",
 		etherscan: "WormholesScan"
 	},
-	"minerspledge": {
-    smileTip: "Your credibility is good, {value}, please keep it and get more income. {btn}",
-    sadTip: "Your credibility is lower than 70, click the button on the right to recovery it. {btn}",
-    neutralTip: "Your credibility is lower than 70, click the button on the right to recovery it. {btn}",
-    homeTip: "Your Credibility is lower than 70, increase your Credibility to gain higher income. {btn}",
-    noMoney: "Please make sure your account balance is over {value} so that you can recover credibility successfully.",
-    resetSendTip: "By credibility recovery，your credibility can be recovered to maximum.One credibility will cost one ERB.",
-    gotIt: "Got it >",
-    resetBtnTip: "With this button，you can recover your credibility to 70 credibility will cost {value} ERB. The ERB cost will be burnt by Wormholes block chain.",
-    credibility: "Credibility",
-    upCredibility: "Credibility will be increased",
+	minerspledge: {
+    	smileTip: "Your credibility is good, {value}, please keep it and get more income. {btn}",
+    	sadTip: "Your credibility is lower than 70, click the button on the right to recovery it. {btn}",
+    	neutralTip: "Your credibility is lower than 70, click the button on the right to recovery it. {btn}",
+    	homeTip: "Your Credibility is lower than 70, increase your Credibility to gain higher income. {btn}",
+    	noMoney: "Please make sure your account balance is over {value} so that you can recover credibility successfully.",
+    	resetSendTip: "By credibility recovery，your credibility can be recovered to maximum.One credibility will cost one ERB.",
+    	gotIt: "Got it >",
+    	resetBtnTip: "With this button，you can recover your credibility to 70 credibility will cost {value} ERB. The ERB cost will be burnt by Wormholes block chain.",
+    	credibility: "Credibility",
+    	upCredibility: "Credibility will be increased",
 		minerspledge: 'MINERS PLEDGE',
 		miners_pledge: 'Miners pledge',
 		unfortunately: 'Unfortunately,the node is wrong',
@@ -1379,7 +1373,7 @@
 		close_wrong: "I'm very sorry, because of some accident, the operation failed, you can go to the transaction history to check the specific information of the transaction",
 		toggleSuccess: "Switch success",
 		node: "Node (Not mandatory)",
-				transfer_approve: "We are approving your request.You can also go to transaction history to see details.",
+		transfer_approve: "We are approving your request.You can also go to transaction history to see details.",
 		transfer_waiting: "We are processing your S-NFT converting.This will take seconds.",
 		transfer_success: "The converting has been done.You can also go ro transaction history to see more details.",
 		transfer_wrong: "Something happened ,the converting failed.Please check transaction history for more details. ",
@@ -1396,7 +1390,6 @@
 		stacking: "Staking income",
 		erb_snft: "ERB & S-NFT",
 		tip2: "Staking & Staking Additional & Staking Redemption",
-
 		tip3: "Tips：Only the amount can be added, and other information cannot be changed",
 		tip4: "Tips：If you do not enter the node, you will not get the pledge income",
 		tip5: "Entered is not in the correct format",
@@ -1425,7 +1418,7 @@
 		minus_success: "Your stake redeption has been done.You can find the details in transaction history.",
 		minus_wrong: "I'm very sorry, because of some accident, the operation failed, you can go to the transaction history to check the specific information of the transaction"
 	},
-	"createminerspledge": {
+	createminerspledge: {
 		openexchange: 'OPEN THE EXCHANGE',
 		hi: 'Hi',
 		welcome: "Welcome to miner's pledge",
@@ -1444,14 +1437,14 @@
 		addStake: "Stake Additional Tokens",
 		addStakeTip: "This is the staking amount which wiill be added "
 	},
-	"amountreminder": {
+	amountreminder: {
 		pleaseenter: 'Please enter the amount',
 		minimum: 'Amount minimum ${data}',
 		maximum: 'The maximum amount is 100000',
 		my: 'The amount cannot be greater than the current account balance',
 		minValue: "The minimum service charge is 0"
 	},
-	"createwallet": {
+	createwallet: {
 		createwallet: 'Create wallet',
 		title: 'The password will be limited to unlocking your Wormholes wallet on this device',
 		password: 'new password',

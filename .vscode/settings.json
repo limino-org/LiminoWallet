@@ -1,0 +1,12 @@
+{
+    "i18n-ally.localesPaths": [
+        "src/popup/language"
+    ],
+    "i18n-ally.keystyle": "nested",
+    "i18n-ally.dirStructure": "file",
+    "i18n-ally.sortKeys": true,
+    "i18n-ally.enabledParsers": ["json", "ts"],
+    "i18n-ally.sourceLanguage": "en",
+    "i18n-ally.displayLanguage": "zh",
+    "i18n-ally.enabledFrameworks": ["vue", "react"]
+}
