@@ -81,7 +81,7 @@ export default {
     async send({ commit, state }: any, params: TransferData) {
       const wallet = await getWallet();
       const { address } = wallet
-      const { nft_address, to } = params
+      const { nft_address, to, checkTxQueue } = params
       // Update recent contacts
       store.commit("account/PUSH_RECENTLIST", to);
       const str = `wormholes:{"version": "v0.0.1","type": 1,"nft_address":"${nft_address}"}`;
@@ -90,7 +90,8 @@ export default {
       const tx = {
         from: address,
         to,
-        data: `0x${data3}`
+        data: `0x${data3}`,
+        checkTxQueue: false
       };
       console.warn('tx', tx)
       const data = await store.dispatch('account/transaction', tx)
@@ -116,5 +117,6 @@ export default {
 
 export type TransferData = {
   nft_address: string,
-  to: string
+  to: string,
+  checkTxQueue: boolean
 }

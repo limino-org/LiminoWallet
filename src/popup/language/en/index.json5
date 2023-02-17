@@ -200,7 +200,11 @@
 		tab3:"S-NFT Staking",
 		staking:"Staking period",
 		iconmeTip:"This is the estimated annual profit you will get after S-NFT staking",
-		periodTip:"During this period,you will not be allowed redeeming your S-NFT back"
+		periodTip:"During this period,you will not be allowed redeeming your S-NFT back",
+		notObtain:"Not Obtain",
+		synthesized:"Synthesized",
+		beSyned:"To be synthesized",
+		converted:"Converted"
 	},
 	createAccountpage: {
 		cantLogin: "Can't log in? {reset}",
@@ -1244,6 +1248,9 @@
     	speedUp: "Speed Up",
 	    hsitory: "History",
 		converTip:"Tips: After the S-NFT exchange is successful, it will disappear from the wallet. You can view the exchange record in the wallet's transaction history or browser.",
+		viewInExchange:"Exchange",
+    	viewInBrowser:"Block browser",
+
 	},
 	categoryform: {
 		"categoryform": "You have not selected any data"

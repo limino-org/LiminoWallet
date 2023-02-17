@@ -133,6 +133,10 @@ export interface SendTransactionParams {
   nft_address?: string
   checkTxQueue?: boolean
   nonce?: number
+  maxFeePerGas? :string
+  maxPriorityFeePerGas? :string
+  type? :string
+  
 
 }
 
@@ -1078,7 +1082,7 @@ export default {
       { state, commit, dispatch }: any,
       params: SendTransactionParams
     ) {
-      const { to, value, gasPrice, gasLimit, data, transitionType, nft_address, checkTxQueue, nonce: sendNonce } = { checkTxQueue: true, ...params };
+      const { to, value, gasPrice, gasLimit, data, transitionType, nft_address, checkTxQueue, nonce: sendNonce, type: newType, maxPriorityFeePerGas, maxFeePerGas } = { checkTxQueue: true, ...params };
       // Determine whether there are transactions in the current trading pool that have not returned transaction receipts, and if so, do not allow them to be sent
       if (checkTxQueue && await dispatch('hasPendingTransactions')) {
         return Promise.reject({ reason: i18n.global.t('common.sendTipPendding'), code: 500 })
@@ -1105,6 +1109,15 @@ export default {
         }
         if (typeof sendNonce != undefined) {
           tx.nonce = sendNonce
+        }
+        // if(newType){
+        //   tx.gasPrice = tx.gasPrice = ethers.utils.parseEther('0.000000053')
+        // }
+        if(maxPriorityFeePerGas){
+          tx.maxPriorityFeePerGas = maxPriorityFeePerGas
+        }
+        if(maxFeePerGas){
+          tx.maxFeePerGas = maxFeePerGas
         }
         // Update recent contacts
         commit("PUSH_RECENTLIST", to);
@@ -1565,9 +1578,9 @@ export default {
               const txInfo: any = await localforage.getItem(txkey)
               let txList: any = []
               if(id === 'wormholes-network-1') {
-                txList = txInfo.list
+                txList = txInfo && txInfo.list ? txInfo.list : []
               }else {
-                txList = txInfo
+                txList = txInfo || []
               }
               const sameNonceTx = txList.find((item: any) => item.nonce === nonce)
               const hashArr = !sameNonceTx ? [hash] : [hash, sameNonceTx.hash]

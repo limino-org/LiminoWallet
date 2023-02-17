@@ -37,7 +37,7 @@ import { Icon, Toast, Button, Sticky, Field,Checkbox, CheckboxGroup  } from "van
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, toRaw } from "vue";
 import { useStore } from 'vuex';
 import AccountIcon from '@/popup/components/accountIcon/index.vue'
 import { addressMask } from '@/popup/utils/filters';
@@ -72,14 +72,13 @@ export default {
     // const checkArr = [accountInfo.value.address,...accounts]
     const checkedList = ref([])
 
-    const { sender } = route.query
+    const { sender, method } = route.query
     console.warn('sender',sender)
     const senderData = ref(JSON.parse(decodeURIComponent(sender.toString())))
     const selectLen = computed(() => {
        return checkedList.value.length
     })
     onMounted(async()=>{
-      const method = 'wallet_requestPermissions'
       // @ts-ignore
       const list = await chrome.storage.local.get(['connectList'])
        // @ts-ignore
@@ -87,16 +86,18 @@ export default {
       const sendParams = data[method] ? data[method] : {}
       const currentSender = list.connectList.find((item: any) => item.origin == sendParams.sender.origin)
       const accounts = currentSender ? currentSender.accountList : []
+      console.warn('sendParams.sender', sendParams.sender)
       const checkArr = [accountInfo.value.address,...accounts]
       checkedList.value = checkArr
     })
     const loading = ref(false)
     const next = () => {
+      console.warn('checkedList.value', checkedList.value)
       loading.value = true
-      sendBackground({method:handleType.wallet_requestPermissions,response: {code:'200',data:[...checkedList.value]}})
+      sendBackground({method,response: {code:'200',data:[accountInfo.value.address]}})
     }
     const cancel = () => {
-      sendBackground({method:handleType.handleReject,response:{method:handleType.wallet_requestPermissions}})
+      sendBackground({method:handleType.handleReject,response:{method}})
     }
     return {
       loading,

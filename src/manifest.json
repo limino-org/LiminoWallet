@@ -54,8 +54,5 @@
   }],
   "content_security_policy": {
     "extension_pages": "script-src 'self' ; object-src 'self'"
-  },
-  "browser_action":{
-    "default_icon":"icons/icon-32.png"
   }
 }

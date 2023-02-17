@@ -129,14 +129,21 @@ export default {
     const toAccount: any = reactive({ data: {
       icon: getRandomIcon()
     } });
-    const toAddress: Ref<string> = ref(newtx.to.toString());
+    const toAddress: Ref<string> = ref(newtx?.to?.toString());
     // Initiate transaction
     const gonext = async () => {
       nextLoading.value = true;
+      let receipt= null
       try {
-        const { from,to,value,data} = newtx
-        const receipt = await dispatch("account/transaction", {from,to: utils.getAddress(to),value,data});
-   
+        const { type, data: bytecode, maxFeePerGas, maxPriorityFeePerGas, gas } = newtx
+
+        // if(type == '0x2') {
+        //   receipt = await dispatch("account/transaction", {...newtx,maxFeePerGas:53899999999,maxPriorityFeePerGas:11, checkTxQueue: false});
+        // } else {
+        //   receipt = await dispatch("account/transaction", {...newtx, checkTxQueue: false});
+        // }
+        receipt = await dispatch("account/transaction", {...newtx, checkTxQueue: false});
+        console.warn('receipt', receipt)
           sendBackground({method:handleType.eth_sendTransaction,response:{code:"200",data: receipt}})
       } catch (err: any) {
         Toast(err.reason);

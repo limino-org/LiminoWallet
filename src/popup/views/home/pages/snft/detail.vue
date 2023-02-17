@@ -3,10 +3,10 @@
 
   <div class="snft-detail">
     <div class="flex between mt-14 snft-list pl-22 pr-22">
-      <div :class="`img-box flex center van-hairline--surround hover   flex center ${
+      <div :class="`img-box flex center van-hairline--surround hover   flex center ${getClass(item)} ${
           item.select ? 'active' : ''
-        }`" v-for="(item, idx) in pageData.children" :key="item.address" @click="hancleClick(item, idx)">
-        <img :src="`${metaDomain}${item.source_url}`" :class="`flex center ${item.select ? 'active' : ''} ${imgGarySmall(item)}`" fit="cover" />
+        }`" :title="getTipText(item)" v-for="(item, idx) in pageData.children" :key="item.address" @click="hancleClick(item, idx)">
+        <img :src="`${metaDomain}${item.source_url}`" :class="`flex center snft-img  ${item.select ? 'active' : ''} ${imgGarySmall(item)}`" fit="cover" />
         <div class="lock-img-box" v-if="handlecanRedeem(item) === false">
           <div class="flex center">
             <svg t="1666159609780" class="lock-img-small" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3307" width="200" height="200">
@@ -122,13 +122,22 @@
           </div>
         </div>
 
-        <div class="btn disabled">
+        <div class="btn" v-if="!chooseData.Exchange" @click="handletoExchange">
           <div class="flex center">
             <div class="icon-in flex center">
-              <i class="iconfont icon-wendang"></i>
+              <i class="iconfont icon-fangwujianzhuwugoujianbeifen"></i>
             </div>
           </div>
-          <div class="btn-txt text-center">{{ t("sendSNFT.more") }}</div>
+          <div class="btn-txt text-center">{{ t("common.viewInExchange") }}</div>
+        </div>
+
+        <div class="btn" v-if="!chooseData.Exchange" @click="handletoBrowser">
+          <div class="flex center">
+            <div class="icon-in flex center">
+              <i class="iconfont icon-network"></i>
+            </div>
+          </div>
+          <div class="btn-txt text-center">{{ t("common.viewInBrowser") }}</div>
         </div>
       </div>
     </div>
@@ -170,6 +179,7 @@ import { VUE_APP_METAURL } from "@/popup/enum/env";
 import TransferSingleSNFTModal from "@/popup/views/home/components/transferSingleSNFTModal.vue";
 import { fa } from "element-plus/es/locale";
 import { show } from "@/popup/components/navHeader/hooks/slider";
+import { isIfStatement } from "@babel/types";
 const disabledChip = {
   address: null,
   select: false,
@@ -199,6 +209,7 @@ export default {
     const route = useRoute();
     const { state } = useStore();
     const swipe: Ref = ref(null);
+    const currentNetwork = computed(() => state.account.currentNetwork)
     const pageData = ref(JSON.parse(sessionStorage.getItem("compData")));
     const network = ref(null);
     console.warn("pagedata", pageData.value);
@@ -371,6 +382,8 @@ export default {
 
     const nftAddr = MergeLevel === 2 ? nft_address + '00' : snftAddress
         getAddressInfo(nftAddr);
+
+        
       }
     };
 
@@ -462,7 +475,6 @@ export default {
           break;
         case "2":
           if (
-            MergeLevel === 0 ||
             !snfts.length ||
             pledgestate === "Pledge" ||
             Exchange === 1
@@ -615,10 +627,23 @@ export default {
 
     // Event of successful redemption
     const reLoading = () => {
-      if (pageData.value.MergeLevel === 2) {
-        router.replace({name:"wallet"})
-        return
-      }
+      // if (pageData.value.MergeLevel === 2) {
+      //   router.replace({name:"wallet"})
+      //   return
+      // }
+      router.replace({name:"wallet"})
+      // Modify cache data and re-initialize page data
+      // const comData = sessionStorage.getItem('compData') ? JSON.parse(sessionStorage.getItem('compData')) : null
+      // if(comData) {
+      //   const idx = swiperIdx.value
+      //   const newData = comData.children[idx]
+      //   for(let i = 0;i< newData.children.length;i++){
+      //     for(let idx =0;idx < newData.children[i].snfts.lengtg;idx++){
+
+      //     }
+      //   }
+
+      // }
       onChange(swiperIdx.value);
     };
     // Optional quantity
@@ -899,10 +924,59 @@ export default {
     };
 
     const totalChip = computed(() => {
-      if(pageData.value.MergeLevel === 2) return 256
-      return 16
+      if(pageData.value.MergeLevel === 2) return pageData.value.totalcount
+      return chooseData.value['Chipcount']
     })
+
+    const getClass = (item: any) => {
+      const { disabled, MergeLevel } = item
+      if(disabled) {
+        return 'gary'
+      }
+      if(!disabled && MergeLevel){
+        return 'shining'
+      }
+      return ''
+
+    }
+    const getTipText = (item: any) => {
+      const { disabled, MergeLevel, Exchange } = item
+      if(Exchange) {
+        return t('converSnft.converted')
+      }
+      if(disabled) {
+        return t('converSnft.notObtain')
+      }
+      if(!disabled && MergeLevel){
+        return t('converSnft.synthesized')
+      }
+      return t('converSnft.beSyned')
+    }
+
+    const handletoBrowser = () => {
+      const { tag, nft_address,source_url, metaData } = chooseSnftData.value
+      const domain = 'https://www.wormholesscan.com/#/SNFT/SNFTDetails'
+      const str = `?snftid=${nft_address}`
+      const newUrl = `${domain}${str}`
+      window.open(newUrl)
+    }
+    const handletoExchange = () => {
+      const { source_url, nft_token_id, MergeLevel, nft_contract_addr } = chooseSnftData.value
+      const domain = currentNetwork.value && currentNetwork.value.chainId === 51888 ? 'http://192.168.1.235:9006/c0x5051580802283c7b053d234d124b199045ead750/#' : 'https://hub.wormholes.com/c0x97807fd98c40e0237aa1f13cf3e7cedc5f37f23b/#'
+      let str = '/assets/detail'
+      if(pageData.value.MergeLevel > 0 || MergeLevel > 0) {
+        str += `?nft_contract_addr=${nft_contract_addr}&nft_token_id=${nft_token_id}`
+      } else {
+        str += `?nft_contract_addr=${nft_contract_addr}&nft_token_id=${nft_token_id}&source_url=${source_url}`
+      }
+      const newUrl = `${domain}${str}`
+      window.open(newUrl)
+    }
     return {
+      handletoBrowser,
+      handletoExchange,
+      getTipText,
+      getClass,
       totalChip,
       handleReStaking,
       selectSingleSnft,
@@ -988,10 +1062,71 @@ export default {
     flex-wrap: wrap;
 
     .img-box {
-      width: 38px;
-      height: 38px;
+      width: 37px;
+      height: 37px;
       margin-bottom: 5px;
-      padding: 1px;
+
+      &.gary {
+    
+  position: relative;
+  .snft-img {
+    backdrop-filter: saturate(80%) blur(0);
+    filter: grayscale(100%);
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    border-radius: 5px;
+    background: rgba($color: #000, $alpha: .5);
+    // left: 2px;
+    // top: 2px;
+    z-index: 1000;
+}
+      }
+      &.shining{
+    // border: 2px solid #FBC332;
+    position: relative;
+    &::before{
+    content: "";
+    width: 35px;
+    height: 35px;
+    border-radius: 4px;
+    background-image: linear-gradient(var(--rotate) , #fff, #f0ca6c 50%, #f8b305);
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    animation: spin 3s linear infinite;
+    }
+    & img {
+      width: 29px !important;
+      height: 29px !important;
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      border-radius:4px;
+      z-index: 1;
+    }
+    &::after{
+      position: absolute;
+  content: "";
+  top: 7px;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
+  transform: scale(0.8);
+  filter: blur(calc(50px / 6));
+  background-image: linear-gradient(var(--rotate) , #fff, rgb(245, 222, 190) 30%, #f8b305);
+    opacity: 1;
+  transition: opacity .5s;
+  animation: spin 3s linear infinite;
+    }
+  }
 
       &::after {
         border-color: #fff;
@@ -1001,7 +1136,7 @@ export default {
 
       &.active {
         border: 1px solid #037cd6;
-        border-radius: 7px;
+        border-radius: 6px;
 
         &::after {
           border-color: #037cd6;
@@ -1020,10 +1155,7 @@ export default {
         justify-content: center;
         align-items: center;
 
-        &.gary {
-          backdrop-filter: saturate(80%) blur(0px);
-        filter: grayscale(100%);
-        }
+
 
         :deep(img) {
           width: 33px;
@@ -1150,7 +1282,7 @@ export default {
   }
 
   .btn-box {
-    width: 170px;
+    width: 300px;
     padding-bottom: 30px;
 
     .btn {
@@ -1204,12 +1336,14 @@ export default {
     bottom: 0;
     right: 0;
     flex-wrap: wrap;
+    border-radius: 6px;
+    overflow: hidden;
 
     .fg {
       width: 64px;
       height: 64px;
       cursor: pointer;
-
+      position: relative;
       &::after {
         border-color: #fff;
       }
@@ -1220,8 +1354,19 @@ export default {
         backdrop-filter: saturate(80%) blur(0px);
         filter: grayscale(100%);
         cursor: no-drop;
+
         &:hover {
           border: none;
+        }
+        &::before {
+          content: '';
+          background: rgba($color: #000, $alpha: .5);
+          position: absolute;
+          left: 0;
+          top: 0;
+          right: 0;
+          bottom: 0;
+       
         }
       }
 
@@ -1251,5 +1396,19 @@ export default {
     }
 
   }
+}
+
+@property --rotate {
+  syntax: "<angle>";
+  initial-value: 200deg;
+  inherits: false;
+}
+@keyframes spin {
+0% {
+--rotate: 0deg;
+}
+100% {
+--rotate: 360deg;
+}
 }
 </style>

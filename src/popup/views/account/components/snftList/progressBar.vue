@@ -14,7 +14,7 @@
       </van-popover>
     </div>
     <div class="bar mt-4">
-      <div :style="{ width: `${width}%` }" class="h-10 bar-line-box">
+      <div :style="{ width: `${width <= 100 ? width : 100}%` }" class="h-10 bar-line-box">
         <div
           :class="`bar-scroll ${width > 0 ? 'scorll-enter-active' : ''}`"
         ></div>
@@ -33,7 +33,7 @@
     </div>
     <div class="flex between scale">
       <span></span>
-      <span class="scale-r">{{ own }}/{{ total }}</span>
+      <span class="scale-r">{{ value }}/{{ total }}</span>
     </div>
   </div>
 </template>
@@ -81,10 +81,13 @@ export default defineComponent({
       () => props.value,
       () => {
         const { value, total } = props;
-        width.value = Number(
+        const nw = Number(
           new BigNumber(value).div(total).multipliedBy(100).toFixed(2)
         );
+        width.value =  nw > 100 ? 100 : nw
         console.log('width', width.value, value, total)
+      },{
+        immediate: true,
       }
     );
     const showPopover = ref(false);
@@ -117,7 +120,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .bubble {
-  border: 1px solid #aef0bf;
+  border: 1px solid #3AAE55;
   border-radius: 7px;
   position: relative;
 
@@ -128,7 +131,7 @@ export default defineComponent({
     border: 5px solid;
     position: absolute;
     bottom: -7px;
-    left: 50%;
+    left: 75%;
     transform: translateX(-50%);
     border-color: #fff transparent transparent;
   }
@@ -139,9 +142,9 @@ export default defineComponent({
     border: 5px solid;
     position: absolute;
     bottom: -8px;
-    left: 50%;
+    left: 75%;
     transform: translateX(-50%);
-    border-color: #aef0bf transparent transparent;
+    border-color: #3AAE55 transparent transparent;
   }
 }
 
@@ -211,11 +214,11 @@ export default defineComponent({
       text-align: center;
       font-size: 10px;
       position: absolute;
-      right: -10px;
+      right: 0px;
       top: -16px;
       .num {
-        color: #aef0bf;
-        padding: 0 2px;
+        color: #3AAE55;
+        padding: 0 4px;
         font-size: 10px;
         // transform: scale(0.8);
       }

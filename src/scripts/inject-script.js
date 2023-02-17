@@ -1,12 +1,23 @@
-// @ts-nocheck
-function provider() {
+
+
+function Provider() {
+    this._state = {
+      accounts:[],
+      isConnected: false,
+      isUnlocked: true,
+      initialized: false
+    }
+    this.isLiminoWallet = true
+    this.chainId = null
+    this.networkVersion = null
+    this.selectedAddress = ''
+
     this.enable = function () {
         console.log('request wallet connect')
         return this.connect()
     }
   this.postMsg = function(data, callback = function(){}) {
       const target = 'wormholes-inpage';
-      console.warn('data postmsg---', data)
       const { method } = data
       if (method) {
         window['wormholes-' + method + '-callback'] = callback
@@ -15,26 +26,72 @@ function provider() {
   }
   this.handlerPostMessage = function(data, callback = function(){}) {
     const target = 'wormholes-inpage';
-    console.warn('data postmsg---', data)
     const { method } = data
     if (method) {
       window['wormholes-' + method + '-callback'] = callback
     }
     window.postMessage({ target, data }, '*');
 }
+// const JSONMethods = ['eth_getBlockByNumber','eth_getTransactionReceipt','eth_getTransactionByHash','eth_getBlockByHash']
     // issue a request
     this.request = function(params) {
       var _this = this
+      const { method } = params
+      if(method === 'wallet_requestPermissions' || method == 'eth_requestAccounts' && this._state.isConnected){
+        return
+      }
+      console.warn(method,params)
       return new Promise(function(resolve,reject){
         _this.postMsg({ ...params },(res)=>{
           const { code,message,response} = res
+          _this.handleUpdateState(res, params)
             if(code && code == 200){
               resolve(res.data)
             } else {
+              console.error('Limino Err:', res)
               reject(res)
             }
         })
       })
+    }
+
+    this.handleUpdateState = function(res, params){
+      const {code, data } = res
+      if(code == 200) {
+        const { method } = params
+        switch(method){
+          case 'wallet_requestPermissions':
+          case 'eth_requestAccounts':
+            this._state.accounts = data.data
+            this._state.isConnected = true
+            this._state.isUnlocked = false
+            this.selectedAddress = data[0]
+            break;
+          case 'removeAllListeners':
+            this._state.accounts = []
+            this._state.isConnected = false
+            this.selectedAddress = ''
+            break;
+          case 'net_version':
+            this.chainId = data
+            this.networkVersion = data
+            break;
+          case 'accountsChanged':
+            this.selectedAddress = data
+            break;
+          default:
+            this._state.isConnected = true
+            break;
+        }
+        console.warn('handleUpdateState', res, params)
+      }
+
+      if(code == 4100){
+        this._state.accounts = []
+        this._state.isConnected = false
+        this.selectedAddress = ''
+      }
+
     }
 
      // connect
@@ -71,13 +128,31 @@ function provider() {
   this.send = function(method, params){
     return this.request({method, params}).then(res => res.data)
   }
+  this.isConnected = function(){
+    return this._state.isConnected
+  }
 };
 
 
-provider.prototype = {
+Provider.prototype = {
     // monitor
-    on(type = 'connect', callback = () => { }) {
-
+    /**
+     * @param {} data
+     * @param {*} type message connect error disconnect
+     * @param {*} callback 
+     */
+    on(params, callback = () => { }) {
+      const { type, data } = params
+      const events = [
+        'connect',
+        'chainChanged',
+        'accountsChanged',
+        'disconnect',
+        'message'
+      ]
+      if(type && events.includes(type)) {
+        window[`wormholes-${type}-callback`] = callback()
+      }
     },
     // information
     message(params) {
@@ -93,16 +168,30 @@ provider.prototype = {
    
 }
 
+
+
 // network switcher
-window["wormholes-changeNetWork-callback"] = function(){
+window["wormholes-chainChanged-callback"] = function(){
 
 }
 // Account switching
-window["wormholes-changeAccount-callback"] = function(){
+window["wormholes-accountsChanged-callback"] = function(){
   
 }
+// Message
+window["wormholes-message-callback"] = function(){
 
-window.wormholes = new provider()
+}
+
+window["wormholes-connect-callback"] = function(){
+
+}
+window["wormholes-disconnect-callback"] = function(){
+
+}
+
+window.ethereum =  new Provider()
+
 
 
 // Registers a custom signature callback event
@@ -112,7 +201,6 @@ event.initEvent('wormHoles-callback-event', true, true);
 // Listen for callback events
 document.addEventListener('wormHoles-callback-event', (res) => {
     // accepting of data
-    console.log('event----', res.detail,window.location.origin)
     let { type, data } = res.detail;
     if (type == "wormholes-callback") {
         const { method, response } = data

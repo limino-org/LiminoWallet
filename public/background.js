@@ -15,7 +15,8 @@ import {
   errorCode,
   isConnected,
   getSenderAccounts,
-  handleType
+  handleType,
+  wallet_methods
 } from './modules/common.js'
 // Listening for Browser events
 // Return true for asynchronous messages
@@ -28,17 +29,24 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
   if (!target) {
     return false
   }
+  if(data.method && data.method === 'eth_requestAccounts') {
+    console.warn('eth_requestAccounts', data, sender, target)
+  }
   if (target != 'wormholes-inpage' && target != 'wormholes-popup' && (!data || !data.method)) {
+    console.error('111', data,target)
     const errMsg = errorCode['4100']
     sendMessage(createMsg(errMsg, data.method || 'unknow'), {}, sender)
     return false
   }
+
   const { method, params: newParams } = data
   // Check whether target is a Content-script injected wormholes-inpage
   // Authentication to check whether the connection is established
   const isConnect = await isConnected(sender)
   //  When not connected
   if ((target == 'wormholes-inpage' && !isConnect) && (method != handleType.wallet_requestPermissions && method != handleType.eth_requestAccounts)) {
+
+    console.error('222', data, target)
     const errMsg = errorCode['4100']
     sendMessage(createMsg(errMsg, method || 'unknow'), {}, sender)
     return false
@@ -58,14 +66,20 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
   // form web page message
   if (target == 'wormholes-inpage') {
     // Check whether the RPC Method is supported
-    if (!handleRpcRequest[method]) {
+    if (wallet_methods.includes(method)) {
       // Return error messages are not supported
-      const errMsg = errorCode['4200']
-      sendMessage(createMsg(errMsg, method || 'unknow'), {}, sender)
-      return false
+      if(handleRpcRequest[method]) {
+        handleRpcRequest[method](newParams, sendResponse, sender)
+        return true
+      } else {
+        const errMsg = errorCode['4200']
+        sendMessage(createMsg(errMsg, method || 'unknow'), {}, sender)
+        return false
+      }
+    } else {
+      // RPC calls
+     handleRpcRequest.handleRpc(method, newParams, sendResponse, sender)
     }
-    // RPC calls
-    handleRpcRequest[method](newParams, sendResponse, sender)
     return true;
   }
 

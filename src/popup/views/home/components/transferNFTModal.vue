@@ -328,28 +328,32 @@ export default defineComponent({
                 props.selectList[key].length
               ) {
                 props.selectList[key].forEach((item) => {
-                  newCount = newCount + item.snfts.length;
+                  
                   const { MergeLevel, MergeNumber } = item;
                   if (MergeLevel == 0) {
                     amount = amount.plus(t0);
                     fstr++;
+                    newCount = newCount + 1;
                   }
                   if (MergeLevel == 1) {
                     amount = amount.plus(
                       new BigNumber(MergeNumber).multipliedBy(t1)
                     );
+                    newCount = newCount + 1;
                     nstr++;
                   }
                   if (MergeLevel == 2) {
                     amount = amount.plus(
                       new BigNumber(MergeNumber).multipliedBy(t2)
                     );
+                    newCount = newCount + 1;
                     cstr++;
                   }
                   if (MergeLevel == 3) {
                     amount = amount.plus(
                       new BigNumber(MergeNumber).multipliedBy(t3)
                     );
+                    newCount = newCount + 1;
                     pstr++;
                   }
                 });

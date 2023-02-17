@@ -137,6 +137,8 @@ export async function setSenderAccounts(sender, accountList = []) {
 export async function isConnected(sender) {
   const connectList = await getConnectList()
   const bool = connectList.find(item => item.origin == sender.origin)
+  console.warn('connectList', connectList,sender)
+
   if (!bool) {
     return false
   }
@@ -187,7 +189,7 @@ export const eventTypes = {
   openTabPopup: "open-tabPopup"
 }
 
-
+let newwallet = null
 export async function initWallet() {
   const local = await localforage.getItem("vuex") || null
   if (!local) {
@@ -204,28 +206,17 @@ export async function initWallet() {
     const { keyStore } = accountInfo;
     const { URL } = currentNetwork
     const params = { json: keyStore, password: pwdVal };
-    let newwallet = null
-    // if(!wallet) {
-    //   wallet = await createWalletByJson(params);
-    //   let provider = ethers.getDefaultProvider(URL);
-    //   newwallet = wallet.connect(provider);
-    // } else {
-    //   if(wallet.provider) {
-    //     // Determines whether the url of the current provider is consistent with the one in the cache
-    //     if(wallet.provider.connection.url !== URL) {
-    //       let provider = ethers.getDefaultProvider(URL);
-    //       newwallet = wallet.connect(provider);
-    //     }
-    //   } else {
-    //     newwallet = await createWalletByJson(params);
-    //     let provider = ethers.getDefaultProvider(URL);
-    //     newwallet = newwallet.connect(provider);
-    //   }
-    // }
-    newwallet = await createWalletByJson(params);
-    let provider = ethers.getDefaultProvider(URL);
-    newwallet = newwallet.connect(provider);
-    // wallet = newwallet
+    if(!newwallet || !newwallet.provider) {
+      const wallet = await createWalletByJson(params);
+      let provider = ethers.getDefaultProvider(URL);
+      newwallet = wallet.connect(provider);
+      return newwallet
+    }
+    if(newwallet.provider &&(newwallet.provider.connection.url != URL)) {
+      let provider = ethers.getDefaultProvider(URL);
+      newwallet = newwallet.connect(provider);
+      return newwallet
+    }
     return newwallet
   } catch (err) {
     clearConnectList()
@@ -265,16 +256,19 @@ export const eventsEmitter = {
   // connected
   connect: 'connect',
   // disconnect
-  disconnect: 'disconnect'
+  disconnect: 'disconnect',
+  message: 'message'
 }
 
 
 // // The type of API that is open to the public
 export const handleType = {
+  eth_getCode:'eth_getCode',
   // Signature 
   eth_sign: "eth_sign",
   // Get block height
   eth_blockNumber: "eth_blockNumber",
+  eth_getBlockByNumber: "eth_getBlockByNumber",
   // trade
   eth_sendTransaction: "eth_sendTransaction",
   // Signature Single signature data
@@ -300,17 +294,32 @@ export const handleType = {
   eth_getTransactionReceipt: 'eth_getTransactionReceipt',
   eth_getTransactionCount: "eth_getTransactionCount",
   eth_getBlockNumber: "eth_getBlockNumber",
+  eth_subscribe: "eth_subscribe",
+  eth_getBlockByHash:'eth_getBlockByHash',
   // Remove listening events
   removeAllListeners: 'removeAllListeners',
   // Get account balance
   eth_getBalance: 'eth_getBalance',
   net_version: 'net_version',
+  eth_gasPrice: 'eth_gasPrice',
   logout: "logout",
   login: "login",
   handleReject: 'handleReject',
+  eth_call:'eth_call',
   // Obtain the transaction receipt
   waitTxQueueResponse: "waitTxQueueResponse"
 }
+
+
+export const wallet_methods = [
+  handleType.eth_requestAccounts,
+  handleType.eth_sendTransaction,
+  handleType.eth_sign,
+  handleType.handleReject,
+  handleType.personal_sign,
+  handleType.multiple_sign,
+  handleType.eth_accounts
+]
 
 export async function getLocalParams(method) {
   const data = await chrome.storage.local.get([method])
@@ -374,7 +383,7 @@ export function createMsg(response = null, method = 'unknow', type = 'wormholes-
     type,
     data: {
       method,
-      response
+      response: {...response, method}
     }
   }
 }

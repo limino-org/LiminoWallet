@@ -214,7 +214,7 @@ export function transactionStatus(txData: any){
       }
    }
     if(txType == 'contract') return 'icon-caozuo-xunhuan1'
-    const bigTo = to.toUpperCase()
+    const bigTo = to ? to.toUpperCase() : ''
     const bigFrom = from.toUpperCase()
     if((myAddr === bigTo && bigFrom !== myAddr)) return 'icon-bottom'
     if(bigTo !== bigFrom || bigTo === bigFrom) return 'icon-arrowTop'
@@ -241,7 +241,7 @@ export function transactionStatus(txData: any){
   }
 
   if(txType === 'contract') return i18n.global.t('transationHistory.contract')
-  const bigTo = to.toUpperCase()
+  const bigTo = to ?to.toUpperCase() :''
   const bigFrom = from.toUpperCase()
   if(bigTo === bigFrom)return i18n.global.t('transationHistory.send')
   if(bigTo === bigFrom || myAddr === bigTo) return i18n.global.t('transactiondetails.recive')
@@ -270,7 +270,7 @@ export function transactionStatus(txData: any){
   }
 
   if(txType === 'contract') return 'Contract'
-  const bigTo = to.toUpperCase()
+  const bigTo = to ?to.toUpperCase() :''
   const bigFrom = from.toUpperCase()
   if(bigTo === bigFrom)return 'Send'
   if(bigTo === bigFrom || myAddr === bigTo) return 'Receive'
@@ -315,7 +315,7 @@ export function transactionStatus(txData: any){
     }
     if(!status)return val
     if(contractAddress) return val
-    const bigTo = to.toUpperCase()
+    const bigTo = to ?to.toUpperCase() :''
     const bigFrom = from.toUpperCase()
     if(bigTo === bigFrom) return '-' + val
     if((myAddr == bigTo && myAddr !== bigFrom)) return '+' + val

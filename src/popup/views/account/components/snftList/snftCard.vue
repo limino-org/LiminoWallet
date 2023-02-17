@@ -1,7 +1,8 @@
 <template>
   <div
-    :class="`new-nft-card pl-8 pr-8 ${data.total_hold == 256 ? 'blink' : ''}`"
+    :class="`new-nft-card pl-8 pr-8 ${data.MergeLevel === 2 ? 'shining' :''}`"
   >
+    <div class="new-nft-card-box ">
     <!-- 1.info -->
     <div class="coll-info">
       <div class="flex between">
@@ -19,8 +20,9 @@
       :class="`coll-list flex ${compData.total_hold && compData.MergeLevel == 2 ? 'active' : ''}`"
     >
       <div
-        class="coll-card hover"
+        :class="`coll-card hover ${getClass(item)}`"
         v-for="(item, idx) in compData.children"
+        :title="getTipText(item)"
         :key="item.key"
         @click.stop="handleClick(item, idx)"
       >
@@ -37,7 +39,7 @@
         <img
           loading="lazy"
           :src="`${metaDomain}${item.source_url}`"
-          :class="`${item.disabled ? 'gray' : ''} ${getDisabled(item)}`"
+          class="snft-img"
         />
       </div>
     </div>
@@ -47,6 +49,7 @@
         :value="data['total_hold']"
         :own="selectSnftsLen"
         :ratio="ratio"
+        :total="data['totalcount']"
       />
     </div>
     <!-- 4.money -->
@@ -71,6 +74,8 @@
         <span>(≈ ${{ toUsd(totalAmount, 2) }})</span>
       </div>
     </div>
+    </div>
+
   </div>
 </template>
 
@@ -131,7 +136,7 @@ export default defineComponent({
   },
   setup(props: any, context: SetupContext) {
     const { t } = useI18n();
-    console.log('props.data------', props.data)
+    console.log('props.data------', props.data,props.status)
     const compData = ref({ select: false, children: [] });
 
 
@@ -160,7 +165,7 @@ export default defineComponent({
         item.select = select ? true : false;
         item.address = item.nft_address.substr(0, 40);
         const { Chipcount, pledgestate, MergeLevel, Exchange } = item;
-        if (pledgestate == "Pledge" || MergeLevel !== 1 || !Chipcount || Exchange === 1) {
+        if (pledgestate == "Pledge" || !Chipcount || Exchange === 1) {
           item.disabled = true;
         } else {
           item.disabled = false;
@@ -291,6 +296,8 @@ export default defineComponent({
     const handleClick = (item: any, idx: number) => {
       console.log('item', item, props)
       if (!props.showIcon) {
+        sessionStorage.setItem("compData", JSON.stringify(compData.value));
+        router.push({name:'coll-detail',query: {...item}})
         return;
       }
       if(props.data.MergeLevel == 2) {
@@ -523,7 +530,33 @@ export default defineComponent({
       // }
       return getNumber.value
     })
+    const getClass = (item: any) => {
+      const { disabled, MergeLevel } = item
+      if(disabled) {
+        return 'gary'
+      }
+      if(!disabled && MergeLevel){
+        return 'shining'
+      }
+      return ''
+
+    }
+    const getTipText = (item: any) => {
+      const { disabled, MergeLevel, Exchange } = item
+      if(Exchange) {
+        return t('converSnft.converted')
+      }
+      if(disabled) {
+        return t('converSnft.notObtain')
+      }
+      if(!disabled && MergeLevel){
+        return t('converSnft.synthesized')
+      }
+      return t('converSnft.beSyned')
+    }
     return {
+      getTipText,
+      getClass,
       selectSnftsLen,
       getNumber,
       addressMask,
@@ -550,8 +583,58 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
+:root {
+  --card-height: 65vh;
+  --card-width: calc(var(--card-height) / 1.5);
+}
 .new-nft-card {
   border: 2px solid #fff;
+  position: relative;
+  min-height: 227px;
+  &.shining{
+    .new-nft-card-box {
+      padding: 8px;
+      position: absolute;
+      background: #f1f3f4;
+      left: 2px;
+      top: 2px;
+      right: 2px;
+      bottom: 2px;
+      z-index: 3;
+    }
+    // border: 2px solid #FBC332;
+    position: relative;
+
+    &::before{
+    content: "";
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    background-image: linear-gradient(var(--rotate) , #f8b305, #f8b305 15%, #f8b305);
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    // animation: spin 4s linear infinite;
+    }
+    &::after {
+  //     position: absolute;
+  // content: "";
+  // top: 10px;
+  // left: 0;
+  // right: 0;
+  // z-index: 1;
+  // height: 100%;
+  // width: 100%;
+  // margin: 0 auto;
+  // transform: scale(1);
+  // filter: blur(calc(50px / 6));
+  // background-image: linear-gradient(var(--rotate) , #fff, #f5f2ed 95%, #eeba37);
+  //   opacity: 1;
+  // transition: opacity .5s;
+  // animation: spin 7s ease-in-out infinite;
+}
+  }
   &.blink {
     border: 2px solid;
     border-image: linear-gradient(
@@ -584,8 +667,8 @@ export default defineComponent({
     flex-wrap: wrap;
     padding-top: 10px;
     padding-bottom: 3px;
-    margin-left: -8px;
-    margin-right: -8px;
+    margin-left: -6px;
+    margin-right: -6px;
     padding-left: 8px;
     padding-right: 8px;
     &.active {
@@ -604,7 +687,6 @@ export default defineComponent({
       height: 35px;
       border-radius: 5px;
       background: #d0cccc;
-      overflow: hidden;
       margin-right: 6.2px;
       margin-bottom: 6.5px;
       position: relative;
@@ -615,7 +697,7 @@ export default defineComponent({
         object-fit: contain;
         left: 6px;
         top: 7px;
-        z-index: 1;
+        z-index: 100;
       }
       .check-icon {
         color: #037cd6;
@@ -628,7 +710,7 @@ export default defineComponent({
         margin-top: -10px;
         //         width: 20px;
         // height: 20px;
-        z-index: 10;
+        z-index: 11;
         &::after {
           content: "";
           display: block;
@@ -653,6 +735,7 @@ export default defineComponent({
         width: 35px;
         height: 35px;
         font-size: 12px;
+        border-radius: 4px;
       }
     }
     .coll-card:nth-of-type(8n + 8) {
@@ -717,28 +800,89 @@ export default defineComponent({
     }
   }
 }
-@media screen and (max-width: 750px) {
-  // .coll-card:nth-of-type(8n + 8) {
-  //     margin-right: 6.4px !important;
-  //   }
+
+.coll-card{
+  &.gary {
+    position: relative;
+  .snft-img {
+    backdrop-filter: saturate(80%) blur(0);
+    filter: grayscale(100%);
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    background: rgba($color: #000, $alpha: .5);
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    border-radius: 4px;
+
+  }
+  }
+
+  &.shining{
+    position: relative;
+    &::before{
+    content: "";
+    width: 35px;
+    height: 35px;
+    border-radius: 4px;
+    background-image: linear-gradient(var(--rotate) , #fff, #f0ca6c 20%, #f8b305);
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    animation: spin 3s linear infinite;
+    }
+    &::after {
+      position: absolute;
+  content: "";
+  top: 10px;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
+  transform: scale(0.8);
+  filter: blur(calc(70px / 6));
+  background-image: linear-gradient(var(--rotate) , #fff, #f5f3f0 30%, #f8b305);
+    opacity: 1;
+  transition: opacity .5s;
+  animation: spin 3s linear infinite;
 }
-@media screen and (min-width: 750px) {
-  .nft-card.card {
-    width: 49%;
-    margin-right: 0 !important;
+    & .snft-img {
+      width: 29px !important;
+      height: 29px !important;
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      border-radius: 4px;
+      z-index: 10;
+    }
   }
-  .new-nft-card .coll-list .coll-card {
-    // width: 52px;
-    // height: 52px;
-  }
-  .new-nft-card .coll-list .coll-card:nth-of-type(8n + 8) {
-    margin-right: 6.4px !important;
-  }
-  .coll-list {
-    justify-content: space-between;
-  }
+
 }
 
+.coll-card.shining .snft-img  {
+
+}
+
+@property --rotate {
+  syntax: "<angle>";
+  initial-value: 200deg;
+  inherits: false;
+}
+
+@keyframes spin {
+0% {
+--rotate: 0deg;
+}
+100% {
+--rotate: 360deg;
+}
+}
 
 @keyframes Gradient {
     0% {
@@ -752,4 +896,36 @@ export default defineComponent({
     }
 
   }
+
+  @media screen and (max-width: 750px) {
+
+  .new-nft-card .coll-list .coll-card {
+    margin-right: 5px;
+  }
+  .new-nft-card {
+    min-height: 196px;
+  }
+  .new-nft-card.shining {
+    min-height: 240px;
+  }
+}
+@media screen and (min-width: 750px) {
+  .nft-card.card {
+    width: 49%;
+    margin-right: 0 !important;
+  }
+  .new-nft-card {
+    min-height: 170px;
+  }
+  .new-nft-card.shining {
+    min-height: 200px;
+  }
+
+  .new-nft-card .coll-list .coll-card:nth-of-type(8n + 8) {
+    margin-right: 6.4px !important;
+  }
+  .coll-list {
+    justify-content: space-between;
+  }
+}
 </style>

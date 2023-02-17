@@ -1,4 +1,7 @@
 
+const clone = (data) => {
+    return JSON.parse(JSON.stringify(data))
+}
 import {
     getLocalParams,
     closeTabs,
@@ -100,7 +103,22 @@ export const handleRpcResponse = {
             const { sender } = senderParams
             // Push when not connected
             await setSenderAccounts(sender, data.data)
-            const errMsg = { ...errorCode['200'], data: data }
+            const errMsg = { ...errorCode['200'], data: clone(data.data) }
+            const sendMsg = createMsg(errMsg, method)
+            await sendMessage(sendMsg, {}, sender)
+            closeTabs()
+        }
+    },
+    [handleType.eth_requestAccounts]: {
+        // Three states  close/open/pendding
+        status: 'close',
+        sendResponse: async (data) => {
+            const method = handleType.eth_requestAccounts
+            const senderParams = await getLocalParams(method)
+            const { sender } = senderParams
+            // Push when not connected
+            await setSenderAccounts(sender, data.data)
+            const errMsg = { ...errorCode['200'], data: clone(data.data) }
             const sendMsg = createMsg(errMsg, method)
             await sendMessage(sendMsg, {}, sender)
             closeTabs()
