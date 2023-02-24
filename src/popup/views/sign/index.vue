@@ -155,6 +155,11 @@ export default {
     margin-bottom: 5px;
   }
 }
+.sign-bg-icon {
+  i {
+    font-size: 30px;
+  }
+}
 .page-sign1 {
   padding-bottom: 100px;
   .back {

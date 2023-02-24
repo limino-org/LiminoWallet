@@ -58,7 +58,7 @@ function Provider() {
             if (code && code == 200) {
               resolve(res.data)
             } else {
-              console.error('Limino Err:', res)
+              console.error('Limino Err:', res.message + ' ' + res.method)
               reject(res)
             }
           } catch (errData) {

@@ -1,12 +1,6 @@
 <template>
   <van-sticky>
-    <NavHeader :hasRight="false">
-      <template v-slot:left>
-        <div class="flex center cancel" @click="clickLeft">
-          {{ t("wallet.back") }}
-        </div>
-      </template>
-    </NavHeader>
+    <NavHeader :hasRight="false" :hasLeft="false"></NavHeader>
   </van-sticky>
   <div class="send-page">
 
