@@ -53,7 +53,7 @@
         <div class="type pt-10 pb-10">{{ t('common.deployContract') }}</div>
         <div class="origin pt-10 pb-10">
           <div class="pl-10 pr-10 source flex center-v">
-            {{ t('common.source') }}<span class="flex center-v"
+            {{ t('common.source') }}<span class="flex center-v van-ellipsis"
               ><img :src="senderData.tab.favIconUrl" alt="" />{{
                 senderData.origin
               }}</span
@@ -218,6 +218,9 @@ export default {
       img {
         width: 13px;
         margin-right: 5px;
+      }
+      span {
+        width: 87%;
       }
     }
   }

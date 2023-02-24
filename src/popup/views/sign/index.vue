@@ -17,7 +17,7 @@
         <div class="type pt-10 pb-10">{{t('sign.sign')}}</div>
         <div class="origin pt-10 pb-10">
           <div class="pl-10 pr-10 source flex center-v">
-            {{ t('common.source') }}<span class="flex center-v"
+            {{ t('common.source') }}<span class="flex center-v van-ellipsis"
               ><img :src="senderData.tab.favIconUrl" alt="" />{{
                 senderData.origin
               }}</span
@@ -141,6 +141,9 @@ export default {
         width: 13px;
         margin-right: 5px;
       }
+      span {
+        width: 87%;
+      }
     }
   }
   .type {
@@ -165,7 +168,7 @@ export default {
   }
   .sign-bg {
     background: #f4faff;
-    height: 100px;
+    height: 130px;
     &-icon {
       font-size: 40px;
       color: #037cd6;

@@ -46,7 +46,7 @@ function Provider() {
   this.request = function (params) {
     var _this = this
     const { method } = params
-    if (method === 'wallet_requestPermissions' || method == 'eth_requestAccounts' && this._state.isConnected) {
+    if (((method === 'wallet_requestPermissions' || method == 'eth_requestAccounts') && this._state.isConnected || (!this._state.isConnected && (method !== 'wallet_requestPermissions' && method !== 'eth_requestAccounts')))) {
       return
     }
     return new Promise(function (resolve, reject) {
