@@ -123,7 +123,9 @@ export const handleRpcRequest = {
                 const sendMsg = createMsg(errMsg, method)
                 sendMessage({ ...sendMsg, sendId }, {}, sender)
             }).catch(err => {
-                sendMessage({ ...err, sendId }, {}, sender)
+                const errMsg = { ...errorCode['32000'], data: JSON.stringify(err) }
+                const sendMsg = createMsg(errMsg, method)
+                sendMessage({ ...sendMsg, sendId }, {}, sender)
             })
         } catch (err) {
             const errMsg = { ...errorCode['32000'], data: JSON.stringify(err) }

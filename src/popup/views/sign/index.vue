@@ -194,6 +194,7 @@ export default {
     margin: 0 20px;
     padding: 10px;
     max-height: 280px;
+    min-height: 220px;
     border-radius: 4px;
     overflow-y: scroll;
     background: #f3f4f5;

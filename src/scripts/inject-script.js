@@ -46,8 +46,9 @@ function Provider() {
   this.request = function (params) {
     var _this = this
     const { method } = params
-    if (((method === 'wallet_requestPermissions' || method == 'eth_requestAccounts') && this._state.isConnected || (!this._state.isConnected && (method !== 'wallet_requestPermissions' && method !== 'eth_requestAccounts')))) {
-      return
+    // (!this._state.isConnected && (method !== 'wallet_requestPermissions' && method !== 'eth_requestAccounts'))
+    if (((method === 'wallet_requestPermissions' || method == 'eth_requestAccounts') && this._state.isConnected)) {
+      return Promise.reject('Request denied.')
     }
     return new Promise(function (resolve, reject) {
       _this.postMsg({ ...params }, (res) => {
@@ -58,7 +59,7 @@ function Provider() {
             if (code && code == 200) {
               resolve(res.data)
             } else {
-              console.error('Limino Err:', res.message + ' ' + res.method)
+              console.error('Limino Err:', res.reason ? res.reason : '' + ' ' + res.method)
               reject(res)
             }
           } catch (errData) {
