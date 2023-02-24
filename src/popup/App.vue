@@ -58,7 +58,6 @@ export default {
     const currentNetwork = computed(() => state.account.currentNetwork);
     provide("appProvide", appProvide());
     onMounted(()=>{
-     dispatch('account/waitTxQueueResponse')
      // update browser session window id
      dispatch('system/setConversationid', guid())
      // Listen to the broadcast of the same source window
@@ -80,7 +79,7 @@ export default {
           document.getElementById('loading-page-box').style.display = 'none'
           document.getElementById('app').style.display = 'block'
           clearTimeout(time)
-        },600)
+        },200)
         
       }
 

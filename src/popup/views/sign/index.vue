@@ -13,6 +13,18 @@
           <div class="text-center sign-bg-tit1">{{t('sign.confirmsignaturedata')}}</div>
         </div>
       </div>
+      <div class="contract-info pb-20 pt-10 pl-20 pr-20">
+        <div class="type pt-10 pb-10">{{t('sign.sign')}}</div>
+        <div class="origin pt-10 pb-10">
+          <div class="pl-10 pr-10 source flex center-v">
+            {{ t('common.source') }}<span class="flex center-v"
+              ><img :src="senderData.tab.favIconUrl" alt="" />{{
+                senderData.origin
+              }}</span
+            >
+          </div>
+        </div>
+      </div>
       <div class="sign-info">
         <div class="title">{{t('sign.walletaddress')}}</div>
         <div class="value">{{ accountInfo.address }}</div>
@@ -59,7 +71,8 @@ export default {
     const accountInfo = computed(() => store.state.account.accountInfo)
     const router = useRouter()
     const { query } = useRoute()
-    const { signType, sig } = query
+    const { signType, sig, sendId, sender }: any = query
+    const senderData = JSON.parse(sender);
     const back = () => {
       router.replace({ name: 'wallet' })
     }
@@ -87,13 +100,13 @@ export default {
         sig: sig,
         isAdmin: false,
         call: (str: string) => {
-          sendBackground({method:signType,response:{code:'200',data: str}})
+          sendBackground({method:signType,response:{code:'200',data: str, sendId}})
         }
       })
     }
 
     const cancel = () => {
-      sendBackground({method:handleType.handleReject,response:{method:signType}})
+      sendBackground({method:handleType.handleReject,response:{method:signType, sendId}})
 
     }
     onMounted(() => {
@@ -112,6 +125,7 @@ export default {
       signSelect,
       router,
       accountInfo,
+      senderData,
       goOn,
       sig
     }
@@ -119,23 +133,39 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.contract-info {
+  .origin {
+    background: #f3f4f5;
+    .source {
+      img {
+        width: 13px;
+        margin-right: 5px;
+      }
+    }
+  }
+  .type {
+    width: auto;
+    display: inline-block;
+    border: 1px solid #ccc;
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 5px;
+  }
+}
 .page-sign1 {
   padding-bottom: 100px;
   .back {
     font-size: 18px;
   }
   .btn-box {
-    position: fixed;
-    bottom: 50px;
-    left: 0;
-    right: 0;
+    margin-top: 30px;
     .van-button {
       width: 160px;
     }
   }
   .sign-bg {
     background: #f4faff;
-    height: 135px;
+    height: 100px;
     &-icon {
       font-size: 40px;
       color: #037cd6;
@@ -153,12 +183,12 @@ export default {
     }
   }
   .sign-info {
-    margin: 25px 27px;
-    padding: 15px;
-    max-height: 327px;
+    margin: 0 20px;
+    padding: 10px;
+    max-height: 280px;
     border-radius: 4px;
     overflow-y: scroll;
-    border: 1PX solid #e4e7e8;
+    background: #f3f4f5;
     div {
       word-break: break-all;
       font-size: 14px;

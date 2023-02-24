@@ -72,7 +72,7 @@ export default {
     // const checkArr = [accountInfo.value.address,...accounts]
     const checkedList = ref([])
 
-    const { sender, method } = route.query
+    const { sender, method, sendId } = route.query
     console.warn('sender',sender)
     const senderData = ref(JSON.parse(decodeURIComponent(sender.toString())))
     const selectLen = computed(() => {
@@ -94,10 +94,10 @@ export default {
     const next = () => {
       console.warn('checkedList.value', checkedList.value)
       loading.value = true
-      sendBackground({method,response: {code:'200',data:[accountInfo.value.address]}})
+      sendBackground({method,response: {code:'200',data:[...checkedList.value],sendId}})
     }
     const cancel = () => {
-      sendBackground({method:handleType.handleReject,response:{method}})
+      sendBackground({method:handleType.handleReject,response:{method,sendId}})
     }
     return {
       loading,

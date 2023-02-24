@@ -47,11 +47,11 @@ export const handleRpcResponse = {
     },
     [handleType.handleReject]: {
         sendResponse: async (data, sendResponse, sender) => {
-            const { method, tab } = data
+            const { method, sendId } = data
             const senderParams = await getLocalParams(method)
             const errMsg = { ...errorCode['4001'], data: null }
             const sendMsg = createMsg(errMsg, method)
-            await sendMessage(sendMsg, {}, senderParams.sender)
+            await sendMessage({...sendMsg, sendId}, {}, senderParams.sender)
             const bgMsg = { ...errorCode['200'], data: null }
             const sendBgMsg = createBgMsg(bgMsg, method)
             await chrome.runtime.sendMessage(sender.id, sendBgMsg);
@@ -113,6 +113,7 @@ export const handleRpcResponse = {
         // Three states  close/open/pendding
         status: 'close',
         sendResponse: async (data) => {
+            const { sendId } = data
             const method = handleType.eth_requestAccounts
             const senderParams = await getLocalParams(method)
             const { sender } = senderParams
@@ -120,7 +121,7 @@ export const handleRpcResponse = {
             await setSenderAccounts(sender, data.data)
             const errMsg = { ...errorCode['200'], data: clone(data.data) }
             const sendMsg = createMsg(errMsg, method)
-            await sendMessage(sendMsg, {}, sender)
+            await sendMessage({ ...sendMsg, sendId }, {}, sender)
             closeTabs()
         }
     },
@@ -130,14 +131,15 @@ export const handleRpcResponse = {
         status: 'close',
         // Signature callback function - sent to Content-script
         sendResponse: async (data, sendResponse, sender) => {
-            const errMsg = data
+            const { sendId } = data
             const method = handleType.personal_sign
+            const errMsg = { ...errorCode['200'], data: clone(data.data) }
             const senderParams = await getLocalParams(method)
             const sendMsg = createMsg(errMsg, method)
-            await sendMessage(sendMsg, {}, senderParams.sender)
+            await sendMessage({ ...sendMsg, sendId }, {}, senderParams.sender)
             const bgMsg = { ...errorCode['200'], data: null }
             const sendGgMsg = createBgMsg(bgMsg, method)
-            await sendMessage(sendGgMsg, {}, sender)
+            await sendMessage({ ...sendGgMsg, sendId }, {}, sender)
             closeTabs()
         },
     },
@@ -146,12 +148,12 @@ export const handleRpcResponse = {
         status: 'close',
         // Signature callback function - sent to Content-script
         sendResponse: async (v) => {
-            const { response } = v;
-            const errMsg = { ...errorCode['200'], data: response }
+            const { sendId } = v;
+            const errMsg = { ...errorCode['200'], data: clone(data.data) }
             const method = handleType.eth_sign
             const sendMsg = createMsg(errMsg, handleType.eth_sign)
             const senderParams = await getLocalParams(method)
-            await sendMessage(sendMsg, {}, senderParams.sender)
+            await sendMessage({ ...sendMsg, sendId }, {}, senderParams.sender)
             closeTabs()
         },
     },
@@ -161,97 +163,69 @@ export const handleRpcResponse = {
         status: 'close',
         // Signature callback function - sent to Content-script
         sendResponse: async (v) => {
-            const { response } = v;
-            const errMsg = { ...errorCode['200'], data: response }
+            const { sendId } = v;
+            const errMsg = { ...errorCode['200'], data: clone(data.data) }
             const method = handleType.multiple_sign
             const sendMsg = createMsg(errMsg, handleType.multiple_sign)
             const senderParams = await getLocalParams(method)
-            await sendMessage(sendMsg, {}, senderParams.sender)
+            await sendMessage({ ...sendMsg, sendId }, {}, senderParams.sender)
             closeTabs()
         },
     },
 
-    // Get block height
-    [handleType.eth_blockNumber]: {
-        status: 'close',
-        // Get block height send data instance
-        sendResponse: async (v) => {
-            try {
-                const wallet = await getWallet()
-                const response = await wallet.provider.getBlockNumber()
-                const errMsg = { ...errorCode['200'], data: response }
-                const method = handleType.eth_getBlockNumber
-                const sendMsg = createMsg(errMsg, method)
-                const senderParams = await getLocalParams(method)
-                sendMessage(sendMsg, {}, senderParams.sender)
-            } catch (err) {
-                console.error('eth_blockNumber', err)
-            }
-        },
-    },
-    // Access to the network
-    [handleType.eth_getNetWork]: {
-        status: 'close',
 
-        // 获取网络id发送数据实例
-        sendResponse: async (v) => {
-            const { response } = v
-            const errMsg = { ...errorCode['200'], data: response }
-            const method = handleType.eth_getNetWork
-            const sendMsg = createMsg(errMsg, handleType.eth_getNetWork)
-            const senderParams = await getLocalParams(method)
-            sendMessage(sendMsg, {}, senderParams.sender)
-        },
-    },
 
     // switching network
     [eventsEmitter.chainChanged]: {
         sendResponse: async (v) => {
-            console.log('changeNetWork', v)
+
             const wallet = await getWallet()
-            const { response } = v;
-            const errMsg = { ...errorCode['200'], data: response }
+            const { data } = v;
+            const errMsg = { ...errorCode['200'], data }
             const method = eventsEmitter.chainChanged
             const sendMsg = createMsg(errMsg, eventsEmitter.chainChanged)
             const connectList = await getConnectList()
             sendMsg.data.connectList = connectList
             sendMsg.data.address = wallet.address
             const senderParams = await getLocalParams(method)
-            sendMessage(sendMsg, {}, senderParams.sender)
-
+            sendMessage(sendMsg, {}, null)
         },
     },
     // Switch account
     [eventsEmitter.accountsChanged]: {
         sendResponse: async (v) => {
-            console.log('accountsChanged', v)
             const wallet = await getWallet()
-            const { response } = v;
-            const errMsg = { ...errorCode['200'], data: response }
+            const { data } = v;
+            const errMsg = { ...errorCode['200'], data }
             const method = eventsEmitter.accountsChanged
             const sendMsg = createMsg(errMsg, method)
             const connectList = await getConnectList()
             sendMsg.data.connectList = connectList
             sendMsg.data.address = wallet.address
-            const senderParams = await getLocalParams(method)
-            sendMessage(sendMsg, {}, senderParams.sender)
-
+            sendMessage(sendMsg, {}, null)
         },
+    },
+    // Message
+    [eventsEmitter.message]: {
+        sendResponse: async (v) => {
+            console.log('message', v)
+
+        }
     },
     // trade
     [handleType.eth_sendTransaction]: {
         // Three states  close/open/pendding
         status: 'close',
         sendResponse: async (v, sendResponse, sender) => {
-            const { data } = v;
+            const { data, sendId } = v;
             const errMsg = { ...errorCode['200'], data: data.hash }
             const method = handleType.eth_sendTransaction
             const senderParams = await getLocalParams(method)
             const sendMsg = createMsg(errMsg, method)
-            await sendMessage(sendMsg, {}, senderParams.sender)
+            await sendMessage({ ...sendMsg, sendId }, {}, senderParams.sender)
             const bgMsg = { ...errorCode['200'], data: null }
             const sendGgMsg = createBgMsg(bgMsg, method)
-            await sendMessage(sendGgMsg, {}, sender)
+            await sendMessage({ ...sendGgMsg, sendId }, {}, sender)
             closeTabs()
 
         },

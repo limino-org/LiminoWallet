@@ -111,15 +111,6 @@ export const globalHomePath = `chrome-extension://${chrome.runtime.id}/home.html
 
 
 
-// Connect to site query sender connected account
-export async function getSenderAccounts(sender) {
-  const connectList = await getConnectList()
-  const se = connectList.find(item => item.origin == sender.origin)
-  if (!se) {
-    return []
-  }
-  return se.accountList || []
-}
 
 export async function setSenderAccounts(sender, accountList = []) {
   const connectList = await getConnectList()
@@ -137,8 +128,6 @@ export async function setSenderAccounts(sender, accountList = []) {
 export async function isConnected(sender) {
   const connectList = await getConnectList()
   const bool = connectList.find(item => item.origin == sender.origin)
-  console.warn('connectList', connectList,sender)
-
   if (!bool) {
     return false
   }
@@ -155,13 +144,29 @@ export async function isConnected(sender) {
   }
   return true
 }
-
+export function guid() {
+  function S4() {
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+  }
+  return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+}
 
 //  get connectList
 export async function getConnectList() {
   const list = await chrome.storage.local.get(['connectList'])
   return list && list.connectList ? list.connectList : []
 }
+
+// Connect to site query sender connected account
+export async function getSenderAccounts(sender) {
+  const connectList = await getConnectList()
+  const se = connectList.find(item => item.origin == sender.origin)
+  if (!se) {
+    return []
+  }
+  return se.accountList || []
+}
+
 
 // clear connectList
 export function clearConnectList() {
@@ -206,15 +211,20 @@ export async function initWallet() {
     const { keyStore } = accountInfo;
     const { URL } = currentNetwork
     const params = { json: keyStore, password: pwdVal };
-    if(!newwallet || !newwallet.provider) {
+    if(!newwallet) {
       const wallet = await createWalletByJson(params);
+      let provider = ethers.getDefaultProvider(URL);
+      newwallet = wallet.connect(provider);
+      return newwallet
+    }
+    if(!newwallet.provider) {
       let provider = ethers.getDefaultProvider(URL);
       newwallet = wallet.connect(provider);
       return newwallet
     }
     if(newwallet.provider &&(newwallet.provider.connection.url != URL)) {
       let provider = ethers.getDefaultProvider(URL);
-      newwallet = newwallet.connect(provider);
+      newwallet.connect(provider);
       return newwallet
     }
     return newwallet
@@ -318,7 +328,10 @@ export const wallet_methods = [
   handleType.handleReject,
   handleType.personal_sign,
   handleType.multiple_sign,
-  handleType.eth_accounts
+  handleType.eth_accounts,
+  eventsEmitter.message,
+  eventsEmitter.accountsChanged,
+  eventsEmitter.chainChanged
 ]
 
 export async function getLocalParams(method) {
@@ -366,7 +379,7 @@ export function sendMessage(msg = {}, opt = {}, sender) {
               const originList = connectList.map(item => item.origin)
               const hostName = getHostName(tab.url)
               if (originList.includes(hostName)) {
-                chrome.tabs.sendMessage(tab.id, { ...msg, hostName });
+                chrome.tabs.sendMessage(tab.id, { ...msg, origin: hostName });
                 resolve()
               }
             }
@@ -405,7 +418,6 @@ export function closeTabs() {
       {
       }, async (tabs) => {
         for await (const win of tabs) {
-          console.warn('win',win)
           if (win.url && (win.url.includes(globalPath) || win.url.includes(globalHomePath))) {
             await chrome.tabs.remove(win.id)
           }
@@ -467,9 +479,7 @@ export async function openTabPopup(
 ) {
   await closeTabs()
   return new Promise(resolve => {
-    console.log('=============open tab url')
     chrome.tabs.create({ url: url }, async(e) => {
-      console.log('ee',e)
       await chrome.storage.local.set({
         [method]: {
           sender,

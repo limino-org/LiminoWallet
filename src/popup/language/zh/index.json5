@@ -1259,6 +1259,8 @@
 		converTip:"提示: S-NFT交换成功后，将从钱包中消失。您可以在钱包的交易历史记录或浏览器中查看交易记录。",
 		viewInExchange:"交易所",
         viewInBrowser:"区块浏览器",
+		deployContract:"合约部署",
+		source:"来源："
 
 	},
 	categoryform: {

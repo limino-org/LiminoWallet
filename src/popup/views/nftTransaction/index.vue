@@ -8,9 +8,11 @@
       </template>
     </NavHeader>
   </van-sticky>
-  <!-- Account selection area -->
-  <div class="page-container">
-    <div class="userinfo">
+  <div class="send-page">
+
+   <div class="page-container">
+     <!-- Account selection area -->
+     <div class="userinfo">
       <!-- sender -->
       <div class="from">
         <div class="userfrom">{{ t("sendto.from") }}:</div>
@@ -31,7 +33,7 @@
         </div>
       </div>
       <!-- recipient -->
-      <div class="to from">
+      <div class="to from" v-if="txJSON.type != '0x2'">
         <div class="sendto text-center">{{ t("sendto.to") }} :</div>
         <div class="information van-hairline--surround">
           <div class="flex">
@@ -47,24 +49,41 @@
           </div>
         </div>
       </div>
+      <div class="contract-info pb-20 pt-10 pl-20 pr-20" v-if="txJSON.type == '0x2'">
+        <div class="type pt-10 pb-10">{{ t('common.deployContract') }}</div>
+        <div class="origin pt-10 pb-10">
+          <div class="pl-10 pr-10 source flex center-v">
+            {{ t('common.source') }}<span class="flex center-v"
+              ><img :src="senderData.tab.favIconUrl" alt="" />{{
+                senderData.origin
+              }}</span
+            >
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div class="p-20">
-    <div class="tx-json van-hairline--surround">{{txJSON}}</div>
-  </div>
-
-  <!-- Click to go to the next step-->
-  <div class="btn-groups">
-     <div class="container pl-26 pr-26 flex evenly">
-      <van-button  @click="calcel" class="mr-10" plain block>{{
-        t("common.cancel")
-      }}</van-button>
-      <van-button type="primary" @click="gonext" :loading="nextLoading" block>{{
-        t("sendto.next")
-      }}</van-button>
-     </div>
+    <div class="m-20 json-box">
+      <div class="tx-json">{{ txJSON }}</div>
     </div>
+
+    <!-- Click to go to the next step-->
+    <div class="btn-boxs">
+      <div class="container pl-26 pr-26 flex evenly">
+        <van-button @click="calcel" class="mr-10" plain block>{{
+          t("common.cancel")
+        }}</van-button>
+        <van-button
+          type="primary"
+          @click="gonext"
+          :loading="nextLoading"
+          block
+          >{{ t("sendto.next") }}</van-button
+        >
+      </div>
+    </div>
+   </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -89,9 +108,9 @@ import { ethers, utils } from "ethers";
 import { web3 } from "@/popup/utils/web3";
 import { getWallet } from "@/popup/store/modules/account";
 import { useI18n } from "vue-i18n";
-import { getRandomIcon } from '@/popup/utils/index'
-import { handleType } from '@/scripts/eventType';
-import { sendBackground } from '@/popup/utils/sendBackground';
+import { getRandomIcon } from "@/popup/utils/index";
+import { handleType } from "@/scripts/eventType";
+import { sendBackground } from "@/popup/utils/sendBackground";
 
 export default {
   name: "pageSendComfirm",
@@ -115,36 +134,39 @@ export default {
     const currentNetwork = computed(() => store.state.account.currentNetwork);
     const route = useRoute();
     const { query } = route;
-    const { tx }: any = query;
-    const newtx = JSON.parse(tx)
-    const txJSON = ref(newtx)
-        console.warn('tx----------------',newtx)
+    const { tx, sendId, sender }: any = query;
+    const newtx = JSON.parse(tx);
+    const senderData = JSON.parse(sender);
+    console.log("senderData", senderData);
+    const txJSON = ref(newtx);
+    console.warn("tx----------------", txJSON.value);
 
     const clickRight = () => {
       router.replace({ name: "wallet" });
     };
     const clickLeft = () => {
-      router.replace({name:"wallet"})
+      router.replace({ name: "wallet" });
     };
-    const toAccount: any = reactive({ data: {
-      icon: getRandomIcon()
-    } });
+    const toAccount: any = reactive({
+      data: {
+        icon: getRandomIcon(),
+      },
+    });
     const toAddress: Ref<string> = ref(newtx?.to?.toString());
     // Initiate transaction
     const gonext = async () => {
       nextLoading.value = true;
-      let receipt= null
+      let receipt = null;
       try {
-        const { type, data: bytecode, maxFeePerGas, maxPriorityFeePerGas, gas } = newtx
-
-        // if(type == '0x2') {
-        //   receipt = await dispatch("account/transaction", {...newtx,maxFeePerGas:53899999999,maxPriorityFeePerGas:11, checkTxQueue: false});
-        // } else {
-        //   receipt = await dispatch("account/transaction", {...newtx, checkTxQueue: false});
-        // }
-        receipt = await dispatch("account/transaction", {...newtx, checkTxQueue: false});
-        console.warn('receipt', receipt)
-          sendBackground({method:handleType.eth_sendTransaction,response:{code:"200",data: receipt}})
+        receipt = await dispatch("account/transaction", {
+          ...newtx,
+          checkTxQueue: false,
+        });
+        console.warn("receipt", receipt);
+        sendBackground({
+          method: handleType.eth_sendTransaction,
+          response: { code: "200", data: receipt, sendId },
+        });
       } catch (err: any) {
         Toast(err.reason);
       } finally {
@@ -153,14 +175,18 @@ export default {
     };
     const nextLoading: Ref<boolean> = ref(false);
     const calcel = () => {
-      sendBackground({method:handleType.handleReject,response:{method:handleType.eth_sendTransaction}})
-    }
+      sendBackground({
+        method: handleType.handleReject,
+        response: { method: handleType.eth_sendTransaction, sendId },
+      });
+    };
     return {
       t,
       calcel,
       clickRight,
       clickLeft,
       txJSON,
+      senderData,
       gonext,
       accountInfo,
       toAddress,
@@ -175,11 +201,40 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .tx-json {
-    padding: 10px;
-    border-radius: 4px;
-    word-break: break-all;
+.send-page {
+  padding-top: 20px;
+}
+.json-box {
+  max-height: 300px;
+  overflow-y: scroll;
+}
+.tx-json{
+  background: #f3f4f5;
+}
+.contract-info {
+  .origin {
+    background: #f3f4f5;
+    .source {
+      img {
+        width: 13px;
+        margin-right: 5px;
+      }
+    }
   }
+  .type {
+    width: auto;
+    display: inline-block;
+    border: 1px solid #ccc;
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 5px;
+  }
+}
+.tx-json {
+  padding: 10px;
+  border-radius: 4px;
+  word-break: break-all;
+}
 .cancel {
   font-size: 11px;
   color: #037cd6;
@@ -189,7 +244,6 @@ export default {
 }
 .userinfo {
   width: 100%;
-  height: 127px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -271,7 +325,7 @@ export default {
     width: 286px;
     height: 46px;
     border-radius: 10px;
-    border: 1PX solid rgba(209, 212, 215, 1);
+    border: 1px solid rgba(209, 212, 215, 1);
   }
 }
 .transfer {
@@ -290,7 +344,7 @@ export default {
   .text {
     width: 100%;
     background-color: rgba(241, 243, 244, 1);
-    border: 1PX solid rgba(216, 216, 216, 1);
+    border: 1px solid rgba(216, 216, 216, 1);
     height: 28px;
     line-height: 28px;
     font-size: 10px;
@@ -323,7 +377,7 @@ export default {
   .text {
     width: 100%;
     background-color: rgba(241, 243, 244, 1);
-    border: 1PX solid rgba(216, 216, 216, 1);
+    border: 1px solid rgba(216, 216, 216, 1);
     height: 28px;
     line-height: 28px;
     font-size: 10px;

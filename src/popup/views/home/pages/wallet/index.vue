@@ -533,6 +533,7 @@ export default {
       dispatch("transfer/clearTx");
       handleLoopBalance();
       dispatch("account/updateBalance");
+      dispatch('account/waitTxQueueResponse')
     });
 
     onActivated(() => {

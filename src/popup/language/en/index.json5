@@ -1250,6 +1250,8 @@
 		converTip:"Tips: After the S-NFT exchange is successful, it will disappear from the wallet. You can view the exchange record in the wallet's transaction history or browser.",
 		viewInExchange:"Exchange",
     	viewInBrowser:"Block browser",
+		deployContract:"Contract deployment",
+		source:"Origin: "
 
 	},
 	categoryform: {

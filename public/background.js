@@ -29,26 +29,21 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
   if (!target) {
     return false
   }
-  if(data.method && data.method === 'eth_requestAccounts') {
-    console.warn('eth_requestAccounts', data, sender, target)
-  }
+
+  const { method, params: newParams, sendId } = data
   if (target != 'wormholes-inpage' && target != 'wormholes-popup' && (!data || !data.method)) {
-    console.error('111', data,target)
     const errMsg = errorCode['4100']
-    sendMessage(createMsg(errMsg, data.method || 'unknow'), {}, sender)
+    sendMessage({...createMsg(errMsg, data.method || 'unknow'), sendId}, {}, sender)
     return false
   }
 
-  const { method, params: newParams } = data
   // Check whether target is a Content-script injected wormholes-inpage
   // Authentication to check whether the connection is established
   const isConnect = await isConnected(sender)
   //  When not connected
-  if ((target == 'wormholes-inpage' && !isConnect) && (method != handleType.wallet_requestPermissions && method != handleType.eth_requestAccounts)) {
-
-    console.error('222', data, target)
+  if ((target == 'wormholes-inpage' && !isConnect) && (method != handleType.wallet_requestPermissions && method != handleType.eth_requestAccounts && method !== 'message')) {
     const errMsg = errorCode['4100']
-    sendMessage(createMsg(errMsg, method || 'unknow'), {}, sender)
+    sendMessage({...createMsg(errMsg, method || 'unknow'), sendId}, {}, sender)
     return false
   }
   // If no, return the account address if yes
@@ -56,7 +51,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     const response = await getSenderAccounts(sender)
     const errMsg = { ...errorCode['200'], data: response }
     const sendMsg = createMsg(errMsg, method)
-    sendMessage(sendMsg, {}, sender)
+    sendMessage({...sendMsg, sendId}, {}, sender)
     return false
   }
 
@@ -69,20 +64,19 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     if (wallet_methods.includes(method)) {
       // Return error messages are not supported
       if(handleRpcRequest[method]) {
-        handleRpcRequest[method](newParams, sendResponse, sender)
+        handleRpcRequest[method]({ newParams, sendId }, sendResponse, sender)
         return true
       } else {
         const errMsg = errorCode['4200']
-        sendMessage(createMsg(errMsg, method || 'unknow'), {}, sender)
+        sendMessage({...createMsg(errMsg, method || 'unknow'), sendId}, {}, sender)
         return false
       }
     } else {
       // RPC calls
-     handleRpcRequest.handleRpc(method, newParams, sendResponse, sender)
+     handleRpcRequest.handleRpc(method, { newParams, sendId}, sendResponse, sender)
     }
     return true;
   }
-
 
   // form popup message
   if (target == 'wormholes-popup') {
@@ -99,6 +93,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     handleRpcResponse[method].sendResponse(response || {}, sendResponse, sender)
     return true
   }
+
 });
 
 
