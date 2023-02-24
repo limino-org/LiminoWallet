@@ -36,6 +36,7 @@
           <van-field
             v-model="password"
             name="password"
+            :autofocus="autofocus"
             :class="`text ${pwdErr ? 'error' : ''}`"
             :type="`${switchPassType ? 'text' : 'password'}`"
             @click-right-icon="switchPassType = !switchPassType"
@@ -140,6 +141,7 @@ export default {
     const { dispatch, commit, state } = useStore();
     const router = useRouter();
     const route = useRoute();
+    const autofocus = ref(false)
     const accountInfo = state.account.accountInfo;
     const { keyStore } = accountInfo;
     const onSubmit = async (value: object) => {
@@ -246,6 +248,7 @@ export default {
 
     onMounted(async () => {
       checkConfirmPwd();
+      autofocus.value = true
     });
 
     const reset_flag = ref(true);
@@ -255,6 +258,7 @@ export default {
       handleComfirm,
       asynPwd,
       cancel,
+      autofocus,
       reset_flag,
       loading,
       password,

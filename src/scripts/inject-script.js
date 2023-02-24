@@ -44,7 +44,6 @@ function Provider() {
   }
   // issue a request
   this.request = function (params) {
-    console.log('request', params)
     var _this = this
     const { method } = params
     if (method === 'wallet_requestPermissions' || method == 'eth_requestAccounts' && this._state.isConnected) {
