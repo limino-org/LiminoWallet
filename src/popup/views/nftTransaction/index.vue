@@ -204,6 +204,7 @@ export default {
 }
 .tx-json{
   background: #f3f4f5;
+  min-height: 260px;
 }
 .contract-info {
   .origin {
