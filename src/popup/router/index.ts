@@ -25,7 +25,6 @@ import store from "@/popup/store";
 import connect from '@/popup/views/connect/route'
 
 
-const isProduct = process.env.NODE_ENV == "production";
 const routes: Array<RouteRecordRaw> = [
   // Transactions
   {

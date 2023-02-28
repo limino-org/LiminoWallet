@@ -32,8 +32,14 @@
         >
           <div class="flex account-card">
             <div class="flex center select-box">
-              <i :class="`iconfont ${item.address.toUpperCase() == accountInfo.address.toUpperCase()
- ? 'icon-danxuan' : 'icon-danxuan1'} `"></i>
+              <i
+                :class="`iconfont ${
+                  item.address.toUpperCase() ==
+                  accountInfo.address.toUpperCase()
+                    ? 'icon-danxuan'
+                    : 'icon-danxuan1'
+                } `"
+              ></i>
             </div>
             <div class="account-icon flex center">
               <div class="account-icon-box">
@@ -46,6 +52,28 @@
                   {{ item.name }}
                   <div class="pl-4 pr-4" @click.stop="openModifModal(item)">
                     <i class="iconfont icon-bianji"></i>
+                  </div>
+                  <div class="flex"  v-if="popupType === 'Popup'">
+                    <div
+                    :class="`connectStatus pl-6 pr-6 ${
+                      handleHasConnect(item.address) ? 'active' : 'disConnect'
+                    } flex center`"
+                    :title="
+                      handleHasConnect(item.address)
+                        ? t('common.isConnect')
+                        : t('common.ununited')
+                    "
+                  ></div>
+                  <div
+                    class="connectTo"
+                    @click.stop="handleConnectTo(item.address)"
+                  >
+                    {{
+                      !handleHasConnect(item.address)
+                        ? t("common.connectTo")
+                        : t("common.disconnect")
+                    }}
+                  </div>
                   </div>
                 </div>
                 <div class="account-value" v-show="amountType != 'mask'">
@@ -77,8 +105,14 @@
         >
           <div class="flex account-card">
             <div class="flex center select-box">
-              <i :class="`iconfont ${item.address.toUpperCase() == accountInfo.address.toUpperCase()
- ? 'icon-danxuan' : 'icon-danxuan1'} `"></i>
+              <i
+                :class="`iconfont ${
+                  item.address.toUpperCase() ==
+                  accountInfo.address.toUpperCase()
+                    ? 'icon-danxuan'
+                    : 'icon-danxuan1'
+                } `"
+              ></i>
             </div>
             <div class="account-icon flex center">
               <div class="account-icon-box">
@@ -91,6 +125,28 @@
                   {{ item.name }}
                   <div class="pl-4 pr-4" @click.stop="openModifModal(item)">
                     <i class="iconfont icon-bianji"></i>
+                  </div>
+                  <div class="flex" v-if="popupType === 'Popup'">
+                    <div
+                    :class="`connectStatus pl-6 pr-6 ${
+                      handleHasConnect(item.address) ? 'active' : 'disConnect'
+                    } flex center`"
+                    :title="
+                      handleHasConnect(item.address)
+                        ? t('common.isConnect')
+                        : t('common.ununited')
+                    "
+                  ></div>
+                  <div
+                    class="connectTo"
+                    @click.stop="handleConnectTo(item.address)"
+                  >
+                    {{
+                      !handleHasConnect(item.address)
+                        ? t("common.connectTo")
+                        : t("common.disconnect")
+                    }}
+                  </div>
                   </div>
                 </div>
                 <div class="account-value" v-show="amountType != 'mask'">
@@ -133,8 +189,41 @@
   </van-dialog>
   <!-- Modify the account name popup -->
   <ModifNameModal v-model="showModifName" :data="modifData" />
+
+  <CommonModal v-model="showConnectModal" :title="connectModalTit">
+    <div>
+      <div class="source-tit text-left mt-20 mb-14 pl-20 pr-20">{{ t('common.source') }}</div>
+      <div class="flex center ml-20 mr-20">
+        <div class="sender flex center-v  f-14 pl-10 pr-10">
+          <div class="icon flex center mr-10">
+            <img :src="activeTab.favIconUrl" alt="" />
+          </div>
+          <div class="origin van-ellipsis text-bold text-left">
+            {{ activeTab.origin }}
+          </div>
+        </div>
+      </div>
+      <div class="text-left connectTip lh-20 pl-20 pr-20">{{ connectTip }}</div>
+      <div class="source-tit text-left mt-10 mb-14 pl-20 pr-20">{{ t('minerspledge.address') }}:</div>
+      <div class="connectAddr text-left pl-20 pr-20">
+        {{ connectAddr }}
+      </div>
+      <div class="flex between p-30 connect-btns">
+        <van-button @click="showConnectModal = false">{{
+          t("common.cancel")
+        }}</van-button>
+        <van-button
+          type="primary"
+          @click="handleConnectFun"
+          :loading="connectLoading"
+          >{{ connectModalTit }}</van-button
+        >
+      </div>
+    </div>
+  </CommonModal>
 </template>
 <script lang="ts">
+// @ts-nocheck
 import {
   defineComponent,
   Ref,
@@ -144,6 +233,8 @@ import {
   computed,
   reactive,
   nextTick,
+  onMounted,
+  onActivated,
 } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToggleAccount } from "@/popup/components/accountModal/hooks/toggleAccount";
@@ -154,6 +245,10 @@ import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
 import ModifNameModal from "@/popup/components/modifNameModal/index.vue";
 import { AccountInfo } from "@/popup/store/modules/account";
+import CommonModal from "@/popup/components/commonModal";
+import { sendBackground } from "@/popup/utils/sendBackground";
+import { show } from "../navHeader/hooks/slider";
+import { useToast } from "@/popup/plugins/toast";
 export default defineComponent({
   name: "accountModal",
   components: {
@@ -163,6 +258,7 @@ export default defineComponent({
     [Loading.name]: Loading,
     AccountIcon,
     ModifNameModal,
+    CommonModal,
   },
   props: {
     modelValue: {
@@ -183,18 +279,19 @@ export default defineComponent({
     const showModal: Ref<boolean> = ref(false);
     // Balance display type
     const amountType = computed(() => store.state.system.amountType);
-  // Imported accounts
-  const importList = computed(() => {
-    return store.state.account.accountList.filter(
-      (item: AccountInfo) => item.imported
-    );
-  });
-  // Non-imported accounts
-  const defaultlist = computed(() => {
-    return store.state.account.accountList.filter(
-      (item: AccountInfo) => !item.imported
-    );
-  });
+    const popupType = window.pageType
+    // Imported accounts
+    const importList = computed(() => {
+      return store.state.account.accountList.filter(
+        (item: AccountInfo) => item.imported
+      );
+    });
+    // Non-imported accounts
+    const defaultlist = computed(() => {
+      return store.state.account.accountList.filter(
+        (item: AccountInfo) => !item.imported
+      );
+    });
     const {
       toggleAccount,
       handleAccount,
@@ -289,9 +386,96 @@ export default defineComponent({
         top: hei,
       });
     };
+    const activeTab = ref(null);
+    const isConnectList = ref([]);
+    const initConectData = () => {
+      return new Promise(async(resolve, reject) => {
+        const connectList = await chrome.storage.local.get(["connectList"]);
+        console.log("connectList", connectList);
+        chrome.tabs.query(
+          { active: true, currentWindow: true },
+          (tabs: Array<[]>) => {
+            console.log("tabs", tabs);
+            activeTab.value = tabs.find((item) => item.active);
+            activeTab.value.origin = getHostName(activeTab.value.url);
+            console.log(" activeTab.value", activeTab.value);
+            connectList.connectList.forEach((element) => {
+              if (
+                element.origin.toUpperCase() ===
+                activeTab.value.origin.toUpperCase()
+              ) {
+                isConnectList.value = element.accountList;
+              }
+              resolve();
+            });
+            resolve();
+          }
+        );
+      });
+    };
+
+    onMounted(async () => {
+      initConectData();
+    });
+
+    onActivated(() => {
+      initConectData();
+    });
+    const showConnectModal = ref(false);
+    const connectModalTit = ref("");
+    const connectType = ref("connectByAddress");
+    const connectTip = ref(t("common.connectTip"));
+    const connectAddr = ref("");
+    const handleHasConnect = (addr: string) => {
+      return isConnectList.value.includes(addr);
+    };
+
+    const handleConnectTo = (addr: string) => {
+      showConnectModal.value = true;
+      if (handleHasConnect(addr)) {
+        connectType.value = "disconnectByAddress";
+        connectModalTit.value = t("common.disconnect");
+        connectTip.value = t("common.disconnectTip");
+      } else {
+        connectType.value = "connectByAddress";
+        connectModalTit.value = t("common.connectTo");
+        connectTip.value = t("common.connectTip");
+      }
+      connectAddr.value = addr;
+    };
+    const {$toast} = useToast()
+    const connectLoading = ref(false);
+    const handleConnectFun = () => {
+      connectLoading.value = true;
+      sendBackground({
+        method: connectType.value,
+        response: {
+          code: "200",
+          data: { address: connectAddr.value, sender: { ...activeTab.value } },
+        },
+      });
+      let time = setTimeout(() => {
+        connectLoading.value = false;
+        showConnectModal.value = false;
+        initConectData();
+        $toast.success(connectType.value ==='connectByAddress' ? t('common.connectSuccess') : t('common.disconnectSuccess'))
+        clearTimeout(time);
+      }, 1000);
+    };
     return {
+      showConnectModal,
+      connectLoading,
+      handleConnectFun,
+      popupType,
+      handleConnectTo,
+      connectTip,
+      connectAddr,
+      handleHasConnect,
+      connectModalTit,
       t,
+      activeTab,
       listDom,
+      isConnectList,
       toggleAccount,
       handleAccount,
       createAccount,
@@ -317,15 +501,88 @@ export default defineComponent({
     };
   },
 });
+
+function getHostName(url = "") {
+  const protocol = url.split("://")[0];
+  const regex = /.*\:\/\/([^\/]*).*/;
+  const match = url.match(regex);
+  let host = "";
+  if (typeof match != "undefined" && null != match) {
+    host = match[1];
+  }
+  return `${protocol}://${host}`;
+}
 </script>
 <style lang="scss" scoped>
-  .select-box {
-    margin-right: 12px;
-    i {
-      font-size: 18px;
-      color: #037cd6;
+.connect-btns {
+  button {
+    min-width: 100px;
+  }
+}
+.connectAddr {
+  font-size: 14px;
+  color: #000;
+  word-break: break-all;
+  word-wrap: break-word;
+}
+.source-tit {
+  color: #000;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: left;
+}
+.sender {
+  border: 1px solid #ccc;
+  height: 40px;
+  width: 100%;
+  border-radius: 20px;
+  .icon {
+    img {
+      width: 20px;
+      display: block;
     }
   }
+  .origin {
+    width: 90%;
+    color: #000;
+    font-size: 13px;
+  }
+}
+.connectTip {
+  color: #000;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+}
+.connectTo {
+  color: #037cd6;
+  margin-left: 5px;
+}
+.connectStatus {
+  &.active::after {
+    content: "";
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    background: rgb(11, 211, 11);
+  }
+  &.disConnect::after {
+    content: "";
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    background: #ccc;
+  }
+}
+.select-box {
+  margin-right: 12px;
+  i {
+    font-size: 18px;
+    color: #037cd6;
+  }
+}
 .btn-group {
   padding: 20px 50px;
 }

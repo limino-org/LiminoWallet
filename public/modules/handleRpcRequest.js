@@ -158,5 +158,5 @@ export const handleRpcRequest = {
             const errMsg = { ...errorCode['32000'], data: JSON.stringify(err) }
             sendMessage({ ...errMsg, sendId }, {}, sender)
         }
-    },
+    }
 };

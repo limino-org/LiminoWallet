@@ -22,7 +22,9 @@ import {
     getWallet,
     globalHomePath,
     eventTypes,
-    eventsEmitter
+    eventsEmitter,
+    delSenderByAddr,
+    addSenderByAddr
 } from './common.js'
 import { useGetTxReceipt } from './useGetTxReceipt.js'
 const { waitTxQueueResponse } = useGetTxReceipt()
@@ -178,7 +180,6 @@ export const handleRpcResponse = {
     // switching network
     [eventsEmitter.chainChanged]: {
         sendResponse: async (v) => {
-
             const wallet = await getWallet()
             const { data } = v;
             const errMsg = { ...errorCode['200'], data }
@@ -230,4 +231,25 @@ export const handleRpcResponse = {
 
         },
     },
+    // connect
+    ['connectByAddress']: {
+        status: 'close',
+        sendResponse: async (v) => {
+            console.log('connectByAddress', v)
+            const {sender, address } = v.data
+            const acc = await addSenderByAddr(sender, address)
+            console.log('add addr end.', acc)
+        }
+    },
+    // disconnect
+    ['disconnectByAddress']: {
+        status: 'close',
+        sendResponse: async (v) => {
+            console.log('disconnectByAddress', v)
+            const {sender, address } = v.data
+            const acc= await delSenderByAddr(sender, address)
+            console.log('del addr end.', acc)
+
+        }
+    }
 };

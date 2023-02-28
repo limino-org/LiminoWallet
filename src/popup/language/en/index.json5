@@ -1251,7 +1251,15 @@
 		viewInExchange:"Exchange",
     	viewInBrowser:"Block browser",
 		deployContract:"Contract deployment",
-		source:"Origin: "
+		source:"Origin: ",
+		isConnect:"The current website is connected to the address",
+		ununited:'Ununited',
+		connectTo:"Connect to",
+		disconnect:'Disconnect',
+		connectTip:"Are you sure you have authorized the site to access the current address?",
+		disconnectTip:"Are you sure to disconnect the site from the current address?",
+		disconnectSuccess:"Disconnect successfully",
+		connectSuccess:"Be connected successfully",
 
 	},
 	categoryform: {

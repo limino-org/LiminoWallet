@@ -2,8 +2,6 @@
 
 
 import { httpGet } from '../request'
-export const isProduct = process.env.NODE_ENV == 'production' || process.env.NODE_ENV == 'test' ? true : false
-const contractApi = isProduct ? 'contractApi' : 'contractApi'
 interface GetTransitionsParams {
     page: string
     page_size: string

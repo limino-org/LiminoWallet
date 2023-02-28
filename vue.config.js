@@ -1,5 +1,5 @@
 console.warn('process.env.VUE_APP_NODE_ENV ', process.env.VUE_APP_NODE_ENV)
-const isProduct = process.env.VUE_APP_NODE_ENV == 'production'
+const isProduct = process.env.VUE_APP_NODE_ENV == 'production' || process.env.VUE_APP_NODE_ENV == 'test'
 console.log('isProduct', isProduct)
 const path = require('path')
 const webpack = require('webpack')

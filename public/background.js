@@ -90,6 +90,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
       sendMessage(createMsg(errMsg, method || 'unknow'), {}, sender)
       return false
     }
+    console.warn('popup msg', method, response)
     handleRpcResponse[method].sendResponse(response || {}, sendResponse, sender)
     return true
   }

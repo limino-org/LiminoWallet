@@ -14,6 +14,7 @@ const events = [
   // 'data'
 ]
 function Provider() {
+  const _this = this
   this._state = {
     accounts: [],
     isConnected: false,
@@ -25,11 +26,23 @@ function Provider() {
   this.networkVersion = null
   this.selectedAddress = ''
   this.subscriptions = []
+  this.onEventMainCallId = 'OnMainEvent'
+  this.init = () => {
+    const callId = this.onEventMainCallId
+    this.on('chainChanged', (chainId) => {
 
+    }, callId)
+    this.on('accountsChanged', (addr) => {
+      this.selectedAddress = addr
+    }, callId)
+  }
   this.enable = function () {
     return this.connect()
   }
   this._rpcSendCallbacks = {
+
+  }
+  this._eventCallbacks = {
 
   }
   this.postMsg = function (data, callback = function () { }) {
@@ -80,6 +93,7 @@ function Provider() {
       switch (method) {
         case 'wallet_requestPermissions':
         case 'eth_requestAccounts':
+        case 'eth_accounts':
           this._state.accounts = data.data
           this._state.isConnected = true
           this._state.isUnlocked = false
@@ -108,6 +122,8 @@ function Provider() {
       this._state.isConnected = false
       this.selectedAddress = ''
       this._rpcSendCallbacks = {}
+      this.handleDelEventCall('accountsChanged')
+      this.handleDelEventCall('chainChanged')
     }
 
   }
@@ -133,18 +149,19 @@ Provider.prototype = {
    * @param {*} type message connect error disconnect
    * @param {*} callback 
    */
-  on(type, callback = () => { }) {
+  on(type, callback = () => { }, callId = null) {
     if (type && events.includes(type)) {
-      window['wormholes-' + type + '-on-callback'] = callback
+      const childCallId = guid()
+      this.handleAddEventCall(type, callId || childCallId, callback)
     }
     return this
   },
-  // off(type, callback = () => { }) {
-  //   if(type && events.includes(type)) {
-  //     window['wormholes-' + type + '-off-callback'] = callback
-  //   }
-  // },
-  // logout
+  off(type) {
+    if(type && events.includes(type)) {
+      this.handleDelEventCall(type)
+    }
+
+  },
   removeAllListeners() {
     return this.request({ method: 'removeAllListeners', params: {} })
   },
@@ -178,13 +195,48 @@ Provider.prototype = {
         this._rpcSendCallbacks[method][sendId](response)
       }
     }
+  },
+  handleUpdateSelectAddress(addr){
+    this.selectedAddress = addr
+  },
+  handleAddEventCall(method, callId, call){
+    if(method && callId && call) {
+      if(!this._eventCallbacks[method]) {
+        this._eventCallbacks[method] = {
+          [callId]: call
+        }
+      } else {
+        this._eventCallbacks[method][callId] = call
+      }
+    }
+  },
+  runCallBackEventByMethod(method, response = {}) {
+    if(method) {
+      if (this._eventCallbacks[method]) {
+        Object.keys(this._eventCallbacks[method]).forEach(callId => {
+          if(this._eventCallbacks[method][callId]){
+            this._eventCallbacks[method][callId](response)
+          }
+        })
+      }
+    }
+  },
+  handleDelEventCall(method) {
+    if(this._eventCallbacks[method] ) {
+      Object.keys(this._eventCallbacks[method]).forEach(callId => {
+        if(callId != this.onEventMainCallId) {
+          delete this._eventCallbacks[method][callId]
+        }
+      })
+
+    }
   }
 
 }
 
 const ethereum = new Provider()
 window.ethereum = ethereum
-
+ethereum.init()
 
 
 // Registers a custom signature callback event
@@ -202,11 +254,9 @@ document.addEventListener('wormHoles-callback-event', (res) => {
         ethereum.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
       }
     } else {
-      let { method, eventType } = data
-      !eventType ? eventType = 'on' : 'off'
-      const handleMethodName = 'wormholes-' + method + '-' + eventType + '-callback'
-      if (eventType == 'on' && window[handleMethodName]) {
-        window[handleMethodName](response.data)
+      let { method } = data
+      if (method) {
+        ethereum.runCallBackEventByMethod(method, response.data)
       }
     }
   }

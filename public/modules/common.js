@@ -124,6 +124,44 @@ export async function setSenderAccounts(sender, accountList = []) {
   return chrome.storage.local.set({ connectList: connectList })
 }
 
+export async function addSenderByAddr(sender, addr) {
+  const connectList = await getConnectList()
+  const idx = connectList.findIndex(item => item.origin == sender.origin)
+  const se = connectList.find(item => item.origin == sender.origin)
+  if(!se) {
+    connectList.unshift({ ...sender, accountList:[addr] })
+  } else {
+    const addrs = connectList[idx].accountList
+    console.log('before', addrs)
+    const i = addrs.findIndex(add => add == addr)
+    if(i === -1) {
+      console.log('splic', addr, i)
+      addrs.unshift(addr)
+    }
+    console.log('end', addrs)
+    connectList[idx].accountList = addrs
+  }
+  console.log('add---', connectList)
+  return chrome.storage.local.set({ connectList: connectList })
+}
+
+export async function delSenderByAddr(sender, addr) {
+  const connectList = await getConnectList()
+  const se = connectList.find(item => item.origin == sender.origin)
+  if(se) {
+    const idx = connectList.findIndex(item => item.origin == sender.origin)
+    const addrs = connectList[idx].accountList
+    const i = addrs.findIndex(add => add == addr)
+    if(i > -1) {
+      addrs.splice(i,1)
+    }
+    connectList[idx].accountList = addrs
+  }
+  console.log('del---', connectList)
+
+  return chrome.storage.local.set({ connectList: connectList })
+}
+
 // Sender Connected website Query Sender connected account Queries whether the current website is connected to the wallet
 export async function isConnected(sender) {
   const connectList = await getConnectList()
@@ -226,6 +264,16 @@ export async function initWallet() {
       let provider = ethers.getDefaultProvider(URL);
       newwallet.connect(provider);
       return newwallet
+    }
+    if(accountInfo.address.toUpperCase() != newwallet.address.toUpperCase()) {
+      const newLocal = await localforage.getItem("vuex") || null
+      const { accountInfo: newAccountInfo, currentNetwork: newCurrentNetwork } = newLocal.account;
+      const { keyStore } = newAccountInfo;
+      const { URL } = newCurrentNetwork
+      const params = { json: keyStore, password: pwdVal };
+      const wallet = await createWalletByJson(params);
+      let provider = ethers.getDefaultProvider(URL);
+      newwallet = wallet.connect(provider);
     }
     return newwallet
   } catch (err) {

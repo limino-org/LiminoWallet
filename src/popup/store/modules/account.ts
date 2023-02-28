@@ -378,7 +378,6 @@ export default {
     UPDATE_WALLET(state: State, value: any) {
       wallet = value;
       if (wallet.provider) {
-        console.log('wallet', wallet)
         sendBackground({ method: 'update-wallet' })
       }
     },

@@ -1260,7 +1260,16 @@
 		viewInExchange:"交易所",
         viewInBrowser:"区块浏览器",
 		deployContract:"合约部署",
-		source:"来源："
+		source:"来源：",
+		isConnect:"当前网站已连接该地址",
+		ununited:"未连接",
+		connectTo:"连接",
+		disconnect:'断开连接',
+		connectTip:"确认授权该网站访问当前地址吗？",
+		disconnectTip:"确定断开该网站到当前地址的连接吗？",
+		connectSuccess:"连接成功",
+		disconnectSuccess:"断开连接成功"
+
 
 	},
 	categoryform: {
