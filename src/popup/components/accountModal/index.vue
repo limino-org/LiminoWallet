@@ -43,15 +43,15 @@
             </div>
             <div class="account-icon flex center">
               <div class="account-icon-box">
-                <AccountIcon :data="item.icon" />
+                <AccountIcon :data="item.icon" :title="item.address"/>
               </div>
             </div>
             <div class="account-info flex center-v">
               <div class="account-info-box">
-                <div class="account-name flex center-v">
+                <div class="account-name flex center-v" :title="item.address">
                   {{ item.name }}
                   <div class="pl-4 pr-4" @click.stop="openModifModal(item)">
-                    <i class="iconfont icon-bianji"></i>
+                    <i class="iconfont icon-bianji"  :title="t('common.modifName')"></i>
                   </div>
                   <div class="flex"  v-if="popupType === 'Popup'">
                     <div
@@ -67,6 +67,8 @@
                   <div
                     class="connectTo"
                     @click.stop="handleConnectTo(item.address)"
+                    :title="`${!handleHasConnect(item.address) ? t('common.connectToSize', {size: activeTab.origin}) : t('common.disconnectToSize', {size: activeTab.origin})}`"
+
                   >
                     {{
                       !handleHasConnect(item.address)
@@ -116,15 +118,15 @@
             </div>
             <div class="account-icon flex center">
               <div class="account-icon-box">
-                <AccountIcon :data="item.icon" />
+                <AccountIcon :data="item.icon" :title="item.address" />
               </div>
             </div>
             <div class="account-info flex center-v">
               <div class="account-info-box">
-                <div class="account-name flex center-v">
+                <div class="account-name flex center-v" :title="item.address">
                   {{ item.name }}
                   <div class="pl-4 pr-4" @click.stop="openModifModal(item)">
-                    <i class="iconfont icon-bianji"></i>
+                    <i class="iconfont icon-bianji" :title="t('common.modifName')"></i>
                   </div>
                   <div class="flex" v-if="popupType === 'Popup'">
                     <div
@@ -140,6 +142,8 @@
                   <div
                     class="connectTo"
                     @click.stop="handleConnectTo(item.address)"
+                    :title="`${!handleHasConnect(item.address) ? t('common.connectToSize', {size: activeTab.origin}) : t('common.disconnectToSize', {size: activeTab.origin})}`"
+
                   >
                     {{
                       !handleHasConnect(item.address)

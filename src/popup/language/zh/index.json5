@@ -1268,7 +1268,11 @@
 		connectTip:"确认授权该网站访问当前地址吗？",
 		disconnectTip:"确定断开该网站到当前地址的连接吗？",
 		connectSuccess:"连接成功",
-		disconnectSuccess:"断开连接成功"
+		disconnectSuccess:"断开连接成功",
+		connectToSize:"连接到{size}",
+		disconnectToSize:"从{size}断开连接",
+		modifName:"修改名称"
+
 
 
 	},

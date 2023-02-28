@@ -1260,6 +1260,10 @@
 		disconnectTip:"Are you sure to disconnect the site from the current address?",
 		disconnectSuccess:"Disconnect successfully",
 		connectSuccess:"Be connected successfully",
+		connectToSize:"Connect to {size}",
+		disconnectToSize:"Disconnect from {size}",
+				modifName:"Modify the name"
+
 
 	},
 	categoryform: {
