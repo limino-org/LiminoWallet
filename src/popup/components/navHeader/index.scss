@@ -150,8 +150,9 @@
   }
 }
 .slider-con {
+  height: 100%;
   .slider-bg {
-    padding: 32px 0 14px 15px;
+    padding: 20px 0 14px 15px;
     box-sizing: border-box;
     &.blue {
       background: #037CD6;
@@ -188,60 +189,6 @@
     }
     .tag-list {
       margin-left: 14px;
-      .tag-user {
-        height: 12px;
-        min-width: 47px;
-        .user {
-          width: 14px;
-          height: 14px;
-          display: block;
-          border-radius: 50%;
-          border: 1PX solid #108ae1;
-          position: absolute;
-          overflow: hidden;
-          left: -1px;
-          top: 0px;
-          img {
-            width: 11px;
-            height: 11px;
-            display: block;
-            vertical-align: top;
-
-          }
-        }
-        .tag-label {
-          line-height: 14px;
-          border-radius: 7px;
-          padding-left: 12px;
-          span {
-            font-size: 12px;
-          transform: scale(.6);
-          transform-origin:center center;
-          display: inline-block;
-          color: #fff;
-          }
-        }
-        &.type1 {
-          // green
-          .user,.tag-label {
-            background: linear-gradient(270deg, #93EBAD 0%, #52E374 100%);
-          }
-        }
-        &.type2 {
-          // orange
-          .user,.tag-label {
-            background: linear-gradient(90deg, #D9B560 0%, #D3E492 100%);
-          }
-        }
-        &.type3 {
-          // exchange
-          .user,.tag-label {
-            background: linear-gradient(270deg, #21245F 0%, #1E275A 100%);
-          }
-        }
-  
-      }
-
     }
     .account-amount-box {
       font-size: 10px;

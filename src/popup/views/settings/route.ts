@@ -118,6 +118,15 @@ export default  {
         },
       },
       {
+        path: "/settings/snft-creator",
+        name: "snft-creator",
+        component: () => import("@/popup/views/settings/pages/snftCreator/index.vue"),
+        meta: {
+          auth: true,
+          tltle:'Snft Creator'
+        },
+      },
+      {
         path: "/settings/account-name",
         name: "account-name",
         component: () => import("@/popup/views/settings/pages/accountManagement/step2.vue"),

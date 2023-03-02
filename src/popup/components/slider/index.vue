@@ -9,7 +9,7 @@
       <div class="slider-con">
         <div :class="`slider-bg ${hasExchange ? 'blue' : ''}`">
           <div class="flex back-box">
-            <van-icon name="arrow-left hover" @click="showSlider = false" />
+            <van-icon name="cross" class="hover" @click="showSlider = false" />
           </div>
 
           <div class="user-img">
@@ -19,21 +19,86 @@
                 @click="toAccountManagement"
               />
               <!-- Label set -->
-              <div class="tag-list flex">
+              <div class="tag-list flex slider">
+                <van-popover
+                  v-model:show="showPopover3"
+                  trigger="manual"
+                  class="account-pop"
+                  placement="bottom-start"
+                >
+                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"                         @mouseover="showPopoverText3 = true"
+                        @mouseleave="handleMouseLeavetext3">
+                    {{ t("common.exchange_pledge") }}
+                  </div>
+                  <template #reference>
+                    <div
+                      class="tag-user type1 position relative hover"
+                      @mouseover="showPopover3 = true"
+                      @mouseleave="handleMouseLeave3"
+                      v-show="
+                        ethAccountInfo ? ethAccountInfo.ExchangerFlag : false
+                      "
+                    >
+                      <span class="user flex center">
+                        <i class="iconfont icon-Add"></i>
+                      </span>
+                      <div class="tag-label flex center-v">
+                        <span>{{ t("sidebar.snftCreator") }}</span>
+                      </div>
+                    </div>
+                  </template>
+                </van-popover>
                 <van-popover
                   v-model:show="showPopover"
                   trigger="manual"
                   class="account-pop MR-10"
                   placement="bottom-start"
                 >
-                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12">
-                    {{ t("common.right_and_interests") }}
+                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"                         @mouseover="showPopoverText = true"
+                        @mouseleave="handleMouseLeavetext1">
+                    <!-- {{ t("common.right_and_interests") }} -->
+                    <i18n-t
+                      tag="div"
+                      v-if="expresionClass == 'smile'"
+                      keypath="minerspledge.smileTip"
+                    >
+                      <template v-slot:value>{{ Coefficient }}</template>
+                      <template v-slot:btn>
+                        <span class="gotIt" @click="minerpledge">{{
+                          t("minerspledge.gotIt")
+                        }}</span>
+                      </template>
+                    </i18n-t>
+                    <i18n-t
+                      tag="div"
+                      v-if="expresionClass == 'sad'"
+                      keypath="minerspledge.homeTip"
+                    >
+                      <!-- <template v-slot:value>{{Coefficient}}</template> -->
+                      <template v-slot:btn>
+                        <span class="gotIt" @click="minerpledge">{{
+                          t("minerspledge.gotIt")
+                        }}</span>
+                      </template>
+                    </i18n-t>
+                    <i18n-t
+                      tag="div"
+                      v-if="expresionClass == 'neutral'"
+                      keypath="minerspledge.homeTip"
+                    >
+                      <!-- <template v-slot:value>{{Coefficient}}</template> -->
+                      <template v-slot:btn>
+                        <span class="gotIt" @click="minerpledge">{{
+                          t("minerspledge.gotIt")
+                        }}</span>
+                      </template>
+                    </i18n-t>
                   </div>
                   <template #reference>
                     <div
-                      class="tag-user type2 position relative hover mr-8"
+                      class="tag-user type2 position relative hover ml-8"
                       @mouseover="showPopover = true"
-                      @mouseleave="showPopover = false"
+                      @mouseleave="handleMouseLeave1"
                       v-show="
                         ethAccountInfo
                           ? ethAccountInfo.PledgedBalance > 0
@@ -42,11 +107,12 @@
                           : false
                       "
                     >
-                      <span class="user">
-                        <img src="@/popup/views/home/imgs/wakuang.png" alt />
+                      <span class="user flex center">
+                        <i class="iconfont icon-chuiziicon"></i>
+                        <!-- <img src="@/popup/views/home/imgs/wakuang.png" alt /> -->
                       </span>
                       <div class="tag-label flex center-v">
-                        <span>{{t('common.validator')}}</span>
+                        <span>{{ t("common.validator") }}</span>
                       </div>
                     </div>
                   </template>
@@ -57,23 +123,26 @@
                   class="account-pop"
                   placement="bottom-start"
                 >
-                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12">
+                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"                         @mouseover="showPopoverText2 = true"
+                        @mouseleave="handleMouseLeavetext2">
                     {{ t("common.exchange_pledge") }}
                   </div>
                   <template #reference>
                     <div
-                      class="tag-user type3 position relative mr-8 hover"
+                      class="tag-user type3 position relative ml-8 hover"
                       @mouseover="showPopover2 = true"
-                      @mouseleave="showPopover2 = false"
+                      @mouseleave="handleMouseLeave2"
                       v-show="
                         ethAccountInfo ? ethAccountInfo.ExchangerFlag : false
                       "
                     >
-                      <span class="user">
-                        <img src="@/popup/views/home/imgs/smallhome.png" alt />
+                      <span class="user flex center">
+                        <i
+                          class="iconfont icon-fangwujianzhuwugoujianbeifen"
+                        ></i>
                       </span>
                       <div class="tag-label flex center-v">
-                        <span>{{t('common.marketplace')}}</span>
+                        <span>{{ t("common.marketplace") }}</span>
                       </div>
                     </div>
                   </template>
@@ -182,6 +251,16 @@
               <van-icon name="arrow" />
             </div>
             <div
+              class="setting-btn active flex center-v between clickActive"
+              @click="toCreator"
+            >
+              <div class="flex center">
+                <i class="iconfont icon-Add"></i>
+                <span>{{ t("sidebar.snftCreator") }}</span>
+              </div>
+              <van-icon name="arrow" />
+            </div>
+            <div
               class="setting-btn flex center-v between clickActive"
               @click="routerTo('settings')"
             >
@@ -230,6 +309,9 @@ import {
   watch,
   getCurrentInstance,
   ComponentInternalInstance,
+  onUnmounted,
+  onActivated,
+  onDeactivated,
 } from "vue";
 import {
   Popup,
@@ -464,9 +546,103 @@ export default defineComponent({
     // The account label pops up
     const showPopover = ref(false);
     const showPopover2 = ref(false);
+    const showPopover3 = ref(false);
+    const toCreator = () => {
+      router.push({ name: "snft-creator" });
+    };
 
+    const Coefficient = computed(() => {
+      return ethAccountInfo.value.Coefficient;
+    });
+    const expresionClass = computed(() => {
+      const num = Number(Coefficient.value);
+      if (num < 40) return "sad";
+      if (num >= 40 && num <= 50) return "neutral";
+      if (num > 50) return "smile";
+    });
+
+
+    const showPopoverText = ref(false);
+    const showPopoverText2 = ref(false);
+    const showPopoverText3 = ref(false);
+    const handleMouseLeave1 = () => {
+      // showPopover.value
+      let time = setTimeout(() => {
+        if (!showPopoverText.value) {
+          showPopover.value = false;
+        } else {
+          showPopover.value = true;
+        }
+        clearTimeout(time);
+      }, 70);
+    };
+    const handleMouseLeave2 = () => {
+      // showPopover.value
+      let time = setTimeout(() => {
+        if (!showPopoverText2.value) {
+          showPopover2.value = false;
+        } else {
+          showPopover2.value = true;
+        }
+        clearTimeout(time);
+      }, 70);
+    };
+    const handleMouseLeave3 = () => {
+      // showPopover.value
+      let time = setTimeout(() => {
+        if (!showPopoverText3.value) {
+          showPopover3.value = false;
+        } else {
+          showPopover3.value = true;
+        }
+        clearTimeout(time);
+      }, 70);
+    };
+    const handleMouseLeavetext1 = () => {
+      // showPopover.value
+      showPopoverText.value = false;
+      if (showPopover.value) {
+        showPopover.value = false;
+      }
+    };
+    const handleMouseLeavetext2 = () => {
+      // showPopover.value
+      showPopoverText2.value = false;
+      if (showPopover2.value) {
+        showPopover2.value = false;
+      }
+    };
+    const handleMouseLeavetext3 = () => {
+      // showPopover.value
+      showPopoverText3.value = false;
+      if (showPopover3.value) {
+        showPopover3.value = false;
+      }
+    };
+    
+    onDeactivated(() => {
+      showPopoverText.value = false
+      showPopoverText2.value = false
+      showPopoverText3.value = false
+      showPopover.value = false
+      showPopover2.value = false
+      showPopover3.value = false
+    })
     return {
+      expresionClass,
+      showPopoverText,
+      showPopoverText2,
+      showPopoverText3,
+      handleMouseLeave1,
+      handleMouseLeave2,
+      handleMouseLeave3,
+      handleMouseLeavetext1,
+      handleMouseLeavetext2,
+      handleMouseLeavetext3,
+      Coefficient,
       showPopover,
+      showPopover3,
+      toCreator,
       showPopover2,
       toOfficiaWebsite,
       handleShowCode,
@@ -527,10 +703,15 @@ export default defineComponent({
     transform: translateX(0);
   }
 }
+.slider-con {
+  position: relative;
+}
 .back-box {
-  margin-bottom: 15px;
+  position: absolute;
+  right: 15px;
+  top: 15px;
   i {
-    font-size: 16px;
+    font-size: 18px;
   }
 }
 </style>

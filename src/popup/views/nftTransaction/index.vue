@@ -90,6 +90,7 @@ import {
   onMounted,
   onBeforeMount,
   nextTick,
+  onUnmounted,
 } from "vue";
 import { Icon, Toast, Button, Sticky, Field } from "vant";
 import { useRoute, useRouter } from "vue-router";
@@ -174,6 +175,18 @@ export default {
         response: { method: handleType.eth_sendTransaction, sendId },
       });
     };
+
+    const handleKeydown = (e: any) => {
+      if(e.keyCode === 13) {
+        gonext()
+      }
+    }
+    onMounted(() => {
+      window.addEventListener('keydown', handleKeydown)
+    })
+    onUnmounted(() => {
+      window.removeEventListener('keydown', handleKeydown)
+    })
     return {
       t,
       calcel,

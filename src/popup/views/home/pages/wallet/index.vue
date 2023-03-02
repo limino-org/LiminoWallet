@@ -9,9 +9,15 @@
         <i class="iconfont icon-gengduo2"></i>
       </div>
     </template>
-    <template v-slot:right >
+    <template v-slot:right>
       <div>
-        <i v-if="pageType == 'Popup'" class="iconfont icon-zhankai" @click="extendView" :style="{color:hasExchange ? '#fff' : '#037cd6'}"></i>
+        <i
+          v-if="pageType == 'Popup'"
+          class="iconfont icon-zhankai"
+          :title="t('common.expandView')"
+          @click="extendView"
+          :style="{ color: hasExchange ? '#fff' : '#037cd6' }"
+        ></i>
       </div>
     </template>
   </NavHeader>
@@ -32,11 +38,14 @@
                 <div class="flex between at center-v">
                   <span
                     @click="showaccount"
-                    class="clickActive f-12"
+                    class="clickActive f-12 accName"
                     id="guide-step1"
+                    :title="accountInfo.name"
                   >
                     <GuideModal1></GuideModal1>
-                    {{ accountInfo.name }}
+                    <span class="accNameSpan van-ellipsis">{{
+                      accountInfo.name
+                    }}</span>
                     <i
                       :class="`iconfont ml-4 f-14 ${
                         showModal ? 'icon-shangjiantou' : 'icon-xiajiantou'
@@ -47,21 +56,98 @@
                   <AccountModal v-model="showModal" />
                   <!-- <SnftDetails v-model="showModal" /> -->
                   <GuideModal10></GuideModal10>
-                  <div class="tag-list flex">
+                  <div class="tag-list flex" id="tagList">
+                    <van-popover
+                      v-model:show="showPopover3"
+                      trigger="manual"
+                      class="account-pop"
+                      placement="bottom-end"
+                    >
+                      <div
+                        class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"
+                        @mouseover="showPopoverText3 = true"
+                        @mouseleave="handleMouseLeavetext3"
+                      >
+                        {{ t("common.exchange_pledge") }}
+                      </div>
+                      <template #reference>
+                        <div
+                          class="tag-user type1 position relative hover"
+                          @mouseover="showPopover3 = true"
+                          @mouseleave="handleMouseLeave3"
+                          @click="toCreator"
+                        >
+                          <span class="user flex center">
+                            <i class="iconfont icon-Add"></i>
+                          </span>
+                        </div>
+                      </template>
+                    </van-popover>
                     <van-popover
                       v-model:show="showPopover"
                       trigger="manual"
                       class="account-pop"
                       placement="bottom-end"
                     >
-                      <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12">
-                        {{ t("common.right_and_interests") }}
+                      <div
+                        class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"
+                        @mouseover="showPopoverText = true"
+                        @mouseleave="handleMouseLeavetext1"
+                      >
+                        <i18n-t
+                          tag="div"
+                          v-if="expresionClass == 'smile'"
+                          keypath="minerspledge.smileTip"
+                        >
+                          <template v-slot:value>{{ Coefficient }}</template>
+                          <template v-slot:btn>
+                            <span class="gotIt" @click="minerpledge">{{
+                              t("minerspledge.gotIt")
+                            }}</span>
+                          </template>
+                        </i18n-t>
+                        <i18n-t
+                          tag="div"
+                          v-if="expresionClass == 'sad'"
+                          keypath="minerspledge.homeTip"
+                        >
+                          <!-- <template v-slot:value>{{Coefficient}}</template> -->
+                          <template v-slot:btn>
+                            <span class="gotIt" @click="minerpledge">{{
+                              t("minerspledge.gotIt")
+                            }}</span>
+                          </template>
+                        </i18n-t>
+                        <i18n-t
+                          tag="div"
+                          v-if="expresionClass == 'neutral'"
+                          keypath="minerspledge.homeTip"
+                        >
+                          <!-- <template v-slot:value>{{Coefficient}}</template> -->
+                          <template v-slot:btn>
+                            <span class="gotIt" @click="minerpledge">{{
+                              t("minerspledge.gotIt")
+                            }}</span>
+                          </template>
+                        </i18n-t>
+
+                        <!-- {{ t("minerspledge.right_and_interests") }} -->
+                        <!-- <div v-if="expresionClass == 'smile'">
+                 {{ t("minerspledge.smileTip", { value: Coefficient }) }}
+               </div>
+               <div v-if="expresionClass == 'sad'">
+                 {{ t("minerspledge.sadTip", { value: Coefficient }) }}
+               </div>
+               <div v-if="expresionClass == 'neutral'">
+                 {{ t("minerspledge.neutralTip", { value: Coefficient }) }}
+               </div> -->
                       </div>
                       <template #reference>
                         <div
-                          class="tag-user type2 position relative hover"
+                          class="tag-user type2 position relative hover ml-8"
                           @mouseover="showPopover = true"
-                          @mouseleave="showPopover = false"
+                          @mouseleave="handleMouseLeave1"
+                          @click="minerpledge"
                           v-show="
                             ethAccountInfo
                               ? ethAccountInfo.PledgedBalance > 0
@@ -70,14 +156,9 @@
                               : false
                           "
                         >
-                          <span class="user">
-                            <img
-                              src="@/popup/views/home/imgs/wakuang.png"
-                            />
+                          <span class="user flex center">
+                            <i class="iconfont icon-chuiziicon"></i>
                           </span>
-                          <div class="tag-label flex center-v">
-                            <span>{{t('common.validator')}}</span>
-                          </div>
                         </div>
                       </template>
                     </van-popover>
@@ -87,28 +168,30 @@
                       class="account-pop"
                       placement="bottom-end"
                     >
-                      <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12">
+                      <div
+                        class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"
+                        @mouseover="showPopoverText2 = true"
+                        @mouseleave="handleMouseLeavetext2"
+                      >
                         {{ t("common.exchange_pledge") }}
                       </div>
                       <template #reference>
                         <div
                           class="tag-user type3 position relative ml-8 hover"
                           @mouseover="showPopover2 = true"
-                          @mouseleave="showPopover2 = false"
+                          @mouseleave="handleMouseLeave2"
+                          @click="toExchange"
                           v-show="
                             ethAccountInfo
                               ? ethAccountInfo.ExchangerFlag
                               : false
                           "
                         >
-                          <span class="user">
-                            <img
-                              src="@/popup/views/home/imgs/smallhome.png"
-                            />
+                          <span class="user flex center">
+                            <i
+                              class="iconfont icon-fangwujianzhuwugoujianbeifen"
+                            ></i>
                           </span>
-                          <div class="tag-label flex center-v">
-                            <span>{{t('common.marketplace')}}</span>
-                          </div>
                         </div>
                       </template>
                     </van-popover>
@@ -116,12 +199,13 @@
                 </div>
                 <!-- Address, copy, QR code -->
                 <div class="address-card flex center-v">
-                  <div class="add">
+                  <div class="add" :title="accountInfo.address">
                     {{ addressMask(accountInfo.address) }}
                     <GuideModal2></GuideModal2>
                   </div>
                   <i
                     class="iconfont icon-fuzhi2 ml-6 hover"
+                    :title="t('bootstrapwindow.addressMessage')"
                     @click="toCopy"
                   ></i>
                   <div class="shuxian ml-8 mr-8"></div>
@@ -130,6 +214,7 @@
 
                     <i
                       class="iconfont icon-erweima1 hover flex center"
+                      :title="t('bootstrapwindow.assetsMessage')"
                       @click="handleShowCode"
                     ></i>
                   </div>
@@ -241,7 +326,7 @@
                 <span class="f-12 text-bold label">{{
                   t("wallet.importToken")
                 }}</span>
-                <span class="add flex center" @click="toCreate"
+                <span class="add flex center" :title="t('wallet.importToken')" @click="toCreate"
                   ><van-icon name="plus"
                 /></span>
               </div>
@@ -312,6 +397,7 @@ import {
   onDeactivated,
   getCurrentInstance,
   ComponentInternalInstance,
+  nextTick,
 } from "vue";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import Slider from "@/popup/components/slider/index.vue";
@@ -353,6 +439,9 @@ import SnftDetails from "@/popup/components/snftdetails/index.vue";
 import { useExchanges } from "@/popup/hooks/useExchanges";
 import { web3 } from "@/popup/utils/web3";
 import { useToast } from "@/popup/plugins/toast";
+import { useDialog } from "@/popup/plugins/dialog";
+import { getWallet } from "@/popup/store/modules/account";
+import BigNumber from "bignumber.js";
 
 export default {
   name: "wallet",
@@ -414,7 +503,7 @@ export default {
     const layoutType = computed(() => store.state.system.layoutType);
     const ethAccountInfo = computed(() => store.state.system.ethAccountInfo);
     // @ts-ignore
-    const pageType = ref(window.pageType)
+    const pageType = ref(window.pageType);
     const isSelect = ref(false);
     // Display the default token of the current network
     const myToken = computed(() => {
@@ -510,22 +599,22 @@ export default {
 
     let time: any = null;
     const handleLoopBalance = () => {
-      if(!time) {
+      if (!time) {
         time = setInterval(() => {
-        dispatch("account/updateBalance");
-        dispatch("account/updateTokensBalances");
-      }, 10000);
+          dispatch("account/updateBalance");
+          dispatch("account/updateTokensBalances");
+        }, 10000);
       }
     };
 
     onMounted(() => {
-      eventBus.on('changeAccount',() => {
-        showModal.value = false
-      })
-      
+      eventBus.on("changeAccount", () => {
+        showModal.value = false;
+      });
+
       dispatch("system/getEthAccountInfo");
       dispatch("account/getExchangeStatus").then((res) => {
-        console.warn(111)
+        console.warn(111);
         if (res.status == 2 && res.exchanger_flag) {
           initExchangeData();
         }
@@ -533,25 +622,25 @@ export default {
       dispatch("transfer/clearTx");
       handleLoopBalance();
       dispatch("account/updateBalance");
-      dispatch('account/waitTxQueueResponse')
+      dispatch("account/waitTxQueueResponse");
     });
 
     onActivated(() => {
+      showPopover.value = false;
+      showPopover2.value = false;
       handleLoopBalance();
     });
 
     onUnmounted(() => {
-      eventBus.off('changeAccount')
-      eventBus.off('walletReady')
+      eventBus.off("changeAccount");
+      eventBus.off("walletReady");
       clearInterval(time);
-      time = null
+      time = null;
     });
     onDeactivated(() => {
       clearInterval(time);
-      time = null
+      time = null;
     });
-
-
 
     // Purchase jump
     const handleToBuy = () => {
@@ -610,10 +699,118 @@ export default {
 
     const extendView = () => {
       // @ts-ignore
-      window.open(`chrome-extension://${chrome.runtime.id}/home.html#/home/wallet`)
-    }
+      window.open(`chrome-extension://${chrome.runtime.id}/home.html#/home/wallet`);
+    };
+    const getStatus = async () => {
+      Toast.loading({
+        message: t("userexchange.loading"),
+        forbidClick: true,
+        loadingType: "spinner",
+      });
+      return dispatch("account/getExchangeStatus").finally(() => Toast.clear());
+    };
+    const toExchange = async () => {
+      const { exchanger_flag, status } = await getStatus();
+      if (exchanger_flag) {
+        router.push({ name: "exchange-management" });
+      } else {
+        router.push({ name: "bourse" });
+      }
+    };
+
+    const minerpledge = () => {
+      router.push({ name: "minersDeal" });
+    };
+
+    const showPopoverText = ref(false);
+    const showPopoverText2 = ref(false);
+    const showPopoverText3 = ref(false);
+    const showPopover3 = ref(false);
+    const handleMouseLeave1 = () => {
+      // showPopover.value
+      let time = setTimeout(() => {
+        if (!showPopoverText.value) {
+          showPopover.value = false;
+        } else {
+          showPopover.value = true;
+        }
+        clearTimeout(time);
+      }, 70);
+    };
+    const handleMouseLeave2 = () => {
+      // showPopover.value
+      let time = setTimeout(() => {
+        if (!showPopoverText2.value) {
+          showPopover2.value = false;
+        } else {
+          showPopover2.value = true;
+        }
+        clearTimeout(time);
+      }, 70);
+    };
+    const handleMouseLeave3 = () => {
+      // showPopover.value
+      let time = setTimeout(() => {
+        if (!showPopoverText3.value) {
+          showPopover3.value = false;
+        } else {
+          showPopover3.value = true;
+        }
+        clearTimeout(time);
+      }, 70);
+    };
+    const handleMouseLeavetext1 = () => {
+      // showPopover.value
+      showPopoverText.value = false;
+      if (showPopover.value) {
+        showPopover.value = false;
+      }
+    };
+    const handleMouseLeavetext2 = () => {
+      // showPopover.value
+      showPopoverText2.value = false;
+      if (showPopover2.value) {
+        showPopover2.value = false;
+      }
+    };
+    const handleMouseLeavetext3 = () => {
+      // showPopover.value
+      showPopoverText3.value = false;
+      if (showPopover3.value) {
+        showPopover3.value = false;
+      }
+    };
+
+    const Coefficient = computed(() => {
+      return ethAccountInfo.value.Coefficient;
+    });
+    const expresionClass = computed(() => {
+      const num = Number(Coefficient.value);
+      if (num < 40) return "sad";
+      if (num >= 40 && num <= 50) return "neutral";
+      if (num > 50) return "smile";
+    });
+
+    const toCreator = () => {
+      router.push({ name: "snft-creator" });
+    };
     return {
+      Coefficient,
+      toCreator,
+      expresionClass,
+      showPopoverText2,
+      showPopoverText3,
+      showPopover3,
+      handleMouseLeavetext1,
+      handleMouseLeavetext2,
+      handleMouseLeavetext3,
+      showPopoverText,
+      handleMouseLeave1,
+      handleMouseLeave2,
+      handleMouseLeave3,
       extendView,
+      toExchange,
+      minerpledge,
       t,
       toCreate,
       handleChangeIsselect,

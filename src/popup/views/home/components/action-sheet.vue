@@ -28,7 +28,7 @@
             :data-selected="accountInfo.address.toUpperCase() ==
                     item.address.toUpperCase() ? true : false"
           >
-            <div class="flex account-card-s">
+            <div class="flex account-card-s" :title="item.address">
               <div class="flex center account-icon">
                 <i
                   :class="`iconfont f-14 ${

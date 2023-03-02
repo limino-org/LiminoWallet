@@ -26,11 +26,11 @@
               : false
           "
           :class="` clickActive ${
-            index < defaultlist.length - 1 ? 'van-hairline--bottom' : ''
+            index < importList.length - 1 ? 'van-hairline--bottom' : ''
           }`"
           @click="handleAccountFun2(item, index)"
         >
-          <div class="flex account-card">
+          <div class="flex account-card" :title="item.address">
             <div class="flex center select-box">
               <i
                 :class="`iconfont ${
@@ -49,7 +49,7 @@
             <div class="account-info flex center-v">
               <div class="account-info-box">
                 <div class="account-name flex center-v" :title="item.address">
-                  {{ item.name }}
+                  <div class="name-box">{{ item.name }}</div>
                   <div class="pl-4 pr-4" @click.stop="openModifModal(item)">
                     <i class="iconfont icon-bianji"  :title="t('common.modifName')"></i>
                   </div>
@@ -105,7 +105,7 @@
           }`"
           @click="handleAccountFun(item, index)"
         >
-          <div class="flex account-card">
+          <div class="flex account-card" :title="item.address">
             <div class="flex center select-box">
               <i
                 :class="`iconfont ${
@@ -518,6 +518,9 @@ function getHostName(url = "") {
 }
 </script>
 <style lang="scss" scoped>
+.name-box {
+  max-width: 120px;
+}
 .connect-btns {
   button {
     min-width: 100px;
