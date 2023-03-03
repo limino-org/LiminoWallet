@@ -143,27 +143,33 @@
     </div>
     <div class="text-center pl-30 pr-30 creatorTip">
         <i18n-t tag="div" keypath="creatorSnft.tip" class="lh-16">
-            <template v-slot:link1><a href="http://" target="_blank" class="link" rel="noopener noreferrer">{{ t('creatorSnft.exchange') }}</a></template>
-            <template v-slot:link2><a href="http://" target="_blank" class="link" rel="noopener noreferrer">{{ t('creatorSnft.browser') }}</a></template>
+            <template v-slot:link1><a :href="exchangeUrl" target="_blank" class="link" rel="noopener noreferrer">{{ t('creatorSnft.exchange') }}</a></template>
+            <template v-slot:link2><a :href="browserurl" target="_blank" class="link" rel="noopener noreferrer">{{ t('creatorSnft.browser') }}</a></template>
         </i18n-t>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { defineComponent, inject, InjectionKey, ref } from "vue";
+import { computed, defineComponent, inject, InjectionKey, ref } from "vue";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useI18n } from "vue-i18n";
 import WormholesTransition from "@/popup/components/wromTransition/index.vue";
 import { AppProvide } from "@/popup/provides/app";
 import { Icon as VanIcon, Popover as vanPopover } from "vant";
-
+import { VUE_APP_EXCHANGES_URL, VUE_APP_SCAN_URL } from "@/popup/enum/env";
+import { useStore } from "vuex";
+const {state} = useStore()
 const appProvide = inject<AppProvide>("appProvide");
+const accountInfo = computed(() => state.account.accountInfo)
 const { t } = useI18n();
 const showPopup = ref(false);
 const showPopup1 = ref(false);
 const showPopup2 = ref(false);
 const showPopup3 = ref(false);
 const showPopup4 = ref(false);
+const exchangeUrl = `${VUE_APP_EXCHANGES_URL}/c0x97807fd98c40e0237aa1f13cf3e7cedc5f37f23b/#/assets`
+const browserurl = `${VUE_APP_SCAN_URL}AccountDetail/${accountInfo.value.address}`
+
 </script>
 
 <style lang="scss" scoped>

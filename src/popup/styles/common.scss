@@ -6,6 +6,9 @@ body {
   min-width: 375PX;
   min-height: 601PX;
   background-color: #fff;
+  // font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  // font-variant: tabular-nums;
+  // font-feature-settings: "tnum","tnum";
 }
 
 body {
@@ -464,12 +467,14 @@ img {
   min-height: 298PX;
 }
 
-
+.van-popover.account-pop {
+  z-index: 1001 !important;
+}
 
 .tag-list {
   &.slider {
     .tag-user {
-      min-width: 50px;
+      min-width: 30px;
       width: auto;
 
       .user {

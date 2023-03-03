@@ -5,7 +5,7 @@ function guid() {
   return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
 }
 const events = [
-  // 'connect',
+  'connect',
   // 'disconnect',
   'chainChanged',
   'accountsChanged',
@@ -32,7 +32,7 @@ function Provider() {
     this.on('chainChanged', (chainId) => {
 
     }, callId)
-    this.on('accountsChanged', (addr) => {
+    this.on('accountsChanged', ([addr]) => {
       this.selectedAddress = addr
     }, callId)
   }
@@ -61,7 +61,23 @@ function Provider() {
     const { method } = params
     // (!this._state.isConnected && (method !== 'wallet_requestPermissions' && method !== 'eth_requestAccounts'))
     if (((method === 'wallet_requestPermissions' || method == 'eth_requestAccounts') && this._state.isConnected)) {
-      return Promise.reject('Request denied.')
+      return new Promise((resolve, reject) => {
+        const newParams = {...params, method: 'eth_accounts' }
+        _this.postMsg(newParams, res => {
+          const { code, message, response, sendId } = res
+          try {
+            _this.handleUpdateState(res, newParams)
+          if(code == 200) {
+            resolve(res.data)
+          } else {
+            reject(res)
+          }
+          } catch(errData){
+            reject(errData)
+          }
+          _this.handleSendCallBackById(method, sendId)
+        })
+      })
     }
     return new Promise(function (resolve, reject) {
       _this.postMsg({ ...params }, (res) => {
@@ -165,6 +181,10 @@ Provider.prototype = {
   removeAllListeners() {
     return this.request({ method: 'removeAllListeners', params: {} })
   },
+  async removeListener(method, call){
+    await this.handleDelEventCall(method);
+    typeof call == 'function' ? call() : '';
+  },
   getBlockNumber() {
     return this.request({ method: 'eth_blockNumber', params: {} })
   },
@@ -222,22 +242,27 @@ Provider.prototype = {
     }
   },
   handleDelEventCall(method) {
-    if(this._eventCallbacks[method] ) {
-      Object.keys(this._eventCallbacks[method]).forEach(callId => {
-        if(callId != this.onEventMainCallId) {
-          delete this._eventCallbacks[method][callId]
-        }
-      })
+    return new Promise((resolve, reject) => {
+      if(this._eventCallbacks[method] ) {
+        Object.keys(this._eventCallbacks[method]).forEach(callId => {
+          if(callId != this.onEventMainCallId) {
+            delete this._eventCallbacks[method][callId]
+          }
+        })
+      }
+      resolve()
+    })
 
-    }
   }
 
 }
 
 const ethereum = new Provider()
+const wormholes = new Provider()
 window.ethereum = ethereum
+window.wormholes = wormholes
 ethereum.init()
-
+wormholes.init()
 
 // Registers a custom signature callback event
 const event = document.createEvent('Event');
@@ -252,11 +277,13 @@ document.addEventListener('wormHoles-callback-event', (res) => {
     if (!events.includes(method)) {
       if (method && sendId && response) {
         ethereum.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
+        wormholes.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
       }
     } else {
       let { method } = data
       if (method) {
         ethereum.runCallBackEventByMethod(method, response.data)
+        wormholes.runCallBackEventByMethod(method, response.data)
       }
     }
   }

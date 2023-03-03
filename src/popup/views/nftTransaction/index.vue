@@ -8,16 +8,16 @@
      <!-- Account selection area -->
      <div class="userinfo">
       <!-- sender -->
-      <div class="from">
+      <div class="from " :title="accountInfo.addresss">
         <div class="userfrom">{{ t("sendto.from") }}:</div>
         <!-- Sender information -->
-        <div class="information van-hairline--surround">
+        <div class="information van-hairline--surround" :title="accountInfo.addresss">
           <div class="flex">
             <div class="avatar">
-              <AccountIcon :data="accountInfo.icon" />
+              <AccountIcon :data="accountInfo.icon"  :title="accountInfo.addresss"/>
             </div>
-            <div class="flex column userinformation">
-              <div class="username">{{ accountInfo.name }}</div>
+            <div class="flex column userinformation" :title="accountInfo.addresss">
+              <div class="username van-ellipsis">{{ accountInfo.name }}</div>
               <div class="userbalance">
                 {{ t("sendto.balance") }}:{{ decimal(accountInfo.amount) }}
                 {{ currentNetwork.currencySymbol }}
@@ -299,6 +299,7 @@ export default {
     .userinformation {
       margin-left: 10px;
       margin-top: 9px;
+      max-width: 80%;
       .username {
         font-size: 12px;
       }

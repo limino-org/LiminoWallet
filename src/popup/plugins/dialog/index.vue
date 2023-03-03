@@ -1,7 +1,7 @@
 <template>
-  <transition name="fade">
+ <Transition name="modal">
     <div :class="`dialog-mask flex center ${theme}`" v-show="isShow">
-      <div class="wormholes-dialog">
+      <div class="wormholes-dialog modal-container">
         <div>
           <div class="title" v-if="title">{{title}}</div>
           <div class="flex center icon-box"><Icon name="warning" /></div>
@@ -160,6 +160,7 @@ defineExpose({
   top: 0;
   bottom: 0;
   z-index: 5000;
+  transition: all 0.3s ease;
   &.light {
     background: rgba($color: #000000, $alpha: 0.5);
     .wormholes-dialog {
@@ -219,13 +220,13 @@ defineExpose({
     }
   }
 }
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease-in;
-}
+// .fade-enter-active,
+// .fade-leave-active {
+//   transition: opacity 0.2s ease-in;
+// }
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
+// .fade-enter-from,
+// .fade-leave-to {
+//   opacity: 0;
+// }
 </style>

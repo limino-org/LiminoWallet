@@ -695,10 +695,11 @@
 		labelProfit:"当选Creator总收益",
 		labelTimes:"当选Creator总次数",
 		labelAward:"当选Crator总奖励",
-		labelWeight:"当选Creator权重",
+		labelWeight:"Creator预提名权重",
 		tip:"通过 {link1} 购买S-NFT以增加成为Creator的权重，请到 {link2} 查看更多详细信息",
 		exchange:"交易所",
-		browser:"区块浏览器"
+		browser:"区块浏览器",
+		creator:"创建者"
 	},
 	importByMnemonic: {
 		importfrommnemonic: '从助记词导入',

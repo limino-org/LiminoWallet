@@ -28,7 +28,7 @@
       <div :class="`account-detail-box ${hasExchange ? 'hasExchange' : ''}`">
         <div class="account-card flex center pl-14 pr-14 pt-20">
           <div class="card flex column between">
-            <div class="card-top flex pl-14 pr-10 pt-10">
+            <div class="card-top flex pl-14 pr-14 pt-16">
               <!-- icon -->
               <div class="icon-circle flex center hover">
                 <AccountIcon :data="accountInfo.icon" @click="showaccount" />
@@ -68,7 +68,11 @@
                         @mouseover="showPopoverText3 = true"
                         @mouseleave="handleMouseLeavetext3"
                       >
-                        {{ t("common.exchange_pledge") }}
+                      <div> {{ t("creatorSnft.labelPeriod") }}:</div>
+                      <div>{{ t("creatorSnft.labelProfit") }}:</div>
+                      <div>{{ t("creatorSnft.labelTimes") }}:</div>
+                      <div>{{ t("creatorSnft.labelAward") }}:</div>
+                      <div>{{ t("creatorSnft.labelWeight") }}:</div>
                       </div>
                       <template #reference>
                         <div
@@ -228,7 +232,7 @@
               </div>
             </div>
             <!-- amount of money -->
-            <div class="card-bottom flex right center-v pr-14 pl-14">
+            <div class="card-bottom flex right center-v pr-16 pl-16">
               <div class="flex right">
                 <i
                   :class="`iconfont  mr-6 ${

@@ -703,10 +703,12 @@
 		labelProfit:"Total revenue of elected Creator",
 		labelTimes:"Total number of times that you have been elected Creator",
 		labelAward:"Total reward for being elected Crator",
-		labelWeight:"Elected Creator weight",
+		labelWeight:"Creator Withhold name weight",
 		tip:"Buy S-NFT through the {link1} to increase the weight to becomeing Creator, Go to the {link2} to see more details",
 		exchange:"Exchange",
-		browser:"Browser"
+		browser:"Browser",
+		creator:"Creator"
+
 	},
 	importByMnemonic: {
 		importfrommnemonic: 'Import from the mnemonic',

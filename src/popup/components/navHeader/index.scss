@@ -222,7 +222,6 @@
   .address-card  {
     height: 20px;
     border-radius: 10px;
-    margin-top: 6px;
     .add {
       font-size: 12px;
       line-height: 20px;
@@ -283,6 +282,12 @@
         font-size: 12px;
         font-weight: 600;
         line-height: 42px;
+        // &.Tab {
+        //   line-height: 48px;
+        // }
+        // &.Popup {
+        //   line-height: 42px;
+        // }
         transition: ease .3s;
         display: flex;
         align-items: center;

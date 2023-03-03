@@ -12,7 +12,7 @@
             <van-icon name="cross" class="hover" @click="showSlider = false" />
           </div>
 
-          <div class="user-img">
+          <div :class="`user-img mt-20`">
             <div class="user-img-circle flex center-v hover">
               <AccountIcon
                 :data="accountInfo.icon"
@@ -28,7 +28,11 @@
                 >
                   <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"                         @mouseover="showPopoverText3 = true"
                         @mouseleave="handleMouseLeavetext3">
-                    {{ t("common.exchange_pledge") }}
+                        <div> {{ t("creatorSnft.labelPeriod") }}:</div>
+                      <div>{{ t("creatorSnft.labelProfit") }}:</div>
+                      <div>{{ t("creatorSnft.labelTimes") }}:</div>
+                      <div>{{ t("creatorSnft.labelAward") }}:</div>
+                      <div>{{ t("creatorSnft.labelWeight") }}:</div>
                   </div>
                   <template #reference>
                     <div
@@ -39,11 +43,11 @@
                         ethAccountInfo ? ethAccountInfo.ExchangerFlag : false
                       "
                     >
-                      <span class="user flex center">
+                      <span class="user flex center" @click="toCreator">
                         <i class="iconfont icon-Add"></i>
                       </span>
-                      <div class="tag-label flex center-v">
-                        <span>{{ t("sidebar.snftCreator") }}</span>
+                      <div class="tag-label flex center-v" @click="toCreator">
+                        <span class="van-ellipsis">{{ t("creatorSnft.creator") }}</span>
                       </div>
                     </div>
                   </template>
@@ -99,6 +103,7 @@
                       class="tag-user type2 position relative hover ml-8"
                       @mouseover="showPopover = true"
                       @mouseleave="handleMouseLeave1"
+                      @click="minerpledge"
                       v-show="
                         ethAccountInfo
                           ? ethAccountInfo.PledgedBalance > 0
@@ -112,7 +117,7 @@
                         <!-- <img src="@/popup/views/home/imgs/wakuang.png" alt /> -->
                       </span>
                       <div class="tag-label flex center-v">
-                        <span>{{ t("common.validator") }}</span>
+                        <span class="van-ellipsis">{{ t("common.validator") }}</span>
                       </div>
                     </div>
                   </template>
@@ -132,6 +137,7 @@
                       class="tag-user type3 position relative ml-8 hover"
                       @mouseover="showPopover2 = true"
                       @mouseleave="handleMouseLeave2"
+                      @click="oneClick"
                       v-show="
                         ethAccountInfo ? ethAccountInfo.ExchangerFlag : false
                       "
@@ -142,7 +148,7 @@
                         ></i>
                       </span>
                       <div class="tag-label flex center-v">
-                        <span>{{ t("common.marketplace") }}</span>
+                        <span class="van-ellipsis">{{ t("common.marketplace") }}</span>
                       </div>
                     </div>
                   </template>
@@ -150,7 +156,7 @@
               </div>
             </div>
             <!-- Switch account -->
-            <div class="account mt-6">
+            <div :class="`account mt-6 ${pageType === 'Tab' ? 'mt-14' :''}`">
               <div class="flex center-v name" @click="toAccountManagement">
                 {{ accountInfo.name }}
                 <i
@@ -160,10 +166,10 @@
                 ></i>
               </div>
               <!-- Address, copy, QR code-->
-              <div class="address-card flex" @click="toCopy">
+              <div :class="`address-card flex mt-6 ${pageType === 'Tab' ? 'mt-14' :''}`" @click="toCopy">
                 <div class="add">{{ accountInfo.address }}</div>
               </div>
-              <div class="amount mt-8">
+              <div :class="`amount mt-8 ${pageType === 'Tab' ? 'mt-14' :''}`">
                 {{ amount }} {{ currentNetwork.currencySymbol }}
               </div>
             </div>
@@ -178,7 +184,7 @@
           <div class="setting-list">
             <!-- websize -->
             <div
-              class="setting-btn flex between center-v clickActive"
+              :class="`setting-btn flex between center-v clickActive ${pageType}`"
               @click="toOfficiaWebsite"
             >
               <div class="flex center">
@@ -190,7 +196,7 @@
             </div>
 
             <div
-              class="setting-btn flex center-v between clickActive"
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
               v-if="currentNetwork.isMain"
               @click="minerpledge"
             >
@@ -203,7 +209,7 @@
 
             <!-- One-click exchange -->
             <div
-              class="setting-btn flex between center-v clickActive"
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
               v-if="currentNetwork.isMain"
               @click="oneClick"
             >
@@ -219,7 +225,7 @@
             </div>
 
             <div
-              class="setting-btn flex between center-v clickActive"
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
               @click="tobrowser"
             >
               <div class="flex center">
@@ -230,7 +236,7 @@
               <van-icon name="arrow" />
             </div>
             <div
-              class="setting-btn flex center-v between clickActive"
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
               @click="routerTo('transaction-history')"
             >
               <div class="flex center">
@@ -241,7 +247,7 @@
             </div>
 
             <div
-              class="setting-btn active flex center-v between clickActive"
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
               @click="toHelp"
             >
               <div class="flex center">
@@ -251,7 +257,7 @@
               <van-icon name="arrow" />
             </div>
             <div
-              class="setting-btn active flex center-v between clickActive"
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
               @click="toCreator"
             >
               <div class="flex center">
@@ -261,7 +267,7 @@
               <van-icon name="arrow" />
             </div>
             <div
-              class="setting-btn flex center-v between clickActive"
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
               @click="routerTo('settings')"
             >
               <div class="flex center">
@@ -371,6 +377,8 @@ export default defineComponent({
     },
   },
   setup(props: any, context: SetupContext) {
+    // @ts-ignore
+    const pageType = window.pageType
     const showSlider = ref(false);
     const { emit } = context;
     const store = useStore();
@@ -620,14 +628,8 @@ export default defineComponent({
       }
     };
     
-    onDeactivated(() => {
-      showPopoverText.value = false
-      showPopoverText2.value = false
-      showPopoverText3.value = false
-      showPopover.value = false
-      showPopover2.value = false
-      showPopover3.value = false
-    })
+
+
     return {
       expresionClass,
       showPopoverText,
@@ -680,6 +682,7 @@ export default defineComponent({
       hasExchange,
       t,
       minerpledge,
+      pageType
     };
   },
 });

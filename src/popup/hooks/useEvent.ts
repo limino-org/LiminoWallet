@@ -7,7 +7,9 @@ import  { web3 } from '@/popup/utils/web3'
 import { sendBackground } from '../utils/sendBackground';
 export enum eventHandler {
     changeNetwork = 'changeNetwork',
-    changeAccount = 'changeAccount'
+    changeAccount = 'changeAccount',
+    connect = 'connect',
+    disconnect = 'disconnect'
 }
 import {getWallet} from '@/popup/store/modules/account'
 // Global Event Management
@@ -26,8 +28,10 @@ export const useEvent = () => {
     })
     // account Change
     eventBus.on(eventHandler.changeAccount, (address: string) => {
-        sendBackground({method:eventsEmitter.accountsChanged, response:{code:'200',data:address}})
+        sendBackground({method:eventsEmitter.accountsChanged, response:{code:'200',data:[address]}})
+        console.log('change---',address)
         dispatch("system/getEthAccountInfo");
         handleUpdate()
     })
+
 }
