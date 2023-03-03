@@ -4,19 +4,19 @@
   </van-sticky>
   <div class="send-page">
 
-   <div class="page-container">
+   <div class="page-container" >
      <!-- Account selection area -->
      <div class="userinfo">
       <!-- sender -->
-      <div class="from " :title="accountInfo.addresss">
+      <div class="from " :title="formAddr">
         <div class="userfrom">{{ t("sendto.from") }}:</div>
         <!-- Sender information -->
-        <div class="information van-hairline--surround" :title="accountInfo.addresss">
+        <div class="information van-hairline--surround">
           <div class="flex">
             <div class="avatar">
-              <AccountIcon :data="accountInfo.icon"  :title="accountInfo.addresss"/>
+              <AccountIcon :data="accountInfo.icon" />
             </div>
-            <div class="flex column userinformation" :title="accountInfo.addresss">
+            <div class="flex column userinformation">
               <div class="username van-ellipsis">{{ accountInfo.name }}</div>
               <div class="userbalance">
                 {{ t("sendto.balance") }}:{{ decimal(accountInfo.amount) }}
@@ -126,6 +126,7 @@ export default {
     const { t } = useI18n();
     const { dispatch } = store;
     const accountInfo = computed(() => store.state.account.accountInfo);
+    const formAddr = computed(() => store.state.account.accountInfo.address)
     const currentNetwork = computed(() => store.state.account.currentNetwork);
     const route = useRoute();
     const { query } = route;
@@ -196,6 +197,7 @@ export default {
       senderData,
       gonext,
       accountInfo,
+      formAddr,
       toAddress,
       nextLoading,
       toAccount,
@@ -218,6 +220,7 @@ export default {
 .tx-json{
   background: #f3f4f5;
   min-height: 260px;
+  font-size: 14px;
 }
 .contract-info {
   .origin {
