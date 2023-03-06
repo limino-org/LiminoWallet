@@ -572,9 +572,9 @@
 		from: 'From',
 		to: 'To',
 		usemax: 'Use the maximum value',
-		balance: 'balance',
-		address: 'address',
-		insufficientfunds: 'insufficient funds',
+		balance: 'Balance',
+		address: 'Address',
+		insufficientfunds: 'Insufficient funds',
 		amount: 'AMOUNT',
 		total: 'total',
 		hexdata: 'Hex Data',
@@ -1262,7 +1262,9 @@
 		connectSuccess:"Be connected successfully",
 		connectToSize:"Connect to {size}",
 		disconnectToSize:"Disconnect from {size}",
-				modifName:"Modify the name"
+		modifName:"Modify the name",
+		diffAddr:"The current address is different from the address selected by the wallet"
+
 
 
 	},

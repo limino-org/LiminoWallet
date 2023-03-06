@@ -106,6 +106,7 @@ export default {
       dispatch('system/getChainVersion', newwallet);
     })
     const animation = ref("slide");
+    
     return {
       t,
       route,

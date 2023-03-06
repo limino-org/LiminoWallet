@@ -9,7 +9,7 @@
      <div class="userinfo">
       <!-- sender -->
       <div class="from">
-        <div class="userfrom">{{ t("sendto.from") }}:</div>
+        <!-- <div class="userfrom">{{ t("sendto.from") }}:</div> -->
         <!-- Sender information -->
         <div class="information van-hairline--surround">
           <div class="flex">
@@ -18,17 +18,22 @@
             </div>
             <div class="flex column userinformation">
               <div class="username">{{ accountInfo.name }}</div>
-              <div class="userbalance">
-                {{ t("sendto.balance") }}:{{ decimal(accountInfo.amount) }}
-                {{ currentNetwork.currencySymbol }}
+              <div class="userbalance van-ellipsis" :title="accountInfo.address">
+                {{ accountInfo.address }}
               </div>
             </div>
           </div>
         </div>
       </div>
+      <!-- <div class="flex center-v pl-16 pr-16 diffAddr" v-if="!diffAddr">
+        <van-icon name="warning" />{{ t('common.diffAddr') }}
+      </div> -->
+      <div class="balance pl-14 pr-14">   {{ t("sendto.balance") }}:{{ decimal(accountInfo.amount) }}
+                {{ currentNetwork.currencySymbol }}
+              </div>
       <!-- recipient -->
       <div class="to from" v-if="txJSON.type != '0x2'">
-        <div class="sendto text-center">{{ t("sendto.to") }} :</div>
+        <!-- <div class="sendto text-center">{{ t("sendto.to") }} :</div> -->
         <div class="information van-hairline--surround">
           <div class="flex">
             <div class="avatar">
@@ -133,8 +138,11 @@ export default {
     const senderData = JSON.parse(sender);
     console.log("senderData", senderData);
     const txJSON = ref(newtx);
-    console.warn("tx----------------", txJSON.value);
-
+    txJSON.value['from'] = accountInfo.value.address
+    // const currentAccountInfo = computed(() => store.state.account.accountList.find(item => item.address.toUpperCase() ==from.toString().toUpperCase()))
+    // console.warn("tx----------------", txJSON.value);
+    // const diffAddr = ref(from.toString().toUpperCase() == accountInfo.value.address.toUpperCase() ? true : false)
+    // console.warn('diffAddr', diffAddr.value)
     const clickRight = () => {
       router.replace({ name: "wallet" });
     };
@@ -199,8 +207,12 @@ export default {
   padding-top: 20px;
 }
 .json-box {
-  max-height: 300px;
+  max-height: 270px;
   overflow-y: scroll;
+}
+.balance {
+  background: #f3f4f5;
+  line-height: 24px;
 }
 .tx-json{
   background: #f3f4f5;
@@ -263,7 +275,6 @@ export default {
     border-collapse: collapse;
     width: 100%;
     height: 46px;
-    margin-right: 13px;
     position: relative;
     .closeIcon {
       position: absolute;
@@ -287,7 +298,8 @@ export default {
       margin-left: 10px;
       margin-top: 9px;
       .username {
-        font-size: 12px;
+        font-size: 12px; 
+
       }
       .userbalance {
         font-size: 10px;
@@ -295,6 +307,15 @@ export default {
         color: rgba(132, 140, 150, 1);
       }
     }
+  }
+}
+.diffAddr {
+  color: #D73A49;
+  line-height: 16px;
+  margin-bottom: 10px;
+  i {
+    font-size: 18px;
+    margin-right: 5px;
   }
 }
 .to {

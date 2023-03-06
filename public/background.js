@@ -1,7 +1,7 @@
 
 
 
-import { handleRpcRequest } from './modules/handleRpcRequest.js'
+import { handleRequest } from './modules/handleRequest.js'
 import { handleRpcResponse } from './modules/handleRpcResponse.js'
 
 import {
@@ -18,6 +18,7 @@ import {
   handleType,
   wallet_methods
 } from './modules/common.js'
+import { handleRpc } from './modules/handleRequest.js';
 // Listening for Browser events
 // Return true for asynchronous messages
 chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
@@ -63,9 +64,8 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     // Check whether the RPC Method is supported
     if (wallet_methods.includes(method)) {
       // Return error messages are not supported
-      if(handleRpcRequest[method]) {
-        handleRpcRequest[method]({ newParams, sendId }, sendResponse, sender)
-        return true
+      if(handleRequest[method]) {
+        handleRequest[method]({ newParams, sendId }, sendResponse, sender)
       } else {
         const errMsg = errorCode['4200']
         sendMessage({...createMsg(errMsg, method || 'unknow'), sendId}, {}, sender)
@@ -73,7 +73,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
       }
     } else {
       // RPC calls
-     handleRpcRequest.handleRpc(method, { newParams, sendId}, sendResponse, sender)
+      handleRpc(method, { newParams, sendId}, sendResponse, sender)
     }
     return true;
   }
@@ -90,7 +90,6 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
       sendMessage(createMsg(errMsg, method || 'unknow'), {}, sender)
       return false
     }
-    console.warn('popup msg', method, response)
     handleRpcResponse[method].sendResponse(response || {}, sendResponse, sender)
     return true
   }
@@ -106,10 +105,39 @@ chrome.runtime.onInstalled.addListener(async () => {
 })
 
 //  Listen window closed
-chrome.tabs.onRemoved.addListener(function (tabid, { windowId }) {
+chrome.tabs.onRemoved.addListener(async function (tabid, { windowId }) {
+  //  try {
+  //   const popupData = await chrome.storage.local.get(['tab-params' + windowId])
+  //   const data = popupData['tab-params' + windowId]
+  //   const { method, sender } = data
+  //   const pendingUrl = data.window.tabs[0].pendingUrl
+  //   const query = getQuery(pendingUrl)
+  //   const { address, sendId } = query
+  //   const errMsg = { code: "-32002", reason: "Cancel request", message: "The user canceled the request" }
+  //   const sendMsg = createMsg(errMsg, method)
+  //   sendMessage({...sendMsg, sendId}, {}, sender)
+  //  } catch(err){
+  //   console.log('err remove', err)
+  //  }
+
   Object.keys(handleRpcResponse).forEach(method => {
     if (handleRpcResponse[method] && handleRpcResponse[method].window && handleRpcResponse[method].window.id == windowId) {
       resetParamsData(method)
     }
   })
 })
+
+export const getQuery = (url) => {
+  const hash = url
+  const strarr = hash.split('?')
+  const str = strarr.length ? strarr[1] : null
+  if (!str) {
+    return {}
+  }
+  let arr = str.split("&");
+  let obj = {};
+  for (let i of arr) {
+    obj[i.split("=")[0]] = i.split("=")[1];
+  }
+  return obj
+}

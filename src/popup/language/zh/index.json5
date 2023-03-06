@@ -1271,7 +1271,8 @@
 		disconnectSuccess:"断开连接成功",
 		connectToSize:"连接到{size}",
 		disconnectToSize:"从{size}断开连接",
-		modifName:"修改名称"
+		modifName:"修改名称",
+		diffAddr:"当前地址与钱包选择的地址不一致"
 
 
 

@@ -35,7 +35,6 @@ export const getQuery = () => {
   for (let i of arr) {
     obj[i.split("=")[0]] = i.split("=")[1];
   }
-  console.log('query-------', obj)
   return obj
 }
 

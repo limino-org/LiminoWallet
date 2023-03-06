@@ -30,10 +30,18 @@ function Provider() {
   this.init = () => {
     const callId = this.onEventMainCallId
     this.on('chainChanged', (chainId) => {
-
+      this._state.chainId = chainId
     }, callId)
     this.on('accountsChanged', (addr) => {
       this.selectedAddress = addr
+    }, callId)
+    // TODO
+    this.on('connect', () => {
+      this._state.isConnected = true
+    }, callId)
+    // TODO
+    this.on('disconnect', () => {
+      this._state.isConnected = false
     }, callId)
   }
   this.enable = function () {
@@ -59,10 +67,6 @@ function Provider() {
   this.request = function (params) {
     var _this = this
     const { method } = params
-    // (!this._state.isConnected && (method !== 'wallet_requestPermissions' && method !== 'eth_requestAccounts'))
-    if (((method === 'wallet_requestPermissions' || method == 'eth_requestAccounts') && this._state.isConnected)) {
-      return Promise.reject('Request denied.')
-    }
     return new Promise(function (resolve, reject) {
       _this.postMsg({ ...params }, (res) => {
         if (res) {
@@ -94,7 +98,7 @@ function Provider() {
         case 'wallet_requestPermissions':
         case 'eth_requestAccounts':
         case 'eth_accounts':
-          this._state.accounts = data.data
+          this._state.accounts = data
           this._state.isConnected = true
           this._state.isUnlocked = false
           this.selectedAddress = data[0]
@@ -109,7 +113,8 @@ function Provider() {
           this.networkVersion = data
           break;
         case 'accountsChanged':
-          this.selectedAddress = data
+          this.selectedAddress = data[0]
+          this._state.accounts = data
           break;
         default:
           this._state.isConnected = true
@@ -157,7 +162,7 @@ Provider.prototype = {
     return this
   },
   off(type) {
-    if(type && events.includes(type)) {
+    if (type && events.includes(type)) {
       this.handleDelEventCall(type)
     }
 
@@ -196,12 +201,12 @@ Provider.prototype = {
       }
     }
   },
-  handleUpdateSelectAddress(addr){
+  handleUpdateSelectAddress(addr) {
     this.selectedAddress = addr
   },
-  handleAddEventCall(method, callId, call){
-    if(method && callId && call) {
-      if(!this._eventCallbacks[method]) {
+  handleAddEventCall(method, callId, call) {
+    if (method && callId && call) {
+      if (!this._eventCallbacks[method]) {
         this._eventCallbacks[method] = {
           [callId]: call
         }
@@ -211,10 +216,10 @@ Provider.prototype = {
     }
   },
   runCallBackEventByMethod(method, response = {}) {
-    if(method) {
+    if (method) {
       if (this._eventCallbacks[method]) {
         Object.keys(this._eventCallbacks[method]).forEach(callId => {
-          if(this._eventCallbacks[method][callId]){
+          if (this._eventCallbacks[method][callId]) {
             this._eventCallbacks[method][callId](response)
           }
         })
@@ -222,9 +227,9 @@ Provider.prototype = {
     }
   },
   handleDelEventCall(method) {
-    if(this._eventCallbacks[method] ) {
+    if (this._eventCallbacks[method]) {
       Object.keys(this._eventCallbacks[method]).forEach(callId => {
-        if(callId != this.onEventMainCallId) {
+        if (callId != this.onEventMainCallId) {
           delete this._eventCallbacks[method][callId]
         }
       })

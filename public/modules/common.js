@@ -225,6 +225,45 @@ export async function getPwd() {
   return ''
 }
 
+// Determine whether the two addresses are the same, return
+export async function handleDiffAddrAndLocalAddr(addr = '', localAddr = ''){
+  return new Promise((resolve, reject) => {
+    if(!addr || !localAddr) {
+      const errMsg = { code: "-32002", reason: "Resource unavailable", message: "Address capacity null" }
+      reject(errMsg)
+    }
+    if(addr && localAddr) {
+      if(addr.toUpperCase() != localAddr.toUpperCase()) {
+        const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The current RPC request address is different from the account address" }
+        reject(errMsg)
+      } else {
+        resolve()
+      }
+    }
+  })
+
+}
+
+//  get local account of addr
+export async function getLocalAddr() {
+  const local = await localforage.getItem("vuex") || null
+  if (!local) {
+    const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The wallet has not been initialized. Please initialize the wallet first" }
+    throw errMsg
+  }
+  const pwdVal = await getPwd()
+  if (!pwdVal) {
+    const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The wallet has not been initialized. Please initialize the wallet first" }
+    throw errMsg
+  }
+  const { accountInfo } = local.account;
+  if(accountInfo && accountInfo.address){
+    return accountInfo.address
+  } else {
+    throw errMsg
+  }
+}
+
 export const eventTypes = {
   // Password failure event
   pwdExpired: "password-expired-event",
@@ -233,6 +272,33 @@ export const eventTypes = {
 }
 
 let newwallet = null
+let provider = null
+export async function getProvider() {
+  const local = await localforage.getItem("vuex") || null
+  if (!local) {
+    const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The wallet has not been initialized. Please initialize the wallet first" }
+    throw errMsg
+  }
+  const pwdVal = await getPwd()
+  if (!pwdVal) {
+    const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The wallet has not been initialized. Please initialize the wallet first" }
+    throw errMsg
+  }
+  const { currentNetwork } = local.account;
+  const { URL } = currentNetwork
+  if(!provider) {
+    provider = ethers.getDefaultProvider(URL);
+    return provider
+  }
+  if(provider){
+    if(provider.connection.url != URL) {
+      provider = ethers.getDefaultProvider(URL);
+    }
+    return provider
+  }
+  return provider
+} 
+
 export async function initWallet() {
   const local = await localforage.getItem("vuex") || null
   if (!local) {
@@ -251,17 +317,17 @@ export async function initWallet() {
     const params = { json: keyStore, password: pwdVal };
     if(!newwallet) {
       const wallet = await createWalletByJson(params);
-      let provider = ethers.getDefaultProvider(URL);
+      provider = ethers.getDefaultProvider(URL);
       newwallet = wallet.connect(provider);
       return newwallet
     }
     if(!newwallet.provider) {
-      let provider = ethers.getDefaultProvider(URL);
+      provider = ethers.getDefaultProvider(URL);
       newwallet = wallet.connect(provider);
       return newwallet
     }
     if(newwallet.provider &&(newwallet.provider.connection.url != URL)) {
-      let provider = ethers.getDefaultProvider(URL);
+      provider = ethers.getDefaultProvider(URL);
       newwallet.connect(provider);
       return newwallet
     }
@@ -272,7 +338,7 @@ export async function initWallet() {
       const { URL } = newCurrentNetwork
       const params = { json: keyStore, password: pwdVal };
       const wallet = await createWalletByJson(params);
-      let provider = ethers.getDefaultProvider(URL);
+      provider = ethers.getDefaultProvider(URL);
       newwallet = wallet.connect(provider);
     }
     return newwallet
@@ -329,6 +395,9 @@ export const handleType = {
   eth_getBlockByNumber: "eth_getBlockByNumber",
   // trade
   eth_sendTransaction: "eth_sendTransaction",
+  eth_signTransaction:"eth_signTransaction",
+  eth_sendRawTransaction:"eth_sendRawTransaction",
+  eth_send:"eth_send",
   // Signature Single signature data
   personal_sign: "personal_sign",
   // Signing multiple signature data
@@ -339,6 +408,7 @@ export const handleType = {
   wallet_requestPermissions: 'wallet_requestPermissions',
   // Connect to wallet
   eth_requestAccounts: 'eth_requestAccounts',
+  eth_signTypedData:"eth_signTypedData",
   // For chain id 
   eth_chainId: 'eth_chainId',
   // Gets the current wallet address
@@ -368,14 +438,14 @@ export const handleType = {
   waitTxQueueResponse: "waitTxQueueResponse"
 }
 
-
+// A method that requires the user to actively trigger through the wallet button
 export const wallet_methods = [
   handleType.eth_requestAccounts,
   handleType.eth_sendTransaction,
   handleType.eth_sign,
-  handleType.handleReject,
   handleType.personal_sign,
   handleType.multiple_sign,
+  handleType.handleReject,
   handleType.eth_accounts,
   eventsEmitter.message,
   eventsEmitter.accountsChanged,
@@ -486,11 +556,12 @@ export async function openPopup(
 ) {
   await closeTabs()
   const senderParams = await getLocalParams(method)
-  const { status } = senderParams
-  if (status && status != 'close') {
-    return
-  }
-
+  // console.log('openPopup 2', senderParams)
+  // const { status } = senderParams
+  // if (status && status != 'close') {
+  //   return
+  // }
+  console.log('openPopup 3', method, url)
   senderParams.status = 'pendding'
   await chrome.storage.local.set({ [method]: senderParams })
   return new Promise(async (resolve) => {
@@ -504,6 +575,9 @@ export async function openPopup(
           width: 390,
           height: 700,
         }, async (e) => {
+          console.log('open', e)
+   
+          // await chrome.storage.local.set({ ['tab-params' +e.id]: {...senderParams,method} })
           await chrome.storage.local.set({
             [method]: {
               sender,

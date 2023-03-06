@@ -26,7 +26,7 @@ export const useEvent = () => {
     })
     // account Change
     eventBus.on(eventHandler.changeAccount, (address: string) => {
-        sendBackground({method:eventsEmitter.accountsChanged, response:{code:'200',data:address}})
+        sendBackground({method:eventsEmitter.accountsChanged, response:{code:'200',data:[address]}})
         dispatch("system/getEthAccountInfo");
         handleUpdate()
     })
