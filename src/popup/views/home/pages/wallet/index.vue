@@ -38,7 +38,7 @@
                 <div class="flex between at center-v">
                   <span
                     @click="showaccount"
-                    class="clickActive f-12 accName"
+                    class="clickActive f-12 accName flex center-v"
                     id="guide-step1"
                     :title="accountInfo.name"
                   >

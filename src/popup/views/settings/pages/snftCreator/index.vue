@@ -1,5 +1,5 @@
 <template>
-  <div class="creator">
+  <div :class="`creator ${pageType}`">
     <NavHeader :title="t('sidebar.snftCreator')" :has-right="false">
       <template v-slot:left>
         <span class="back" @click="appProvide.back">{{
@@ -29,7 +29,7 @@
               class="creatorSnftPopover"
               v-model:show="showPopup"
               theme="dark"
-              placement="right"
+              :placement="`${pageType == 'Popup' ? 'bottom-start' : 'right'}`"
             >
               <p class="pl-10 pr-10">{{ t("creatorSnft.totalPeriod") }}</p>
               <template #reference>
@@ -52,7 +52,7 @@
               class="creatorSnftPopover"
               v-model:show="showPopup1"
               theme="dark"
-              placement="right"
+              :placement="`${pageType == 'Popup' ? 'bottom-start' : 'right'}`"
             >
               <p class="pl-10 pr-10">{{ t("creatorSnft.totalProfit") }}</p>
               <template #reference>
@@ -76,7 +76,7 @@
               v-model:show="showPopup2"
               class="creatorSnftPopover"
               theme="dark"
-              placement="right"
+              :placement="`${pageType == 'Popup' ? 'bottom-start' : 'right'}`"
             >
               <p class="pl-10 pr-10">{{ t("creatorSnft.totalTimes") }}</p>
               <template #reference>
@@ -100,7 +100,7 @@
               v-model:show="showPopup3"
               class="creatorSnftPopover"
               theme="dark"
-              placement="right"
+              :placement="`${pageType == 'Popup' ? 'bottom-start' : 'right'}`"
             >
               <p class="pl-10 pr-10">{{ t("creatorSnft.totalAward") }}</p>
               <template #reference>
@@ -124,7 +124,7 @@
                 v-model:show="showPopup4"
                 class="creatorSnftPopover"
                 theme="dark"
-                placement="right"
+                :placement="`${pageType == 'Popup' ? 'bottom-start' : 'right'}`"
               >
                 <p class="pl-10 pr-10">{{ t("creatorSnft.totalWeight") }}</p>
                 <template #reference>
@@ -169,7 +169,8 @@ const showPopup3 = ref(false);
 const showPopup4 = ref(false);
 const exchangeUrl = `${VUE_APP_EXCHANGES_URL}/c0x97807fd98c40e0237aa1f13cf3e7cedc5f37f23b/#/assets`
 const browserurl = `${VUE_APP_SCAN_URL}AccountDetail/${accountInfo.value.address}`
-
+// @ts-ignore
+const pageType = window.pageType
 </script>
 
 <style lang="scss" scoped>
@@ -204,6 +205,15 @@ const browserurl = `${VUE_APP_SCAN_URL}AccountDetail/${accountInfo.value.address
     .c-bottom {
       line-height: 12px;
       margin-top: 5px;
+    }
+  }
+}
+.creator {
+  &.Popup {
+    :deep(){
+      .icon-box {
+        margin-top: 20px;
+      }
     }
   }
 }
