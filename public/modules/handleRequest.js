@@ -96,8 +96,8 @@ export const handleRequest = {
     async [handleType.eth_sign](data, sendResponse, sender) {
         //Sign the hexadecimal data and sign the account address
         const { newParams, sendId } = data
-        const [address, sig] = newParams
         try {
+            const [address, sig] = newParams
             // const localAddr = await getLocalAddr()
             // await handleDiffAddrAndLocalAddr(address, localAddr)
             // Parsing signature data
@@ -171,13 +171,13 @@ export const handleRpc = async function (method, data, sendResponse, sender) {
             const sendMsg = createMsg(errMsg, method)
             sendMessage({ ...sendMsg, sendId }, {}, sender)
         }).catch(err => {
-            const errMsg = { ...errorCode['32000'], data: JSON.stringify(err) }
+            const errMsg = { ...errorCode['32000'], data: err }
             const sendMsg = createMsg(errMsg, method)
             sendMessage({ ...sendMsg, sendId }, {}, sender)
         })
     } catch (err) {
         console.log('err----', err)
-        const errMsg = { ...errorCode['32000'], data: JSON.stringify(err) }
+        const errMsg = { ...errorCode['32000'], data: err }
         sendMessage({ ...errMsg, sendId }, {}, sender)
     }
 }

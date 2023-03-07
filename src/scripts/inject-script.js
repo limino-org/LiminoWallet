@@ -1,9 +1,7 @@
-function guid() {
-  function S4() {
-    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-  }
-  return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+function generateRandom() {
+  return Math.random().toString(16).slice(2);
 }
+
 const events = [
   // 'connect',
   // 'disconnect',
@@ -28,6 +26,30 @@ function Provider() {
   this.subscriptions = []
   this.onEventMainCallId = 'OnMainEvent'
   this.init = () => {
+    // Registers a custom signature callback event
+    const event = document.createEvent('Event');
+    event.initEvent('wormHoles-callback-event', true, true);
+
+    // Listen for callback events
+    document.addEventListener('wormHoles-callback-event', (res) => {
+      // accepting of data
+      let { type, data, sendId } = res.detail;
+      if (type == "wormholes-callback") {
+        const { method, response } = data
+        if (!events.includes(method)) {
+          if (method && sendId && response) {
+            ethereum.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
+            wormholes.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
+          }
+        } else {
+          let { method } = data
+          if (method) {
+            ethereum.runCallBackEventByMethod(method, response.data)
+            wormholes.runCallBackEventByMethod(method, response.data)
+          }
+        }
+      }
+    });
     const callId = this.onEventMainCallId
     this.on('chainChanged', (chainId) => {
       this._state.chainId = chainId
@@ -43,6 +65,7 @@ function Provider() {
     this.on('disconnect', () => {
       this._state.isConnected = false
     }, callId)
+
   }
   this.enable = function () {
     return this.connect()
@@ -57,7 +80,7 @@ function Provider() {
     const target = 'wormholes-inpage';
     const { method, params } = data
     if (method && method !== 'message') {
-      const id = guid()
+      const id = generateRandom()
       this.addSendCallBackById(method, id, callback)
       window.postMessage({ target, data: { ...data, sendId: id } }, '*');
     }
@@ -90,7 +113,23 @@ function Provider() {
     })
   }
 
-  this.handleUpdateState = function (res, params) {
+
+  // connect
+  this.connect = function () {
+    return this.request({
+      method: "eth_requestAccounts",
+      params: null
+    })
+  }
+
+  this.isConnected = function () {
+    return this._state.isConnected
+  }
+
+};
+
+Provider.prototype = {
+  handleUpdateState(res, params) {
     const { code, data } = res
     if (code == 200) {
       const { method } = params
@@ -131,23 +170,7 @@ function Provider() {
       this.handleDelEventCall('chainChanged')
     }
 
-  }
-
-  // connect
-  this.connect = function () {
-    return this.request({
-      method: "eth_requestAccounts",
-      params: null
-    })
-  }
-
-  this.isConnected = function () {
-    return this._state.isConnected
-  }
-
-};
-
-Provider.prototype = {
+  },
   // monitor
   /**
    * @param {} data
@@ -156,7 +179,7 @@ Provider.prototype = {
    */
   on(type, callback = () => { }, callId = null) {
     if (type && events.includes(type)) {
-      const childCallId = guid()
+      const childCallId = generateRandom()
       this.handleAddEventCall(type, callId || childCallId, callback)
     }
     return this
@@ -240,31 +263,12 @@ Provider.prototype = {
 }
 
 const ethereum = new Provider()
+const wormholes = new Provider()
 window.ethereum = ethereum
+window.wormholes = wormholes
 ethereum.init()
+wormholes.init()
 
 
-// Registers a custom signature callback event
-const event = document.createEvent('Event');
-event.initEvent('wormHoles-callback-event', true, true);
 
-// Listen for callback events
-document.addEventListener('wormHoles-callback-event', (res) => {
-  // accepting of data
-  let { type, data, sendId } = res.detail;
-  if (type == "wormholes-callback") {
-    const { method, response } = data
-    if (!events.includes(method)) {
-      if (method && sendId && response) {
-        ethereum.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
-      }
-    } else {
-      let { method } = data
-      if (method) {
-        ethereum.runCallBackEventByMethod(method, response.data)
-      }
-    }
-  }
-
-});
 
