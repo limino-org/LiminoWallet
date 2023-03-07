@@ -149,20 +149,17 @@ img {
   }
 
   &.van-popup--center {
-    // left: 50%;
+    // position: absolute;
     // top: 50%;
-    // transform: translate(-50%, -50%);
-    // padding-bottom: 1PX;
-    // left: 50%;
-
-    // top: 50%;
-  
-    // -webkit-transform: translate3d(-50%, -50%, 0);
-  
-    // transform: translate3d(-50%, -50%, 0);
+    // right: 0;
+    // margin: 0 auto;
+    // left: 0;
+    // transform: translateY(0);
+    // margin-top: -25%;
     // padding: 5px;
     // transform: none;
     // transform-origin: center;
+
   }
 }
 

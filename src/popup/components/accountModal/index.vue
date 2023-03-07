@@ -25,9 +25,7 @@
               ? true
               : false
           "
-          :class="` clickActive ${
-            index < defaultlist.length - 1 ? 'van-hairline--bottom' : ''
-          }`"
+          :class="` clickActive van-hairline--bottom`"
           @click="handleAccountFun2(item, index)"
         >
           <div class="flex account-card">
@@ -100,9 +98,7 @@
               ? true
               : false
           "
-          :class="` clickActive ${
-            index < defaultlist.length - 1 ? 'van-hairline--bottom' : ''
-          }`"
+          :class="` clickActive van-hairline--bottom`"
           @click="handleAccountFun(item, index)"
         >
           <div class="flex account-card">
