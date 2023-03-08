@@ -245,7 +245,6 @@ export const getWallet = () => {
 };
 // calc gasFee
 export const getGasFee = async (tx: any) => {
-  console.log('估算gas', tx)
   try {
     const wall = await getWallet()
     const gasPrice = await wall.provider.getGasPrice()
