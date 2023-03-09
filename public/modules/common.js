@@ -315,7 +315,8 @@ export const eventsEmitter = {
   connect: 'connect',
   // disconnect
   disconnect: 'disconnect',
-  message: 'message'
+  message: 'message',
+  pwdExpired: 'pwdExpired'
 }
 
 
@@ -426,6 +427,7 @@ export function sendMessage(msg = {}, opt = {}, sender) {
               const connectList = await getConnectList()
               const originList = connectList.map(item => item.origin)
               const hostName = getHostName(tab.url)
+              console.warn('send null', msg)
               if (originList.includes(hostName)) {
                 chrome.tabs.sendMessage(tab.id, { ...msg, origin: hostName });
                 resolve()

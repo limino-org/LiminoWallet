@@ -33,7 +33,6 @@ window.addEventListener("message", function (ev) {
 const filterEvent = ['accountsChanged', 'chainChanged']
 // Receive messages Sent to the background Receive messages from the background
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-
   if (sender.id == chrome.runtime.id) {
     // The callback event
     const { type, data, origin } = request

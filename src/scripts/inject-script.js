@@ -10,6 +10,8 @@ const events = [
   'chainChanged',
   'accountsChanged',
   'message',
+  'pwdExpired',
+  'loginIn'
   // 'error',
   // 'data'
 ]
@@ -18,8 +20,10 @@ function Provider() {
   this._state = {
     accounts: [],
     isConnected: false,
-    isUnlocked: true,
-    initialized: false
+    isUnlocked: false,
+    initialized: false,
+
+
   }
   this.isLiminoWallet = true
   this.chainId = null
@@ -34,6 +38,12 @@ function Provider() {
     }, callId)
     this.on('accountsChanged', ([addr]) => {
       this.selectedAddress = addr
+    }, callId)
+    this.on('pwdExpired', () => {
+      this.state.isUnlocked = false
+    }, callId)
+    this.on('loginIn', () => {
+      this._state.isUnlocked = true
     }, callId)
   }
   this.enable = function () {
@@ -59,20 +69,22 @@ function Provider() {
   this.request = function (params) {
     var _this = this
     const { method } = params
-    // (!this._state.isConnected && (method !== 'wallet_requestPermissions' && method !== 'eth_requestAccounts'))
+    // if(!this._state.isConnected && (method !== 'wallet_requestPermissions' && method !== 'eth_requestAccounts')){
+    //   return Promise.reject('Request denied')
+    // }
     if (((method === 'wallet_requestPermissions' || method == 'eth_requestAccounts') && this._state.isConnected)) {
       return new Promise((resolve, reject) => {
-        const newParams = {...params, method: 'eth_accounts' }
+        const newParams = { ...params, method: 'eth_accounts' }
         _this.postMsg(newParams, res => {
           const { code, message, response, sendId } = res
           try {
             _this.handleUpdateState(res, newParams)
-          if(code == 200) {
-            resolve(res.data)
-          } else {
-            reject(res)
-          }
-          } catch(errData){
+            if (code == 200) {
+              resolve(res.data)
+            } else {
+              reject(res)
+            }
+          } catch (errData) {
             reject(errData)
           }
           _this.handleSendCallBackById(method, sendId)
@@ -127,6 +139,12 @@ function Provider() {
         case 'accountsChanged':
           this.selectedAddress = data
           break;
+        case 'pwdExpired':
+          this._state.isUnlocked = false
+          break;
+        case 'loginIn':
+          this._state.isUnlocked = true
+          break;
         default:
           this._state.isConnected = true
           break;
@@ -173,7 +191,7 @@ Provider.prototype = {
     return this
   },
   off(type) {
-    if(type && events.includes(type)) {
+    if (type && events.includes(type)) {
       this.handleDelEventCall(type)
     }
 
@@ -181,7 +199,7 @@ Provider.prototype = {
   removeAllListeners() {
     return this.request({ method: 'removeAllListeners', params: {} })
   },
-  async removeListener(method, call){
+  async removeListener(method, call) {
     await this.handleDelEventCall(method);
     typeof call == 'function' ? call() : '';
   },
@@ -216,12 +234,12 @@ Provider.prototype = {
       }
     }
   },
-  handleUpdateSelectAddress(addr){
+  handleUpdateSelectAddress(addr) {
     this.selectedAddress = addr
   },
-  handleAddEventCall(method, callId, call){
-    if(method && callId && call) {
-      if(!this._eventCallbacks[method]) {
+  handleAddEventCall(method, callId, call) {
+    if (method && callId && call) {
+      if (!this._eventCallbacks[method]) {
         this._eventCallbacks[method] = {
           [callId]: call
         }
@@ -231,10 +249,10 @@ Provider.prototype = {
     }
   },
   runCallBackEventByMethod(method, response = {}) {
-    if(method) {
+    if (method) {
       if (this._eventCallbacks[method]) {
         Object.keys(this._eventCallbacks[method]).forEach(callId => {
-          if(this._eventCallbacks[method][callId]){
+          if (this._eventCallbacks[method][callId]) {
             this._eventCallbacks[method][callId](response)
           }
         })
@@ -243,9 +261,9 @@ Provider.prototype = {
   },
   handleDelEventCall(method) {
     return new Promise((resolve, reject) => {
-      if(this._eventCallbacks[method] ) {
+      if (this._eventCallbacks[method]) {
         Object.keys(this._eventCallbacks[method]).forEach(callId => {
-          if(callId != this.onEventMainCallId) {
+          if (callId != this.onEventMainCallId) {
             delete this._eventCallbacks[method][callId]
           }
         })
@@ -272,6 +290,7 @@ event.initEvent('wormHoles-callback-event', true, true);
 document.addEventListener('wormHoles-callback-event', (res) => {
   // accepting of data
   let { type, data, sendId } = res.detail;
+
   if (type == "wormholes-callback") {
     const { method, response } = data
     if (!events.includes(method)) {

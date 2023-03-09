@@ -763,7 +763,8 @@ export default {
        const block = await provider.getBlockNumber()
        const weight = new BigNumber(block - data.lastNumber).multipliedBy(utils.formatEther(res.snftValue)).toString()
        const rewardEth = utils.formatEther(data.reward)
-       const stateData = {...data, account: res, weight, rewardEth}
+       const profitStr = utils.formatEther(data.profit)
+       const stateData = {...data, account: res, weight, rewardEth, profitStr}
        console.warn('state', stateData)
        commit('UPDATE_CREATORSTATUS', stateData)
       }catch(err) {

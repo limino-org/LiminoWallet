@@ -65,7 +65,7 @@
             </van-popover>
           </div>
         </div>
-        <div class="c-bottom">{{ creatorStatus.profit }} ERB</div>
+        <div class="c-bottom">{{ creatorStatus.profitStr }} ERB</div>
       </div>
       <div class="card">
         <div class="c-top">

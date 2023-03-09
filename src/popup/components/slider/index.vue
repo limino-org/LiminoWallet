@@ -30,7 +30,7 @@
                         @mouseover="showPopoverText3 = true"
                         @mouseleave="handleMouseLeavetext3">
                         <div> {{ t("creatorSnft.labelPeriod") }}: {{ creatorStatus.count }}</div>
-                      <div>{{ t("creatorSnft.labelProfit") }}: {{ creatorStatus.profit }} ERB</div>
+                      <div>{{ t("creatorSnft.labelProfit") }}: {{ creatorStatus.profitStr }} ERB</div>
                       <div>{{ t("creatorSnft.labelTimes") }}: {{ creatorStatus.count }}</div>
                       <div>{{ t("creatorSnft.labelAward") }}: {{ creatorStatus.rewardEth }} ERB</div>
                       <div>{{ t("creatorSnft.labelWeight") }}: {{ creatorStatus.weight }}</div>
