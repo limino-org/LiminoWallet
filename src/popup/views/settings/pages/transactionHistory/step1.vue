@@ -538,7 +538,7 @@ export default {
       eventBus.off('sameNonce')
       window.removeEventListener('scroll', deFun)
       store.dispatch('account/clearWaitTime')
-
+      eventBus.off('changeNetwork')
 
     });
     const cancelSend = async () => {

@@ -262,7 +262,7 @@ import useClipboard from "vue-clipboard3";
 import { useToast } from "@/popup/plugins/toast";
 import { useDialog } from "@/popup/plugins/dialog";
 import BigNumber from "bignumber.js";
-import { getWallet } from "@/popup/store/modules/account";
+import { getProvider, getWallet } from "@/popup/store/modules/account";
 
 export default defineComponent({
   name: "slider-menu",
@@ -430,9 +430,10 @@ export default defineComponent({
     const { $dialog } = useDialog();
     const minerpledge = async () => {
       showSlider.value = false;
-      const wallet = await getWallet();
-      const ethAccountInfo = await wallet.provider.send("eth_getAccountInfo", [
-        wallet.address,
+      
+      const provider = await getProvider();
+      const ethAccountInfo = await provider.send("eth_getAccountInfo", [
+        accountInfo.value.address,
         "latest",
       ]);
       if (ethAccountInfo.PledgedBalance) {

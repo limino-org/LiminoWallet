@@ -182,6 +182,7 @@ import {
   onUnmounted,
   onBeforeMount,
   watch,
+  onDeactivated,
 } from "vue";
 import { ethers } from "ethers";
 import { VUE_APP_SCAN_URL } from "@/popup/enum/env";
@@ -323,7 +324,6 @@ export default {
     let waitTime: any = ref(null);
     onMounted(async () => {
       store.dispatch('account/clearWaitTime')
-      console.warn('onMounted')
       try {
        const { total, asyncRecordKey} = await handleAsyncTxList();
        console.warn('onMounted 1', total)
@@ -480,9 +480,10 @@ export default {
       eventBus.off('sameNonce')
       window.removeEventListener('scroll', deFun)
       store.dispatch('account/clearWaitTime')
-
+      eventBus.off('changeNetwork')
 
     });
+
     const cancelSend = async () => {
       try {
         const wallet = await getWallet();

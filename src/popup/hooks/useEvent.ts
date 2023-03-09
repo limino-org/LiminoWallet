@@ -9,7 +9,7 @@ export enum eventHandler {
     changeNetwork = 'changeNetwork',
     changeAccount = 'changeAccount'
 }
-import {getWallet} from '@/popup/store/modules/account'
+import {getProvider, getWallet} from '@/popup/store/modules/account'
 // Global Event Management
 export const useEvent = () => {
 
@@ -17,8 +17,8 @@ export const useEvent = () => {
     const { handleUpdate } = useBroadCast()
     // network Change
     eventBus.on(eventHandler.changeNetwork, async(network: NetWorkData) => {
-        const wallet = await getWallet()
-        const net = await wallet.provider.getNetwork()
+        const provider = await getProvider();
+        const net = await provider.getNetwork()
         const chainId = web3.utils.toHex(net.chainId)
         sendBackground({method:eventsEmitter.chainChanged, response:{code:"200",data:chainId}})
         dispatch("system/getEthAccountInfo");

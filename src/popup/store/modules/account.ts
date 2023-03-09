@@ -48,7 +48,9 @@ import { getContractAddress } from "@/popup/http/modules/common";
 import Bignumber from 'bignumber.js'
 import { sendBackground } from "@/popup/utils/sendBackground";
 import localforage from "localforage";
-import { Wallet } from "ethers";
+import { Wallet, BaseProvider } from "ethers";
+
+
 export interface State {
   // Mnemonic words
   mnemonic: Mnemonic;
@@ -235,6 +237,12 @@ export type TransactionReceipt = {
 let waitTime = null;
 
 export let wallet: any = null;
+export let provider: any = null
+
+export const getProvider = () => {
+  const { dispatch } = storeObj;
+  return dispatch('account/getProvider')
+}
 export const getWallet = () => {
   if (!wallet || !wallet.provider) {
     const { dispatch } = storeObj;
@@ -752,6 +760,13 @@ export default {
     },
   },
   actions: {
+    getProvider({ commit, dispatch, state }){
+      const { URL } = state.currentNetwork;
+      if(!provider || provider.connection.url.toUpperCase() != URL.toUpperCase()) {
+        provider = ethers.getDefaultProvider(URL)
+      }
+      return provider
+    },
     // Judge whether there is an account with a certain address in the wallet
     hasAccountByAddress({ commit, dispatch, state }: any, address: string) {
       const accountList = toRaw(state.accountList);
@@ -862,8 +877,8 @@ export default {
     // Get the balance of the current Wallet
     async getBalance({ commit, state, dispatch }: any) {
       try {
-        const newwallet = await dispatch("getProviderWallet");
-        const balance = await newwallet.getBalance();
+        const provider = await getProvider()
+        const balance = await provider.getBalance(state.accountInfo.address);
         const amount = ethers.utils.formatEther(balance);
         return Promise.resolve(amount);
       } catch (err) {
@@ -878,10 +893,11 @@ export default {
     },
     // Switch accounts
     async updateAccount({ commit, state, dispatch }: any) {
-      const newwallet = await dispatch("getProviderWallet");
-      const balance = await newwallet.getBalance();
+      const address = state.accountInfo.address;
+      const provider = await getProvider()
+      const balance = await provider.getBalance(address);
       const amount = ethers.utils.formatEther(balance);
-      const address = newwallet.address;
+
       const accountList = toRaw(state.accountList);
       const {
         name,
@@ -905,7 +921,7 @@ export default {
         mnemonic: { path, pathIndex },
         keyStore,
       });
-      return Promise.resolve(newwallet);
+      return Promise.resolve();
     },
     //Create wallet instance through password keystore
     async createWalletByJson(
@@ -949,23 +965,25 @@ export default {
     // Set up network
     async setNetWork({ commit, state, dispatch }: any, net: NetWorkData) {
       commit("UPDATE_NETWORK", net);
-      // While setting up the network, update the linked network through the wallet instance
-      // Link current wallet instance
       const wallet = await dispatch("getProviderWallet");
-      const { chainId } = await wallet.provider.getNetwork();
+      // While setting up the network, update the linked network through the wallet instance
+      const res = await wallet.provider.getNetwork()
+      commit('UPDATE_ETHNETWORK', res)
+      // Link current wallet instance
+ 
+      // const { chainId } = await wallet.provider.getNetwork();
       // Wallet link currently selected network
       return Promise.resolve();
     },
     // Update for all accounts balance
     async updateAllBalance({ commit, state, dispatch }: any) {
-      const wallet = await getWallet()
       try {
         const accountList = state.accountList;
         const list: Array<string> = accountList.map(
           (item: AccountInfo) => item.address
         );
         const asyncList = list.map((address) => {
-          return dispatch("getBalanceByAddress", { address, wallet });
+          return dispatch("getBalanceByAddress", { address });
         });
         const data = await Promise.all(asyncList);
         const banList: any = {};
@@ -983,19 +1001,17 @@ export default {
     },
     // Return the balance of the current address account
     async getBalanceByAddress({ commit, state }: any, { address, wallet }: any) {
-      if (!address || !wallet) {
-        return Promise.reject(i18n.global.t("common.cannotbeempty"));
-      }
-      return wallet.provider.getBalance(address);
+      const provider = await getProvider()
+      return provider.getBalance(address);
     },
     // Update balance in current account currency
     async updateBalance({ commit, state, dispatch }: any, wall: any) {
-      const newwallet = wall || wallet && wallet.provider && wallet.provider.connection.url === state.currentNetwork.URL ? wallet : await dispatch("getProviderWallet");
+      // const newwallet = wall || wallet && wallet.provider && wallet.provider.connection.url === state.currentNetwork.URL ? wallet : await dispatch("getProviderWallet");
+      const provider = await getProvider()
       try {
-        if (newwallet) {
-          const balance = await newwallet.getBalance();
+        if (provider) {
+          const balance = await provider.getBalance(state.accountInfo.address);
           const amount = ethers.utils.formatEther(balance);
-          commit("UPDATE_WALLET", newwallet);
           commit("UPDATE_BALANCE", amount);
           commit('UPDATE_NETSTATUS', NetStatus.success)
           return Promise.resolve(amount);
@@ -1007,14 +1023,15 @@ export default {
     },
     // Link current network provider wallet instance
     async getProviderWallet({ commit, state, dispatch }: any) {
-      let provider = null
+
       const { URL } = state.currentNetwork;
       if(wallet && wallet.provider && (wallet.provider.connection.url == URL)){
         return wallet
       }
-      if (!wallet || !wallet.provider || (wallet.provider.connection.url != URL)) {
-        provider = ethers.getDefaultProvider(URL)
-      }
+      // if (!wallet || !wallet.provider || (wallet.provider.connection.url != URL)) {
+      //   provider = ethers.getDefaultProvider(URL)
+      // }
+      const provider = await getProvider()
       try {
         if (!wallet) {
           const { accountInfo } = state;
@@ -1023,15 +1040,14 @@ export default {
           const password: string = await getCookies("password") || "";
           const wall = await dispatch("createWalletByJson", { password, json });
           const newWallet = wall.connect(provider)
-          const res = await newWallet.provider.getNetwork()
-          commit('UPDATE_ETHNETWORK', res)
+
           commit('UPDATE_NETSTATUS', NetStatus.success)
           commit("UPDATE_WALLET", newWallet);
           return newWallet
         }
         if (wallet && wallet.provider) {
           const { connection: { url } } = wallet.provider
-          if (URL != url) {
+          if (URL.toUpperCase() != url.toUpperCase()) {
             const newWallet = wallet.connect(provider)
             const res = await newWallet.provider.getNetwork()
             commit('UPDATE_NETSTATUS', NetStatus.success)
@@ -1381,7 +1397,7 @@ export default {
     },
     // Update current network, current address, current token list balance
     async updateTokensBalances({ commit, state, dispatch }: any) {
-      const wallet = await getWallet();
+      // const wallet = await getWallet();
       const address = state.accountInfo.address.toUpperCase();
       const currentNetwork = state.currentNetwork;
       const tokens = currentNetwork.tokens[address];
@@ -1408,15 +1424,16 @@ export default {
         return Promise.reject("Address cannot be empty!");
       }
       try {
-        const wallet = await getWallet();
+        // const wallet = await getWallet();
+        const provider = await getProvider()
         const contract = new ethers.Contract(
           tokenAddress,
           erc20Abi,
-          wallet.provider
+          provider
         );
-        const contractWithSigner = contract.connect(wallet);
-        console.warn("contractWithSigner--------------", contractWithSigner);
-        const amount = await contractWithSigner.balanceOf(wallet.address)
+        // const contractWithSigner = contract.connect(wallet);
+        console.warn("contractWithSigner--------------", contract);
+        const amount = await contract.balanceOf(state.accountInfo.address)
         return Promise.resolve(utils.formatEther(amount));
       } catch (err) {
         return Promise.reject(err);

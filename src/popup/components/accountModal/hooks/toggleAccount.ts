@@ -63,16 +63,15 @@ export const useToggleAccount = () => {
     try {
       const wall = await dispatch("account/createWalletByJson", data);
       commit("account/UPDATE_ACCOUNTINFO", account);
-      eventBus.emit('changeAccount', wall.address)
-
+      // eventBus.emit('changeAccount', wall.address)
       dispatch("account/updateTokensBalances");
-      const wallet = await dispatch("account/getProviderWallet");
+      // const wallet = await dispatch("account/getProviderWallet");
       dispatch("account/getExchangeStatus").then(res => {
         if(res.status == 2 && res.exchanger_flag){
           initExchangeData()
         }
       })
-      const { address } = wallet
+      const { address } = wall
       eventBus.emit("changeAccount", address);
 
     } catch (err) {

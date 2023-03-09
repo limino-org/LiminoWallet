@@ -26,6 +26,14 @@ import connect from '@/popup/views/connect/route'
 
 
 const routes: Array<RouteRecordRaw> = [
+  {
+    path:"/btc",
+    name:'btc',
+    component: () => import('@/popup/views/btc.vue'),
+    meta: {
+      auth: true,
+    },
+  },
   // Transactions
   {
     path: "/transactionList",
