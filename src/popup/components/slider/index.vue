@@ -26,13 +26,14 @@
                   class="account-pop"
                   placement="bottom-start"
                 >
-                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"                         @mouseover="showPopoverText3 = true"
+                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"
+                        @mouseover="showPopoverText3 = true"
                         @mouseleave="handleMouseLeavetext3">
-                        <div> {{ t("creatorSnft.labelPeriod") }}:</div>
-                      <div>{{ t("creatorSnft.labelProfit") }}:</div>
-                      <div>{{ t("creatorSnft.labelTimes") }}:</div>
-                      <div>{{ t("creatorSnft.labelAward") }}:</div>
-                      <div>{{ t("creatorSnft.labelWeight") }}:</div>
+                        <div> {{ t("creatorSnft.labelPeriod") }}: {{ creatorStatus.count }}</div>
+                      <div>{{ t("creatorSnft.labelProfit") }}: {{ creatorStatus.profit }} ERB</div>
+                      <div>{{ t("creatorSnft.labelTimes") }}: {{ creatorStatus.count }}</div>
+                      <div>{{ t("creatorSnft.labelAward") }}: {{ creatorStatus.rewardEth }} ERB</div>
+                      <div>{{ t("creatorSnft.labelWeight") }}: {{ creatorStatus.weight }}</div>
                   </div>
                   <template #reference>
                     <div
@@ -40,7 +41,7 @@
                       @mouseover="showPopover3 = true"
                       @mouseleave="handleMouseLeave3"
                       v-show="
-                        ethAccountInfo ? ethAccountInfo.ExchangerFlag : false
+                        creatorStatus
                       "
                     >
                       <span class="user flex center" @click="toCreator">
@@ -259,6 +260,7 @@
             <div
             :class="`setting-btn flex between center-v clickActive ${pageType}`"
               @click="toCreator"
+              v-if="currentNetwork.isMain && creatorStatus"
             >
               <div class="flex center">
                 <i class="iconfont icon-Add"></i>
@@ -387,6 +389,8 @@ export default defineComponent({
     const { dispatch } = store;
     // Main network account details
     const ethAccountInfo = computed(() => store.state.system.ethAccountInfo);
+    const creatorStatus = computed(() => store.state.account.creatorStatus)
+
     // Exchange status
     const hasExchange = computed(() => {
       const { exchanger_flag, status } = store.state.account.exchangeStatus;
@@ -445,6 +449,7 @@ export default defineComponent({
       createAccount,
       createLoading,
       accountLoading,
+      
     } = useToggleAccount();
 
     const toAccountManagement = () => {
@@ -641,6 +646,7 @@ export default defineComponent({
       handleMouseLeavetext1,
       handleMouseLeavetext2,
       handleMouseLeavetext3,
+      creatorStatus,
       Coefficient,
       showPopover,
       showPopover3,

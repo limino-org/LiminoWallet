@@ -698,7 +698,7 @@
 		totalProfit:"Creator continuously receives 10% of the total amount of the royalty trading quota",
 		totalTimes:"The total number of times you were successfully elected as Creator",
 		totalAward:"Creator, as the initiator of the transaction, directly gets the sum of the rewards in each period",
-		totalWeight:"The current period becomes the weight of Creator",
+		totalWeight:"Current block height * S-NFT value.",
 		labelPeriod:"Create the total number of phases",
 		labelProfit:"Total revenue of elected Creator",
 		labelTimes:"Total number of times that you have been elected Creator",

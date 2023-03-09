@@ -22,7 +22,7 @@ import { getRandomIcon } from "@/popup/utils/index";
 import { toRaw } from "vue";
 import { TransactionData, TransactionParams } from "./index";
 import { ETH, Token } from "@/popup/utils/token";
-import { checkAuth } from "@/popup/http/modules/common";
+import { checkAuth, getAccountAddr, getCreator, getPeriodById } from "@/popup/http/modules/common";
 import { useStore } from "vuex";
 import {
   NetWorkData,
@@ -77,7 +77,7 @@ export interface State {
   exchangeTotalProfit: number
   minerTotalProfit: number
   netStatus: NetStatus
-
+  creatorStatus: Object | null
 
 }
 export type ContactInfo = {
@@ -318,7 +318,8 @@ export default {
     // miner total profit
     minerTotalProfit: 4856544,
     // exchange total profit
-    exchangeTotalProfit: 2522880
+    exchangeTotalProfit: 2522880,
+    creatorStatus: null
   },
   getters: {
     // Token of current account
@@ -342,9 +343,12 @@ export default {
     // Current transaction pop-up status
     tranactionModel(state: State) {
       return state.tranactionModel
-    }
+    },
   },
   mutations: {
+    UPDATE_CREATORSTATUS(state: State, val: any) {
+      state.creatorStatus = val
+    },
     UPDATE_ETHNETWORK(state: State, val: any) {
       state.ethNetwork = val
       if (val && val.chainId) {
@@ -751,6 +755,21 @@ export default {
     },
   },
   actions: {
+    async getCreatorStatus({commit, state}, address: string) {
+      try {
+       const data = await getCreator(address)
+       const res = await getAccountAddr(address)
+       const provider = ethers.getDefaultProvider(state.currentNetwork.URL)
+       const block = await provider.getBlockNumber()
+       const weight = new BigNumber(block - data.lastNumber).multipliedBy(utils.formatEther(res.snftValue)).toString()
+       const rewardEth = utils.formatEther(data.reward)
+       const stateData = {...data, account: res, weight, rewardEth}
+       console.warn('state', stateData)
+       commit('UPDATE_CREATORSTATUS', stateData)
+      }catch(err) {
+        commit('UPDATE_CREATORSTATUS', null)
+      }
+    },
     // Judge whether there is an account with a certain address in the wallet
     hasAccountByAddress({ commit, dispatch, state }: any, address: string) {
       const accountList = toRaw(state.accountList);

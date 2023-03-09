@@ -68,11 +68,11 @@
                         @mouseover="showPopoverText3 = true"
                         @mouseleave="handleMouseLeavetext3"
                       >
-                      <div> {{ t("creatorSnft.labelPeriod") }}:</div>
-                      <div>{{ t("creatorSnft.labelProfit") }}:</div>
-                      <div>{{ t("creatorSnft.labelTimes") }}:</div>
-                      <div>{{ t("creatorSnft.labelAward") }}:</div>
-                      <div>{{ t("creatorSnft.labelWeight") }}:</div>
+                      <div> {{ t("creatorSnft.labelPeriod") }}: {{ creatorStatus.count }}</div>
+                      <div>{{ t("creatorSnft.labelProfit") }}: {{ creatorStatus.profit }} ERB</div>
+                      <div>{{ t("creatorSnft.labelTimes") }}: {{ creatorStatus.count }}</div>
+                      <div>{{ t("creatorSnft.labelAward") }}: {{ creatorStatus.rewardEth }} ERB</div>
+                      <div>{{ t("creatorSnft.labelWeight") }}: {{ creatorStatus.weight }}</div>
                       </div>
                       <template #reference>
                         <div
@@ -80,6 +80,7 @@
                           @mouseover="showPopover3 = true"
                           @mouseleave="handleMouseLeave3"
                           @click="toCreator"
+                          v-if="creatorStatus"
                         >
                           <span class="user flex center">
                             <i class="iconfont icon-Add"></i>
@@ -506,6 +507,7 @@ export default {
     const layoutList = computed(() => store.state.system.layoutList);
     const layoutType = computed(() => store.state.system.layoutType);
     const ethAccountInfo = computed(() => store.state.system.ethAccountInfo);
+    const creatorStatus = computed(() => store.state.account.creatorStatus)
     // @ts-ignore
     const pageType = ref(window.pageType);
     const isSelect = ref(false);
@@ -615,7 +617,7 @@ export default {
       eventBus.on("changeAccount", () => {
         showModal.value = false;
       });
-
+      dispatch('account/getCreatorStatus', accountInfo.value.address)
       dispatch("system/getEthAccountInfo");
       dispatch("account/getExchangeStatus").then((res) => {
         console.warn(111);
@@ -860,6 +862,7 @@ export default {
       showGuideModal,
       ethAccountInfo,
       toUsd,
+      creatorStatus
     };
   },
 };

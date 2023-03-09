@@ -57,8 +57,9 @@ export default {
     const { commit, dispatch, state, getters } = store
     const { initWallet } = useWallet();
     const currentNetwork = computed(() => state.account.currentNetwork);
+  
     provide("appProvide", appProvide());
-    onMounted(()=>{
+    onMounted(async()=>{
       console.log('this', this)
      // update browser session window id
      dispatch('system/setConversationid', guid())
@@ -101,11 +102,13 @@ export default {
       initWallet();
       dispatch("account/getContractAddress");
       dispatch("configuration/getConfiguration");
+
       useEvent();
     });
     
     eventBus.on('walletReady',newwallet => {
       dispatch('system/getChainVersion', newwallet);
+ 
     })
     const animation = ref("slide");
     return {

@@ -42,7 +42,7 @@
             </van-popover>
           </div>
         </div>
-        <div class="c-bottom">32</div>
+        <div class="c-bottom">{{ creatorStatus.count }}</div>
       </div>
       <div class="card">
         <div class="c-top">
@@ -65,7 +65,7 @@
             </van-popover>
           </div>
         </div>
-        <div class="c-bottom">32ERB</div>
+        <div class="c-bottom">{{ creatorStatus.profit }} ERB</div>
       </div>
       <div class="card">
         <div class="c-top">
@@ -89,7 +89,7 @@
             </van-popover>
           </div>
         </div>
-        <div class="c-bottom">1</div>
+        <div class="c-bottom">{{ creatorStatus.count }}</div>
       </div>
       <div class="card">
         <div class="c-top">
@@ -113,7 +113,7 @@
             </van-popover>
           </div>
         </div>
-        <div class="c-bottom">32ERB</div>
+        <div class="c-bottom">{{ creatorStatus.rewardEth }} ERB</div>
       </div>
       <div class="card">
         <div class="c-top">
@@ -138,7 +138,7 @@
             </div>
           </div>
         </div>
-        <div class="c-bottom">32</div>
+        <div class="c-bottom">{{ creatorStatus.weight }}</div>
       </div>
     </div>
     <div class="text-center pl-30 pr-30 creatorTip">
@@ -169,6 +169,9 @@ const showPopup3 = ref(false);
 const showPopup4 = ref(false);
 const exchangeUrl = `${VUE_APP_EXCHANGES_URL}/c0x97807fd98c40e0237aa1f13cf3e7cedc5f37f23b/#/assets`
 const browserurl = `${VUE_APP_SCAN_URL}AccountDetail/${accountInfo.value.address}`
+
+const creatorStatus = computed(() => state.account.creatorStatus)
+
 // @ts-ignore
 const pageType = window.pageType
 </script>

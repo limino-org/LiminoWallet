@@ -31,6 +31,7 @@ export const useEvent = () => {
         sendBackground({method:eventsEmitter.accountsChanged, response:{code:'200',data:[address]}})
         console.log('change---',address)
         dispatch("system/getEthAccountInfo");
+        dispatch('account/getCreatorStatus', address)
         handleUpdate()
     })
 
