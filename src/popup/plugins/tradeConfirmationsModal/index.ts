@@ -6,6 +6,8 @@ export type TradeConfirmType = {
 }
 export const useTradeConfirm = () => {
     const { globalProperties } = (getCurrentInstance() as ComponentInternalInstance).appContext.config
+
+    // @ts-ignore
     const $tradeConfirm: TradeConfirmType = globalProperties.$tradeConfirm
     return {
         $tradeConfirm

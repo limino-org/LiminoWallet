@@ -23,8 +23,9 @@ export const vantLangs = {
     package: enUS
   }
 }
-const i18n = createI18n({
+const i18n:any = createI18n({
   silentFallbackWarn: true,
+  legacy: false,
   fallbackLocale,
   globalInjection: true,
   locale: fallbackLocale,
