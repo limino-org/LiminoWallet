@@ -11,7 +11,7 @@
         <van-button type="primary" class="btn" round block @click="next">{{$t('minerspledge.next')}}</van-button>
       </div>
     </div>
-    <loading-view v-model:show="isLoading" v-model:currentRate="currentRate" v-model:speed="speed" v-model:rate="rate"></loading-view>
+    <!-- <loading-view v-model:show="isLoading" v-model:currentRate="currentRate" v-model:speed="speed" v-model:rate="rate"></loading-view> -->
     <affirm-dialog v-model:show="isAffirmDialog"></affirm-dialog>
     <next-dialog v-model:show="nextShow" @success="nextSuccess"></next-dialog>
     <index-dialog
@@ -33,7 +33,7 @@ import { ref, nextTick } from 'vue'
 import AffirmDialog from './components/affirmDialog.vue'
 import NextDialog from './components/next.vue'
 import SuccessDialog from './components/success.vue'
-import LoadingView from '@/popup/components/minerpledge/loading.vue'
+// import LoadingView from '@/popup/components/minerpledge/loading.vue'
 import AgreementView from '@/popup/components/minerpledge/agreement.vue'
 import { RegUrl, RegNum1 } from '@/popup/enum/regexp'
 import { ethers, utils } from 'ethers'
@@ -51,7 +51,7 @@ export default {
     AffirmDialog,
     NextDialog,
     SuccessDialog,
-    LoadingView,
+    // LoadingView,
     AgreementView
   },
   setup() {

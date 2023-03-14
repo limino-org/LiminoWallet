@@ -28,6 +28,7 @@ const i18n = createI18n({
   fallbackLocale,
   globalInjection: true,
   locale: fallbackLocale,
+  legacy: false, 
   messages,
 });
 localforage.getItem('vuex').then(store => {
