@@ -15,7 +15,7 @@
       <h2>to WIF: {{ toWIF }}</h2>
       <h2>to balance: {{ toBalance }} WEI</h2>
     </div>
-    <h2>发交易 100 wei to</h2>
+    <h2>发交易 50000 wei to</h2>
     <button @click="handleSend">send 100 WEI to.</button>
   </div>
 
@@ -88,9 +88,10 @@ console.log("bitcore", PrivateKey);
 const fromKey = new PrivateKey(
   "8702c1cb58d2cda0b9bd735224b9f02323f40bbacd0d85bf53069e91dbc3541e"
 , Networks.testnet);
-console.log("fromKey", fromKey.toString());
+console.log("fromKey", fromKey.publicKey.toString());
 const fromPrivateKey = ref(fromKey.toString());
 const fromAddress = ref(fromKey.toAddress(Networks.testnet).toString());
+const fromPublicKey = ref()
 const fromWIF = ref(fromKey.toWIF());
 const fromBalance = ref(0);
 
@@ -103,10 +104,11 @@ const toAddress = ref(toKey.toAddress(Networks.testnet).toString());
 const toWIF = ref(toKey.toWIF());
 const toBalance = ref(0);
 
-const handleSend = () => {
+const handleSend = async () => {
   const transaction = new Transaction();
   console.log("Transaction", transaction);
-  handleSendTransaction(fromPrivateKey.value, fromAddress.value, fromAddress.value)
+  await handleSendTransaction(fromPrivateKey.value,  fromAddress.value, toAddress.value)
+  handleUpdateBalance()
 };
 
 const handleUpdateBalance = async () => {

@@ -8,8 +8,9 @@ const { PrivateKey, Address, Networks, Transaction, HDPrivateKey, Mnemonic, Mess
 const bip39 = require('bip39');
 
 import axios from "axios";
-import { VUE_APP_NODE_ENV } from "../enum/env";
-import { httpPost } from "../http/request";
+import { VUE_APP_NODE_ENV } from "@/popup/enum/env";
+import { httpPost } from "@/popup/http/request";
+import { BTCMnemonicAccountInfo, BTCPrivateKeyAccountInfo, sendPrams } from "./btc";
 const isProduct = VUE_APP_NODE_ENV === 'production' ? true : false;
 const network = isProduct ? Networks.bitcore : Networks.testnet
 const baseUrl = `https://api.bitcore.io/api/BTC/testnet`;
@@ -20,8 +21,6 @@ console.log('Mnemonic', Mnemonic)
 console.log('bip39', bip39)
 // bitcoinTransaction.providers.utxo.testnet.default = bitcoinTransaction.providers.utxo.testnet.blockchain;
 
-const explorers = require("bitcore-explorers");
-const insight = new explorers.Insight('https://api.bitcore.io');
 
 // Fetch Api
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
@@ -43,9 +42,7 @@ export const selectUtxo = async(address: string, value: number) => {
     return utxos.find(item => item.value > value)
 }
 
-type sendPrams = {
-    rawTx: string
-}
+
 export const send = (params: sendPrams): Promise<string> => {
     const url = `${baseUrl}/tx/send`
     return axios.post(url, params).then(res => res.data.txid)
@@ -89,10 +86,8 @@ export const getCoins = (txid: string) => {
 export default () => {
     setInterval(async() => {
         const block = await getBlockNumber()
-        const txList = await getTxs('mh7P1mUdhUpZL2qquFH8CCfQugR1o7641Y')
         console.warn('getBlockNumber', block.height)
-        console.log('txList', txList)
-    },8000)
+    },2000)
     // Import an account using a private key
     const handleImportPrivateKey = async (privateKey: string): Promise<BTCPrivateKeyAccountInfo> => {
         try {
@@ -205,7 +200,7 @@ export default () => {
                   const txData = await getTx(txid)
                   resolve(txData)
             }catch(err){
-                reject()
+                reject(err)
                 console.error(err)
             }
         })
@@ -225,27 +220,4 @@ export default () => {
 
 
 
-export const useBTCRpc = () => {
 
-}
-
-interface BTCMnemonicAccountInfo {
-    // Account privateKey
-    privateKey: string
-    // Account publicKey
-    publicKey: string
-    // Account address
-    address: string
-    // Account index
-    pathIndex: number
-}
-
-interface BTCPrivateKeyAccountInfo {
-    // Account privateKey
-    privateKey: string
-    // Account publicKey
-    publicKey?: string
-    // Account address
-    address: string
-    wif: string
-}
