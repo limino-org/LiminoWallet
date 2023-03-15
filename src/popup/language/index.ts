@@ -26,6 +26,7 @@ export const vantLangs = {
 const i18n = createI18n({
   silentFallbackWarn: true,
   fallbackLocale,
+  legacy: false,
   globalInjection: true,
   locale: fallbackLocale,
   legacy: false, 

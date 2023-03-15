@@ -1,12 +1,16 @@
-
+// @ts-nocheck
 import bitcore from "bitcore-lib";
-import Buffer from 'buffer'
-// @ts-ignore
-window.Buffer = Buffer
+const bitcoinjs = require('bitcoinjs-lib')
+console.log('bitcore', bitcore)
+console.log('bitcoinjs', bitcoinjs)
+// import Buffer from 'buffer'
+// // @ts-ignore
+// window.Buffer = Buffer
 // const Message = require('bitcore-message')
 import { onMounted, ref } from "vue";
 const { PrivateKey, Address, Networks, Transaction, HDPrivateKey, Mnemonic, Message } = bitcore;
-
+// const explorers = require('bitcore-explorers');
+// const insight = new explorers.Insight();
 const bip39 = require('bip39');
 
 import axios from "axios";
@@ -25,9 +29,24 @@ export const getBalance = (address: string) => {
     return fetcher(url);
 };
 
+export const ListUnspent = (address: string) => {
+    const url = `${baseUrl}/address/${address}/ListUnspent`;
+    const data= {
+        MinimumConfirmations: 1,
+        MaximumConfirmations: 9999999,
+        Addresses: address
+    }
+    return axios({
+        method:'get',
+        url: url,
+        data
+    })
+}
+
+
 export default () => {
     // Import an account using a private key
-    const handleImportPrivateKey = async(privateKey: string): Promise<BTCPrivateKeyAccountInfo> => {
+    const handleImportPrivateKey = async (privateKey: string): Promise<BTCPrivateKeyAccountInfo> => {
         try {
             const privateKeyInstance = new PrivateKey(privateKey)
             const privateKeyStr = privateKeyInstance.toString()
@@ -46,29 +65,21 @@ export default () => {
     // Sign with the private key
     const handleSignWithPrivateKey = (message: string, privateKey: string) => {
         console.log('sign', message, privateKey)
-        // const privateKeyInstance = new PrivateKey(privateKey, network)
-        // // console.log('privateKeyInstance', privateKeyInstance, privateKeyInstance.toString())
-        // // console.log('ADD', privateKeyInstance.toAddress(network).toString())
-        // const messageStance = new Message(message);
-        // // console.log('messageStance', messageStance)
-        // const signature = messageStance.sign(privateKeyInstance);
-
-
         const privateKeyIns = new PrivateKey(privateKey, network);
         console.log('privateKeyIns', privateKeyIns)
         const messageIns = new Message(message);
         console.log('messageIns', messageIns)
         const signature = messageIns.sign(privateKeyIns);
         console.log('signature', signature)
-
-
         return signature
     }
 
 
     // verify sign
-    const handleVerifySign = (sign: string) => {
-
+    const handleVerifySign = (address: string, message: string, signature: string) => {
+        const verified = new Message(message).verify(address, signature);
+        console.log('verified', verified)
+        return verified
     }
 
     // Return account's path string
@@ -117,6 +128,30 @@ export default () => {
     // Generate random 
     // const 
 
+    const handleSendTransaction = async (privateKeyStr: string, from: string, to: string) => {
+        insight.getUtxos(from, function(err, utxos) {
+            if (err) {
+                console.log('err', err)
+              // Handle errors...
+            } else {
+                console.log('utxos', utxos)
+              // Maybe use the UTXOs to create a transaction
+            }
+          });
+        const privateKey = new PrivateKey(privateKeyStr);
+        const utxo = {
+            "txId": "115e8f72f39fad874cfab0deed11a80f24f967a84079fb56ddf53ea02e308986",
+            "outputIndex": 0,
+            "address": from,
+            "script": "76a91447862fe165e6121af80d5dde1ecb478ed170565b88ac",
+            "satoshis": 5000
+        };
+
+        const transaction = new Transaction()
+            .from(utxo)
+            .to(to, 15000)
+            .sign(privateKey);
+    }
     return {
         getBalance,
         fetcher,
@@ -124,6 +159,8 @@ export default () => {
         handleSignWithPrivateKey,
         handleImportMnemonic,
         handleGenerateAccountByMnemonic,
+        handleVerifySign,
+        handleSendTransaction
     }
 }
 
