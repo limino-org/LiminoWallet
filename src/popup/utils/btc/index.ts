@@ -1,64 +1,78 @@
-Object.defineProperty(global,  '_bitcore', { 	get(){ 		return undefined 	}, 	set(){} })
-// @ts-nocheck
-import bitcore from "bitcore-lib";
+Object.defineProperty(global,  '_bitcore', {get(){return undefined}, 	set(){} })
+const bitcore = require( "bitcore-lib");
 console.log('bitcore', bitcore)
+const coinSelect = require('coinselect')
 import { onMounted, ref } from "vue";
 const { PrivateKey, Address, Networks, Transaction, HDPrivateKey, Mnemonic, Message } = bitcore;
-
+console.log('coinSelect',coinSelect)
 const bip39 = require('bip39');
 
 import axios from "axios";
 import { VUE_APP_NODE_ENV } from "@/popup/enum/env";
-import { httpPost } from "@/popup/http/request";
-import { BTCMnemonicAccountInfo, BTCPrivateKeyAccountInfo, sendPrams } from "./btc";
+
+import { BTCMnemonicAccountInfo, BTCPrivateKeyAccountInfo, FeeRes, RPCBlockRes, RPCHeightRes, RPCOutputRes, RPCTxRes, RPCTxsRes, SelectUtxoRes, sendPrams } from "./type";
 const isProduct = VUE_APP_NODE_ENV === 'production' ? true : false;
 const network = isProduct ? Networks.bitcore : Networks.testnet
 const baseUrl = `https://api.bitcore.io/api/BTC/testnet`;
-const bitcoinTransaction = require('bitcoin-transaction');
-// const config = `https://user:pass@api.bitcore.io/api/BTC/testnet`
-console.log('send ---', bitcoinTransaction)
-console.log('Mnemonic', Mnemonic)
-console.log('bip39', bip39)
-// bitcoinTransaction.providers.utxo.testnet.default = bitcoinTransaction.providers.utxo.testnet.blockchain;
-
 
 // Fetch Api
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 const post = (url: string) => axios.post(url).then((res) => res.data);
+
 // Get balance for address
 export const getBalance = (address: string) => {
     const url = `${baseUrl}/address/${address}/balance`;
     return fetcher(url);
 };
 
-export const getUtxos = (address: string) => {
+// Get fee
+export const getFee = ():Promise<FeeRes> => {
+    const url = 'https://bitcoinfees.earn.com/api/v1/fees/recommended'
+    return fetcher(url);
+}
+
+export const getUtxos = (address: string): Promise<Array<RPCOutputRes>> => {
     // return insight
     const url = `${baseUrl}/address/${address}/?unspent=true`
     return fetcher(url);
 }
 
-export const selectUtxo = async(address: string, value: number) => {
+export const selectUtxo = async(address: string, value: number, feeRate: number): Promise<SelectUtxoRes> => {
     const utxos = await getUtxos(address)
-    return utxos.find(item => item.value > value)
+    const targets = [
+        {
+          address,
+          value
+        }
+      ]
+    return coinSelect(utxos, targets, feeRate)
 }
 
 
-export const send = (params: sendPrams): Promise<string> => {
+export const send = async (params: sendPrams): Promise<string> => {
     const url = `${baseUrl}/tx/send`
-    return axios.post(url, params).then(res => res.data.txid)
+    const res = await axios.post(url, params);
+    return res.data.txid;
 }
 
-export const getTx = (txid: string) => {
+export const getTx = (txid: string):Promise<RPCTxRes> => {
     const url = `${baseUrl}/tx/${txid}`
     return fetcher(url)
 }
 
-export const getTxs = (address: string) => {
+export const getTxs = (address: string):Promise<RPCTxsRes> => {
     const url = `${baseUrl}/address/${address}/txs`
     return fetcher(url)
 }
 
-export const getBlockNumber = () => {
+// Get Block
+export const getBlock = (blockId: string): Promise<RPCBlockRes> => {
+    const url = `${baseUrl}/block/${blockId}`
+    return fetcher(url)
+}
+
+// Get Current Height
+export const getHeight = ():Promise<RPCHeightRes> => {
     const url = `${baseUrl}/block/tip`
     return fetcher(url)
 }
@@ -85,8 +99,8 @@ export const getCoins = (txid: string) => {
 
 export default () => {
     setInterval(async() => {
-        const block = await getBlockNumber()
-        console.warn('getBlockNumber', block.height)
+        const block = await getHeight()
+        console.warn('getBlock', block.height)
     },2000)
     // Import an account using a private key
     const handleImportPrivateKey = async (privateKey: string): Promise<BTCPrivateKeyAccountInfo> => {
@@ -125,10 +139,7 @@ export default () => {
         return verified
     }
 
-    // Return account's path string
-    const getPath = (index: number) => {
-        return `m/44'/0'/0'/0/${index}`
-    }
+
     // Import an account useing a mnemonic, with account index
     const handleImportMnemonic = async (mnemonic: string, index: number = 0): Promise<BTCMnemonicAccountInfo> => {
         try {
@@ -175,30 +186,35 @@ export default () => {
         // Transaction.UnspentOutput(from)
         console.log(privateKeyStr,from, to)
         const privateKey = new PrivateKey(privateKeyStr);
-
-
         return new Promise(async(resolve,reject) => {
             try {
-                const ut = await selectUtxo(from, 50000)
-                const {mintTxid,script,mintIndex, address,value} = ut
-                const utxo = {
-                    "txId" : mintTxid,
-                    "outputIndex" : mintIndex,
-                    "address" : address,
-                    "script" : script,
-                    "satoshis" : value
-                  };
-                  console.log('utxo', utxo)
-                  const tx = new Transaction()
-                    .from(utxo)
-                    .to(to, 50000)
-                    .sign(privateKey)
-                    .serialize();
-                  console.log('tx', tx)
-                  const txid = await send({rawTx: tx})
-                  console.log('txid', txid)
-                  const txData = await getTx(txid)
-                  resolve(txData)
+                const { fastestFee, halfHourFee, hourFee } = await getFee()
+                console.log('fastestFee', fastestFee)
+                const { inputs } = await selectUtxo(from, 20000, fastestFee)
+                let list = []
+                if(inputs && inputs.length) {
+                    list = inputs.map(({mintTxid,script,mintIndex,address,value}) => ({
+                        txId : mintTxid,
+                        outputIndex : mintIndex,
+                        address,
+                        script,
+                        satoshis : value
+                    }))
+                    console.log('utxo', list)
+                    const tx = new Transaction()
+                      .from(list)
+                      .to(to, 20000)
+                      .sign(privateKey)
+                      .serialize();
+                    console.log('tx', tx)
+                    const txid = await send({rawTx: tx})
+                    console.warn('txid', txid)
+                    const txData = await getTx(txid)
+                    resolve(txData)
+                } else {
+                    console.error('没钱了...')
+                }
+
             }catch(err){
                 reject(err)
                 console.error(err)

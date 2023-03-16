@@ -62,6 +62,7 @@
     "@storybook/manager-webpack5": "^6.5.16",
     "@storybook/testing-library": "^0.0.13",
     "@storybook/vue3": "^6.5.16",
+    "@types/bitcore-lib": "^0.15.3",
     "@types/firefox-webext-browser": "^67.0.2",
     "@vue/cli-plugin-babel": "~4.5.15",
     "@vue/cli-plugin-router": "~4.5.15",

@@ -40,7 +40,7 @@ export type RPCSendRes = {
 export type RPCBlockHashRes = {
     _id: string,
     txid: string,
-    network: string,
+    network: BtcNetwork,
     chain: string,
     blockHeight: number,
     blockHash: string,
@@ -60,9 +60,9 @@ export type RPCBlockHashRes = {
 export type RPCBlockHeightRes = {
     _id: string,
     txid: string,
-    network: string,
+    network: BtcNetwork,
     chain: string,
-    blockHeight: 12,
+    blockHeight: number,
     blockHash: string,
     blockTime: string,
     blockTimeNormalized: string,
@@ -81,13 +81,13 @@ export type RPCAuthheadRes = {
     authbase: string,
     chain: string,
     identityOutputs: Array<[]>,
-    network: string
+    network: BtcNetwork
 }
 
 //Get Authhead
 
 
-export type ResOutputRes =         {
+export type RPCOutputRes = {
     address: string,
     chain: string,
     coinbase: true,
@@ -95,7 +95,7 @@ export type ResOutputRes =         {
     mintHeight: number,
     mintIndex: number,
     mintTxid: string,
-    network: string,
+    network: BtcNetwork,
     script: string,
     spentHeight: number,
     spentTxid: string,
@@ -106,9 +106,12 @@ export type ResOutputRes =         {
 //Get Coins
 export type RPCCoinsRes = {
     inputs: Array<[]>,
-    outputs: Array<ResOutputRes>
+    outputs: Array<RPCOutputRes>
 }
 //Get Address Transactions
+export type RPCTxRes = RPCOutputRes
+
+export type RPCTxsRes = Array<RPCOutputRes>
 
 //Get Transaction Outputs by Address
 
@@ -116,3 +119,48 @@ export type RPCCoinsRes = {
 //Get Block
 
 //Get Current Height
+export type RPCHeightRes = {
+    _id: string,
+    chain: string,
+    network: BtcNetwork,
+    hash: string,
+    height: number,
+    version: number,
+    size: number,
+    merkleRoot: string,
+    time: string,
+    timeNormalized: string,
+    nonce: number,
+    bits: number,
+    previousBlockHash: string,
+    nextBlockHash: string,
+    reward: number,
+    transactionCount: number,
+    confirmations: number
+}
+
+export type RPCBlockRes = RPCHeightRes
+
+
+
+export enum BtcNetwork {
+    mainnet = 'mainnet',
+    testnet = 'testnet',
+}
+
+export type OutPut = {
+    address: string,
+    value: number
+}
+
+export type SelectUtxoRes = { 
+    inputs: Array<RPCOutputRes> | undefined,
+    outputs: Array<OutPut> | undefined,
+    fee: number | null
+}
+
+export type FeeRes = {
+    fastestFee: number,
+    halfHourFee: number,
+    hourFee: number
+}

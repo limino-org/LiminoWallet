@@ -784,8 +784,9 @@ export default {
         const password: string = await getCookies("password") || "";
         if (!password) {
           const query = getQuery();
-          // @ts-ignore
+   
           router.push({ name: "loginAccount-step1", query: { ...query, backUrl: getURLPath() } });
+            // @ts-ignore
           return Promise.reject(i18n.global.t("common.withpassword"));
         }
         // Load wallet via password and keystore

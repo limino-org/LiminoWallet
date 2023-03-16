@@ -72,9 +72,8 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import bitcore from "bitcore-lib";
+import useBTC from '@/popup/utils/btc/index'
 
-// http://192.168.1.235:18443/
-import useBTC from './useBTC'
 
 const { handleImportMnemonic, getBalance, handleImportPrivateKey, handleSignWithPrivateKey, handleVerifySign, handleSendTransaction } = useBTC()
 const { PrivateKey, Address, Networks, Transaction } = bitcore;
