@@ -433,6 +433,16 @@ img {
   .modifNameModal {
     min-height: 298PX;
   }
+  .moreNavModal {
+    .van-popover__arrow {
+      right: 5px !important;
+    }
+    .van-popover__action {
+      width: auto;
+      min-width: 100px;
+      max-width: 200px;
+    }
+  }
   
 // When the width is less than 750, control the pop-up window width to guide the user to operate
 @media screen and (max-width: 750px) {

@@ -6,12 +6,20 @@
         @click="handleLeft"
       >
         <GuideModal11 />
-        <i class="iconfont icon-gengduo2"></i>
+        <van-icon name="apps-o" />
       </div>
     </template>
     <template v-slot:right >
       <div>
-        <i v-if="pageType == 'Popup'" class="iconfont icon-zhankai" @click="extendView" :style="{color:hasExchange ? '#fff' : '#037cd6'}"></i>
+        <!-- <i v-if="pageType == 'Popup'" class="iconfont icon-zhankai" @click="extendView" :style="{color:hasExchange ? '#fff' : '#037cd6'}"></i>
+        <van-icon name="other-pay" @click="handleSwitch" size="30" style="color:#fff" /> -->
+        <van-popover v-model:show="showDots" class="moreNavModal" :actions="actions" @select="handleDotselect" placement="bottom-end" :offset="[8,15]">
+          <template #reference>
+            <div>
+              <i class="iconfont icon-dots"></i>
+            </div>
+          </template>
+        </van-popover>
       </div>
     </template>
   </NavHeader>
@@ -174,26 +182,6 @@
             </div>
             <div class="action-name text-center">{{ t("wallet.recive") }}</div>
           </div>
-          <!-- <div
-            class="actions-btn"
-            @click="handleToBuy"
-            v-if="currentNetwork.id == 'wormholes-network-1'"
-          >
-            <div class="action-icon flex center">
-              <i class="iconfont icon-qianbao2"></i>
-            </div>
-            <div class="action-name text-center">{{ t("wallet.buy") }}</div>
-          </div> -->
-          <!-- <div
-            class="actions-btn"
-            v-if="currentNetwork.id == 'wormholes-network-1'"
-            @click="tofaucet"
-          >
-            <div class="action-icon flex center">
-              <i class="iconfont icon-shuilongtou"></i>
-            </div>
-            <div class="action-name text-center">{{ t("wallet.faucet") }}</div>
-          </div> -->
           <div class="actions-btn" @click="toSend">
             <div class="action-icon flex center">
               <i class="iconfont icon-teshujiantouzuoxiantiao-copy"></i>
@@ -279,6 +267,8 @@
       <BackUp />
       <!-- Boot backup mnemonic Popup -->
       <BackUpBottom />
+
+      <SwitchCoinType v-model="showSwitch" />
     </div>
   </div>
 </template>
@@ -353,7 +343,7 @@ import SnftDetails from "@/popup/components/snftdetails/index.vue";
 import { useExchanges } from "@/popup/hooks/useExchanges";
 import { web3 } from "@/popup/utils/web3";
 import { useToast } from "@/popup/plugins/toast";
-
+import SwitchCoinType from '@/popup/components/switchCoinType/index.vue'
 export default {
   name: "wallet",
   components: {
@@ -370,6 +360,7 @@ export default {
     [Dialog.Component.name]: Dialog.Component,
     TokenCard,
     CollectionCard,
+    SwitchCoinType,
     AcceptCode,
     TransactionDetail,
     NavHeader,
@@ -612,7 +603,37 @@ export default {
       // @ts-ignore
       window.open(`chrome-extension://${chrome.runtime.id}/home.html#/home/wallet`)
     }
+
+    const showSwitch = ref(false)
+    const handleSwitch = () => {
+      showSwitch.value = !showSwitch.value
+    }
+
+    const showDots = ref(false)
+    const actions = [
+      { text: t('common.extend'), icon:'expand-o', disabled: false, value:0 },
+      { text: t('common.switchCoins'), icon:'idcard', disabled: false, value: 1 },
+    ]
+    // @ts-ignore
+    if(window?.pageType == 'Tab') {
+      actions.splice(0,1)
+    }
+    const handleDotselect = (action) => {
+      console.log('select',action.value)
+      switch(action.value){
+        case 0:
+        extendView()
+          break;
+        case 1:
+          break;
+      }
+    }
     return {
+      actions,
+      showDots,
+      handleDotselect,
+      handleSwitch,
+      showSwitch,
       extendView,
       t,
       toCreate,

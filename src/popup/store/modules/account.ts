@@ -52,6 +52,7 @@ import { Wallet, BaseProvider } from "ethers";
 
 
 export interface State {
+  coinType: CoinType
   // Mnemonic words
   mnemonic: Mnemonic;
   ethNetwork: Object;
@@ -199,6 +200,12 @@ export type UpdateKeyStoreByAddressParams = {
   address: string;
 };
 
+export enum CoinType {
+  ETH = 'ETH',
+  BTC = 'BTC',
+}
+
+
 // Transactions
 export type TransactionReceipt = {
   network: NetWorkData,
@@ -275,6 +282,8 @@ export const clearWallet = () => {
 
 export default {
   state: {
+    // Default currency
+    coinType: 'ETH',
     // Mnemonic words
     mnemonic: {
       path: "",

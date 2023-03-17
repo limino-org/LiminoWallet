@@ -24,20 +24,20 @@ export const vantLangs = {
   }
 }
 const i18n = createI18n({
-  silentFallbackWarn: true,
   fallbackLocale,
-  legacy: false,
-  globalInjection: true,
+  globalInjection: false,
   locale: fallbackLocale,
   legacy: false, 
   messages,
 });
+console.log('i18n 0', i18n)
 localforage.getItem('vuex').then(store => {
   const fallbackLocale = store ? store.system.language : 'en'
-  sessionStorage.setItem('systemLang',fallbackLocale)
+  console.log('fallbackLocale', fallbackLocale)
   storeObj.dispatch('system/setLanguage', fallbackLocale)
   Locale.use(vantLangs[fallbackLocale].value, vantLangs[fallbackLocale]['package']);
   i18n.global.locale = fallbackLocale
+  console.log('i18n 1', i18n)
 })
 
 export default i18n

@@ -60,7 +60,7 @@ import { Language, languages } from "@/popup/enum/language";
 import { vantLangs } from "@/popup/language/index";
 import { Locale } from "vant";
 import { useBroadCast } from "@/popup/utils/broadCost";
-
+import i18n from '@/popup/language/index'
 export default defineComponent({
   name: "toggle-language-modal",
   components: {
@@ -82,8 +82,8 @@ export default defineComponent({
   setup(props: any, context: SetupContext) {
     const { emit }: any = context;
     const showModal: Ref<boolean> = ref(false);
-    const { t } = useI18n();
-    const { locale } = useI18n();
+    const $i18n = useI18n();
+    const { locale, t } = $i18n
     const store = useStore();
     const { dispatch, state } = store;
     const lang = computed(() => state.system.language);
@@ -98,8 +98,12 @@ export default defineComponent({
       dispatch("system/setLanguage", langName);
     }
     const setLanguage = async (item: Language) => {
+      console.log('locale', i18n, locale )
+      console.log('$i18n', $i18n)
       const { value } = item;
-      locale.value = value;
+         // @ts-ignore
+      i18n.global.locale = value
+      // locale.value = value
       // @ts-ignore
       Locale.use(vantLangs[value].value, vantLangs[value]["package"]);
       await dispatch("system/setLanguage", value);

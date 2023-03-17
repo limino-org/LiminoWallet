@@ -1263,9 +1263,9 @@
 		connectToSize:"Connect to {size}",
 		disconnectToSize:"Disconnect from {size}",
 		modifName:"Modify the name",
-		diffAddr:"The current address is different from the address selected by the wallet"
-
-
+		diffAddr:"The current address is different from the address selected by the wallet",
+		extend:"Expand view",
+		switchCoins:"Switching currencies"
 
 	},
 	categoryform: {

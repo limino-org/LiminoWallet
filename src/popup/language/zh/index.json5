@@ -1272,10 +1272,9 @@
 		connectToSize:"连接到{size}",
 		disconnectToSize:"从{size}断开连接",
 		modifName:"修改名称",
-		diffAddr:"当前地址与钱包选择的地址不一致"
-
-
-
+		diffAddr:"当前地址与钱包选择的地址不一致",
+		extend:"展开视图",
+		switchCoins:"切换币种"
 	},
 	categoryform: {
 		"categoryform": "您还未选择任何数据"

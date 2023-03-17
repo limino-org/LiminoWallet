@@ -25,14 +25,14 @@ module.exports = {
   },
   pluginOptions: {
     i18n: {
-      locale: 'yes',
       fallbackLocale: 'yes',
       localeDir: 'popup/language',
       includeLocales: true,
       runtimeOnly: true,
-      enableInSFC: false,
-      enableLegacy: true,
-      compositionOnly: true,
+      isGlobal: true,
+      enableInSFC: true,
+      enableLegacy: false,
+      compositionOnly: false,
       fullInstall: true
     },
     browserExtension: {

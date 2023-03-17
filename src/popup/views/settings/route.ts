@@ -28,14 +28,14 @@ export default  {
           auth: true,
         },
       },
-      {
-        path: "/settings/language",
-        name: "language",
-        component:() =>  import("@/popup/views/settings/pages/language/index.vue"),
-        meta: {
-          auth: true,
-        },
-      },
+      // {
+      //   path: "/settings/language",
+      //   name: "language",
+      //   component:() =>  import("@/popup/views/settings/pages/language/index.vue"),
+      //   meta: {
+      //     auth: true,
+      //   },
+      // },
       {
         path: "/settings/contacts-add",
         name: "contacts-add",

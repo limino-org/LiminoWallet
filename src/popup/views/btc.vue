@@ -73,14 +73,17 @@
 import { onMounted, ref } from "vue";
 import bitcore from "bitcore-lib";
 import useBTC from '@/popup/utils/btc/index'
-
+import { BTCWallet } from '@/popup/utils/btc/BTCWallet'
+import { network } from "../utils/btc/config";
 
 const { handleImportMnemonic, getBalance, handleImportPrivateKey, handleSignWithPrivateKey, handleVerifySign, handleSendTransaction } = useBTC()
 const { PrivateKey, Address, Networks, Transaction } = bitcore;
 console.log("bitcore", bitcore);
 console.log("bitcore", PrivateKey);
 
-
+const wallet = new BTCWallet("8702c1cb58d2cda0b9bd735224b9f02323f40bbacd0d85bf53069e91dbc3541e", network)
+wallet.provider.getBalance().then(res => console.log('getbalance---', res))
+console.log('wallet', wallet)
 // const Insight = require('bitcore-insight').Insight;
 // let insight = new Insight('testnet');
 // console.log('insight', insight)
@@ -89,7 +92,7 @@ const fromKey = new PrivateKey(
 , Networks.testnet);
 console.log("fromKey", fromKey.publicKey.toString());
 const fromPrivateKey = ref(fromKey.toString());
-const fromAddress = ref(fromKey.toAddress(Networks.testnet).toString());
+const fromAddress = ref(fromKey.toAddress().toString());
 const fromPublicKey = ref()
 const fromWIF = ref(fromKey.toWIF());
 const fromBalance = ref(0);
@@ -99,14 +102,14 @@ const toKey = new PrivateKey(
   , Networks.testnet);
 console.log("oldKey", toKey.toString());
 const toPrivateKey = ref(toKey.toString());
-const toAddress = ref(toKey.toAddress(Networks.testnet).toString());
+const toAddress = ref(toKey.toAddress().toString());
 const toWIF = ref(toKey.toWIF());
 const toBalance = ref(0);
 
 const handleSend = async () => {
   const transaction = new Transaction();
   console.log("Transaction", transaction);
-  await handleSendTransaction(fromPrivateKey.value,  fromAddress.value, toAddress.value)
+  await handleSendTransaction(fromPrivateKey.value,  fromAddress.value, toAddress.value, 100)
   handleUpdateBalance()
 };
 
