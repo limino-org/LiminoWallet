@@ -1,22 +1,24 @@
 <template>
   <div class="switch-coin-type">
-    <van-popup v-model:show="showModal" :style="{ height:'70vh' }"  position="bottom" @click.stop="showModal = false">
+    <van-popup v-model:show="showModal" :style="{ height:'30vh' }"  position="bottom" @click.stop="showModal = false">
       <div class="coin-list container">
         <div class="p-20 con-box clear-both">
-            <div v-for="item in coinList" :key="item.name" @click.stop="handleSwitch" class="lh-30 hover card" :style="{background: item.color}">{{ item.name }}</div>
+            <div v-for="item in coinList" :key="item.name" @click.stop="handleSwitch(item)" class="lh-30 hover card" :style="{background: item.color}">{{ item.name }}</div>
         </div>
       </div>
     </van-popup>
   </div>
 </template>
 <script lang="ts" setup>
+import { CoinType } from "@/popup/store/modules/account";
 import { Popup as vanPopup } from "vant";
-import { ref, watch } from "vue";
+import { ref, watch,Ref } from "vue";
+import { useStore } from "vuex";
 
 const coinList = ref([{ name: "BTC", color:"orange" }, { name: "ETH", color:'#037CD6' }]);
 const showModal = ref(false);
 const emits = defineEmits(["update:modelValue", "onChange"]);
-
+const store = useStore()
 const props = defineProps({
   modelValue: Boolean,
 });
@@ -34,8 +36,8 @@ watch(
     emits("update:modelValue", v);
   }
 );
-const handleSwitch = () => {
-
+const handleSwitch = (item: CoinType) => {
+  store.commit('account/UPDATE_COINTYPE', item)
 }
 
 </script>

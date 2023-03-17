@@ -200,9 +200,14 @@ export type UpdateKeyStoreByAddressParams = {
   address: string;
 };
 
-export enum CoinType {
+export enum CoinTypeName {
   ETH = 'ETH',
   BTC = 'BTC',
+}
+
+export interface CoinType {
+  name: CoinTypeName,
+  color: string
 }
 
 
@@ -283,7 +288,10 @@ export const clearWallet = () => {
 export default {
   state: {
     // Default currency
-    coinType: 'ETH',
+    coinType: {
+      name: 'ETH',
+      color:'#037CD6'
+    },
     // Mnemonic words
     mnemonic: {
       path: "",
@@ -363,6 +371,9 @@ export default {
     }
   },
   mutations: {
+    UPDATE_COINTYPE(state: State, type: CoinType) {
+      state.coinType = type
+    },
     UPDATE_ETHNETWORK(state: State, val: any) {
       state.ethNetwork = val
       if (val && val.chainId) {
@@ -1693,6 +1704,14 @@ export default {
         return false
       }
       return list.some((item: any) => item.hash.toUpperCase() == hash.toUpperCase())
+    },
+    // Switch cointype
+    handleSwitchCoinType({commit, state}, coinType: CoinType) {
+      commit('UPDATE_COINTYPE', coinType)
+      // 重新推导地址，并更新
+      // state.account.accountInfo
+      // state.account.accountList
+      
     }
   },
   namespaced: true,

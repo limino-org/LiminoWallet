@@ -1,5 +1,5 @@
 <template>
-  <NavHeader :hasNet="true">
+  <NavHeader :hasNet="true" :title="coinType.name">
     <template v-slot:left>
       <div
         :class="`flex center icon-box ${hasExchange ? 'hasExchange' : ''}`"
@@ -625,10 +625,14 @@ export default {
         extendView()
           break;
         case 1:
+        handleSwitch()
           break;
       }
     }
+    const coinType = computed(() => store.state.account.coinType)
+
     return {
+      coinType,
       actions,
       showDots,
       handleDotselect,
