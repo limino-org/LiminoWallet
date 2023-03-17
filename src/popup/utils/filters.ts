@@ -299,9 +299,9 @@ export function transactionStatus(txData: any){
       }
       if(data.type == 1) {
         if(to.toUpperCase() == myAddr) {
-          return 'S-NFT ' + i18n.global.t('transationHistory.send')
-        } else {
           return 'S-NFT ' + i18n.global.t('transactiondetails.recive')
+        } else {
+          return 'S-NFT ' + i18n.global.t('transationHistory.send')
         }
       }
       if(txTypes.includes(data.type)) {
