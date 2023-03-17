@@ -230,13 +230,17 @@ export function transactionStatus(txData: any){
        if(data){
         console.warn('data', data)
         if(data.type == 6) {
-          return 'S-NFT ' + i18n.global.t('common.conver')
+          const { nft_address } = data
+          const level = getSNFTLevel(nft_address)
+          return `S-NFT(${level}) ` + i18n.global.t('common.conver')
         }
         if(data.type == 1) {
+          const { nft_address } = data
+          const level = getSNFTLevel(nft_address)
           if(to.toUpperCase() == myAddr) {
-            return 'S-NFT ' + i18n.global.t('transactiondetails.recive')
+            return `S-NFT(${level}) ` + i18n.global.t('transactiondetails.recive')
           } else {
-            return 'S-NFT ' + i18n.global.t('transationHistory.send')
+            return `S-NFT(${level}) ` + i18n.global.t('transationHistory.send')
           }
         }
         if(txTypes.includes(data.type)) {
@@ -258,7 +262,25 @@ export function transactionStatus(txData: any){
     if(bigTo === bigFrom || myAddr === bigTo) return i18n.global.t('transactiondetails.recive')
     if(bigTo !== bigFrom) return i18n.global.t('transationHistory.send')
     }
-
+    function getSNFTLevel (nft_addr: string) {
+      const len = nft_addr.length
+      let levels = 'L0'
+      switch(len){
+        case 42:
+          levels = 'L0';
+          break;
+        case 41:
+          levels = 'L1';
+          break;
+        case 40:
+          levels = 'L2';
+          break;
+        case 39:
+          levels = 'L3';
+          break;
+      }
+      return levels
+    }
   // export const handleTxType = (item: any) => {
   // const { to, from, contractAddress, sendStatus , txType, input} = item
   // const myAddr = store.state.account.accountInfo.address.toUpperCase()

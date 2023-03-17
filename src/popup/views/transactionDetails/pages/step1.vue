@@ -52,7 +52,7 @@
         </div>
       </div>
     </div>
-    <div class="tx-tit lh-30 pl-14 pr-14 mt-20">{{ t("common.hsitory") }}</div>
+    <div class="tx-tit lh-30 pl-14 pr-14">{{ t("common.hsitory") }}</div>
 
     <div class="swap-list" v-show="!loading">
       <CollectionCard
@@ -63,7 +63,7 @@
         :key="item.address"
         :data="item"
       />
-      <NoData v-if="!txList.length" :message="$t('wallet.no')" />
+      <NoData v-if="!txList.length" :message="t('wallet.no')" />
 
       <van-dialog
         v-model:show="showTransactionModal"
