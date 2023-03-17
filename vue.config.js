@@ -29,10 +29,9 @@ module.exports = {
       localeDir: 'popup/language',
       includeLocales: true,
       runtimeOnly: true,
-      isGlobal: true,
-      enableInSFC: true,
+      enableInSFC: false,
       enableLegacy: false,
-      compositionOnly: false,
+      compositionOnly: true,
       fullInstall: true
     },
     browserExtension: {

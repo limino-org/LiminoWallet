@@ -52,6 +52,8 @@
         </div>
       </div>
     </div>
+    <div class="tx-tit lh-30 pl-14 pr-14 mt-20">{{ t("common.hsitory") }}</div>
+
     <div class="swap-list" v-show="!loading">
       <CollectionCard
         @handleClick="handleView(item)"
@@ -769,6 +771,11 @@ export default {
     border-radius: 5px;
     background: #fff;
   }
+}
+.tx-tit {
+  height: 30px;
+  color: #848484;
+  background: #F1F3F4;
 }
 .view-history {
   color: #037cd6;

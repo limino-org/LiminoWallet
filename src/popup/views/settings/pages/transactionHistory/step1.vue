@@ -284,7 +284,7 @@ export default {
         { name: t("transationHistory.all"), value: 1, select: true },
         // { name: "Receive", value: 2, select: false },
         { name: t("transationHistory.send"), value: 3, select: false },
-        { name: t("transationHistory.swap"), value: 4, select: false },
+        // { name: t("transationHistory.swap"), value: 4, select: false },
         { name: t("transationHistory.other"), value: 5, select: false },
       ],
     });
@@ -462,7 +462,7 @@ export default {
     const sendList = computed(() => {
       const newlist = tlist.value || [];
       return newlist.filter((item: any) => {
-        return handleTxTypeString(item) == 'Send'
+        return handleTxTypeString(item).indexOf('Send') > -1
       });
     });
     // swap transaction
@@ -476,10 +476,7 @@ export default {
     const otherList = computed(() => {
       const newlist = tlist.value || [];
       return newlist.filter((item: any) => {
-        return (
-          handleTxTypeString(item) == 'Contract' ||
-          handleTxTypeString(item) == 'Receive'
-        );
+        return (handleTxTypeString(item).indexOf('Send') == -1)
       });
     });
     // Transaction details data
@@ -855,7 +852,7 @@ export default {
   background: #fff;
 }
 .tabs {
-  width: 345px;
+  width: 260px;
   &::after {
     border-color: #037cd6;
     border-radius: 26px;

@@ -82,8 +82,7 @@ export default defineComponent({
   setup(props: any, context: SetupContext) {
     const { emit }: any = context;
     const showModal: Ref<boolean> = ref(false);
-    const $i18n = useI18n();
-    const { locale, t } = $i18n
+    const { t, locale } = useI18n();
     const store = useStore();
     const { dispatch, state } = store;
     const lang = computed(() => state.system.language);
@@ -98,12 +97,10 @@ export default defineComponent({
       dispatch("system/setLanguage", langName);
     }
     const setLanguage = async (item: Language) => {
-      console.log('locale', i18n, locale )
-      console.log('$i18n', $i18n)
+      console.log('locale', locale, i18n)
       const { value } = item;
-         // @ts-ignore
-      i18n.global.locale = value
-      // locale.value = value
+      i18n.global.locale.value = value;
+      i18n.global.fallbackLocale.value = value
       // @ts-ignore
       Locale.use(vantLangs[value].value, vantLangs[value]["package"]);
       await dispatch("system/setLanguage", value);

@@ -23,7 +23,7 @@ export default {
                 vnode.component?.exposed?.open(opt)
             },
         }
-        // @ts-ignore
+                // @ts-ignore
         app.config.globalProperties.$dialog = $dialog
 
     }

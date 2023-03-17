@@ -124,14 +124,14 @@ export default {
       },
     },
     // Miner pledge
-    {
-      path: "/home/miner-pledge",
-      name: "minerpledge",
-      component: () =>
-        import("@/popup/views/home/pages/minerPledge/index.vue"),
-      meta: {
-        auth: true,
-      },
-    },
+    // {
+    //   path: "/home/miner-pledge",
+    //   name: "minerpledge",
+    //   component: () =>
+    //     import("@/popup/views/home/pages/minerPledge/index.vue"),
+    //   meta: {
+    //     auth: true,
+    //   },
+    // },
   ],
 };

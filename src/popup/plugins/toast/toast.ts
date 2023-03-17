@@ -31,8 +31,7 @@ export default {
                 vnode.component?.exposed?.hide()
             }
         }
-                // @ts-ignore
-
+        // @ts-ignore
         app.config.globalProperties.$toast = $toast
 
     }

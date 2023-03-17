@@ -219,34 +219,74 @@ export function transactionStatus(txData: any){
     if((myAddr === bigTo && bigFrom !== myAddr)) return 'icon-bottom'
     if(bigTo !== bigFrom || bigTo === bigFrom) return 'icon-arrowTop'
   }
-  export const handleTxType = (item: any) => {
-  const { to, from, contractAddress, sendStatus , txType, input} = item
-  const myAddr = store.state.account.accountInfo.address.toUpperCase()
-  if(txType === 'wormholes') {
-     const data = getInput(input)
-     if(data){
-      if(data.type == 6) {
-        return i18n.global.t('common.conver')
-      }
-      if(txTypes.includes(data.type)) {
-        return i18n.global.t('transationHistory.send')
-      }
-     }
-  }
-  if(sendStatus && sendStatus === 'pendding') {
-    if(txType === 'contract') {
-      return i18n.global.t('transationHistory.contract')
-    }
-    return i18n.global.t('transationHistory.send')
-  }
 
-  if(txType === 'contract') return i18n.global.t('transationHistory.contract')
-  const bigTo = to ?to.toUpperCase() :''
-  const bigFrom = from.toUpperCase()
-  if(bigTo === bigFrom)return i18n.global.t('transationHistory.send')
-  if(bigTo === bigFrom || myAddr === bigTo) return i18n.global.t('transactiondetails.recive')
-  if(bigTo !== bigFrom) return i18n.global.t('transationHistory.send')
-  }
+
+
+  export const handleTxType = (item: any) => {
+    const { to, from, contractAddress, sendStatus , txType, input} = item
+    const myAddr = store.state.account.accountInfo.address.toUpperCase()
+    if(txType === 'wormholes') {
+       const data = getInput(input)
+       if(data){
+        console.warn('data', data)
+        if(data.type == 6) {
+          return 'S-NFT ' + i18n.global.t('common.conver')
+        }
+        if(data.type == 1) {
+          if(to.toUpperCase() == myAddr) {
+            return 'S-NFT ' + i18n.global.t('transationHistory.send')
+          } else {
+            return 'S-NFT ' + i18n.global.t('transactiondetails.recive')
+          }
+        }
+        if(txTypes.includes(data.type)) {
+          return i18n.global.t('transationHistory.send')
+        }
+       }
+    }
+    if(sendStatus && sendStatus === 'pendding') {
+      if(txType === 'contract') {
+        return i18n.global.t('transationHistory.contract')
+      }
+      return i18n.global.t('transationHistory.send')
+    }
+  
+    if(txType === 'contract') return i18n.global.t('transationHistory.contract')
+    const bigTo = to.toUpperCase()
+    const bigFrom = from.toUpperCase()
+    if(bigTo === bigFrom)return i18n.global.t('transationHistory.send')
+    if(bigTo === bigFrom || myAddr === bigTo) return i18n.global.t('transactiondetails.recive')
+    if(bigTo !== bigFrom) return i18n.global.t('transationHistory.send')
+    }
+
+  // export const handleTxType = (item: any) => {
+  // const { to, from, contractAddress, sendStatus , txType, input} = item
+  // const myAddr = store.state.account.accountInfo.address.toUpperCase()
+  // if(txType === 'wormholes') {
+  //    const data = getInput(input)
+  //    if(data){
+  //     if(data.type == 6) {
+  //       return i18n.global.t('common.conver')
+  //     }
+  //     if(txTypes.includes(data.type)) {
+  //       return i18n.global.t('transationHistory.send')
+  //     }
+  //    }
+  // }
+  // if(sendStatus && sendStatus === 'pendding') {
+  //   if(txType === 'contract') {
+  //     return i18n.global.t('transationHistory.contract')
+  //   }
+  //   return i18n.global.t('transationHistory.send')
+  // }
+
+  // if(txType === 'contract') return i18n.global.t('transationHistory.contract')
+  // const bigTo = to ?to.toUpperCase() :''
+  // const bigFrom = from.toUpperCase()
+  // if(bigTo === bigFrom)return i18n.global.t('transationHistory.send')
+  // if(bigTo === bigFrom || myAddr === bigTo) return i18n.global.t('transactiondetails.recive')
+  // if(bigTo !== bigFrom) return i18n.global.t('transationHistory.send')
+  // }
 
   export const handleTxTypeString = (item: any) => {
   const { to, from, contractAddress, sendStatus , txType, input} = item
@@ -256,6 +296,13 @@ export function transactionStatus(txData: any){
      if(data){
       if(data.type == 6) {
         return 'Conver'
+      }
+      if(data.type == 1) {
+        if(to.toUpperCase() == myAddr) {
+          return 'S-NFT ' + i18n.global.t('transationHistory.send')
+        } else {
+          return 'S-NFT ' + i18n.global.t('transactiondetails.recive')
+        }
       }
       if(txTypes.includes(data.type)) {
         return 'Send'
