@@ -8,11 +8,12 @@ import enUS from 'vant/es/locale/lang/en-US';
 import zhCN from 'vant/es/locale/lang/zh-CN';
 import storeObj from '../store';
 import localforage from 'localforage';
+import { ref } from 'vue';
 const messages = {
     zh,
     en,
 }
-const fallbackLocale = 'en'
+const fallbackLocale = 'zh'
 export const vantLangs = {
   'zh': {
     value: 'zh-CN',
@@ -23,12 +24,13 @@ export const vantLangs = {
     package: enUS
   }
 }
+
 const i18n:any = createI18n({
   silentFallbackWarn: true,
   legacy: false,
   fallbackLocale,
   globalInjection: true,
-  locale: fallbackLocale,
+  locale: ref(fallbackLocale),
   messages,
 });
 localforage.getItem('vuex').then(store => {
@@ -36,7 +38,8 @@ localforage.getItem('vuex').then(store => {
   sessionStorage.setItem('systemLang',fallbackLocale)
   storeObj.dispatch('system/setLanguage', fallbackLocale)
   Locale.use(vantLangs[fallbackLocale].value, vantLangs[fallbackLocale]['package']);
-  i18n.global.locale = fallbackLocale
+  i18n.global.locale.value = fallbackLocale
+
 })
 
 export default i18n

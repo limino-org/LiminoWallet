@@ -1,7 +1,7 @@
 <template>
   <div class="transaction-detail">
     <div class="title f-16 text-center">
-      {{ t("transactionDetails.transationHistoryDetails") }}
+      {{ title }}
     </div>
     <div class="tran-form mt-20">
       <div class="form-box ml-14 mr-14">
@@ -197,7 +197,11 @@ export default defineComponent({
     const handleCancel = () => {
       emit("handleCancel", props.data);
     };
+    const title = computed(() => {
+      return handleTxType(props.data)
+    })
     return {
+      title,
       handleSpeed,
       handleCancel,
       t,

@@ -31,7 +31,7 @@ module.exports = {
       includeLocales: true,
       runtimeOnly: true,
       enableInSFC: false,
-      enableLegacy: true,
+      enableLegacy: false,
       compositionOnly: true,
       fullInstall: true
     },
