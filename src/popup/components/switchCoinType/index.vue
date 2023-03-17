@@ -15,7 +15,7 @@ import { Popup as vanPopup } from "vant";
 import { ref, watch,Ref } from "vue";
 import { useStore } from "vuex";
 
-const coinList = ref([{ name: "BTC", color:"orange" }, { name: "ETH", color:'#037CD6' }]);
+const coinList = ref([ { name: "ETH", color:'#037CD6', value: 0 },{ name: "BTC", color:"orange", value: 1 }]);
 const showModal = ref(false);
 const emits = defineEmits(["update:modelValue", "onChange"]);
 const store = useStore()
@@ -37,7 +37,7 @@ watch(
   }
 );
 const handleSwitch = (item: CoinType) => {
-  store.commit('account/UPDATE_COINTYPE', item)
+  store.dispatch('account/handleSwitchCoinType', item)
 }
 
 </script>

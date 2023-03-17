@@ -4,7 +4,8 @@ import storeObj from '@/popup/store/index'
 import { useBroadCast } from '@/popup/utils/broadCost'
 import { getConverAmount, getInput } from "./txList";
 import { guid } from '@/popup/utils/utils';
-
+import useBTC from '@/popup/utils/btc/index'
+import { network } from "@/popup/utils/btc/config";
 const { handleUpdate } = useBroadCast()
 import eventBus from "@/popup/utils/bus";
 
@@ -17,6 +18,7 @@ import {
   ImportPrivateKey,
   CreateWalletByMnemonicParams,
   createRandomWallet,
+  parsekeystore,
 } from "@/popup/utils/ether";
 import { getRandomIcon } from "@/popup/utils/index";
 import { toRaw } from "vue";
@@ -49,6 +51,7 @@ import Bignumber from 'bignumber.js'
 import { sendBackground } from "@/popup/utils/sendBackground";
 import localforage from "localforage";
 import { Wallet, BaseProvider } from "ethers";
+import { PrivateKey } from "bitcore-lib";
 
 
 export interface State {
@@ -207,7 +210,8 @@ export enum CoinTypeName {
 
 export interface CoinType {
   name: CoinTypeName,
-  color: string
+  color: string,
+  value: number
 }
 
 
@@ -290,7 +294,8 @@ export default {
     // Default currency
     coinType: {
       name: 'ETH',
-      color:'#037CD6'
+      color:'#037CD6',
+      value: 0
     },
     // Mnemonic words
     mnemonic: {
@@ -1706,16 +1711,59 @@ export default {
       return list.some((item: any) => item.hash.toUpperCase() == hash.toUpperCase())
     },
     // Switch cointype
-    handleSwitchCoinType({commit, state}, coinType: CoinType) {
+    async handleSwitchCoinType({commit, state,dispatch}, coinType: CoinType) {
       commit('UPDATE_COINTYPE', coinType)
+      const { value } = coinType
+      const password = await getCookies()
       // 重新推导地址，并更新
       // state.account.accountInfo
       // state.account.accountList
-      
+      console.log(' state.account.accountList',  state.accountList)
+      try {
+        switch(value){
+          case 0:
+            // ETH
+            dispatch("createWalletByJson", { password, json: state.accountInfo.keyStore }).then(wall => {
+              state.accountInfo.address = toAddrByPrivateKeyETH(wall.privateKey)
+            })
+            for (const iterator of state.accountList) {
+              dispatch("createWalletByJson", { password, json: iterator.keyStore }).then(wall => {
+                iterator.address = toAddrByPrivateKeyETH(wall.privateKey)
+              })
+            }
+
+            break;
+          case 1:
+            // BTC
+            dispatch("createWalletByJson", { password, json: state.accountInfo.keyStore }).then(wall => {
+              state.accountInfo.address = toAddrByPrivateKeyBTC(wall.privateKey)
+            })
+            for (const iterator of state.accountList) {
+              dispatch("createWalletByJson", { password, json: iterator.keyStore }).then(wall => {
+                iterator.address = toAddrByPrivateKeyBTC(wall.privateKey)
+              })
+            }
+
+            break;
+        }
+      }catch(err){
+        console.error(err)
+      }
     }
   },
   namespaced: true,
 };
+
+
+function toAddrByPrivateKeyETH(privateKey: SVGStringList){
+  const newWallet = new ethers.Wallet(privateKey)
+  return newWallet.address
+}
+async function toAddrByPrivateKeyBTC(privateKey: string){
+  const newstr = privateKey.substr(2,privateKey.length)
+  const privateKeyInstance = new PrivateKey(newstr)
+  return privateKeyInstance.toAddress().toString();
+}
 
 // Transaction type
 export enum TransactionTypes {
