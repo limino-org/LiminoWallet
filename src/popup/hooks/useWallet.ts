@@ -13,6 +13,8 @@ export const useWallet = () => {
         const { hasAccount } = useLogin()
         const hasAcc = await hasAccount()
         const password = await getCookies()
+        console.warn('hasAcc', hasAcc)
+        console.warn('password', password)
         if(!hasAcc) {
             router.replace({ name: 'guide-step1'})
         }

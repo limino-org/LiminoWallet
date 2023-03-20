@@ -233,12 +233,16 @@ export default {
     },
     // Get account details
     async getEthAccountInfo({commit, state}: any){
-      const wall = await getWallet()
-      const { address } = wall
-      wall.provider.send('eth_getAccountInfo',[address, "latest"]).then((res:any)=>{
-        sessionStorage.setItem('eth_addountInfo', JSON.stringify(res))
-        commit('UPDATA_ACCOUNTINFO', res)
-      })
+      if(state.coinType.value == 0) {
+        const wall = await getWallet()
+        const { address } = wall
+        wall.provider.send('eth_getAccountInfo',[address, "latest"]).then((res:any)=>{
+          sessionStorage.setItem('eth_addountInfo', JSON.stringify(res))
+          commit('UPDATA_ACCOUNTINFO', res)
+        })
+      } 
+      return Promise.resolve()
+
     },
     setConversationid({commit, state}: any, id: string) {
       commit('UPDATA_CONVERSATIONID',id)

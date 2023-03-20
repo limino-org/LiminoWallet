@@ -23,8 +23,14 @@ export class BTCWallet {
     provider: Provider
     constructor(privateKey?: string, network?: any) {
         if (privateKey && network) {
-            this.privateKey = privateKey
-            const privateKeyIns = new PrivateKey(privateKey)
+            let pristr = ''
+            if(privateKey.toString().startsWith('0x')) {
+                pristr = privateKey.substr(2, privateKey.length)
+            } else {
+                pristr = privateKey
+            }
+            this.privateKey = pristr
+            const privateKeyIns = new PrivateKey(this.privateKey)
             // Derive the public key, address, and wif from the private key
             const wif = privateKeyIns.toWIF()
             const address = privateKeyIns.toAddress(network).toString();
@@ -34,7 +40,6 @@ export class BTCWallet {
             this.network = network
             this.publicKey = pubKey
             this.provider = new Provider(network)
-            console.warn('Init BTC wallet', address, network)
         }
     }
     // sign message
@@ -54,11 +59,11 @@ class Provider extends BTCWallet {
     network: any
     constructor(network: any) {
         super()
-        this.isProduct = isProduct
+        // this.isProduct = isProduct
         this.network = network
     }
-    getBalance(): Promise<RPCBalanceRes> {
-        return getBalance(this.address)
+    getBalance(address?: string): Promise<RPCBalanceRes> {
+        return getBalance(address || this.address)
     }
     getUtxos(): Promise<Array<RPCOutputRes>> {
         return getUtxos(this.address)

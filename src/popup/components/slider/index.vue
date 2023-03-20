@@ -318,7 +318,7 @@ export default defineComponent({
       () => props.modelValue,
       (n) => {
         showSlider.value = n;
-        if (n) {
+        if (n && store.state.account.coinType.value == 0 && store.state.account.currentNetwork.id === 'wormholes-network-1') {
           dispatch("account/getExchangeStatus");
         }
       },

@@ -381,7 +381,9 @@ export const eventsEmitter = {
   connect: 'connect',
   // disconnect
   disconnect: 'disconnect',
-  message: 'message'
+  message: 'message',
+  // switch coinType
+  switchCoinType: 'switchCoinType'
 }
 
 

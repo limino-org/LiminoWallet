@@ -66,11 +66,13 @@ export const useToggleAccount = () => {
       // eventBus.emit('changeAccount', wall.address)
       dispatch("account/updateTokensBalances");
       // const wallet = await dispatch("account/getProviderWallet");
-      dispatch("account/getExchangeStatus").then(res => {
-        if(res.status == 2 && res.exchanger_flag){
-          initExchangeData()
-        }
-      })
+      if(state.account.coinType.value == 0) {
+        dispatch("account/getExchangeStatus").then(res => {
+          if(res.status == 2 && res.exchanger_flag){
+            initExchangeData()
+          }
+        })
+      }
       const { address } = wall
       eventBus.emit("changeAccount", address);
 

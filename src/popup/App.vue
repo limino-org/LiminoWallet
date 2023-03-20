@@ -56,6 +56,7 @@ export default {
     const { commit, dispatch, state, getters } = store
     const { initWallet } = useWallet();
     const currentNetwork = computed(() => state.account.currentNetwork);
+    const coinType = computed(() => state.account.coinType)
     provide("appProvide", appProvide());
     onMounted(()=>{
      // update browser session window id
@@ -73,6 +74,7 @@ export default {
         }
       }
       window.onload = () => {
+        store.dispatch('account/handleSwitchCoinType', store.state.account.coinType)
         // @ts-ignore
         chrome.storage.local.set({comfirm_password: ''})
         let time = setTimeout(() => {
@@ -101,10 +103,20 @@ export default {
       dispatch("configuration/getConfiguration");
       useEvent();
     });
-    
+
+
     eventBus.on('walletReady',newwallet => {
-      dispatch('system/getChainVersion', newwallet);
+      let time = setTimeout(() => {
+        if(store.state.account.coinType.value == 0) {
+        console.warn('state.account.coinType', coinType.value)
+        console.log('--=-=-=', newwallet)
+        dispatch('system/getChainVersion', newwallet);
+      }
+      clearTimeout(time)
+      }, 1000)
     })
+
+
     const animation = ref("slide");
     
     return {

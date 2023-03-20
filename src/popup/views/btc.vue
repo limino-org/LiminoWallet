@@ -72,12 +72,13 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import bitcore from "bitcore-lib";
+const { PrivateKey, Address, Networks, Transaction } = bitcore;
 import useBTC from '@/popup/utils/btc/index'
 import { BTCWallet } from '@/popup/utils/btc/BTCWallet'
 import { network } from "../utils/btc/config";
 
 const { handleImportMnemonic, getBalance, handleImportPrivateKey, handleSignWithPrivateKey, handleVerifySign, handleSendTransaction } = useBTC()
-const { PrivateKey, Address, Networks, Transaction } = bitcore;
+
 console.log("bitcore", bitcore);
 console.log("bitcore", PrivateKey);
 

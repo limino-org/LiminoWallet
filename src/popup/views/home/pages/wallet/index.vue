@@ -16,7 +16,7 @@
         <van-popover v-model:show="showDots" class="moreNavModal" :actions="actions" @select="handleDotselect" placement="bottom-end" :offset="[8,15]">
           <template #reference>
             <div>
-              <i class="iconfont icon-dots"></i>
+              <i class="iconfont icon-dots" :style="{color:hasExchange ? '#fff' : '#037cd6'}"></i>
             </div>
           </template>
         </van-popover>
@@ -510,17 +510,19 @@ export default {
     };
 
     onMounted(() => {
+
       eventBus.on('changeAccount',() => {
         showModal.value = false
       })
       
-      dispatch("system/getEthAccountInfo");
-      dispatch("account/getExchangeStatus").then((res) => {
-        console.warn(111)
+      if(store.state.account.coinType.value == 0) {
+        dispatch("system/getEthAccountInfo");
+        dispatch("account/getExchangeStatus").then((res) => {
         if (res.status == 2 && res.exchanger_flag) {
           initExchangeData();
         }
       });
+      }
       dispatch("transfer/clearTx");
       handleLoopBalance();
       dispatch("account/updateBalance");

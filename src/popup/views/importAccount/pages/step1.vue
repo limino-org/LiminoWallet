@@ -74,6 +74,8 @@ import { encryptPrivateKey, EncryptPrivateKeyParams } from "@/popup/utils/web3";
 import { ref, SetupContext, Ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { setCookies, getCookies } from "@/popup/utils/jsCookie";
+import bitcore from "bitcore-lib";
+const { PrivateKey, Address, Networks, Transaction } = bitcore;
 import {
   Icon,
   Search,

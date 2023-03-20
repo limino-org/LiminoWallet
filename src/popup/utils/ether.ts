@@ -52,7 +52,7 @@ export interface CreateWalletByJsonParams {
     password: string
 }
 // Create a wallet instance through the JSON file of the password keystore
-export function createWalletByJson(params: CreateWalletByJsonParams): Promise<Object> {
+export function createWalletByJson(params: CreateWalletByJsonParams): Promise<any> {
     const { password, json }: any = params
     if(!password || !json){
         return Promise.reject()
