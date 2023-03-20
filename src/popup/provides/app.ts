@@ -1,6 +1,6 @@
 import { useRouter } from "vue-router"
 import { useStore } from "vuex"
-
+import { InjectionKey, Ref } from 'vue'
 export const provide = () => {
     const router = useRouter()
     const store = useStore()
@@ -17,8 +17,8 @@ export const provide = () => {
     }
 }
 
-export type AppProvide = {
-    back: Function,
-    wallet: Function,
-    backHome:Function
+export interface AppProvide {
+    back: InjectionKey<void>,
+    backHome: InjectionKey<void>,
+    wallet: InjectionKey<Ref<any>>
 }

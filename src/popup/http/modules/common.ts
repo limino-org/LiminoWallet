@@ -1,5 +1,5 @@
 import { httpGet, httpPost } from '../request'
-import { wormholesscanApi,wormholesApi,scanApi } from '@/popup/http/httpUrl'
+import { wormholesscanApi, wormholesApi, scanApi, snftUrl } from '@/popup/http/httpUrl'
 
 
 // One click to create an exchange
@@ -37,14 +37,14 @@ export const setExchangeSig = (address: string, params = {}) => {
  * @param params 
  * @returns boolean
  */
- export const getExchangeSig = (address: string, params = {}) => {
+export const getExchangeSig = (address: string, params = {}) => {
     return httpGet(`${wormholesApi}/c${address.toLowerCase()}/v2/getExchangeSig`, params)
 }
 
 
 // 
 export const checkAuth = (address: string) => {
-    return httpGet(`${scanApi}/extra/checkAuth`,{address})
+    return httpGet(`${scanApi}/extra/checkAuth`, { address })
 }
 
 // Get the smart contract address
@@ -60,5 +60,29 @@ export const getRedemption = () => {
 
 // Query the account information of the specified address
 export const getAccountAddr = (address: string) => {
-    return httpGet(`${scanApi}/account/${address}`,{})
+    return httpGet(`${snftUrl}/account/${address}`, {})
+}
+
+
+
+export interface CreatorData {
+    address: string
+    count: number
+    lastEpoch: string
+    lastNumber: number
+    lastTime: number
+    number: number
+    profit: string
+    reward: string
+    timestamp: number
+}
+// specifies the address to query the creator
+export const getCreator = (address: string): Promise<CreatorData> => {
+    return httpGet(`${snftUrl}/creator/${address}`, {})
+}
+
+
+// specifies the ID to query the NFT period information of the system, including 16 collection information
+export const getPeriodById = (id: string): Promise<any> => {
+    return httpGet(`${snftUrl}/epoch/${id}`, {})
 }

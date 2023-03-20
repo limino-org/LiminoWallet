@@ -1,5 +1,5 @@
 <template>
-  <div class="page-sign1">
+  <div class="page-sign1" @keydown.enter="goOn">
     <van-sticky>
       <NavHeader :hasRight="false" :hasLeft="false" title="LiminoWallet"></NavHeader>
     </van-sticky>
@@ -47,7 +47,7 @@ import { Loading, Sticky, Icon, Field, Button, Toast } from 'vant'
 import NavHeader from '@/popup/components/navHeader/index.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSign } from './hooks/sign'
-import { computed, onMounted, ref, Ref } from 'vue'
+import { computed, onMounted, ref, Ref, Events, onUnmounted } from 'vue'
 import useClipboard from 'vue-clipboard3'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
@@ -109,8 +109,16 @@ export default {
       sendBackground({method:handleType.handleReject,response:{method:signType, sendId}})
 
     }
+    const handleKeydown = (e: any) => {
+      if(e.keyCode === 13) {
+        goOn()
+      }
+    }
     onMounted(() => {
- 
+      window.addEventListener('keydown', handleKeydown)
+    })
+    onUnmounted(() => {
+      window.removeEventListener('keydown', handleKeydown)
     })
     return {
       t,

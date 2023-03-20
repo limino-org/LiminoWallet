@@ -1,5 +1,6 @@
 <template>
   <div class="page-box" id="page-box">
+
     <div class="container" id="container">
       <div v-if="route.meta.keepAlive">
         <router-view v-slot="{ Component }">
@@ -56,8 +57,10 @@ export default {
     const { commit, dispatch, state, getters } = store
     const { initWallet } = useWallet();
     const currentNetwork = computed(() => state.account.currentNetwork);
+  
     provide("appProvide", appProvide());
-    onMounted(()=>{
+    onMounted(async()=>{
+      console.log('this', this)
      // update browser session window id
      dispatch('system/setConversationid', guid())
      // Listen to the broadcast of the same source window
@@ -99,11 +102,13 @@ export default {
       initWallet();
       dispatch("account/getContractAddress");
       dispatch("configuration/getConfiguration");
+
       useEvent();
     });
     
     eventBus.on('walletReady',newwallet => {
       dispatch('system/getChainVersion', newwallet);
+ 
     })
     const animation = ref("slide");
     
@@ -136,17 +141,17 @@ export default {
 }
 .page-box {
   min-height: 100vh;
-  transition: transform 0.35s, opacity 0.35s;
+  transition: ease .3s;
   position: relative;
   max-width: 820px;
   margin: 0 auto;
   overflow-y: hidden;
   background: #fff;
   box-sizing: border-box;
-  // &::-webkit-scrollbar {
-  //   width: 0 !important;
-  //   display: none;
-  // }
+  // box-shadow: 0 1px 2px #f4f5f7;
+  &:hover {
+    box-shadow: 0 2px 10px #ebedf0;
+  }
   :deep(.van-toast) {
     word-break: keep-all !important;
   }

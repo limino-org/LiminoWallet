@@ -204,7 +204,7 @@
 		notObtain:"Not Obtain",
 		synthesized:"Synthesized",
 		beSyned:"To be synthesized",
-		converted:"Converted"
+		converted:"It has been converted and cannot be traded"
 	},
 	createAccountpage: {
 		cantLogin: "Can't log in? {reset}",
@@ -689,7 +689,26 @@
 		aboutAs: "Wormholes Official Website",
 		receiveAward: "receive award",
 		help: 'Help Center',
-		logoutTip:"Are you sure to cancel?"
+		logoutTip:"Are you sure to cancel?",
+		snftCreator:"S-NFT Creator"
+
+	},
+	creatorSnft:{
+		totalPeriod:"As the sum of the successful creation period of Creator",
+		totalProfit:"Creator continuously receives 10% of the total amount of the royalty trading quota",
+		totalTimes:"The total number of times you were successfully elected as Creator",
+		totalAward:"Creator, as the initiator of the transaction, directly gets the sum of the rewards in each period",
+		totalWeight:"Current block height * S-NFT value.",
+		labelPeriod:"Create the total number of phases",
+		labelProfit:"Total revenue of elected Creator",
+		labelTimes:"Total number of times that you have been elected Creator",
+		labelAward:"Total reward for being elected Crator",
+		labelWeight:"Creator Withhold name weight",
+		tip:"Buy S-NFT through the {link1} to increase the weight to becomeing Creator, Go to the {link2} to see more details",
+		exchange:"Exchange",
+		browser:"Browser",
+		creator:"Creator"
+
 	},
 	importByMnemonic: {
 		importfrommnemonic: 'Import from the mnemonic',
@@ -1263,7 +1282,8 @@
 		connectToSize:"Connect to {size}",
 		disconnectToSize:"Disconnect from {size}",
 		modifName:"Modify the name",
-		diffAddr:"The current address is different from the address selected by the wallet"
+		diffAddr:"The current address is different from the address selected by the wallet",
+		expandView:"Expand view"
 
 
 

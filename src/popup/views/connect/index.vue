@@ -37,7 +37,7 @@ import { Icon, Toast, Button, Sticky, Field,Checkbox, CheckboxGroup  } from "van
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { computed, onMounted, ref, toRaw } from "vue";
+import { computed, onMounted, onUnmounted, ref, toRaw } from "vue";
 import { useStore } from 'vuex';
 import AccountIcon from '@/popup/components/accountIcon/index.vue'
 import { addressMask } from '@/popup/utils/filters';
@@ -78,7 +78,19 @@ export default {
     const selectLen = computed(() => {
        return checkedList.value.length
     })
+
+    const handleKeydown = (e: any) => {
+      if(e.keyCode === 13) {
+        next()
+      }
+    }
+    
+    onUnmounted(() => {
+      window.removeEventListener('keydown', handleKeydown)
+    })
+
     onMounted(async()=>{
+      window.addEventListener('keydown', handleKeydown)
       // @ts-ignore
       const list = await chrome.storage.local.get(['connectList'])
        // @ts-ignore

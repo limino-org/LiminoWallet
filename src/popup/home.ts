@@ -1,4 +1,6 @@
 // @TS-NOCHECK
+
+window.pageType = 'Tab'
 import 'amfe-flexible'
 import '@vant/touch-emulator';
 import { createApp } from 'vue'
@@ -19,8 +21,6 @@ import Toast from '@/popup/plugins/toast/toast'
 import Dialog from '@/popup/plugins/dialog/dialog'
 import NoData from '@/popup/components/noData/index.vue'
 import 'element-plus/dist/index.css'
-
-window.pageType = 'Tab'
 
 window.BigNumber = BigNumber
 const app = createApp(App)

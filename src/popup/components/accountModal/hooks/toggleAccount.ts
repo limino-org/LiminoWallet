@@ -63,7 +63,7 @@ export const useToggleAccount = () => {
     try {
       const wall = await dispatch("account/createWalletByJson", data);
       commit("account/UPDATE_ACCOUNTINFO", account);
-      eventBus.emit('changeAccount', wall.address)
+      // eventBus.emit('changeAccount', wall.address)
 
       dispatch("account/updateTokensBalances");
       const wallet = await dispatch("account/getProviderWallet");
