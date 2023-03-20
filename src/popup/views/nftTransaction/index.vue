@@ -8,13 +8,14 @@
      <!-- Account selection area -->
      <div class="userinfo">
       <!-- sender -->
+
       <div class="from " :title="formAddr">
         <div class="userfrom">{{ t("sendto.from") }}:</div>
         <!-- Sender information -->
         <div class="information van-hairline--surround">
               <div class="username">{{ accountInfo.name }}</div>
               <div class="userbalance van-ellipsis" :title="accountInfo.address">
-                {{ accountInfo.address }}
+                <!-- {{ accountInfo.address }} -->
               <div class="username van-ellipsis">{{ accountInfo.name }}</div>
               <div class="userbalance">
                 {{ t("sendto.balance") }}:{{ decimal(accountInfo.amount) }}
