@@ -342,20 +342,23 @@ export default {
     }
   }
 
-  ::v-deep .van-tabs__line {
+  :deep(){
+    .van-tab {
+    position: inherit;
+    color: #848484;
+  }
+  .van-tab {
+    border-bottom: 0.5px solid rgba(151, 151, 151, 1);
+    font-size: 11px;
+  }
+  .van-tabs__line {
     z-index: 0;
     width: 50%;
     height: 0.05333rem;
     background: #037dd6;
   }
-  ::v-deep .van-tab {
-    position: inherit;
-    color: #848484;
   }
-  ::v-deep .van-tab {
-    border-bottom: 0.5px solid rgba(151, 151, 151, 1);
-    font-size: 11px;
-  }
+
 }
 .qccode-content {
   width: 100%;

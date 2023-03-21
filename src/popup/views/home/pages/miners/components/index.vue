@@ -263,13 +263,16 @@ export default {
         box-sizing: border-box;
         border-radius: 4px 4px 4px 4px;
         border: 1px solid #e4e7e8;
-        ::v-deep .van-field__control:disabled {
+        :deep(){
+          .van-field__control:disabled {
           color: #232323 !important;
           -webkit-text-fill-color: #232323 !important;
         }
-        ::v-deep .van-field__control {
+        .van-field__control {
           font-size: 10px !important;
         }
+        }
+
         ::-webkit-input-placeholder {
           /* WebKit browsers，webkit*/
           color: #232323;
@@ -366,9 +369,12 @@ export default {
             color: #3aae55;
           }
         }
-        ::v-deep .van-cell {
+        :deep() {
+          .van-cell {
           padding: 5px 0;
         }
+        }
+
       }
       .container-btn {
         margin-bottom: 30px;
@@ -402,11 +408,14 @@ export default {
           margin: 0 5px 0 10px;
         }
       }
-      ::v-deep .van-cell {
+      :deep() {
+        .van-cell {
         &:after {
           display: none;
         }
       }
+        }
+
     }
   }
 }

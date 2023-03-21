@@ -1790,9 +1790,10 @@ export default defineComponent({
           color: #3aae55;
         }
       }
-      ::v-deep .van-cell {
-        padding-left: 0px;
-      }
+      :deep(){
+          .van-cell {
+          padding-left: 0px;
+        }
     }
     .container-btn {
       margin-bottom: 30px;
@@ -1826,12 +1827,16 @@ export default defineComponent({
         margin: 0 5px 0 10px;
       }
     }
-    ::v-deep .van-cell {
+    :deep(){
+      .van-cell {
       &:after {
         display: none;
       }
     }
+        }
+
   }
+}
 }
 :deep(.el-input__inner) {
   display: none;

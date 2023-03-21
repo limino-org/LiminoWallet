@@ -226,7 +226,8 @@ export default {
             color: #3aae55;
           }
         }
-        ::v-deep .van-cell {
+        :deep(){
+          .van-cell {
           padding-left: 0px;
         }
         .van-cell:after {
@@ -298,5 +299,6 @@ export default {
   line-height: 20px;
   font-size: 12px;
   color: #D73A49;
+}
 }
 </style>

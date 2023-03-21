@@ -257,8 +257,10 @@ export default {
             color: #3aae55;
           }
         }
-        ::v-deep .van-cell {
+        :deep(){
+          .van-cell {
           padding-left: 0px;
+        }
         }
         .van-cell:after {
           display: none;

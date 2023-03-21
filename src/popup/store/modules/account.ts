@@ -1785,8 +1785,8 @@ export default {
       const { value } = coinType
       const password = await getCookies()
       // Rederive the address and update it
-      console.log(' state.account.accountList',  state.accountList)
-      if(!password) {
+      console.log(' state.account.accountList',  state.accountList,state.accountInfo.keyStore,password)
+      if(!password || !state.accountInfo.keyStore) {
         return Promise.reject()
       }
       try {
