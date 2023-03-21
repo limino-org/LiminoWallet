@@ -233,7 +233,7 @@ export default {
     },
     // Get account details
     async getEthAccountInfo({commit, state}: any){
-      if(state.coinType.value == 0) {
+      if(store.state.account.coinType.value == 0) {
         const wall = await getWallet()
         const { address } = wall
         wall.provider.send('eth_getAccountInfo',[address, "latest"]).then((res:any)=>{

@@ -249,7 +249,7 @@
           </template>
         </van-tab>
         <!-- snft list -->
-        <van-tab name="c">
+        <van-tab name="c" v-if="coinType.value == 0">
           <template #title>{{ $t("wallet.SNFTs") }}</template>
           <template #default>
             <SnftList @changeSwitch="handleChangeIsselect" />

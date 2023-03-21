@@ -1109,7 +1109,7 @@ export default {
     // Link current network provider wallet instance
     async getProviderWallet({ commit, state, dispatch }: any) {
       const { URL } = state.currentNetwork;
-      if(state.coinType.value == 0 && wallet && wallet.provider && (wallet.provider.connection.url == URL)){
+      if(state.coinType.value == 0 && wallet && wallet.provider && wallet.provider.connection && (wallet.provider.connection.url == URL)){
         return wallet
       }
       // if (!wallet || !wallet.provider || (wallet.provider.connection.url != URL)) {
