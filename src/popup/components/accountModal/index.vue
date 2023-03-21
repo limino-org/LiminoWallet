@@ -77,7 +77,7 @@
                   </div>
                 </div>
                 <div class="account-value" v-show="amountType != 'mask'">
-                  {{ decimal(item.amount) }} {{ currentNetwork.currencySymbol }}
+                  {{ decimal(item.amount) }} {{ symbol }}
                 </div>
                 <div class="account-value" v-show="amountType == 'mask'">
                   ********
@@ -150,7 +150,7 @@
                   </div>
                 </div>
                 <div class="account-value" v-show="amountType != 'mask'">
-                  {{ decimal(item.amount) }} {{ currentNetwork.currencySymbol }}
+                  {{ decimal(item.amount) }} {{ symbol }}
                 </div>
                 <div class="account-value" v-show="amountType == 'mask'">
                   ********
@@ -272,7 +272,7 @@ export default defineComponent({
     const route = useRoute();
     const store = useStore();
     const i18n = useI18n();
-    const { dispatch } = store;
+    const { dispatch, state } = store;
     const { t } = useI18n();
     const accountInfo = computed(() => store.state.account.accountInfo);
     const currentNetwork = computed(() => store.state.account.currentNetwork);
@@ -292,6 +292,18 @@ export default defineComponent({
         (item: AccountInfo) => !item.imported
       );
     });
+    const symbol = computed(() => {
+      let str = ''
+      switch(state.account.coinType.value){
+        case 0:
+        str = currentNetwork.value.currencySymbol
+          break;
+        case 1:
+        str = 'BTC'
+          break;
+      }
+      return str
+    })
     const {
       toggleAccount,
       handleAccount,
@@ -498,6 +510,7 @@ export default defineComponent({
       defaultlist,
       importList,
       amountType,
+      symbol
     };
   },
 });

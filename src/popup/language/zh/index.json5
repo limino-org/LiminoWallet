@@ -1274,7 +1274,8 @@
 		modifName:"修改名称",
 		diffAddr:"当前地址与钱包选择的地址不一致",
 		extend:"展开视图",
-		switchCoins:"切换币种"
+		switchCoins:"切换币种",
+		walletType:"身份钱包"
 	},
 	categoryform: {
 		"categoryform": "您还未选择任何数据"

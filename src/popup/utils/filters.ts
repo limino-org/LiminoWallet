@@ -20,8 +20,8 @@ export const addressMask = (v: string) => {
     if (!v) {
         return ''
     }
-    const f = v.substring(0, 6)
-    const e = v.substring(v.length - 4, v.length)
+    const f = v.substring(0, 8)
+    const e = v.substring(v.length - 6, v.length)
     return `${f}****${e}`
 }
 

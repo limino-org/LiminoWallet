@@ -1265,7 +1265,8 @@
 		modifName:"Modify the name",
 		diffAddr:"The current address is different from the address selected by the wallet",
 		extend:"Expand view",
-		switchCoins:"Switching currencies"
+		switchCoins:"Switching currencies",
+		walletType:"Identity wallet"
 
 	},
 	categoryform: {

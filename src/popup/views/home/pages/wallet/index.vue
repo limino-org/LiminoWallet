@@ -1,5 +1,5 @@
 <template>
-  <NavHeader :hasNet="true" :title="coinType.name">
+  <NavHeader :hasNet="!coinType.value ? true : false" :title="coinType.name">
     <template v-slot:left>
       <div
         :class="`flex center icon-box ${hasExchange ? 'hasExchange' : ''}`"
@@ -16,7 +16,8 @@
         <van-popover v-model:show="showDots" class="moreNavModal" :actions="actions" @select="handleDotselect" placement="bottom-end" :offset="[8,15]">
           <template #reference>
             <div>
-              <i class="iconfont icon-dots" :style="{color:hasExchange ? '#fff' : '#037cd6'}"></i>
+              <van-icon name="ellipsis" :style="{color:hasExchange ? '#fff' : '#037cd6', fontWeight:'bold'}" size="24"/>
+              <!-- <i class="iconfont icon-dots" :style="{color:hasExchange ? '#fff' : '#037cd6'}"></i> -->
             </div>
           </template>
         </van-popover>

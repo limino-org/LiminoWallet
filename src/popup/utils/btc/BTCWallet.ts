@@ -23,23 +23,27 @@ export class BTCWallet {
     provider: Provider
     constructor(privateKey?: string, network?: any) {
         if (privateKey && network) {
-            let pristr = ''
-            if(privateKey.toString().startsWith('0x')) {
-                pristr = privateKey.substr(2, privateKey.length)
-            } else {
-                pristr = privateKey
+            try {
+                let pristr = ''
+                if (privateKey.toString().startsWith('0x')) {
+                    pristr = privateKey.substr(2, privateKey.length)
+                } else {
+                    pristr = privateKey
+                }
+                this.privateKey = pristr
+                const privateKeyIns = new PrivateKey(pristr, network)
+                const address = privateKeyIns.toAddress().toString();
+                // Derive the public key, address, and wif from the private key
+                const wif = privateKeyIns.toWIF()
+                const pubKey = privateKeyIns.publicKey.toString()
+                this.wif = wif
+                this.address = address
+                this.network = network
+                this.publicKey = pubKey
+                this.provider = new Provider(network)
+            } catch (err) {
+                throw err
             }
-            this.privateKey = pristr
-            const privateKeyIns = new PrivateKey(this.privateKey)
-            // Derive the public key, address, and wif from the private key
-            const wif = privateKeyIns.toWIF()
-            const address = privateKeyIns.toAddress(network).toString();
-            const pubKey = privateKeyIns.publicKey.toString()
-            this.wif = wif
-            this.address = address
-            this.network = network
-            this.publicKey = pubKey
-            this.provider = new Provider(network)
         }
     }
     // sign message
@@ -61,6 +65,9 @@ class Provider extends BTCWallet {
         super()
         // this.isProduct = isProduct
         this.network = network
+    }
+    getNetwork() {
+        return getBalance(this.address)
     }
     getBalance(address?: string): Promise<RPCBalanceRes> {
         return getBalance(address || this.address)
