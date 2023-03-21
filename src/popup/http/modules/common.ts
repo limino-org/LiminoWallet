@@ -1,5 +1,5 @@
 import { httpGet, httpPost } from '../request'
-import { wormholesscanApi, wormholesApi, scanApi, snftUrl } from '@/popup/http/httpUrl'
+import { wormholesApi, scanApi, snftUrl } from '@/popup/http/httpUrl'
 
 
 // One click to create an exchange
@@ -60,7 +60,7 @@ export const getRedemption = () => {
 
 // Query the account information of the specified address
 export const getAccountAddr = (address: string) => {
-    return httpGet(`${snftUrl}/account/${address}`, {})
+    return httpGet(`${scanApi}/account/${address}`, {})
 }
 
 
@@ -78,7 +78,7 @@ export interface CreatorData {
 }
 // specifies the address to query the creator
 export const getCreator = (address: string): Promise<CreatorData> => {
-    return httpGet(`${snftUrl}/creator/${address}`, {})
+    return httpGet(`${scanApi}/creator/${address}`, {})
 }
 
 

@@ -233,12 +233,20 @@ export default defineComponent({
       const list = compData.value.children
         .filter((item) => item.select)
       const { status, data } = props;
-      let total = 0
       if (status == "2") {
-        list.forEach(item => {
-          total+=item.snfts.length
-        })
-        return total
+
+        let total = 0;
+        list.forEach((item: any) => {
+          if (getDisabled(item) == "") {
+            const {MergeLevel:level,total_hold, MergeNumber} = item
+            if(level === 1 && total_hold) {
+              total += total_hold
+            } else {
+              total += item.snfts.length;
+            }
+          }
+        });
+        return total;
       }
       if (status == "1" || status == "3") {
         let total = 0

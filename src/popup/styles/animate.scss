@@ -12,8 +12,8 @@
 
 .modal-enter-from .modal-container,
 .modal-leave-to .modal-container {
-    -webkit-transform: scale(1.1);
-    transform: scale(1.1);
+    -webkit-transform: scale(.7);
+    transform: scale(.7);
 }
 
 
@@ -34,12 +34,18 @@
 // .toast-enter-active {
 //     animation: toastIn 0.3s ease;
 // }
+.toast-enter-from {
+    opacity: 0;
+}
+
+.toast-leave-to {
+    opacity: 0;
+}
 
 .toast-enter-from .toast-container,
 .toast-leave-to .toast-container {
-    opacity: .3;
-    -webkit-transform: scale(.3);
-    transform: scale(.3);
+    -webkit-transform: scale(.7);
+    transform: scale(.7);
 }
 
 // .toast-enter-active .toast-container {
@@ -47,9 +53,9 @@
 // }
 @keyframes toastIn {
     0% {
-        opacity: .3;
-        -webkit-transform: scale(.3);
-        transform: scale(.3);
+        opacity: 0;
+        -webkit-transform: scale(.7);
+        transform: scale(.7);
     }
 
     100% {
