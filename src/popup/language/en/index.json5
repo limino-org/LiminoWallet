@@ -262,7 +262,15 @@
 		isServiceandPrivacyNotices: "Please check the user agreement ",
 		pwdTip: "By proceeding, you agree to Wormholes's {br} {link1} & {link2}",
 		link1: "Terms of Use",
-		link2: "Privacy Notice"
+		link2: "Privacy Notice",
+		isServiceandPrivacyNotice: "Please make sure to checkmthe Terms of Service and Privacy Notice ",
+    	isServiceandPrivacyNotices: "Please check the user agreement ",
+    	pwdTip: "By proceeding, you agree to Wormholes's {br} {link1} & {link2}",
+    	link1: "Terms Of Service",
+    	link2: "Privacy Notice",
+    	pwdTip2: "By proceeding, you agree to Wormholes's {br} {link1}",
+
+    link3:"Token Staking Terms For Marketplace Operator"
 	},
 	create: {
 		createwallet: 'Create wallet',

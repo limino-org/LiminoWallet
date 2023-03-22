@@ -263,6 +263,12 @@
       </div> -->
 
       <div :class="!isExchanger_flag ? 'bourse-container-btns' : 'btn-groups'">
+        <div class="pwd-tip mb-24">
+        <i18n-t keypath="createAccountpage.pwdTip2" tag="div" class="text-center mt-20 lh-16">
+          <template v-slot:br><br></template>
+          <template v-slot:link1><span class="hover" @click="routerTo">{{t('createAccountpage.link3')}}</span></template>
+        </i18n-t>
+      </div>
         <div class="container flex between pl-12 pr-12 btn-box">
           <van-button
             v-if="!isExchanger_flag"
@@ -779,6 +785,10 @@ export default defineComponent({
         console.log(error);
       }
     };
+    const routerTo = () => {
+      window.open('https://limino.com/upload/tsm.html')
+
+    }
     // Additional pledge confirmation pop-up window
     const showAddModal = ref(false);
     const handleAddAmount = () => {
@@ -915,6 +925,7 @@ export default defineComponent({
     return {
       addBalance,
       feilvstr,
+      routerTo,
       showClose,
       insufficientMoney,
       handleClose,

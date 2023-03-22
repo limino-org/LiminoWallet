@@ -10,7 +10,11 @@
 .active-d {
     border: 1px solid #B3B3B3;
 }
-
+.pwd-tip {
+    span {
+      color: #037CD6;
+    }
+  }
 :deep() {
     .slider-ipt {
         padding: 0;

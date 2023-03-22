@@ -278,11 +278,13 @@
 		next: '下一步',
 		serviceandPrivacyNotice: '请查看 Wormholes ERB 钱包服务条款和隐私声明',
 		memErr: "助记词格式有误，请确认后重新提交",
-		isServiceandPrivacyNotice: "请务必检查服务条款和隐私政策 ",
-		isServiceandPrivacyNotices: "请务必勾选用户协议 ",
-		pwdTip: "通过继续，您同意 Wormholes 的 {br} {link1}&{link2}",
-		link1: "Terms of Use",
-		link2: "Privacy Notice"
+        isServiceandPrivacyNotice: "请务必检查服务条款和隐私政策 ",
+        isServiceandPrivacyNotices: "请务必勾选用户协议 ",
+        pwdTip: "通过继续，您同意 Wormholes 的 {br} {link1}&{link2}",
+        link1: "Terms Of Service",
+        link2: "Privacy Notice",
+        pwdTip2: "通过继续，您同意 Wormholes 的 {br} {link1}",
+        link3:"市场运营商的代币权益条款"
 	},
 	sign: {
 		"sign": "签名",
