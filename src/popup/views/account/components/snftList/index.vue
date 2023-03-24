@@ -811,7 +811,7 @@ export default defineComponent({
   color: #848484;
     background: #fff;
    &.fixed {
-    z-index: 1;
+    z-index: 100;
     position: fixed;
     width: 190px;
     bottom: 10px;

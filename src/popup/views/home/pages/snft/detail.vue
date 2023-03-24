@@ -220,7 +220,7 @@ export default {
       (item: any) =>
         item.nft_address.toUpperCase() == nft_address?.toString().toUpperCase()
     );
-
+    console.warn('idx', idx)
     const chooseData = computed(() => {
       return pageData.value.children[swiperIdx.value];
     });
@@ -245,8 +245,8 @@ export default {
       if (pageData.value.MergeLevel === 2 && pageData.value.Chipcount) {
         return [{ ...pageData.value }];
       }
-      const { selectFlag, MergeLevel, snfts } = chooseData.value;
-      if (selectFlag && MergeLevel === 1 && snfts.length) {
+      const { selectFlag, MergeLevel, snfts,Chipcount } = chooseData.value;
+      if (selectFlag && MergeLevel === 1 && Chipcount) {
         return [{ ...chooseData.value }];
       }
       if (!selectFlag && MergeLevel === 1 && snfts.length) {
@@ -410,12 +410,19 @@ export default {
           flag = false;
           break;
         case "2":
-          flag = chooseSnftData.value.snfts.length ? true : false;
+        const { disabled} = chooseSnftData.value
+          if(!disabled) {
+            flag = true
+          } else {
+            flag = chooseSnftData.value.snfts.length ? true : false;
+          }
           break;
         case "3":
           flag = false;
           break;
       }
+
+      console.warn('showConvertBtn', flag)
       return flag;
     });
     const showSendBtn = computed(() => {
@@ -425,7 +432,12 @@ export default {
           flag = false;
           break;
         case "2":
-          flag = chooseSnftData.value.snfts.length ? true : false;
+        const { disabled} = chooseSnftData.value
+        if(!disabled) {
+            flag = true
+          } else {
+            flag = chooseSnftData.value.snfts.length ? true : false;
+          }
           break;
         case "3":
           flag = !hasDisabled.value;
@@ -465,7 +477,7 @@ export default {
     });
     const imgGarySmall = (data: any) => {
       let flag = "";
-      console.warn('actionType.value', actionType.value)
+      console.warn('actionType.value', actionType.value, typeof actionType.value)
       const { MergeLevel, pledgestate, snfts, total_hold, disabled, Exchange, Chipcount } =
         data;
       switch (actionType.value) {
@@ -500,7 +512,7 @@ export default {
           disabled ? (flag = "gary") : "";
           break;
         case "2":
-        if(MergeLevel === 0 && snfts.length &&  pledgestate === "NoPledge" && Exchange !== 1 ) {
+        if((MergeLevel === 0 && snfts.length &&  pledgestate === "NoPledge" && Exchange !== 1) || MergeLevel > 1 ) {
             return
           }
           if (
@@ -575,6 +587,7 @@ export default {
             case 1:
               nft_address = nft_address.substr(0, 41);
               break;
+            
           }
           return {
             nft_address,
@@ -726,7 +739,10 @@ export default {
     });
     // Currently selected snft
     const chooseSnftData = computed(
-      () => pageData.value.children[swiperIdx.value]
+      () => {
+        console.log('pageData.value.children[swiperIdx.value]', pageData.value.children[swiperIdx.value])
+        return pageData.value.children[swiperIdx.value]
+      }
     );
     const showModal = ref(false);
 
@@ -941,13 +957,14 @@ export default {
     }
     const getTipText = (item: any) => {
       const { disabled, MergeLevel, Exchange } = item
+      console.warn('getTipText', item, pageData.value.MergeLevel)
       if(Exchange) {
         return t('converSnft.converted')
       }
       if(disabled) {
         return t('converSnft.notObtain')
       }
-      if(!disabled && pageData.value.MergeLevel > 0){
+      if(!disabled && (MergeLevel > 0 || pageData.value.MergeLevel > 0)){
         return t('converSnft.synthesized')
       }
       return t('converSnft.beSyned')

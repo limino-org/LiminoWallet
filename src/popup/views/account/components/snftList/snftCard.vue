@@ -551,6 +551,7 @@ export default defineComponent({
     }
     const getTipText = (item: any) => {
       const { disabled, MergeLevel, Exchange } = item
+
       if(Exchange) {
         return t('converSnft.converted')
       }
@@ -558,7 +559,7 @@ export default defineComponent({
         return t('converSnft.notObtain')
       }
       // @ts-ignore
-      if(!disabled && props.data.MergeLevel > 0){
+      if(!disabled && MergeLevel > 0){
         return t('converSnft.synthesized')
       }
       return t('converSnft.beSyned')
@@ -778,7 +779,7 @@ export default defineComponent({
     }
     & .icon-check_line {
       color: #848484;
-      font-size: 14px;
+      font-size: 16px;
     }
   }
 }
