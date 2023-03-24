@@ -13,14 +13,24 @@
         <div class="userfrom">{{ t("sendto.from") }}:</div>
         <!-- Sender information -->
         <div class="information van-hairline--surround">
-              <div class="username">{{ accountInfo.name }}</div>
+           
               <div class="userbalance van-ellipsis" :title="accountInfo.address">
-                <!-- {{ accountInfo.address }} -->
-              <div class="username van-ellipsis">{{ accountInfo.name }}</div>
+                <div class="flex">
+            <div class="avatar">
+              <AccountIcon :data="accountInfo.icon" />
+            </div>
+            <div class="flex column userinformation">
+              <div class="username">{{ accountInfo.name }}</div>
               <div class="userbalance">
-                {{ t("sendto.balance") }}:{{ decimal(accountInfo.amount) }}
-                {{ currentNetwork.currencySymbol }}
+                {{ t("sendto.balance") }}:{{ decimal(accountInfo.amount) }} {{ currentNetwork.currencySymbol }}
               </div>
+            </div>
+            </div>
+
+                <!-- {{ accountInfo.address }} -->
+              <!-- <div class="username van-ellipsis">{{ accountInfo.name }}</div> -->
+              <!-- {{ t("sendto.balance") }}:{{ decimal(accountInfo.amount) }}
+                {{ currentNetwork.currencySymbol }} -->
             </div>
           </div>
         </div>
@@ -60,11 +70,13 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="m-20 json-box">
+      <div class="json-box">
       <div class="tx-json">{{ txJSON }}</div>
     </div>
+    </div>
+
+
 
     <!-- Click to go to the next step-->
     <div class="btn-boxs">
@@ -223,6 +235,7 @@ export default {
 .json-box {
   max-height: 270px;
   overflow-y: scroll;
+  margin:0 20px 20px;
 }
 .balance {
   background: #f3f4f5;

@@ -2,6 +2,7 @@
 import {
     getLocalParams,
     closeTabs,
+    hasOpenConnectPopup,
     errorCode,
     sendMessage,
     handleType,
@@ -38,8 +39,10 @@ export const handleRequest = {
         const accountList = await getSenderAccounts(sender)
         const newurl = `${globalPath}#/connect?sender=${encodeURIComponent(JSON.stringify(sender))}&accountList=${encodeURIComponent(JSON.stringify(accountList))}&method=wallet_requestPermissions`
         try {
+            await hasOpenConnectPopup()
             await openPopup(method, newurl, sendResponse, sender, 'popup')
         } catch (err) {
+            
             console.error('err-', err || 'error...')
         }
         if (local && !local.account.accountInfo.address) {
@@ -60,6 +63,7 @@ export const handleRequest = {
         const accountList = await getSenderAccounts(sender)
         const newurl = `${globalPath}#/connect?sendId=${sendId}&sender=${encodeURIComponent(JSON.stringify(sender))}&accountList=${encodeURIComponent(JSON.stringify(accountList))}&method=eth_requestAccounts`
         try {
+            await hasOpenConnectPopup()
             await openPopup(method, newurl, sendResponse, sender, 'popup')
         } catch (err) {
             console.error('err-', err || 'error...')

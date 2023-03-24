@@ -449,7 +449,6 @@ export default defineComponent({
       if (address && typeof address !== "undefined") {
         if (MergeLevel === 2) {
           if (children.length) {
-            const nft_address = children[0].nft_address.substr(0, 40);
             checkObjs.data[address] = [{ ...data }];
           } else {
             checkObjs.data[address] = [];

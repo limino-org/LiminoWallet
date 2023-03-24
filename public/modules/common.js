@@ -3,6 +3,7 @@ import { localforage } from './localforage.js'
 import { encrypt, decrypt } from './cryptojs.js'
 
 
+
 export const handleGetPwd = (str, time) => {
   return decrypt(str, time)
 }
@@ -546,6 +547,29 @@ export function closeTabs() {
       })
   })
 
+}
+
+export function hasOpenConnectPopup() {
+  return new Promise((resolve,reject) => {
+    chrome.tabs.query(
+      {
+      }, async (tabs) => {
+        let flag = false
+        for await (const win of tabs) {
+          if (win.url && (win.url.includes(globalPath)) && (win.url.includes('/loginAccount/step1') > -1 || win.url.includes('/connect') > -1) ) {
+            flag = true
+          }
+        }
+        console.warn('flag', flag)
+       if(!flag){
+        resolve(true)
+       } else {
+        const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The window is already open" }
+        const sendMsg = createMsg(errMsg, 'connect')
+        reject()
+       }
+      })
+  })
 }
 
 

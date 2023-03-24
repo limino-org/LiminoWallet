@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="`new-nft-card pl-8 pr-8 ${data.MergeLevel === 2 ? 'shining' :''}`"
+    :class="`new-nft-card pl-8 pr-8 ${data.MergeLevel == 2 ? 'shining' :''}`"
   >
     <div class="new-nft-card-box ">
     <!-- 1.info -->
@@ -382,9 +382,9 @@ export default defineComponent({
     const chooseAll = (bool: boolean) => {
       console.log('props.data', props.data)
       // @ts-ignore
-      if(props.data.MergeLevel === 2 && props.data.Chipcount && props.status === '1') {
+      if(props.data.MergeLevel === 2 && props.data.Chipcount) {
       // @ts-ignore
-        if(props.status === '1' && compData.value.pledgestate === 'Pledge' && !compData.value.isUnfreeze) {
+        if( compData.value.pledgestate === 'Pledge' && !compData.value.isUnfreeze) {
           Toast(t('common.unisUnfreeze'))
           return
         }
@@ -557,7 +557,8 @@ export default defineComponent({
       if(disabled) {
         return t('converSnft.notObtain')
       }
-      if(!disabled && MergeLevel){
+      // @ts-ignore
+      if(!disabled && props.data.MergeLevel > 0){
         return t('converSnft.synthesized')
       }
       return t('converSnft.beSyned')

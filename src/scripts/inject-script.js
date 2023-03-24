@@ -42,13 +42,13 @@ function Provider() {
         const { method, response } = data
         if (!events.includes(method)) {
           if (method && sendId && response) {
-            ethereum.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
+            // ethereum.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
             wormholes.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
           }
         } else {
           let { method } = data
           if (method) {
-            ethereum.runCallBackEventByMethod(method, response.data)
+            // ethereum.runCallBackEventByMethod(method, response.data)
             wormholes.runCallBackEventByMethod(method, response.data)
           }
         }
@@ -91,7 +91,7 @@ function Provider() {
   this.request = function (params) {
     var _this = this
     const { method } = params
-    // if(!this._state.isConnected && (method !== 'wallet_requestPermissions' && method !== 'eth_requestAccounts')){
+    // if(!this._state.isConnected && (method !== 'wallet_requestPermissions' || method !== 'eth_requestAccounts')){
     //   return Promise.reject('Request denied')
     // }
     if (((method === 'wallet_requestPermissions' || method == 'eth_requestAccounts') && this._state.isConnected)) {
@@ -339,11 +339,11 @@ Provider.prototype = {
 
 }
 
-const ethereum = new Provider()
+// const ethereum = new Provider()
 const wormholes = new Provider()
-window.ethereum = ethereum
+// window.ethereum = ethereum
 window.wormholes = wormholes
-ethereum.init()
+// ethereum.init()
 wormholes.init()
 
 
@@ -356,13 +356,13 @@ document.addEventListener('wormHoles-callback-event', (res) => {
     const { method, response } = data
     if (!events.includes(method)) {
       if (method && sendId && response) {
-        ethereum.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
+        // ethereum.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
         wormholes.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
       }
     } else {
       let { method } = data
       if (method) {
-        ethereum.runCallBackEventByMethod(method, response.data)
+        // ethereum.runCallBackEventByMethod(method, response.data)
         wormholes.runCallBackEventByMethod(method, response.data)
       }
     }

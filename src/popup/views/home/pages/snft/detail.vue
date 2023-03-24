@@ -947,7 +947,7 @@ export default {
       if(disabled) {
         return t('converSnft.notObtain')
       }
-      if(!disabled && MergeLevel){
+      if(!disabled && pageData.value.MergeLevel > 0){
         return t('converSnft.synthesized')
       }
       return t('converSnft.beSyned')
