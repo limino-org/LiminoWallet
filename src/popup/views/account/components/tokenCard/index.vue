@@ -3,7 +3,8 @@
     <div class="token-card-left flex between">
       <div class="token-icon flex center">
         <div class="icon-box flex center">
-          <img src="@/assets/icon_black.svg" alt />
+          <img src="@/assets/icon_black.svg" v-if="coinType.value ==0" />
+          <img src="@/popup/assets/token/BTC.svg" v-if="coinType.value ==1" />
         </div>
       </div>
       <div class="token-info flex center f-12">{{ data.name }}</div>
@@ -13,7 +14,8 @@
       <slot name="right">
         <div>
           <div v-show="amountType != 'mask' ">
-          <div class="name text-right">{{ decimal(data.balance) }} {{ data.symbol }}</div>
+            <div class="name text-right" v-if="coinType.value ==0">{{ decimal(data.balance) }} {{  data.symbol }}</div>
+            <div class="name text-right" v-if="coinType.value ==1">{{ decimal(data.balance) }} {{  coinType.name }}</div>
           <div class="amount text-right">{{ toUsdSymbol(data.balance) }}</div>
         </div>
         <div class="flex center-v right f12" v-show="amountType == 'mask'">******</div>
@@ -53,6 +55,8 @@ export default defineComponent({
   setup(props: any, context: SetupContext) {
     const store = useStore()
     const { commit } = store
+    const coinType = computed(() => store.state.account.coinType)
+
     const currentNetwork = computed(() => store.state.account.currentNetwork)
     // Balance display type
     const amountType = computed(() => store.state.system.amountType)
@@ -70,6 +74,7 @@ export default defineComponent({
     return {
       toTokenHome,
       decimal,
+      coinType,
       currentNetwork,
       toUsd,
       toUsdSymbol,

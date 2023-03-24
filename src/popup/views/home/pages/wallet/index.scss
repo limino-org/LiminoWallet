@@ -73,7 +73,13 @@ i {
     .card {
       height: 120px;
       border-radius: 7.5px;
-      background: #037cd6;
+      &.ETH{
+        background: #037cd6;
+      }
+      &.BTC{
+        background: orange;
+
+      }
       width: 100%;
       .icon-circle {
         width: 36px;

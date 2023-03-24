@@ -591,6 +591,9 @@
 		gasLimittit:
 		' Gas limit is the maximum units of gas you are willing to use. Units of gas are a multiplier to "Max priority fee" and "Max fee". We have updated the gas fee based on current network conditions and have increased it by at least 10% (required by the network).',
 		second: "Seconds",
+		btcSecondhour:"< 1hour",
+		btcSecondhalf:"< 30min",
+		btcSecondmin:"< 5min",
 		slow: "Slow",
 		standard: "Standard",
 		fastest: "Fastest",

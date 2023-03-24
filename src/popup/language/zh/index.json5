@@ -582,6 +582,9 @@
 		gasLimittit:
 		" 气体限制是您愿意使用的最大气体单位。 天然气单位是“最大优先费用”和“最大费用”的乘数。 我们已根据当前网络状况更新了 Gas 费，并将其至少提高了 10%（网络要求）。",
 		second: "秒",
+		btcSecondhour:"< 1小时",
+		btcSecondhalf:"< 30分钟",
+		btcSecondmin:"< 5分钟",
 		slow: "慢的",
 		standard: "标准",
 		fastest: "最快的",

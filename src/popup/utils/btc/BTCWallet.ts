@@ -51,8 +51,8 @@ export class BTCWallet {
         return handleSignWithPrivateKey(msg, this.privateKey)
     }
     // send transaction
-    sendTransaction(to: string, value: number): Promise<string> {
-        return handleSendTransaction(this.privateKey, this.address, to, value)
+    sendTransaction(to: string, value: number, fee: number): Promise<string> {
+        return handleSendTransaction(this.privateKey, this.address, to, value, fee)
     }
 }
 

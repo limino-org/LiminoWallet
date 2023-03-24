@@ -77,14 +77,14 @@ export default () => {
     // Generate random 
     // const 
 
-    const handleSendTransaction = async (privateKeyStr: string, from: string, to: string, sendVal: number): Promise<string> => {
+    const handleSendTransaction = async (privateKeyStr: string, from: string, to: string, sendVal: number, fee: number): Promise<string> => {
         // Transaction.UnspentOutput(from)
         console.log(privateKeyStr, from, to)
         const privateKey = new PrivateKey(privateKeyStr);
         return new Promise(async (resolve, reject) => {
             try {
-                const { fastestFee, halfHourFee, hourFee } = await getFee()
-                const { inputs } = await selectUtxo(from, sendVal, fastestFee)
+                // const { fastestFee, halfHourFee, hourFee } = await getFee()
+                const { inputs } = await selectUtxo(from, sendVal, fee)
                 let list = []
                 if (inputs && inputs.length) {
                     list = inputs.map(({ mintTxid, script, mintIndex, address, value }) => ({

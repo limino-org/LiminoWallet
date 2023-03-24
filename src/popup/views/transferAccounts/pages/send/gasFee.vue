@@ -32,8 +32,11 @@
               <span class="text-bold"
                 >≈ {{ gasData[gasFee] }} Gwei,</span
               >
-              <span class="second pl-6"
+              <span v-if="coinType.value == 0" class="second pl-6"
                 >≈ {{ second }} {{ t("sendto.second") }}</span
+              >
+              <span v-if="coinType.value == 1" class="second pl-6"
+                >{{ btcTime }}</span
               >
             </div>
           </div>
@@ -64,9 +67,9 @@
           <div class="speed-label speed-r">{{ t("sendto.fastest") }}</div>
         </div>
         <!-- Line -->
-        <div class="van-hairline--bottom mt-20 mb-20"></div>
+        <div class="van-hairline--bottom mt-20 mb-20" v-if="coinType.value == 0"></div>
         <!-- gas limit -->
-        <div class="label mb-10 pt-20">
+        <div class="label mb-10 pt-20"  v-if="coinType.value == 0">
           {{ t("sendto.gasLimit") }}
           <van-popover
             v-model:show="gasLimitModal"
@@ -84,7 +87,7 @@
           </van-popover>
         </div>
 
-        <div class="limit-box flex between center-v pl-16 pr-16">
+        <div class="limit-box flex between center-v pl-16 pr-16"  v-if="coinType.value == 0">
           <div
             class="action flex center clickActive"
             @click="handleLimit(-1)"
@@ -171,6 +174,8 @@ setup(props: any) {
   const toAddress = ref(to);
   const currentNetwork = computed(() => state.account.currentNetwork);
   const accountInfo = computed(() => state.account.accountInfo);
+  const coinType = computed(() => state.account.coinType)
+
   // Estimated transaction sending time
   const second = computed(() => {
     let secondTime = 0;
@@ -212,6 +217,29 @@ setup(props: any) {
       loading.value = false;
     }
   };
+  const initBTCGas = async () => {
+      try {
+        const wallet = await getWallet()
+        const {
+          fastestFee,
+          halfHourFee,
+          hourFee
+        } = await wallet.provider.getFee()
+        gasData.value = [hourFee, halfHourFee, fastestFee ];
+      }catch(err){
+        console.error(err)
+      }finally{
+        loading.value = false
+      }
+    }
+    console.warn('coinType', coinType)
+    if(coinType.value.value == 0) {
+      initGas();
+    }
+    if(coinType.value.value == 1) {
+      initBTCGas()
+    }
+
   const gasLimit = ref(21000);
   // Default token/ selected token data
   const chooseToken = computed(() => {
@@ -314,17 +342,37 @@ setup(props: any) {
     router.replace({ name: backUrl || "send", query });
   };
   onActivated(async () => {
-    calcGasLimit();
-    initGas();
+    gasFee.value = query?.gasFee != undefined ? Number(query?.gasFee) : 0
+    if(coinType.value.value == 0) {
+      calcGasLimit();
+      initGas();
+    }
+    if(coinType.value.value == 1) {
+      initBTCGas()
+    }
+
   });
 
   const back = () => {
     router.replace({name:"send"})
   }
+  const btcTime = computed(() => {
+    if(gasFee.value == 0) {
+      return t('sendto.btcSecondhour')
+    }
+    if(gasFee.value == 1) {
+      return t('sendto.btcSecondhalf')
+    }
+    if(gasFee.value == 2) {
+      return t('sendto.btcSecondmin')
+    }
+  })
   return {
+    btcTime,
     gasPriceModal,
     gasLimitModal,
     back,
+    coinType,
     gasData,
     second,
     gasFee,

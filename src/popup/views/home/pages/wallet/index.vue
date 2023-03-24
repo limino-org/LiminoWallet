@@ -30,7 +30,7 @@
       <!-- Account details module -->
       <div :class="`account-detail-box ${hasExchange ? 'hasExchange' : ''}`">
         <div class="account-card flex center pl-14 pr-14 pt-20">
-          <div class="card flex column between">
+          <div :class="`card flex column between ${coinType.name}`">
             <div class="card-top flex pl-14 pr-10 pt-10">
               <!-- icon -->
               <div class="icon-circle flex center hover">
@@ -230,7 +230,7 @@
                 <span class="f-12 text-bold label">{{
                   t("wallet.importToken")
                 }}</span>
-                <span class="add flex center" @click="toCreate"
+                <span class="add flex center" v-if="coinType.value == 0" @click="toCreate"
                   ><van-icon name="plus"
                 /></span>
               </div>
@@ -251,7 +251,7 @@
         </van-tab>
         <!-- snft list -->
         <van-tab name="c" v-if="coinType.value == 0">
-          <template #title>{{ $t("wallet.SNFTs") }}</template>
+          <template #title>{{ t("wallet.SNFTs") }}</template>
           <template #default>
             <SnftList @changeSwitch="handleChangeIsselect" />
           </template>
@@ -260,7 +260,7 @@
       <!-- sidebar -->
       <slider v-model="showSlider" />
       <!-- One touch exchange button -->
-      <ExchangeBtn :isSelect="isSelect" />
+      <ExchangeBtn :isSelect="isSelect" v-if="coinType.value == 0" />
 
       <!-- Guide the user to operate the pop-up window -->
       <GuideModal v-model="showGuideModal" />

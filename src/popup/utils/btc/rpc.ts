@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { Axios } from "axios";
 import { baseUrl, gasFeeUrl, network } from "./config";
 import { BTCMnemonicAccountInfo, BTCPrivateKeyAccountInfo, FeeRes, RPCBalanceRes, RPCBlockRes, RPCHeightRes, RPCOutputRes, RPCTxRes, RPCTxsRes, SelectUtxoRes, sendPrams } from "./type";
 const coinSelect = require('coinselect')
@@ -86,3 +86,66 @@ export const getCoins = (txid: string) => {
 export const waitBTCTransaction = (txid: string) => {
 
 }
+
+
+
+const service = axios.create({
+    // Set the baseur address. If you cross domains through proxy, you can directly fill in the base address
+    baseURL: '/',
+    // Define unified request headers
+    headers: {
+       "Content-Type": "application/json; charset=UTF-8"
+    },
+    // Configure request timeout
+    timeout: 60000, 
+    auth: {
+        username: 'admin',
+        password: '123456'
+      },
+    // If jsonp is used, this parameter can be configured to bring cookie credentials. If it is proxy or CORS, it does not need to be set
+})
+/**
+ * RPC Request
+ * {"jsonrpc": "1.0", "id":"curltest", "method": "getblockchaininfo", "params": [] }
+ */
+
+export function btcRpcRequest(method: string, params: Array<any> = []): Promise<any> {
+    console.warn('btcRpcRequest',method ,params)
+    return service({
+        url:'http://192.168.1.235:18443',
+        method:"POST",
+        data: {
+            jsonrpc: "1.0", 
+            id: "wallet",
+            method,
+            params
+        }
+
+    })
+}
+
+// {"jsonrpc":"1.0","id":"rpc","method":"getmempoolinfo", "params":[]}  
+// {"jsonrpc":"1.0","id":"rpc","method":"getrawtransaction", "params":["' + transactionid + '"]} 
+// {"jsonrpc":"1.0","id":"rpc","method":"decoderawtransaction", "params":["' + rawtransactiondata + '"]} 
+// {"jsonrpc":"1.0","id":"rpc","method":"GetBestBlockHash", "params":[]} 返回最优链上最近区块的哈希
+// {"jsonrpc":"1.0","id":"rpc","method":"GetBlock", "params":[]} 返回具有指定哈希的区块
+// {"jsonrpc":"1.0","id":"rpc","method":"getblockchaininfo", "params":[]}  返回区块链当前状态信息
+// {"jsonrpc":"1.0","id":"rpc","method":"GetBlockCount", "params":[]}  返回本地最优链上的区块数量
+// {"jsonrpc":"1.0","id":"rpc","method":"GetBlockHash", "params":[]} 返回本地最有区块链上指定高度区块的哈希
+// {"jsonrpc":"1.0","id":"rpc","method":"GetBlockHeader", "params":[]} 返回指定区块头
+// {"jsonrpc":"1.0","id":"rpc","method":"GetChainTips", "params":[]} 返回每个本地区块链的最高位区块（tip）信息
+// {"jsonrpc":"1.0","id":"rpc","method":"GetDifficulty", "params":[]} 返回POW难度
+// {"jsonrpc":"1.0","id":"rpc","method":"GetMemPoolAncestors", "params":[]} 返回交易池内指定交易的所有祖先
+// {"jsonrpc":"1.0","id":"rpc","method":"GetMemPoolDescendants", "params":[]} 返回交易池内指定交易的所有后代
+// {"jsonrpc":"1.0","id":"rpc","method":"GetMemPoolEntry", "params":[]} 返回交易池内指定交易的池数据
+// {"jsonrpc":"1.0","id":"rpc","method":"GetRawMemPool", "params":[]} 返回交易池内的所有交易
+// {"jsonrpc":"1.0","id":"rpc","method":"GetTxOut", "params":[]} 返回指定交易输出的详细信息
+// {"jsonrpc":"1.0","id":"rpc","method":"GetTxOutProof", "params":[]} 返回一个或多个交易的证明数据
+// {"jsonrpc":"1.0","id":"rpc","method":"GetTxOutSetInfo", "params":[]} 返回UTXO集合的统计信息
+// {"jsonrpc":"1.0","id":"rpc","method":"PreciousBlock", "params":[]} 
+// {"jsonrpc":"1.0","id":"rpc","method":"PruneBlockChain", "params":[]} 对区块链执行剪枝操作
+// {"jsonrpc":"1.0","id":"rpc","method":"VerifyChain", "params":[]}  验证本地区块链的每个记录
+// {"jsonrpc":"1.0","id":"rpc","method":"VerifyTxOutProof", "params":[]} 验证交易输出证明
+
+
+

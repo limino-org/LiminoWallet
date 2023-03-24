@@ -75,7 +75,10 @@ body {
 }
 
 .disabled {
-  cursor: no-drop;
+  cursor: no-drop !important;
+}
+.disabled-color {
+  color: #ccc !important;
 }
 
 img {

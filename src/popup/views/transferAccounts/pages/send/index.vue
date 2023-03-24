@@ -12,6 +12,7 @@
         <div class="from flex column between">
           <div
             class="information p-14 flex between"
+            :title="accountInfo.address"
             @click="handleShowAccountModal"
           >
             <div class="flex center-v">
@@ -23,7 +24,7 @@
               >
                 <div class="username mb-4">{{ accountInfo.name }}</div>
                 <div class="userbalance">
-                  {{ chooseToken.balance }} {{ chooseToken.name }}
+                  {{ chooseToken.balance }} {{ coinSymbol }}
                 </div>
               </div>
             </div>
@@ -129,16 +130,20 @@
                 style="width: 1px"
               ></div>
               <div
-                class="token-info flex center-v between pr-6 pl-6 hover"
+                :class="`token-info flex center-v between pr-6 pl-6 ${coinType.value == 0 ? 'hover' : 'disabled'}`"
                 @click="handleTokenModal"
               >
                 <div class="xuanwo flex center">
-                  <img src="@/assets/token/logowallet.png" alt />
+                  <img src="@/assets/token/logowallet.png" v-if="coinType.value == 0" />
+                  <img src="@/popup/assets/token/BTC.svg" v-if="coinType.value == 1" />
                 </div>
-                <div class="van-ellipsis ml-6 mr-6 token-name lh-14">
+                <div class="van-ellipsis ml-6 mr-6 token-name lh-14" v-if="coinType.value == 0">
                   {{ chooseToken.name }}
                 </div>
-                <van-icon name="arrow" />
+                <div class="van-ellipsis ml-6 mr-6 token-name lh-14" v-if="coinType.value == 1">
+                  {{ coinType.name }}
+                </div>
+                <van-icon name="arrow" :class="{ 'disabled-color': coinType.value == 0?false:true}" />
               </div>
             </div>
           </div>
@@ -176,8 +181,14 @@
               <span class="text-bold"
                 >≈ {{ gasPriceNum }} Gwei,</span
               >
-              <span class="second pl-6"
+              <!-- <span class="second pl-6"
                 >≈ {{ second }} {{ t("sendto.second") }}</span
+              > -->
+              <span v-if="coinType.value == 0" class="second pl-6"
+                >≈ {{ second }} {{ t("sendto.second") }}</span
+              >
+              <span v-if="coinType.value == 1" class="second pl-6"
+                >{{ btcTime }}</span
               >
             </div>
           </div>
@@ -262,6 +273,7 @@ import { ethers } from "ethers";
 import eventBus from "@/popup/utils/bus";
 import CommonModal from "@/popup/components/commonModal/index.vue";
 import { useToast } from "@/popup/plugins/toast";
+import { btcRpcRequest } from '@/popup/utils/btc/rpc';
 
 export default {
   name: "pageSend",
@@ -486,6 +498,10 @@ export default {
 
     // Jump to select token
     const handleTokenModal = () => {
+      console.log('coinType.value', coinType.value.value)
+      if(coinType.value.value == 1){
+        return
+      }
       router.replace({
         name: "receive-choose",
         query: { backUrl: "send", clickBackUrl: "send" },
@@ -511,7 +527,7 @@ export default {
     const btnDisabled = computed(() => {
       return false;
     });
-
+    const coinType = computed(() => store.state.account.coinType)
     // Send confirmation pop-up
     const showSendConfirm = ref(false);
     const handleShowSendConfirm = () => {
@@ -521,6 +537,7 @@ export default {
     // Get the three highest, lowest and average gas fees
     const gasData: any = ref([]);
     const gasPriceNum = ref("0");
+    // ETH
     const initGas = async () => {
       // const wallet = await getWallet();
       try {
@@ -547,7 +564,28 @@ export default {
         console.error("getGasPrice:error", err);
       }
     };
-    initGas();
+
+    const initBTCGas = async () => {
+      try {
+        const wallet = await getWallet()
+        const {
+          fastestFee,
+          halfHourFee,
+          hourFee
+        } = await wallet.provider.getFee()
+        gasData.value = [hourFee,halfHourFee,fastestFee ];
+        gasPriceNum.value = fastestFee;
+      }catch(err){
+        console.error(err)
+      }
+    }
+    console.warn('coinType', coinType)
+    if(coinType.value.value == 0) {
+      initGas();
+    }
+    if(coinType.value.value == 1) {
+      initBTCGas()
+    }
 
     // Estimated transaction sending time
     const random = Math.random() * (1 - 0 + 1);
@@ -666,7 +704,13 @@ export default {
     onActivated(() => {
       reCalc(route.query);
     });
-    onMounted(() => {
+    onMounted(async() => {
+      const wallet = await getWallet()
+      const txInfo = await wallet.provider.getTx('2860101b6b69881ceff298decc9361cf8eaf9ee9e5d6d2447b8165d214687e67')
+      const txHashInfo = await wallet.provider.getBlockHash('2860101b6b69881ceff298decc9361cf8eaf9ee9e5d6d2447b8165d214687e67')
+      
+      console.warn('txInfo', txInfo)
+      console.warn('txHashInfo', txHashInfo)
       const accountTokens = computed(
         () => store.getters["account/accountTokens"]
       );
@@ -719,8 +763,29 @@ export default {
     const back = () => {
       router.replace({ name: "wallet" });
     };
+
+    const coinSymbol = computed(() => {
+      if(coinType.value.value == 1) {
+        return coinType.value.name
+      }
+      return chooseToken.value.name
+    })
+
+    const btcTime = computed(() => {
+    if(gasFee.value == 0) {
+      return t('sendto.btcSecondhour')
+    }
+    if(gasFee.value == 1) {
+      return t('sendto.btcSecondhalf')
+    }
+    if(gasFee.value == 2) {
+      return t('sendto.btcSecondmin')
+    }
+  })
     return {
+      btcTime,
       back,
+      coinSymbol,
       gasLimitModal,
       handleAmountBlur,
       gasPriceModal,
@@ -746,6 +811,7 @@ export default {
       cancelAccount,
       checkAddress,
       amountErrMsg,
+      coinType,
       showModal,
       handleShowAccountModal,
       decimal,

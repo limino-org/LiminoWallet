@@ -9,7 +9,7 @@
       :title="''"
     >
       <div class="title text-center f-16 bold van-hairline--bottom">
-        {{ $t("send.sendConfirm") }}
+        {{ t("send.sendConfirm") }}
       </div>
       <div class="ml-12 mr-12 p-12 content mt-24">
         <div class="flex between">
@@ -25,7 +25,7 @@
           <div class="label">{{ t("transactiondetails.transferAmount") }}</div>
           <div class="value">
             {{ data.amount ? data.amount : data.value }}
-            {{ currentNetwork.currencySymbol }}
+            {{ symbol }}
           </div>
         </div>
         <div class="flex between">
@@ -52,13 +52,13 @@
             </van-popover>
           </div>
           <div class="value green">
-            ≈ {{ gasFee }} {{ currentNetwork.currencySymbol }}
+            ≈ {{ gasFee }} {{ symbol }}
           </div>
         </div>
         <div class="flex between">
           <div class="label">{{ t("transactiondetails.totalAmount") }}</div>
           <div class="value">
-            ≈ {{ totalAmount }} {{ currentNetwork.currencySymbol }}
+            ≈ {{ totalAmount }} {{ symbol }}
           </div>
         </div>
       </div>
@@ -212,6 +212,7 @@ export default defineComponent({
       $tradeConfirm.open({
         disabled: [TradeStatus.pendding],
       });
+
       try {
         txData = await store.dispatch(
           value ? "account/transaction" : "account/tokenTransaction",
@@ -270,9 +271,19 @@ export default defineComponent({
         finishCount.value = true;
       },
     });
+    const coinType = computed(() => store.state.account.coinType)
 
+    const symbol = computed(() => {
+      if(coinType.value.value == 0){
+        return currentNetwork.value.currencySymbol
+      }
+      if(coinType.value.value == 1){
+        return coinType.value.name
+      }
+    })
     return {
       t,
+      symbol,
       showModal,
       gasFee,
       cencel,

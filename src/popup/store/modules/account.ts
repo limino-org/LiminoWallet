@@ -582,8 +582,8 @@ export default {
       const address = state.accountInfo.address.toUpperCase();
       const accountList = toRaw(state.accountList);
       const accountInfo: any = state.accountInfo;
-      console.log('update1', accountInfo.address.toUpperCase(), wallet)
-      console.log('wallet', wallet)
+      console.log('update1', accountInfo.address.toUpperCase(), balance)
+
       if (accountInfo.address.toUpperCase() == address) {
         accountInfo.amount = balance;
         accountInfo.token.forEach((item: any) => {
@@ -607,7 +607,13 @@ export default {
       const accountInfo: AccountInfo = state.accountInfo;
       Object.keys(allBalance).forEach((key: string) => {
         accountList.forEach((item: any) => {
-          const amount = ethers.utils.formatEther(allBalance[key]);
+          let amount = '0'
+          if(state.coinType.value == 0){
+            amount = ethers.utils.formatEther(allBalance[key]);
+          }
+          if(state.coinType.value == 1) {
+            amount = ethers.utils.formatUnits(allBalance[key],'gwei')
+          }
           if (item.address.toUpperCase() == key.toUpperCase()) {
             item.amount = amount;
             item.token.forEach((item: any) => {
@@ -1035,8 +1041,13 @@ export default {
       const wallet = await dispatch("getProviderWallet");
       console.log('setNetWork', wallet)
       // While setting up the network, update the linked network through the wallet instance
-      const res = await wallet.provider.getNetwork()
-      commit('UPDATE_ETHNETWORK', res)
+      if(state.coinType.value == 0) {
+        const res =  wallet.provider ? await wallet.provider.getNetwork() : await dispatch('getProviderWallet').provider.getNetwork()
+        commit('UPDATE_ETHNETWORK', res)
+      } 
+      if(state.coinType.value == 0) {
+        
+      }
       // Link current wallet instance
  
       // const { chainId } = await wallet.provider.getNetwork();
@@ -1055,8 +1066,11 @@ export default {
         });
         const data = await Promise.all(asyncList);
         const banList: any = {};
+        console.log('data--', data)
+        
         list.forEach((address, index) => {
-          banList[address] = data[index];
+          banList[address] = data[index]
+
         });
         commit('UPDATE_NETSTATUS', NetStatus.success)
         commit("UPDATE_ALLACCOUNT", banList);
@@ -1069,6 +1083,7 @@ export default {
     },
     // Return the balance of the current address account
     async getBalanceByAddress({ commit, state, dispatch }: any, { address }: any) {
+      console.warn('getBalanceByAddress', address)
       if(state.coinType.value == 0){
         const provider = await getProvider()
         return provider.getBalance(address);
@@ -1076,7 +1091,7 @@ export default {
       if(state.coinType.value == 1) {
         const newwallet = await getWallet()
         const balance = await newwallet.provider.getBalance(address)
-        return balance.balance;
+        return balance.balance.toString();
       }
     },
     // Update balance in current account currency
@@ -1094,6 +1109,8 @@ export default {
 
       try {
         if (provider) {
+          console.log('state.accountInfo.address', state.accountInfo.address)
+          console.log('provider', provider)
           const balance = await provider.getBalance(state.accountInfo.address);
           let amount = 0
           if(state.coinType.value == 0) {
@@ -1121,7 +1138,7 @@ export default {
       // if (!wallet || !wallet.provider || (wallet.provider.connection.url != URL)) {
       //   provider = ethers.getDefaultProvider(URL)
       // }
-      const provider = await getProvider()
+
       let newWallet = null
       console.log('state.coinType.value', state.coinType.value)
       try {
@@ -1132,8 +1149,10 @@ export default {
             const { keyStore } = accountInfo;
             const json = toRaw(keyStore)
             const password: string = await getCookies("password") || "";
-            const wall = await dispatch("createWalletByJson", { password, json });
-            newWallet = wall.connect(provider)
+            const provider = await getProvider()
+            newWallet = await dispatch("createWalletByJson", { password, json });
+            newWallet = newWallet.connect(provider)
+            console.warn('provider', provider)
             commit('UPDATE_NETSTATUS', NetStatus.success)
             commit("UPDATE_WALLET", newWallet);
            })()
@@ -1180,13 +1199,15 @@ export default {
               const password: string = await getCookies("password") || "";
               const wall = await dispatch("createWalletByJson", { password, json });
               newWallet = new BTCWallet(wall.privateKey, network)
-              console.warn('newWallet---', newWallet)
+              // console.warn('newWallet--- Btc', newWallet)
               const hei = await newWallet.provider.getBalance()
+
               commit('UPDATE_NETSTATUS', NetStatus.success)
-              commit("UPDATE_WALLET", newWallet);
+              // commit("UPDATE_WALLET", newWallet);
              })()
             break;
         }
+        console.warn('init wallet newWallet', newWallet, state.coinType.name)
         return newWallet
       } catch (err: any) {
         Notify({ type: 'danger', message: i18n.global.t('error.netErr'),duration: 5000, position: 'bottom' })
@@ -1216,59 +1237,80 @@ export default {
       }
       console.warn('params', params)
       try {
-        const newData = data || ''
-        const { currentNetwork } = state
-        let tx: any = {
-          to,
-          value: utils.parseEther(value && Number(value) ? value.toString() : '0')
-        };
-        if (Number(gasPrice)) {
-          const bigPrice = new BigNumber(gasPrice)
-          console.warn('bigPrice', bigPrice.toNumber())
-          const gasp = Number(gasPrice) ? bigPrice.dividedBy(1000000000).toFixed(12) : '0.0000000012';
-          tx.gasPrice = ethers.utils.parseEther(gasp)
-        }
-        if (gasLimit) {
-          tx.gasLimit = gasLimit
-        }
-        if (newData) {
-          tx.data = newData
-        }
-        if (typeof sendNonce != undefined) {
-          tx.nonce = sendNonce
-        }
-        // if(newType){
-        //   tx.gasPrice = tx.gasPrice = ethers.utils.parseEther('0.000000053')
-        // }
-        if(maxPriorityFeePerGas){
-          tx.maxPriorityFeePerGas = maxPriorityFeePerGas
-        }
-        if(maxFeePerGas){
-          tx.maxFeePerGas = maxFeePerGas
-        }
+       
         // Update recent contacts
         commit("PUSH_RECENTLIST", to);
         const newwallet = await getWallet();
-        let sendData = await newwallet.sendTransaction(tx);
+        let sendData = null
+        let btcTXHash = ''
+        if(state.coinType.value == 0) {
+          const newData = data || ''
+          const { currentNetwork } = state
+          let tx: any = {
+            to,
+            value: utils.parseEther(value && Number(value) ? value.toString() : '0')
+          };
+          if (Number(gasPrice)) {
+            const bigPrice = new BigNumber(gasPrice)
+            console.warn('bigPrice', bigPrice.toNumber())
+            const gasp = Number(gasPrice) ? bigPrice.dividedBy(1000000000).toFixed(12) : '0.0000000012';
+            tx.gasPrice = ethers.utils.parseEther(gasp)
+          }
+          if (gasLimit) {
+            tx.gasLimit = gasLimit
+          }
+          if (newData) {
+            tx.data = newData
+          }
+          if (typeof sendNonce != undefined) {
+            tx.nonce = sendNonce
+          }
+          // if(newType){
+          //   tx.gasPrice = tx.gasPrice = ethers.utils.parseEther('0.000000053')
+          // }
+          if(maxPriorityFeePerGas){
+            tx.maxPriorityFeePerGas = maxPriorityFeePerGas
+          }
+          if(maxFeePerGas){
+            tx.maxFeePerGas = maxFeePerGas
+          }
+          sendData = await newwallet.sendTransaction(tx);
+          const { from, gasLimit: newLimit, gasPrice: newPrice, hash, nonce, to: toAddr, type, value: newVal } = sendData;
+          await PUSH_TXQUEUE({
+            hash,
+            from,
+            gasLimit: gasLimit || utils.formatUnits(newLimit, 'wei'),
+            gasPrice,
+            nonce,
+            to: toAddr,
+            type,
+            value: newVal,
+            transitionType: transitionType || null,
+            txType: TransactionTypes.default,
+            network: clone(currentNetwork),
+            data: newData,
+            sendStatus: TransactionSendStatus.pendding,
+            sendData: clone(sendData),
+            nft_address: nft_address || ''
+          })
+        }
+        if(state.coinType.value == 1){
+          const sendVal = new BigNumber(value).multipliedBy(1000000000).toNumber()
+          const fee = Number(gasPrice)
+          console.warn('sendVal', sendVal, fee, sendVal)
+          try {
+            btcTXHash = await newwallet.sendTransaction(to, sendVal, fee);
+          const txInfo = await newwallet.provider.getBlock(btcTXHash)
+          console.warn('txInfo',txInfo)
+          localStorage.setItem('btctx', JSON.stringify(txInfo))
+          sendData = {
+            hash: btcTXHash,
+          }
+          } catch(err) {
+            console.error('send err', err)
+          }
+        }
 
-        const { from, gasLimit: newLimit, gasPrice: newPrice, hash, nonce, to: toAddr, type, value: newVal } = sendData;
-        await PUSH_TXQUEUE({
-          hash,
-          from,
-          gasLimit: gasLimit || utils.formatUnits(newLimit, 'wei'),
-          gasPrice,
-          nonce,
-          to: toAddr,
-          type,
-          value: newVal,
-          transitionType: transitionType || null,
-          txType: TransactionTypes.default,
-          network: clone(currentNetwork),
-          data: newData,
-          sendStatus: TransactionSendStatus.pendding,
-          sendData: clone(sendData),
-          nft_address: nft_address || ''
-        })
 
         console.log("i18n", i18n);
         sendData.wallet = newwallet
@@ -1339,8 +1381,10 @@ export default {
     // send data
     async sendTransaction({ commit, dispatch, state }: any, tx: any) {
       return new Promise(async (resolve, reject) => {
+        const wallet = await getWallet();
         try {
-          const wallet = await getWallet();
+         if(state.coinType.value == 0) {
+
           console.log('newtx', tx)
           const { to } = tx
           // Update recent contacts
@@ -1378,6 +1422,11 @@ export default {
           // Add to transaction
           commit("UPDATE_TRANSACTION", rep);
           resolve(data)
+         }
+         if(state.coinType.value == 1) {
+          const data = await wallet.sendTransaction(tx);
+         }
+   
         } catch (err) {
           console.error(err)
         }
@@ -1803,40 +1852,47 @@ export default {
       const { value } = coinType
       const password = await getCookies()
       // Rederive the address and update it
-      console.log(' state.account.accountList',  state.accountList,state.accountInfo.keyStore,password)
       if(!password || !state.accountInfo.keyStore) {
         return Promise.reject()
       }
-      
-      try {
-        switch(value){
-          case 0:
-            // ETH
-            dispatch("createWalletByJson", { password, json: state.accountInfo.keyStore }).then(wall => {
-              state.accountInfo.address = toAddrByPrivateKeyETH(wall.privateKey)
-            })
-            for (const iterator of state.accountList) {
-              dispatch("createWalletByJson", { password, json: iterator.keyStore }).then(wall => {
-                iterator.address = toAddrByPrivateKeyETH(wall.privateKey)
+      return new Promise(async(resolve,reject) => {
+        try {
+          switch(value){
+            case 0:
+              // ETH
+              await dispatch("createWalletByJson", { password, json: state.accountInfo.keyStore }).then(wall => {
+                state.accountInfo.address = toAddrByPrivateKeyETH(wall.privateKey)
               })
-            }
-            break;
-          case 1:
-            // BTC
-            dispatch("createWalletByJson", { password, json: state.accountInfo.keyStore }).then(wall => {
-              state.accountInfo.address = toAddrByPrivateKeyBTC(wall.privateKey)
-            })
-            for (const iterator of state.accountList) {
-              dispatch("createWalletByJson", { password, json: iterator.keyStore }).then(wall => {
-                iterator.address = toAddrByPrivateKeyBTC(wall.privateKey)
+              for await(const iterator of state.accountList) {
+                await dispatch("createWalletByJson", { password, json: iterator.keyStore }).then(wall => {
+                  iterator.address = toAddrByPrivateKeyETH(wall.privateKey)
+                })
+              }
+              break;
+            case 1:
+              // BTC
+              await dispatch("createWalletByJson", { password, json: state.accountInfo.keyStore }).then(wall => {
+                state.accountInfo.address = toAddrByPrivateKeyBTC(wall.privateKey)
               })
-            }
-            break;
+              for await(const iterator of state.accountList) {
+                await dispatch("createWalletByJson", { password, json: iterator.keyStore }).then(wall => {
+                  iterator.address = toAddrByPrivateKeyBTC(wall.privateKey)
+                })
+              }
+              break;
+          }
+          console.log('init wallet addr')
+          let time = setTimeout(() => {
+            handleUpdate()
+            resolve(true)
+            clearTimeout(time)
+          },200)
+        }catch(err){
+          reject(err)
+          console.error(err)
         }
+      })
 
-      }catch(err){
-        console.error(err)
-      }
     }
   },
   namespaced: true,
@@ -1854,7 +1910,9 @@ export function toAddrByPrivateKeyBTC(privateKey: string){
   } else {
       pristr = privateKey
   }
+  console.warn('transfer-BTC addr', pristr)
   const privateKeyInstance = new PrivateKey(pristr,network)
+  console.warn('BTC network addr', privateKeyInstance.toAddress().toString())
   return privateKeyInstance.toAddress().toString();
 }
 
