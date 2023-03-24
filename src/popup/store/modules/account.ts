@@ -1013,8 +1013,12 @@ export default {
           newWallet = wa.connect(provider)
         }
         if(state.coinType.value == 1) {
-          new PrivateKey(privatekey, network)
+         try {
+          new PrivateKey(privatekey.startsWith('0x') ? privatekey.substr(2, privatekey.length) : privatekey, network)
           newWallet = new BTCWallet(privatekey, network)
+         }catch(err) {
+          return Promise.reject({ reason: err.toString()});
+         }
         }
 
         // During the import, check whether the address exists in the current account list. If the address exists, an exception is thrown and the import will not continue

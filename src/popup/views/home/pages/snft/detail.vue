@@ -945,6 +945,7 @@ export default {
         return t('converSnft.converted')
       }
       if(disabled) {
+        // haven't
         return t('converSnft.notObtain')
       }
       if(!disabled && MergeLevel){
