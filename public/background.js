@@ -30,7 +30,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
   if (!target) {
     return false
   }
-
+  console.log('event---000', data)
   const { method, params: newParams, sendId } = data
   if (target != 'wormholes-inpage' && target != 'wormholes-popup' && (!data || !data.method)) {
     const errMsg = errorCode['4100']
@@ -43,6 +43,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
   const isConnect = await isConnected(sender)
   //  When not connected
   if ((target == 'wormholes-inpage' && !isConnect) && (method != handleType.wallet_requestPermissions && method != handleType.eth_requestAccounts && method !== 'message')) {
+    console.log('event---', data)
     const errMsg = errorCode['4100']
     sendMessage({...createMsg(errMsg, method || 'unknow'), sendId}, {}, sender)
     return false

@@ -22,7 +22,8 @@ const handleSetPwd = (msg: string,time: number | string) => {
 export async function getCookies(key: string = pwdKey):WalletToken | null {
   const val = store.state.system.wallet_token
   let localPwd = await chrome.storage.local.get(['password'])
-  const password = localPwd.password || Cookies.get(key)
+  // const password = localPwd.password || Cookies.get(key)
+  const password = localPwd.password || ''
   if(password){
     const {time} = val
     return handleGetPwd(password, time)
@@ -42,8 +43,8 @@ export async function setCookies(key: string = pwdKey, value: any, expiresTime?:
     seconds
   }
   // Cookies expire 5s 
-  let cookieExpires = new Date(new Date() * 1 + 5 * 1000)
-  Cookies.set(key, pwd, { expires: cookieExpires });
+  // let cookieExpires = new Date(new Date() * 1 + 5 * 1000)
+  // Cookies.set(key, pwd, { expires: cookieExpires });
   sendBackground({method:"login", response:{ password: pwd}})
   store.commit('system/UPDATE_WALLET_TOKEN',pwdObj)
   return value

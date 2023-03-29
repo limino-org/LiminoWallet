@@ -15,9 +15,9 @@
         </div>
       </div>
       <div class="amount text-center text-bold pl-14 pr-14">
-        {{ decimal(pageData.data.balance) }} {{ pageData.data.name }}
+        {{ decimal(pageData.data.balance) }} {{symbol}}
       </div>
-      <div class="f-12 text-center lh-16 mt-6 balance">
+      <div class="f-12 text-center lh-16 mt-6 balance" v-if="coinType.value == 0">
         {{ toUsd(pageData.data.balance) }}
       </div>
       <div class="flex center">
@@ -52,10 +52,11 @@
         </div>
       </div>
     </div>
-    <div class="tx-tit lh-30 pl-14 pr-14 mt-20">{{ t("common.hsitory") }}</div>
+    <div class="tx-tit lh-30 pl-14 pr-14">{{ t("common.hsitory") }}</div>
 
     <div class="swap-list" v-show="!loading">
-      <CollectionCard
+      <div v-if="coinType.value == 0">
+        <CollectionCard
         @handleClick="handleView(item)"
         @handleSend="handleSend"
         @handleCancel="handleCancel"
@@ -63,7 +64,17 @@
         :key="item.address"
         :data="item"
       />
-      <NoData v-if="!txList.length" :message="$t('wallet.no')" />
+      </div>
+      <div v-if="coinType.value == 1">
+        <BTCCollectionCard
+        @handleClick="handleView(item)"
+        v-for="item in txList"
+        :key="item.address"
+        :data="item"
+      />
+      </div>
+
+      <NoData v-if="!txList.length" :message="t('wallet.no')" />
 
       <van-dialog
         v-model:show="showTransactionModal"
@@ -77,6 +88,14 @@
           @handleSpeed="handleSend"
           @handleCancel="handleCancel"
           :data="transactionData.data"
+          v-if="coinType.value == 0"
+        />
+        <TransactionBTCDetail
+          :data="transactionData.data"
+          @handleClose="handleClose"
+          @handleSpeed="handleSend"
+          @handleCancel="handleCancel"
+          v-if="coinType.value == 1"
         />
       </van-dialog>
     </div>
@@ -192,9 +211,11 @@ import NoData from "@/popup/components/noData/index.vue";
 
 import { Icon, Popup, Empty, Dialog, Button, Skeleton, List, Toast } from "vant";
 import CollectionCard from "@/popup/views/account/components/collectionCard/index.vue";
+import BTCCollectionCard from "@/popup/views/account/components/collectionCard/BTC.vue";
 import { addressMask, decimal, toUsd } from "@/popup/utils/filters";
 import AcceptCode from "@/popup/views/account/components/acceptCode/index.vue";
 import TransactionDetail from "@/popup/views/account/components/transactionDetail/index.vue";
+import TransactionBTCDetail from "@/popup/views/account/components/transactionDetail/BTC.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { hexValue } from "@ethersproject/bytes";
@@ -215,6 +236,7 @@ import { stopLoop } from '@/popup/store/modules/txList';
 import localforage from "localforage";
 
 import CommonModal from "@/popup/components/commonModal/index.vue";
+import { network } from "@/popup/utils/btc/config";
 export default {
   components: {
     [Icon.name]: Icon,
@@ -226,8 +248,10 @@ export default {
     [Dialog.Component.name]: Dialog.Component,
     [Dialog.Component.name]: Dialog.Component,
     CollectionCard,
+    BTCCollectionCard,
     AcceptCode,
     TransactionDetail,
+    TransactionBTCDetail,
     CommonModal,
     ModifGasFee,
     NoData
@@ -239,6 +263,7 @@ export default {
     const { query } = useRoute();
     const { tokenContractAddress } = query;
     const accountInfo = computed(() => store.state.account.accountInfo);
+    const coinType = computed(() => store.state.account.coinType)
     const currentNetwork = computed(() => store.state.account.currentNetwork);
     const transactionList = ref([]);
     const pageData = reactive({ data: {} });
@@ -260,21 +285,29 @@ export default {
           const id = currentNetwork.value.id;
           const targetAddress = accountInfo.value.address.toUpperCase();
           let searchKey = "";
-          if (id === "wormholes-network-1") {
+          if(coinType.value.value == 0) {
+            if (id === "wormholes-network-1") {
             searchKey = `async-${id}-${chainId}-${targetAddress}`;
           } else {
             searchKey = `txlist-${id}-${chainId}-${targetAddress}`;
           }
+          }
+          if(coinType.value.value == 1) {
+            searchKey = `txBTClist-${network.name}-${targetAddress}`;
+          }
+
           const txInfo: any = await localforage.getItem(searchKey);
+          if(coinType.value.value == 0) {
+
           const queuekey = `txQueue-${id}-${chainId}-${targetAddress.toUpperCase()}`;
           const txQueue = await localforage.getItem(queuekey);
           let tx = [];
-          if (id === "wormholes-network-1") {
+            if (id === "wormholes-network-1") {
             tx = txInfo ? txInfo.list : [];
           } else {
             tx = txInfo;
           }
-
+          
           if (tx && tx.length) {
             const list = tx || [];
             if (tokenContractAddress) {
@@ -310,6 +343,15 @@ export default {
             })
           }
           }
+          }
+
+          if(coinType.value.value == 1) {
+            const queuekey = `txBTCQueue-${network.name}-${targetAddress.toUpperCase()}`;
+            const txQueue = await localforage.getItem(queuekey);
+            console.warn('load BTC TXLIST', txInfo, txQueue)
+            // @ts-ignore
+            txList.value = [...txQueue,...txInfo]
+          }
 
         } catch (err) {
         } finally {
@@ -326,13 +368,19 @@ export default {
     let waitTime: any = ref(null);
     onMounted(async () => {
       store.dispatch('account/clearWaitTime')
-      try {
+      if(coinType.value.value == 0) {
+        try {
        const { total, asyncRecordKey} = await handleAsyncTxList();
        console.warn('onMounted 1', total)
         await store.dispatch('txList/asyncUpdateList',{total})
       }catch(err: any){
         console.error(err)
       }finally {
+        getPageList();
+        loading.value = false
+      }
+      }
+      if(coinType.value.value == 1) {
         getPageList();
         loading.value = false
       }
@@ -485,7 +533,15 @@ export default {
       eventBus.off('changeNetwork')
 
     });
-
+    const symbol = computed(() => {
+      if(coinType.value.value == 0) {
+        // @ts-ignore
+        return pageData.data.name
+      }
+      if(coinType.value.value == 1) {
+        return coinType.value.name
+      }
+    })
     const cancelSend = async () => {
       try {
         const wallet = await getWallet();
@@ -723,6 +779,7 @@ export default {
       bugTipClass,
       showSpeedModal,
       sendTxType,
+      coinType,
       handleGasChange,
       handleSend,
       sendTx,
@@ -742,6 +799,7 @@ export default {
       decimal,
       currentNetwork,
       transactionList,
+      symbol,
       loading,
       pageData,
       toUsd,

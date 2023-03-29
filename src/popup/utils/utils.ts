@@ -1,7 +1,8 @@
 
 import useClipboard from 'vue-clipboard3'
-import { VUE_APP_SCAN_URL } from "@/popup/enum/env";
+import { VUE_APP_BTC_SCAN_URL, VUE_APP_SCAN_URL } from "@/popup/enum/env";
 import store from '@/popup/store';
+import { isProduct } from './btc/config';
 
 const { toClipboard } = useClipboard()
 
@@ -150,15 +151,20 @@ export function guid() {
 
 export const viewTransactionByHash = (hash:string | null) => {
   if(hash) {
-    if(store.state.account.currentNetwork.id === 'wormholes-network-1') {
-      window.open(`${VUE_APP_SCAN_URL}TradeDetail/${hash}`);
-    } else {
-      const defaultUrl = store.state.account.currentNetwork.browser
-      if(defaultUrl) {
-        window.open(`${defaultUrl}`);
-      } else {
+    if(store.state.account.coinType.value == 0) {
+      if(store.state.account.currentNetwork.id === 'wormholes-network-1') {
         window.open(`${VUE_APP_SCAN_URL}TradeDetail/${hash}`);
+      } else {
+        const defaultUrl = store.state.account.currentNetwork.browser
+        if(defaultUrl) {
+          window.open(`${defaultUrl}`);
+        } else {
+          window.open(`${VUE_APP_SCAN_URL}TradeDetail/${hash}`);
+        }
       }
+    }
+    if(store.state.account.coinType.value == 1) {
+      window.open(`${VUE_APP_BTC_SCAN_URL}/insight/BTC/${isProduct ? 'mainnet' : 'testnet'}/tx/${hash}`);
     }
   } else {
     throw Error('The hash cannot be empty')
@@ -167,6 +173,7 @@ export const viewTransactionByHash = (hash:string | null) => {
 
 export const viewAccountByAddress = (address:string ) => {
   if(address) {
+  if(store.state.account.coinType.value == 0) {
     if(store.state.account.currentNetwork.id === 'wormholes-network-1') {
       window.open(`${VUE_APP_SCAN_URL}AccountDetail/${address}`);
     } else {
@@ -177,6 +184,10 @@ export const viewAccountByAddress = (address:string ) => {
         window.open(`${VUE_APP_SCAN_URL}AccountDetail/${address}`);
       }
     }
+  }
+  if(store.state.account.coinType.value == 1) {
+    window.open(`${VUE_APP_BTC_SCAN_URL}/insight/BTC/${isProduct ? 'mainnet' : 'testnet'}/address/${address}`);
+  }
   } else {
     throw Error('The address cannot be empty')
   }

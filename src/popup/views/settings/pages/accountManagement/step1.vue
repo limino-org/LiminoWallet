@@ -16,7 +16,7 @@
           }`"
         @click="handleAccountFun(item, index)"
       >
-      <div class="flex account-card">
+      <div class="flex account-card" :title="item.address">
             <div class="flex center select-box">
               <i :class="`iconfont ${item.address.toUpperCase() == accountInfo.address.toUpperCase()
  ? 'icon-danxuan' : 'icon-danxuan1'} `"></i>
@@ -67,7 +67,7 @@
           }`"
         @click="handleAccountFun(item, index)"
       >
-      <div class="flex account-card">
+      <div class="flex account-card" :title="item.address">
             <div class="flex center select-box">
               <i :class="`iconfont ${item.address.toUpperCase() == accountInfo.address.toUpperCase()
  ? 'icon-danxuan' : 'icon-danxuan1'} `"></i>

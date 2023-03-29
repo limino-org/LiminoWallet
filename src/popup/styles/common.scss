@@ -6,6 +6,10 @@ body {
   min-width: 375PX;
   min-height: 601PX;
   background-color: #fff;
+  // font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  // font-variant: tabular-nums;
+  // font-feature-settings: "tnum","tnum";
+  font-family: Roboto,Arial,sans-serif;
 }
 
 body {
@@ -159,6 +163,15 @@ img {
     // left: 0;
     // transform: translateY(0);
     // margin-top: -25%;
+    // transform: translate(-50%, -50%);
+    // padding-bottom: 1PX;
+    // left: 50%;
+
+    // top: 50%;
+
+    // -webkit-transform: translate3d(-50%, -50%, 0);
+
+    // transform: translate3d(-50%, -50%, 0);
     // padding: 5px;
     // transform: none;
     // transform-origin: center;
@@ -218,11 +231,15 @@ img {
 .van-popover__content {
   overflow: hidden;
   border-radius: 4px;
+
   .dialog-box {
     padding-top: 13px;
   }
 }
 
+.creatorSnftPopover {
+  max-width: 250px;
+}
 
 
 
@@ -242,6 +259,7 @@ img {
 .van-field__error-message {
   line-height: 14px;
 }
+
 // .van-popover {
 //   background-color: rgba($color: #fff, $alpha: 0.7);
 // }
@@ -266,19 +284,23 @@ img {
 
   z-index: 1 !important;
 }
+
 .popover-btn-tip-disabled {
   .van-popover__content {
     background: #9A9A9A;
   }
+
   .van-popover__arrow {
     color: #9A9A9A;
   }
 }
+
 .van-popover__wrapper {
   .van-icon-question {
     margin-left: 0 !important;
   }
 }
+
 .van-icon-question {
   cursor: pointer;
   margin-left: 5px !important;
@@ -369,46 +391,198 @@ img {
 
 }
 
-  // Fixed popover blur
-  .server-modal {
-    max-height: 610PX;
-  }
-  .add-pledge-modal {
-    max-height: 768PX;
-  }
-  .account-list-modal1 {
-    max-height: 508PX;
-  }
-  .account-list-modal2 {
-    max-height: 662PX;
-  }
-  .switch-network-modal {
-    min-height: 250px;
-  }
-  .send-confirm-modal {
-    max-height: 360px;
-  }
-  .transaction-modal {
-    max-height: 520PX;
-  }
-  .transactionDetailsModal {
-    max-height: 710PX;
-  }
-  .cancel-modal {
-    max-height: 256PX;
+// Fixed popover blur
+.server-modal {
+  max-height: 610PX;
+}
+
+.add-pledge-modal {
+  max-height: 768PX;
+}
+
+.account-list-modal1 {
+  max-height: 508PX;
+}
+
+.account-list-modal2 {
+  max-height: 662PX;
+}
+
+.switch-network-modal {
+  min-height: 250px;
+}
+
+.send-confirm-modal {
+  max-height: 360px;
+}
+
+.transaction-modal {
+  max-height: 520PX;
+}
+
+.transactionDetailsModal {
+  max-height: 710PX;
+}
+
+.cancel-modal {
+  // max-height: 256PX;
+}
+
+.minus-pledge-dialog {
+  max-height: 452PX;
+  overflow: initial;
+
+  .van-dialog__content {
+    overflow: inherit;
   }
 
-  .minus-pledge-dialog {
-    max-height: 452PX;
-    overflow: initial;
-    .van-dialog__content {
-      overflow: inherit;
-    }
-    .sheet-header {
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
-    }
+  .sheet-header {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
   }
+}
+
+.minus-miner-stack-dialog {
+  max-height: 758PX;
+}
+
+.transfer-NFT-modal {
+  max-height: 606PX;
+  // &.type3 {
+  //   height: 566PX;
+  // }
+}
+
+.minerAdditionalModal {
+  height: 758PX;
+}
+
+.toggleSnftListModal {
+  height: 420PX;
+}
+
+.custom-setAmount-modal {
+  // height: 290PX;
+}
+
+.guideModalGetStart {
+  height: 392PX;
+}
+
+.guideBackupModal {
+  height: 422PX;
+}
+
+.modifNameModal {
+  min-height: 298PX;
+}
+
+.van-popover.account-pop {
+  z-index: 1001 !important;
+}
+
+
+.tag-list {
+  &.slider {
+    .tag-user {
+      min-width: 30px;
+      width: auto;
+
+      .user {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        position: absolute;
+        overflow: hidden;
+        left: -1px;
+        top: 0px;
+
+        i {
+          font-size: 12px;
+        }
+
+        .icon-Add {
+          font-size: 14px;
+        }
+      }
+
+      .tag-label {
+        line-height: 18px;
+        border-radius: 9px;
+        padding-left: 18px;
+
+        span {
+          font-size: 12PX;
+        }
+      }
+
+    }
+
+
+  }
+
+  .tag-user {
+    width: 20px;
+    height: 20px;
+
+    .user {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+
+      i {
+        font-size: 12px;
+      }
+
+      .icon-Add {
+        font-size: 13px;
+      }
+    }
+
+    .tag-label {
+      line-height: 16px;
+      border-radius: 8px;
+      padding-left: 17px;
+      padding-right: 5px;
+
+      span {
+        font-size: 12px;
+        transform-origin: center center;
+        display: inline-block;
+        line-height: 18px;
+        height: 18px;
+      }
+    }
+
+    &.type1 {
+
+      // green
+      .user,
+      .tag-label {
+        background: linear-gradient(270deg, #93EBAD 0%, #52E374 100%);
+      }
+    }
+
+    &.type2 {
+
+      // orange
+      .user,
+      .tag-label {
+        background: linear-gradient(90deg, #D9B560 0%, #D3E492 100%);
+      }
+    }
+
+    &.type3 {
+
+      // exchange
+      .user,
+      .tag-label {
+        background: linear-gradient(270deg, #21245F 0%, #1E275A 100%);
+      }
+    }
+
+  }
+}
   .minus-miner-stack-dialog {
     max-height: 758PX;
   }
@@ -425,7 +599,7 @@ img {
     height: 420PX;
   }
   .custom-setAmount-modal {
-    height: 290PX;
+    // height: 290PX;
   }
   .guideModalGetStart {
     height: 392PX;
@@ -446,12 +620,15 @@ img {
       max-width: 200px;
     }
   }
-  
+
 // When the width is less than 750, control the pop-up window width to guide the user to operate
 @media screen and (max-width: 750px) {
-  .popover-btn-tip,.el-popper {
+
+  .popover-btn-tip,
+  .el-popper {
     max-width: 160px;
   }
+
   .popover-dialog {
     // max-width: 340px;
     left: 18px !important;
@@ -559,36 +736,49 @@ img {
       left: 14px !important;
       position: fixed;
       top: inherit !important;
+
       .van-popover__arrow {
         right: 25px;
       }
     }
   }
-.add-pledge-modal,.transfer-NFT-modal,.minerAdditionalModal,.minus-miner-stack-dialog,.transaction-modal {
-  height: auto;
-}
-.toggleSnftListModal {
-  height: 350PX;
-}
-.custom-setAmount-modal {
-  height: 236PX;
-}
-.guideModalGetStart {
-  height: 326PX;
-}
-.guideBackupModal {
-  height: 422PX;
-}
-.modifNameModal {
-  min-height: 248PX;
-}
+
+  .add-pledge-modal,
+  .transfer-NFT-modal,
+  .minerAdditionalModal,
+  .minus-miner-stack-dialog,
+  .transaction-modal {
+    height: auto;
+  }
+
+  .toggleSnftListModal {
+    height: 350PX;
+  }
+
+  .custom-setAmount-modal {
+    // height: 236PX;
+  }
+
+  .guideModalGetStart {
+    height: 326PX;
+  }
+
+  .guideBackupModal {
+    height: 422PX;
+  }
+
+  .modifNameModal {
+    min-height: 248PX;
+  }
 }
 
-@media screen and (min-width: 750px) {                                                                                                                                 
+@media screen and (min-width: 750px) {
   html {
-    font-size: 45PX !important; // ignored
+    font-size:55PX !important; // ignored
   }
-  .popover-btn-tip,.el-popper {
+
+  .popover-btn-tip,
+  .el-popper {
     max-width: 220px;
   }
 
@@ -647,6 +837,7 @@ img {
       width: calc(100% - 40px) !important;
       left: 20px !important;
       right: 20px !important;
+
       .van-popover__arrow {
         left: 105px;
       }
@@ -719,11 +910,13 @@ img {
       left: inherit !important;
       bottom: 150px;
       position: fixed !important;
+
       .van-popover__arrow {
         //left: 321px;
       }
     }
   }
+
   .van-dialog {
     &.van-popup--center {
       // padding-bottom: 1px;
@@ -736,9 +929,11 @@ img {
 .slider-enter-active {
   animation: slider-in 0.3s ease-in-out;
 }
+
 .slider-leave-active {
   animation: slider-in 0.3s reverse ease-in-out;
 }
+
 @keyframes slider-in {
   0% {
     transform: translateY(90px);

@@ -4,6 +4,21 @@
     font-size: 18px;
   }
 }
+.accName {
+  max-width: 180px;
+  .accNameSpan {
+    display: inline-block;
+    max-width: 160px;
+  }
+}
+.gotIt {
+  text-decoration: underline;
+  font-weight: bold;
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 12px;
+  color: #037CD6;
+}
 .create-box {
   background: #f1f3f4;
   height: 30px;
@@ -85,64 +100,6 @@ i {
         width: 36px;
         overflow: hidden;
       }
-      .tag-list {
-        .tag-user {
-          min-width: 47px;
-          .user {
-            width: 14px;
-            height: 14px;
-            display: block;
-            border-radius: 50%;
-            border: 1PX solid #108ae1;
-            // &::after {
-            //   border-color:#108ae1 ;
-            //   border-radius: 50%;
-            // }
-            position: absolute;
-            overflow: hidden;
-            left: -1px;
-            top: 0px;
-            img {
-              width: 100%;
-              height: 100%;
-              display: block;
-              vertical-align: top;
-  
-            }
-          }
-          .tag-label {
-            line-height: 14px;
-            border-radius: 7px;
-            padding-left: 12px;
-            span {
-              font-size: 12px;
-            transform: scale(.7);
-            transform-origin:center center;
-            display: inline-block;
-            }
-          }
-          &.type1 {
-            // green
-            .user,.tag-label {
-              background: linear-gradient(270deg, #93EBAD 0%, #52E374 100%);
-            }
-          }
-          &.type2 {
-            // orange
-            .user,.tag-label {
-              background: linear-gradient(90deg, #D9B560 0%, #D3E492 100%);
-            }
-          }
-          &.type3 {
-            // exchange
-            .user,.tag-label {
-              background: linear-gradient(270deg, #21245F 0%, #1E275A 100%);
-            }
-          }
-    
-        }
-  
-      }
       .account-r {
         width: calc(100% - 46px);
         .address-card {
@@ -181,7 +138,6 @@ i {
   }
   .card-bottom {
     line-height: 50px;
-    margin-bottom: 3px;
     font-size: 30px;
     .amount-box {
       line-height: 50px;
@@ -396,25 +352,16 @@ i {
     /* Chrome Safari */
   }
 }
-// .van-tabs__nav {
-//   background: rgba($color: #fff, $alpha: 0.2);
-//   backdrop-filter: saturate(180%) blur(10px);
-// }
 
-// @media screen and (max-width: 750px) {
-//   .van-tabs__nav {
-//     background: none;
-//     backdrop-filter: saturate(60%) blur(10px);
-//   }
-// }
 .account-pop {
-  top: 106px !important;
+  // top: 100px !important;
   .van-popover__content {
-    background: rgba($color: #fff, $alpha: 0.8);
+    background: rgba($color: #fff, $alpha: 0.9);
     max-width: 175px;
   }
   .van-popover__arrow {
-    color: rgba($color: #fff, $alpha: 0.8);
+    color: rgba($color: #fff, $alpha: 0.9);
+    right: -2px !important;
   }
 }
 

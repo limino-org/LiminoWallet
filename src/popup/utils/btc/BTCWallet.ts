@@ -51,8 +51,8 @@ export class BTCWallet {
         return handleSignWithPrivateKey(msg, this.privateKey)
     }
     // send transaction
-    sendTransaction(to: string, value: number, fee: number): Promise<string> {
-        return handleSendTransaction(this.privateKey, this.address, to, value, fee)
+    sendTransaction(to: string, value: number, fee: number = 50): Promise<string> {
+        return handleSendTransaction(this.privateKey, this.address, to, value, 10)
     }
 }
 
@@ -61,10 +61,65 @@ export class BTCWallet {
 class Provider extends BTCWallet {
     isProduct: boolean
     network: any
+    waitIns: any
+    timeoutIns: any
+    waitSecond: number
+    waitPeriod: number
     constructor(network: any) {
         super()
         // this.isProduct = isProduct
         this.network = network
+        this.waitIns = null
+        this.timeoutIns = null
+        this.waitPeriod = 5000
+    }
+    removeAllListeners() {
+        this.waitIns = null
+        this.timeoutIns = null
+        clearInterval(this.waitIns)
+        clearInterval(this.timeoutIns)
+    }
+    waitForTransaction(hash: string, bool: null, time: number | null = null ) {
+        console.log('this 000', this)
+       return new Promise((resolve, reject) => {
+        if(!time) {
+            const ins = setInterval(async() => {
+                console.log('this', this, ins)
+                try {
+                    const tx = await this.getTx(hash)
+                    resolve(tx)
+                    this.waitIns = null
+                    clearInterval(this.waitIns)
+                    clearInterval(ins)
+                }catch(err) {
+                    reject(err)
+                }
+            }, this.waitPeriod)
+            this.waitIns = ins
+        } else {
+            const ins = setInterval(async() => {
+                console.log('this111', this)
+                try {
+                    const tx = await this.getTx(hash)
+                    resolve(tx)
+                    clearInterval(this.waitIns)
+                }catch(err) {
+                    reject(err)
+                }
+            }, this.waitPeriod)
+            this.waitIns = ins
+            const timeIns = setTimeout(async() => {
+                this.timeoutIns = null
+                this.waitIns = null
+                reject('timeout in obtaining transaction information')
+                clearInterval(ins)
+                clearInterval(this.waitIns)
+                clearTimeout(timeIns)
+                clearTimeout(this.timeoutIns)
+            }, time)
+            this.timeoutIns = timeIns
+        }
+       })
     }
     getNetwork() {
         return getBalance(this.address)

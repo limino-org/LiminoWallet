@@ -4,7 +4,7 @@
     </NavHeader>
   </van-sticky>
   <div class="modif-name-modal pl-14 mt-24 pr-14">
-    <van-form @submit="onSubmit">
+    <van-form @submit="onSubmit" :title="address">
       <div class="label text-bold">{{t('account.accountname')}} ({{ name.length }} / 25)</div>
       <van-field
         v-model="name"
@@ -51,7 +51,9 @@ export default {
     const showModal: Ref<boolean> = ref(false);
     const { t } = useI18n();
     const { dispatch } = useStore();
-    const name = ref(query.name);
+    const {name: newName, address: newAddress} = query
+    const name = ref(newName.toString());
+    const address = ref(newAddress.toString());
     // Listen to the broadcast of the same source window
     const { handleUpdate } = useBroadCast()
 
@@ -73,6 +75,7 @@ export default {
     };
     return {
       showModal,
+      address,
       name,
       cancel,
       onSubmit,

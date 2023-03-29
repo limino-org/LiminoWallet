@@ -84,13 +84,20 @@
       </div>
     </van-form>
     <div class="pwd-tip">
+        <i18n-t keypath="createAccountpage.pwdTip" tag="div" class="text-center mt-20 lh-16">
+          <template v-slot:br><br></template>
+          <template v-slot:link1><span class="hover" @click="routerTo('termsOfUse')">{{t('createAccountpage.link1')}}</span></template>
+          <template v-slot:link2><span class="hover" @click="routerTo('privacyNotice')">{{t('createAccountpage.link2')}}</span></template>
+        </i18n-t>
+      </div>
+    <!-- <div class="pwd-tip">
       <i18n-t keypath="createAccountpage.pwdTip" tag="div" class="text-center mt-20 lh-16">
         <template v-slot:br><br></template>
         <template v-slot:link1><a class="hover" 
           :href="VUE_APP_TERMSOFUSE" target="__blank">{{t('createAccountpage.link1')}}</a></template>
         <template v-slot:link2><a class="hover"  :href="VUE_APP_PRIVACYNOTICE" target="__blank">{{t('createAccountpage.link2')}}</a></template>
       </i18n-t>
-    </div>
+    </div> -->
   </div>
 </div>
 
@@ -262,7 +269,17 @@ setup() {
   const back = () => {
     router.back()
   }
+
+  const routerTo = (name: any) => {
+      if(name == 'termsOfUse') {
+        window.open('https://limino.com/upload/tst.html')
+      }
+      if(name =='privacyNotice') {
+        window.open('https://limino.com/upload/pn.html')
+      }
+    }
   return {
+    routerTo,
     back,
     t,
     pw1Error,
@@ -299,9 +316,9 @@ font-size: 16px;
 font-weight: bold;
 }
 .pwd-tip {
-a {
-  color: #037CD6;
-}
+  span {
+    color: #037CD6;
+  }
 }
 .btn-box {
 margin-top: 30px;

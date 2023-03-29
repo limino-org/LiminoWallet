@@ -77,6 +77,7 @@ import { useI18n } from "vue-i18n";
 import { utils } from "ethers";
 import { useToast } from "@/popup/plugins/toast";
 
+
 export default defineComponent({
   name: "collectionCard",
   components: {

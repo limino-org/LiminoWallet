@@ -1,5 +1,6 @@
 <template>
   <div class="page-box" id="page-box">
+
     <div class="container" id="container">
       <div v-if="route.meta.keepAlive">
         <router-view v-slot="{ Component }">
@@ -57,8 +58,10 @@ export default {
     const { initWallet } = useWallet();
     const currentNetwork = computed(() => state.account.currentNetwork);
     const coinType = computed(() => state.account.coinType)
+  
     provide("appProvide", appProvide());
-    onMounted(()=>{
+    onMounted(async()=>{
+      console.log('this', this)
      // update browser session window id
      dispatch('system/setConversationid', guid())
      // Listen to the broadcast of the same source window
@@ -101,6 +104,7 @@ export default {
       initWallet();
       dispatch("account/getContractAddress");
       dispatch("configuration/getConfiguration");
+
       useEvent();
     });
 
@@ -114,6 +118,7 @@ export default {
       }
       clearTimeout(time)
       }, 1000)
+ 
     })
 
 
@@ -148,17 +153,17 @@ export default {
 }
 .page-box {
   min-height: 100vh;
-  transition: transform 0.35s, opacity 0.35s;
+  transition: ease .3s;
   position: relative;
   max-width: 820px;
   margin: 0 auto;
   overflow-y: hidden;
   background: #fff;
   box-sizing: border-box;
-  // &::-webkit-scrollbar {
-  //   width: 0 !important;
-  //   display: none;
-  // }
+  // box-shadow: 0 1px 2px #f4f5f7;
+  &:hover {
+    box-shadow: 0 2px 10px #ebedf0;
+  }
   :deep(.van-toast) {
     word-break: keep-all !important;
   }

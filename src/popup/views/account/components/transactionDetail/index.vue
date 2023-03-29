@@ -130,6 +130,8 @@ import {
   transactionStatusClass,
   formatTxDate,
 } from "@/popup/utils/filters";
+import { viewTransactionByHash } from "@/popup/utils/utils";
+
 export default defineComponent({
   name: "transactionDetail",
   emits: ["handleClose", "handleSpeed", "handleCancel"],
@@ -185,7 +187,8 @@ export default defineComponent({
       return bigP.multipliedBy(bigU);
     });
     const view = () => {
-      window.open(`${VUE_APP_SCAN_URL}TradeDetail/${props.data.hash}`);
+      viewTransactionByHash(props.data.hash)
+      // window.open(`${VUE_APP_SCAN_URL}TradeDetail/${props.data.hash}`);
     };
     const cancel = () => {
       emit("handleClose");

@@ -181,7 +181,7 @@
 		notObtain:"没有获得",
 		synthesized:"已合成",
 		beSyned:"待合成",
-		converted:"已兑换"
+		converted:"它已被转换，不能交易"
 
 	},
 	internet: {
@@ -278,11 +278,13 @@
 		next: '下一步',
 		serviceandPrivacyNotice: '请查看 Wormholes ERB 钱包服务条款和隐私声明',
 		memErr: "助记词格式有误，请确认后重新提交",
-		isServiceandPrivacyNotice: "请务必检查服务条款和隐私政策 ",
-		isServiceandPrivacyNotices: "请务必勾选用户协议 ",
-		pwdTip: "通过继续，您同意 Wormholes 的 {br} {link1}&{link2}",
-		link1: "Terms of Use",
-		link2: "Privacy Notice"
+        isServiceandPrivacyNotice: "请务必检查服务条款和隐私政策 ",
+        isServiceandPrivacyNotices: "请务必勾选用户协议 ",
+        pwdTip: "通过继续，您同意 Wormholes 的 {br} {link1}&{link2}",
+        link1: "Terms Of Service",
+        link2: "Privacy Notice",
+        pwdTip2: "通过继续，您同意 Wormholes 的 {br} {link1}",
+        link3:"市场运营商的代币权益条款"
 	},
 	sign: {
 		"sign": "签名",
@@ -312,14 +314,14 @@
 		tips: "如果您在使用钱包之前不进行备份，您的资金将面临风险。 确保立即备份。",
 		yourRecoveryPhrase: "你的恢复短语",
 		yourRecoveryPhraseTitle:
-		"在任何情况下,WormHoles 都不会要求您提供恢复短语。保护您的资金，不要与任何人分享您的恢复短语。",
+		"在任何情况下,Wormholes 都不会要求您提供恢复短语。保护您的资金，不要与任何人分享您的恢复短语。",
 		remindMeLater: "稍后提醒我",
 		backUp: "备份",
 		hint1: "以正确的顺序写下或复制这些单词并将它们保存在安全的地方。",
 		suggest: "建议您将它们写下来。",
 		getStarted: "让我们开始吧",
 		saveTips:
-		"将您的密钥存储在安全的位置。这是找回钱包的唯一方法。WormHoles不保留副本。",
+		"将您的密钥存储在安全的位置。这是找回钱包的唯一方法。Wormholes不保留副本。",
 		continue: "继续",
 		verifyMnemonicPhrase: "验证助记词",
 		protectYourFunds: "保护您的资金，不要与任何人分享您的恢复短语。",
@@ -499,6 +501,7 @@
 		"cancel": "取消",
 		"viewDetails": "查看详情",
 		"at": "的",
+		"byteSize":"字节数"
 
 	},
 	send: {
@@ -648,7 +651,7 @@
 		"cancel": "取消",
 		"confirm": "确认",
 		"importAccount": "导入账户",
-		"importMessage": "改进后的帐户可在您的钱包中查看，但无法通过您的 WormHoles Secret 恢复恢复短语。访问此处了解更多信息。",
+		"importMessage": "改进后的帐户可在您的钱包中查看，但无法通过您的 Wormholes Secret 恢复恢复短语。访问此处了解更多信息。",
 		"inputPrivateKey": "输入私钥",
 		"scanQRCode": "扫描二维码",
 		"forexample": "例如.3a1076bf45ab87712ad64ccb3b10217737faacbf2872e88fdd9a537d8fe266",
@@ -684,8 +687,25 @@
 		aboutAs: "虫洞官网",
 		receiveAward: "领取奖励",
 		help: '使用帮助',
-		logoutTip:"确定登出吗？"
+		logoutTip:"确定登出吗？",
+		snftCreator:"S-NFT创造者"
 
+	},
+	creatorSnft:{
+		totalPeriod:"作为Creator成功创建期的总和",
+		totalProfit:"Creator持续获得版税 交易额度的10%的总和",
+		totalTimes:"成功当选Creator次数的总和",
+		totalAward:"Creator作为交易发起者, 每期直接获得奖励的总和",
+		totalWeight:"当前块高度* S-NFT值。",
+		labelPeriod:"创建总期数",
+		labelProfit:"当选Creator总收益",
+		labelTimes:"当选Creator总次数",
+		labelAward:"当选Crator总奖励",
+		labelWeight:"Creator预提名权重",
+		tip:"通过 {link1} 购买S-NFT以增加成为Creator的权重，请到 {link2} 查看更多详细信息",
+		exchange:"交易所",
+		browser:"区块浏览器",
+		creator:"创建者"
 	},
 	importByMnemonic: {
 		importfrommnemonic: '从助记词导入',
@@ -895,7 +915,7 @@
 	import: {
 		"input": "输入私钥",
 		"scan": "扫描二维码",
-		"hint": "改进后的帐户可以在您的钱包中查看，但您的 WormHoles 秘密恢复短语无法恢复您的帐户 {a}",
+		"hint": "改进后的帐户可以在您的钱包中查看，但您的 Wormholes 秘密恢复短语无法恢复您的帐户 {a}",
 		"hintatag": "访问此处了解更多信息",
 		importaccount: '导入账户',
 		announcement: '导入的账户可在你的钱包中查看的,但无法通过Wormholes助记词找回。',
@@ -1278,7 +1298,9 @@
 		diffAddr:"当前地址与钱包选择的地址不一致",
 		extend:"展开视图",
 		switchCoins:"切换币种",
-		walletType:"身份钱包"
+		walletType:"身份钱包",
+		expandView:"展开视图"
+
 	},
 	categoryform: {
 		"categoryform": "您还未选择任何数据"
@@ -1433,7 +1455,7 @@
 		tip3: "温馨提示：只能添加金额，其他信息不可更改",
 		tip4: "温馨提示：未入节点，将无法获得质押收益",
 		tip5: "输入的格式不正确",
-		stackinglabel: "矿工兑换",
+		stackinglabel: "质押赎回",
 		Stackingtit: "矿工质押",
 		Delegatetit: "委托质押",
 		address: "地址",

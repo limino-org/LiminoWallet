@@ -62,7 +62,14 @@ export const formatDate = (time: number, format = 'MMMM-DD') => {
     return moment(time).format(format)
 }
 
+export const formatBTCTxDate =(data: any) => {
+  const {blockTime,sendStatus,date} = data
+  if(sendStatus === 'pendding') {
+    return formatDate(date, "MM/DD")+' ' + i18n.global.t("transactionDetails.at") +' ' + formatDate(date, "HH:mm ")
+  }
 
+  return formatDate(blockTime, "MM/DD")+' ' + i18n.global.t("transactionDetails.at")+' ' + formatDate(blockTime, "HH:mm ")
+}
 
 export const formatTxDate = (data: any) => {
   const {timestamp,sendStatus,date} = data
@@ -176,6 +183,14 @@ export const toUsdSymbol = (v: string | number, keepDotLength = 6) => {
     return chainId == 51888 ? `≈ $${showstr}`:''
   }
 
+export function transactionBTCStatus(txData: any) {
+  const {sendStatus} = txData
+  if(sendStatus && sendStatus === 'pendding') return i18n.global.t('transationHistory.pendding')
+  if(sendStatus === 'success') {
+    return i18n.global.t('transationHistory.successly')
+  }
+  return i18n.global.t('transationHistory.failed')
+}
   // Return to transaction status
 export function transactionStatus(txData: any){
   const {status,sendStatus, sendType} = txData
@@ -198,6 +213,12 @@ export function transactionStatus(txData: any){
     const {status,sendStatus} = data
     if(sendStatus && sendStatus === 'pendding') return sendStatus
     return status ? 'success' : 'fail'
+  }
+
+  export const handleBTCSendStatus = (data: any) => {
+    const {sendStatus} = data
+    if(sendStatus && sendStatus === 'pendding') return sendStatus
+    return sendStatus == 'success' ? 'success' : 'fail'
   }
 
   export const txTypeToIcon = (data: any) => {
@@ -353,6 +374,24 @@ export function transactionStatus(txData: any){
     if(sendStatus && sendStatus === 'pendding') return 'waitting'
     return status ? 'success' : 'failed'
   }
+
+  export const transactionBTCStatusClass = (data: any) => {
+    const {sendStatus} = data
+    if(sendStatus && sendStatus === 'pendding') return 'waitting'
+    return sendStatus == 'success' ? 'success' : 'failed'
+  }
+
+export const transferBTCAmountText = (data: any) => {
+  const {sendStatus,from, to, value} = data
+  const val = new BigNumber(value).div(100000000).toString()
+  if(sendStatus == 'pendding') {
+    return val
+  }
+  if(sendStatus == 'success') {
+    return '-' + val
+  }
+  return val
+}
 
   export const transferAmountText = (data: any) => {
     const { to, from, contractAddress, value, input, convertAmount, sendStatus, status, tokenAddress, amount, txType, jsonData } = data

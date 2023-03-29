@@ -16,6 +16,30 @@
     <div class="all" v-show="chooseTabdata.value == 1">
       <!-- Transactions -->
       <div v-if="transactionList.length">
+
+        <div v-if="coinType.value == 0">
+        <CollectionCard
+        @handleClick="handleView(item)"
+        @handleSend="handleSend"
+        @handleCancel="handleCancel"
+        :id="item.hash"
+        v-for="item in transactionList"
+        :key="item.address"
+        :data="item"
+        :active="route.query.hash?.toString() === item.hash"
+      />
+      </div>
+      <div v-if="coinType.value == 1">
+        <BTCCollectionCard
+        @handleClick="handleView(item)"
+        v-for="item in transactionList"
+        :id="item.hash"
+        :key="item.address"
+        :data="item"
+        :active="route.query.hash?.toString() === item.hash"
+      />
+      </div>
+<!-- 
         <CollectionCard
         :id="item.hash"
           @handleClick="handleView(item)"
@@ -25,14 +49,38 @@
           @handleSend="handleSend"
           @handleCancel="handleCancel"
           :active="route.query.hash?.toString() === item.hash"
-        />
+        /> -->
       </div>
       <no-data v-if="!loading && !transactionList.length" />
     </div>
     <div class="receive" v-show="chooseTabdata.value == 2"></div>
     <div class="send" v-show="chooseTabdata.value == 3">
       <div v-if="sendList.length">
+
+        <div v-if="coinType.value == 0">
         <CollectionCard
+        @handleClick="handleView(item)"
+        @handleSend="handleSend"
+        @handleCancel="handleCancel"
+        :id="item.hash"
+        v-for="item in sendList"
+        :key="item.address"
+        :data="item"
+        :active="route.query.hash?.toString() === item.hash"
+      />
+      </div>
+      <div v-if="coinType.value == 1">
+        <BTCCollectionCard
+        @handleClick="handleView(item)"
+        v-for="item in sendList"
+        :id="item.hash"
+        :key="item.address"
+        :data="item"
+        :active="route.query.hash?.toString() === item.hash"
+      />
+      </div>
+
+        <!-- <CollectionCard
         :id="item.hash"
           @handleClick="handleView(item)"
           v-for="item in sendList"
@@ -41,7 +89,7 @@
           @handleSend="handleSend"
           @handleCancel="handleCancel"
           :active="route.query.hash?.toString() === item.hash"
-        />
+        /> -->
       </div>
       <no-data v-if="!loading && !sendList.length" />
     </div>
@@ -90,12 +138,23 @@
     :showConfirmButton="false"
     closeOnClickOverlay
   >
-    <TransactionDetail
-      @handleClose="handleClose"
-      :data="transactionData.data"
-      @handleSpeed="handleSend"
-      @handleCancel="handleCancel"
-    />
+
+  <TransactionDetail
+          @handleClose="handleClose"
+          @handleSpeed="handleSend"
+          @handleCancel="handleCancel"
+          :data="transactionData.data"
+          v-if="coinType.value == 0"
+        />
+        <TransactionBTCDetail
+          :data="transactionData.data"
+          @handleClose="handleClose"
+          @handleSpeed="handleSend"
+          @handleCancel="handleCancel"
+          v-if="coinType.value == 1"
+        />
+
+
   </van-dialog>
 
   <CommonModal
@@ -222,6 +281,7 @@ import TokenCard from "@/popup/views/account/components/tokenCard/index.vue";
 import TransactionDetail from "@/popup/views/account/components/transactionDetail/index.vue";
 import ModifGasFee from "@/popup/views/transactionDetails/components/modifGasFee.vue";
 import CommonModal from "@/popup/components/commonModal/index.vue";
+import TransactionBTCDetail from "@/popup/views/account/components/transactionDetail/BTC.vue";
 
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useStore } from "vuex";
@@ -249,6 +309,9 @@ import eventBus from "@/popup/utils/bus";
 import { utils } from 'ethers';
 import { stopLoop } from '@/popup/store/modules/txList';
 import { handleTxType, handleTxTypeString } from '@/popup/utils/filters';
+import { network } from "@/popup/utils/btc/config";
+import BTCCollectionCard from "@/popup/views/account/components/collectionCard/BTC.vue";
+
 export default {
   name: "transaction-history",
   components: {
@@ -264,7 +327,9 @@ export default {
     [Skeleton.name]: Skeleton,
     [Empty.name]: Empty,
     CollectionCard,
+    BTCCollectionCard,
     TransactionDetail,
+    TransactionBTCDetail,
     NavHeader,
     ElTableV2,
     ModifGasFee,
@@ -352,6 +417,8 @@ export default {
       showSpeedModal.value = false
       getPageList();
     })
+    const coinType = computed(() => store.state.account.coinType)
+
     eventBus.on("txUpdate", (data: any) => {
       console.warn("txUpdate----", data);
       getPageList();
@@ -395,8 +462,26 @@ export default {
       window.addEventListener('scroll', deFun)
 
       try {
-        const { total, asyncRecordKey} = await handleAsyncTxList();
+
+
+        if(coinType.value.value == 0) {
+        try {
+       const { total, asyncRecordKey} = await handleAsyncTxList();
+       console.warn('onMounted 1', total)
         await store.dispatch('txList/asyncUpdateList',{total})
+      }catch(err: any){
+        console.error(err)
+      }finally {
+        getPageList();
+        loading.value = false
+      }
+      }
+      if(coinType.value.value == 1) {
+        getPageList();
+        loading.value = false
+      }
+
+
       }finally {
         getPageList();
         loading.value = false
@@ -415,13 +500,20 @@ export default {
           const id = currentNetwork.value.id;
           const targetAddress = accountInfo.value.address.toUpperCase();
           let searchKey = "";
-          if (id === "wormholes-network-1") {
+  
+          if(coinType.value.value == 0) {
+            if (id === "wormholes-network-1") {
             searchKey = `async-${id}-${chainId}-${targetAddress}`;
           } else {
             searchKey = `txlist-${id}-${chainId}-${targetAddress}`;
           }
+          }
+          if(coinType.value.value == 1) {
+            searchKey = `txBTClist-${network.name}-${targetAddress}`;
+          }
           const txInfo: any = await localforage.getItem(searchKey);
-          const queuekey = `txQueue-${id}-${chainId}-${targetAddress.toUpperCase()}`;
+          if(coinType.value.value == 0) {
+            const queuekey = `txQueue-${id}-${chainId}-${targetAddress.toUpperCase()}`;
           const txQueue = await localforage.getItem(queuekey);
           let tx = [];
           if (id === "wormholes-network-1") {
@@ -431,6 +523,16 @@ export default {
           }
           Array.isArray(tx) ? tlist.value = [...tx] : '';
           Array.isArray(txQueue) ? tlist.value.unshift(...txQueue) : "";
+          }
+          if(coinType.value.value == 1) {
+            const queuekey = `txBTCQueue-${network.name}-${targetAddress.toUpperCase()}`;
+            const txQueue = await localforage.getItem(queuekey);
+            console.warn('load BTC TXLIST', txInfo, txQueue)
+            // @ts-ignore
+            tlist.value = [...txQueue,...txInfo]
+          }
+
+
         } finally {
           loading.value = false;
         }
@@ -808,6 +910,7 @@ export default {
       viewAccountByAddress,
       chooseTabdata,
       back,
+      coinType,
       transactionList,
       sendList,
       transactionData,

@@ -707,10 +707,10 @@ export default {
     onMounted(async() => {
       const wallet = await getWallet()
       const txInfo = await wallet.provider.getTx('2860101b6b69881ceff298decc9361cf8eaf9ee9e5d6d2447b8165d214687e67')
-      const txHashInfo = await wallet.provider.getBlockHash('2860101b6b69881ceff298decc9361cf8eaf9ee9e5d6d2447b8165d214687e67')
+      // const txHashInfo = await wallet.provider.getBlockHash('2860101b6b69881ceff298decc9361cf8eaf9ee9e5d6d2447b8165d214687e67')
       
       console.warn('txInfo', txInfo)
-      console.warn('txHashInfo', txHashInfo)
+      // console.warn('txHashInfo', txHashInfo)
       const accountTokens = computed(
         () => store.getters["account/accountTokens"]
       );

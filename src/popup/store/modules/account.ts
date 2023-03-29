@@ -25,7 +25,7 @@ import { getRandomIcon } from "@/popup/utils/index";
 import { toRaw } from "vue";
 import { TransactionData, TransactionParams } from "./index";
 import { ETH, Token } from "@/popup/utils/token";
-import { checkAuth } from "@/popup/http/modules/common";
+import { checkAuth, getAccountAddr, getCreator, getPeriodById } from "@/popup/http/modules/common";
 import { useStore } from "vuex";
 import {
   NetWorkData,
@@ -84,7 +84,7 @@ export interface State {
   exchangeTotalProfit: number
   minerTotalProfit: number
   netStatus: NetStatus
-
+  creatorStatus: Object | null
 
 }
 export type ContactInfo = {
@@ -271,7 +271,6 @@ export const getWallet = () => {
 };
 // calc gasFee
 export const getGasFee = async (tx: any) => {
-  console.log('估算gas', tx)
   try {
     const wall = await getWallet()
     const gasPrice = await wall.provider.getGasPrice()
@@ -352,7 +351,8 @@ export default {
     // miner total profit
     minerTotalProfit: 4856544,
     // exchange total profit
-    exchangeTotalProfit: 2522880
+    exchangeTotalProfit: 2522880,
+    creatorStatus: null
   },
   getters: {
     // Token of current account
@@ -376,11 +376,14 @@ export default {
     // Current transaction pop-up status
     tranactionModel(state: State) {
       return state.tranactionModel
-    }
+    },
   },
   mutations: {
     UPDATE_COINTYPE(state: State, type: CoinType) {
       state.coinType = type
+    },
+    UPDATE_CREATORSTATUS(state: State, val: any) {
+      state.creatorStatus = val
     },
     UPDATE_ETHNETWORK(state: State, val: any) {
       state.ethNetwork = val
@@ -612,7 +615,7 @@ export default {
             amount = ethers.utils.formatEther(allBalance[key]);
           }
           if(state.coinType.value == 1) {
-            amount = ethers.utils.formatUnits(allBalance[key],'gwei')
+            amount = new BigNumber(allBalance[key]).div(100000000).toString()
           }
           if (item.address.toUpperCase() == key.toUpperCase()) {
             item.amount = amount;
@@ -798,16 +801,28 @@ export default {
   },
   actions: {
     getProvider({ commit, dispatch, state }){
-      if(state.coinType.value === 0) {
         const { URL } = state.currentNetwork;
       if(!provider || provider.connection.url.toUpperCase() != URL.toUpperCase()) {
         provider = ethers.getDefaultProvider(URL)
       }
-      return provider
-      }
-      return {}
+      return provider || {}
     },
-    // Judge whether there is an account with a certain address in the wallet
+    async getCreatorStatus({commit, state}, address: string) {
+      try {
+       const data = await getCreator(address)
+       const res = await getAccountAddr(address)
+       const provider = ethers.getDefaultProvider(state.currentNetwork.URL)
+       const block = await provider.getBlockNumber()
+       const weight = new BigNumber(block - data.lastNumber).multipliedBy(utils.formatEther(res.snftValue)).toString()
+       const rewardEth = utils.formatEther(data.reward)
+       const profitStr = utils.formatEther(data.profit)
+       const stateData = {...data, account: res, weight, rewardEth, profitStr}
+       console.warn('state', stateData)
+       commit('UPDATE_CREATORSTATUS', stateData)
+      }catch(err) {
+        commit('UPDATE_CREATORSTATUS', null)
+      }
+    },
     hasAccountByAddress({ commit, dispatch, state }: any, address: string) {
       const accountList = toRaw(state.accountList);
       const newAdd = address.toUpperCase();
@@ -850,11 +865,14 @@ export default {
     },
     // Create wallet from keystore mnemonic
     async createWallet(
-      { commit, dispatch }: any,
+      { commit, dispatch, state }: any,
       params: CreateWalletByMnemonicParams
     ) {
       try {
         wallet = await dispatch("createWalletByMnemonic", params);
+        // if(state.coinType.value = 1) {
+        //   wallet = new BTCWallet(wallet.privateKey, network)
+        // }
         commit("UPDATE_MNEMONIC", params);
         return Promise.resolve(wallet);
       } catch (err) {
@@ -898,13 +916,16 @@ export default {
     },
     // Creating wallets with mnemonics
     async createWalletByMnemonic(
-      { commit }: any,
+      { commit, state }: any,
       params: CreateWalletByMnemonicParams
     ) {
       try {
         const { phrase, pathIndex } = params;
         console.warn('000', params)
         wallet = await createWalletByMnemonic({ phrase, pathIndex });
+        if(state.coinType.value == 1) {
+          wallet = new BTCWallet(wallet.privateKey, network)
+        }
         return Promise.resolve(wallet);
       } catch ({ reason }) {
         Toast(i18n.global.t("common.failedtoload"));
@@ -936,7 +957,7 @@ export default {
     async updateAccount({ commit, state, dispatch }: any) {
       const address = state.accountInfo.address;
       let provider = null
-      let amount  =0
+      let amount  = '0'
       if(state.coinType.value == 0) {
         provider = await getProvider()
       } 
@@ -948,7 +969,7 @@ export default {
         amount = ethers.utils.formatEther(balance);
       }
       if(state.coinType.value == 1) { 
-        amount = ethers.utils.formatUnits(balance.balance, 'gwei');
+        amount = new BigNumber(balance.balance).div(100000000).toString();
       }
 
 
@@ -1116,12 +1137,12 @@ export default {
           console.log('state.accountInfo.address', state.accountInfo.address)
           console.log('provider', provider)
           const balance = await provider.getBalance(state.accountInfo.address);
-          let amount = 0
+          let amount = '0'
           if(state.coinType.value == 0) {
             amount = ethers.utils.formatEther(balance);
           }
           if(state.coinType.value == 1) {
-            amount = ethers.utils.formatUnits(balance.balance, 'gwei')
+            amount = new BigNumber(balance.balance).div(100000000).toString()
           }
           console.warn('UPDATE_BALANCE', amount)
           commit("UPDATE_BALANCE", amount);
@@ -1257,7 +1278,7 @@ export default {
           if (Number(gasPrice)) {
             const bigPrice = new BigNumber(gasPrice)
             console.warn('bigPrice', bigPrice.toNumber())
-            const gasp = Number(gasPrice) ? bigPrice.dividedBy(1000000000).toFixed(12) : '0.0000000012';
+            const gasp = Number(gasPrice) ? bigPrice.dividedBy(100000000).toFixed(12) : '0.0000000012';
             tx.gasPrice = ethers.utils.parseEther(gasp)
           }
           if (gasLimit) {
@@ -1299,17 +1320,23 @@ export default {
           })
         }
         if(state.coinType.value == 1){
-          const sendVal = new BigNumber(value).multipliedBy(1000000000).toNumber()
+          const sendVal = new BigNumber(value).multipliedBy(100000000).toNumber()
           const fee = Number(gasPrice)
           console.warn('sendVal', sendVal, fee, sendVal)
           try {
-            btcTXHash = await newwallet.sendTransaction(to, sendVal, fee);
-          const txInfo = await newwallet.provider.getBlock(btcTXHash)
-          console.warn('txInfo',txInfo)
-          localStorage.setItem('btctx', JSON.stringify(txInfo))
+          btcTXHash = await newwallet.sendTransaction(to, sendVal, fee);
+          // console.warn('txInfo',txInfo)
+          // localStorage.setItem('btctx', JSON.stringify(txInfo))
           sendData = {
             hash: btcTXHash,
+            to,
+            from: state.accountInfo.address,
+            fee,
+            value: sendVal,
+            network,
+            sendStatus: 'pendding'
           }
+          await PUSH_BTCTXQUEUE(sendData)
           } catch(err) {
             console.error('send err', err)
           }
@@ -1736,17 +1763,24 @@ export default {
       const { id } = state.currentNetwork
       const from = state.accountInfo.address
       // @ts-ignore
-      const queuekey = `txQueue-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
+      let queuekey = ''
       let txkey = ''
-      if(id === 'wormholes-network-1') {
-        txkey = `async-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
-      }else {
-        txkey = `txlist-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
+      if(state.coinType.value == 0) {
+        queuekey = `txQueue-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
+        if(id === 'wormholes-network-1') {
+          txkey = `async-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
+        }else {
+          txkey = `txlist-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
+        }
+      } else {
+        queuekey = `txBTCQueue-${network.name}-${from.toUpperCase()}`
+        txkey = `txBTClist-${network.name}-${from.toUpperCase()}`
       }
       let data1 = null
       return new Promise((resolve, reject) => {
         waitTime = setTimeout(async () => {
           const list: any = await localforage.getItem(queuekey)
+          console.warn('list--', list)
           const txQueue = list && list.length ? list : []
           if (!txQueue.length) {
             resolve(true)
@@ -1758,13 +1792,21 @@ export default {
               let { hash, transitionType, nft_address, blockNumber, network, txType, txId, amount, isCancel, sendData, date, value, nonce } = iterator
               const txInfo: any = await localforage.getItem(txkey)
               let txList: any = []
-              if(id === 'wormholes-network-1') {
-                txList = txInfo && txInfo.list ? txInfo.list : []
-              }else {
-                txList = txInfo || []
+              let hashArr = []
+              if(state.coinType.value == 0) {
+                if(id === 'wormholes-network-1') {
+                  txList = txInfo && txInfo.list ? txInfo.list : []
+                }else {
+                  txList = txInfo || []
+                }
+                const sameNonceTx = txList.find((item: any) => item.nonce === nonce)
+                hashArr = !sameNonceTx ? [hash] : [hash, sameNonceTx.hash]
               }
-              const sameNonceTx = txList.find((item: any) => item.nonce === nonce)
-              const hashArr = !sameNonceTx ? [hash] : [hash, sameNonceTx.hash]
+              if(state.coinType.value == 1) {
+                const sameIdTx = txList.find((item: any) => item.txId.toUpperCase() === txId.toUpperCase())
+                hashArr = !sameIdTx ? [hash] : [hash, sameIdTx.hash]
+              }
+              console.warn('222', hashArr)
               if (_opt.time != null) {
                 data1 = await waitForTransactions(hashArr, _opt.time)
                 // data1 = await wallet.provider.waitForTransaction(hash, null, _opt.time);
@@ -1810,21 +1852,28 @@ export default {
               }
 
 
-              await DEL_TXQUEUE({ ...iterator, txId, txType })
-              const newtx = {
-                receipt: data1,
-                network,
-                sendData,
-                txId,
-                date,
-                value
+
+              if(state.coinType.value == 0) {
+                await DEL_TXQUEUE({ ...iterator, txId, txType })
+                const newtx = {
+                  receipt: data1,
+                  network,
+                  sendData,
+                  txId,
+                  date,
+                  value
+                }
+                if(id === 'wormholes-network-1') {
+                  await UPDATE_TRANSACTION(newtx)
+                }else {
+                  await PUSH_TRANSACTION({...newtx, txId: guid()})
+                }
               }
-              if(id === 'wormholes-network-1') {
-                await UPDATE_TRANSACTION(newtx)
-              }else {
-                await PUSH_TRANSACTION({...newtx, txId: guid()})
+              if(state.coinType.value == 1) {
+                await DELBTC_TXQUEUE({ ...iterator, txId, txType })
+                console.warn('wait btc', iterator, data1)
+                await PUSHBTC_TRANSACTION({...data1,...iterator, sendStatus: 'success'})
               }
-              
             }
             eventBus.emit('waitTxEnd')
             resolve(receiptList)
@@ -1886,10 +1935,14 @@ export default {
               break;
           }
           console.log('init wallet addr')
-          let time = setTimeout(() => {
+          let time = setTimeout(async() => {
+     
+            const newwallet = await dispatch('getProviderWallet')
+            commit('UPDATE_WALLET', newwallet)
+            eventBus.emit('changeCoinType', {wallet: newwallet,coinType})
+            clearTimeout(time)
             handleUpdate()
             resolve(true)
-            clearTimeout(time)
           },200)
         }catch(err){
           reject(err)
@@ -2045,6 +2098,20 @@ export const PUSH_TXQUEUE = async (tx: any) => {
   return tx
 }
 
+
+export const PUSH_BTCTXQUEUE =async (tx: any) => {
+  const { from, network: { name }  } = tx
+  tx.txId = guid()
+  tx.date = new Date()
+  const queuekey = `txBTCQueue-${name}-${from.toUpperCase()}`
+  const list: any = await localforage.getItem(queuekey)
+  const txQueue = list || []
+  txQueue.unshift(clone(tx))
+  await localforage.setItem(queuekey, txQueue)
+  eventBus.emit('txQueuePush', tx)
+  return tx
+}
+
 export const DEL_TXQUEUE = async (tx: any) => {
   const { network: { id, chainId }, txId, from } = tx
   if (id && chainId && txId && from) {
@@ -2058,6 +2125,35 @@ export const DEL_TXQUEUE = async (tx: any) => {
     eventBus.emit('delTxQueue', tx)
   }
   return tx
+}
+
+export const DELBTC_TXQUEUE = async (tx: any) => {
+  console.warn('del BTC', tx)
+  const { network: { name }, txId, from } = tx
+  if (name && txId && from) {
+    // @ts-ignore
+    let queueKey = `txBTCQueue-${name}-${from.toUpperCase()}`
+    const list: any = await localforage.getItem(queueKey)
+    const txQueue = list && list.length ? list : []
+    console.warn('del BTC 1', txQueue)
+    const newList = txQueue.filter((item: any) => item.txId.toUpperCase() != txId.toUpperCase())
+    console.warn('del BTC 2', newList)
+    await localforage.setItem(queueKey, newList)
+    eventBus.emit('delTxQueue', tx)
+  }
+  return tx
+}
+
+export const PUSHBTC_TRANSACTION = async (da: any) => {
+  console.warn('da--', da)
+  const {network:{name}, from} = da
+  const queryKey = `txBTClist-${name}-${from.toUpperCase()}`
+  const list: any = await localforage.getItem(queryKey) || []
+  if(!list.find(item => item.hash.toUpperCase() == da.hash.toUpperCase())) {
+    list.unshift(da)
+    await localforage.setItem(queryKey, list)
+  }
+
 }
 
 export const PUSH_TRANSACTION = async (da: any) => {
@@ -2268,7 +2364,8 @@ export const UPDATE_TRANSACTION = async (da: any) => {
 
 export function waitForTransactions(hashs: Array<any>, time: number | null = null):Promise<TransactionReceipt>{
   return new Promise((resolve, reject) => {
-    if(hashs.length) {
+    console.warn('provider', wallet.provider)
+    if(hashs.length && wallet.provider) {
       hashs.forEach((hash) => {
         if(time != null) {
           wallet.provider.waitForTransaction(hash, null, time).then((res: TransactionReceipt) => {

@@ -28,7 +28,7 @@
             :data-selected="accountInfo.address.toUpperCase() ==
                     item.address.toUpperCase() ? true : false"
           >
-            <div class="flex account-card-s">
+            <div class="flex account-card-s" :title="item.address">
               <div class="flex center account-icon">
                 <i
                   :class="`iconfont f-14 ${
@@ -49,7 +49,7 @@
                   <div class="account-name">{{ item.name }}</div>
                   <div class="account-value van-ellipsis">
                     {{ showAmount ? decimal(item.amount) : item.address }}
-                    {{ showAmount ? currentNetwork.currencySymbol : "" }}
+                    {{ showAmount ? symbol : "" }}
                   </div>
                 </div>
               </div>
@@ -207,8 +207,18 @@
           top: hei
         })
       };
+      const coinType = computed(() => store.state.account.coinType)
+      const symbol = computed(() => {
+        if(coinType.value.value == 0) {
+          return currentNetwork.value.currencySymbol
+        }
+        if(coinType.value.value == 1) {
+          return 'BTC'
+        }
+      })
   
       return {
+        symbol,
         t,
         options,
         toggleAccount,

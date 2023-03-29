@@ -70,6 +70,7 @@ export const handleRpcResponse = {
             const bgMsg = { ...errorCode['200'], data: null }
             const sendBgMsg = createBgMsg(bgMsg, method)
             await chrome.runtime.sendMessage(sender.id, sendBgMsg);
+            handleRpcResponse[eventTypes.pwdExpired].sendResponse()
 
         }
     },
@@ -86,10 +87,13 @@ export const handleRpcResponse = {
                         // 12 h password expired clear data
                         await clearConnectList()
                         await clearPwd()
+                        handleRpcResponse[eventTypes.pwdExpired].sendResponse()
                     }
                 })
-                waitTxQueueResponse()
                 const method = handleType.login
+                const errMsg = { ...errorCode['200'], data: true}
+                const sendLoginMsg =  createMsg(errMsg, 'loginIn')
+                sendMessage(sendLoginMsg, {}, null)
                 const bgMsg = { ...errorCode['200'], data: null }
                 const sendBgMsg = createBgMsg(bgMsg, method)
                 await chrome.runtime.sendMessage(sender.id, sendBgMsg);
@@ -213,6 +217,14 @@ export const handleRpcResponse = {
             console.log('message', v)
 
         }
+    },
+    [eventsEmitter.pwdExpired]: {
+        sendResponse: async () => {
+            const method = eventsEmitter.pwdExpired
+            const errMsg = { ...errorCode['200'], data: true}
+            const sendMsg = createMsg(errMsg, method)
+            sendMessage(sendMsg, {}, null)
+        },
     },
     // trade
     [handleType.eth_sendTransaction]: {

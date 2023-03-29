@@ -134,11 +134,13 @@ export const useToggleAccount = () => {
             address,
             imported: false,
           })
-          dispatch("account/getExchangeStatus").then(res => {
-            if(res.status == 2 && res.exchanger_flag){
-              initExchangeData()
-            }
-          })
+          if(state.account.coinType.value == 0) {
+            dispatch("account/getExchangeStatus").then(res => {
+              if(res.status == 2 && res.exchanger_flag){
+                initExchangeData()
+              }
+            })
+          }
           eventBus.emit("changeAccount", wallet.address);
           resolve(wallet)
         }catch(err){

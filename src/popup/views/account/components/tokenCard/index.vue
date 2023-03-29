@@ -7,7 +7,7 @@
           <img src="@/popup/assets/token/BTC.svg" v-if="coinType.value ==1" />
         </div>
       </div>
-      <div class="token-info flex center f-12">{{ data.name }}</div>
+      <div class="token-info flex center f-12">{{ symbol }}</div>
     </div>
     <div class="token-card-right flex center">
       <!-- <van-icon name="arrow" /> -->
@@ -71,10 +71,19 @@ export default defineComponent({
       })
       emit('handleClick')
     }
+    const symbol = computed(() => {
+      if(coinType.value.value == 0){
+        return props.data.name
+      }
+      if(coinType.value.value == 1){
+        return 'BTC'
+      }
+    })
     return {
       toTokenHome,
       decimal,
       coinType,
+      symbol,
       currentNetwork,
       toUsd,
       toUsdSymbol,

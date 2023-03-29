@@ -4,23 +4,33 @@
   </van-sticky>
   <div class="send-page">
 
-   <div class="page-container">
+   <div class="page-container" >
      <!-- Account selection area -->
      <div class="userinfo">
       <!-- sender -->
-      <div class="from">
-        <!-- <div class="userfrom">{{ t("sendto.from") }}:</div> -->
+
+      <div class="from " :title="formAddr">
+        <div class="userfrom">{{ t("sendto.from") }}:</div>
         <!-- Sender information -->
         <div class="information van-hairline--surround">
-          <div class="flex">
+           
+              <div class="userbalance van-ellipsis" :title="accountInfo.address">
+                <div class="flex">
             <div class="avatar">
               <AccountIcon :data="accountInfo.icon" />
             </div>
             <div class="flex column userinformation">
               <div class="username">{{ accountInfo.name }}</div>
-              <div class="userbalance van-ellipsis" :title="accountInfo.address">
-                {{ accountInfo.address }}
+              <div class="userbalance">
+                {{ t("sendto.balance") }}:{{ decimal(accountInfo.amount) }} {{ currentNetwork.currencySymbol }}
               </div>
+            </div>
+            </div>
+
+                <!-- {{ accountInfo.address }} -->
+              <!-- <div class="username van-ellipsis">{{ accountInfo.name }}</div> -->
+              <!-- {{ t("sendto.balance") }}:{{ decimal(accountInfo.amount) }}
+                {{ currentNetwork.currencySymbol }} -->
             </div>
           </div>
         </div>
@@ -60,11 +70,13 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="m-20 json-box">
+      <div class="json-box">
       <div class="tx-json">{{ txJSON }}</div>
     </div>
+    </div>
+
+
 
     <!-- Click to go to the next step-->
     <div class="btn-boxs">
@@ -82,7 +94,6 @@
       </div>
     </div>
    </div>
-  </div>
 </template>
 
 <script lang="ts">
@@ -95,6 +106,7 @@ import {
   onMounted,
   onBeforeMount,
   nextTick,
+  onUnmounted,
 } from "vue";
 import { Icon, Toast, Button, Sticky, Field } from "vant";
 import { useRoute, useRouter } from "vue-router";
@@ -130,6 +142,7 @@ export default {
     const { t } = useI18n();
     const { dispatch } = store;
     const accountInfo = computed(() => store.state.account.accountInfo);
+    const formAddr = computed(() => store.state.account.accountInfo.address)
     const currentNetwork = computed(() => store.state.account.currentNetwork);
     const route = useRoute();
     const { query } = route;
@@ -182,6 +195,18 @@ export default {
         response: { method: handleType.eth_sendTransaction, sendId },
       });
     };
+
+    const handleKeydown = (e: any) => {
+      if(e.keyCode === 13) {
+        gonext()
+      }
+    }
+    onMounted(() => {
+      window.addEventListener('keydown', handleKeydown)
+    })
+    onUnmounted(() => {
+      window.removeEventListener('keydown', handleKeydown)
+    })
     return {
       t,
       calcel,
@@ -191,6 +216,7 @@ export default {
       senderData,
       gonext,
       accountInfo,
+      formAddr,
       toAddress,
       nextLoading,
       toAccount,
@@ -209,6 +235,7 @@ export default {
 .json-box {
   max-height: 270px;
   overflow-y: scroll;
+  margin:0 20px 20px;
 }
 .balance {
   background: #f3f4f5;
@@ -217,6 +244,7 @@ export default {
 .tx-json{
   background: #f3f4f5;
   min-height: 260px;
+  font-size: 14px;
 }
 .contract-info {
   .origin {
@@ -297,6 +325,7 @@ export default {
     .userinformation {
       margin-left: 10px;
       margin-top: 9px;
+      max-width: 80%;
       .username {
         font-size: 12px; 
 

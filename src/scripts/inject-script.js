@@ -3,11 +3,13 @@ function generateRandom() {
 }
 
 const events = [
-  // 'connect',
+  'connect',
   // 'disconnect',
   'chainChanged',
   'accountsChanged',
   'message',
+  'pwdExpired',
+  'loginIn'
   // 'error',
   // 'data'
 ]
@@ -16,8 +18,10 @@ function Provider() {
   this._state = {
     accounts: [],
     isConnected: false,
-    isUnlocked: true,
-    initialized: false
+    isUnlocked: false,
+    initialized: false,
+
+
   }
   this.isLiminoWallet = true
   this.chainId = null
@@ -38,13 +42,13 @@ function Provider() {
         const { method, response } = data
         if (!events.includes(method)) {
           if (method && sendId && response) {
-            ethereum.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
+            // ethereum.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
             wormholes.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
           }
         } else {
           let { method } = data
           if (method) {
-            ethereum.runCallBackEventByMethod(method, response.data)
+            // ethereum.runCallBackEventByMethod(method, response.data)
             wormholes.runCallBackEventByMethod(method, response.data)
           }
         }
@@ -54,18 +58,15 @@ function Provider() {
     this.on('chainChanged', (chainId) => {
       this._state.chainId = chainId
     }, callId)
-    this.on('accountsChanged', (addr) => {
+    this.on('accountsChanged', ([addr]) => {
       this.selectedAddress = addr
     }, callId)
-    // TODO
-    this.on('connect', () => {
-      this._state.isConnected = true
+    this.on('pwdExpired', () => {
+      this.state.isUnlocked = false
     }, callId)
-    // TODO
-    this.on('disconnect', () => {
-      this._state.isConnected = false
+    this.on('loginIn', () => {
+      this._state.isUnlocked = true
     }, callId)
-
   }
   this.enable = function () {
     return this.connect()
@@ -90,6 +91,28 @@ function Provider() {
   this.request = function (params) {
     var _this = this
     const { method } = params
+    // if(!this._state.isConnected && (method !== 'wallet_requestPermissions' || method !== 'eth_requestAccounts')){
+    //   return Promise.reject('Request denied')
+    // }
+    if (((method === 'wallet_requestPermissions' || method == 'eth_requestAccounts') && this._state.isConnected)) {
+      return new Promise((resolve, reject) => {
+        const newParams = { ...params, method: 'eth_accounts' }
+        _this.postMsg(newParams, res => {
+          const { code, message, response, sendId } = res
+          try {
+            _this.handleUpdateState(res, newParams)
+            if (code == 200) {
+              resolve(res.data)
+            } else {
+              reject(res)
+            }
+          } catch (errData) {
+            reject(errData)
+          }
+          _this.handleSendCallBackById(method, sendId)
+        })
+      })
+    }
     return new Promise(function (resolve, reject) {
       _this.postMsg({ ...params }, (res) => {
         if (res) {
@@ -113,6 +136,53 @@ function Provider() {
     })
   }
 
+  this.handleUpdateState = function (res, params) {
+    const { code, data } = res
+    if (code == 200) {
+      const { method } = params
+      switch (method) {
+        case 'wallet_requestPermissions':
+        case 'eth_requestAccounts':
+        case 'eth_accounts':
+          this._state.accounts = data.data
+          this._state.isConnected = true
+          this._state.isUnlocked = false
+          this.selectedAddress = data[0]
+          break;
+        case 'removeAllListeners':
+          this._state.accounts = []
+          this._state.isConnected = false
+          this.selectedAddress = ''
+          break;
+        case 'net_version':
+          this.chainId = data
+          this.networkVersion = data
+          break;
+        case 'accountsChanged':
+          this.selectedAddress = data
+          break;
+        case 'pwdExpired':
+          this._state.isUnlocked = false
+          break;
+        case 'loginIn':
+          this._state.isUnlocked = true
+          break;
+        default:
+          this._state.isConnected = true
+          break;
+      }
+    }
+
+    if (code == 4100) {
+      this._state.accounts = []
+      this._state.isConnected = false
+      this.selectedAddress = ''
+      this._rpcSendCallbacks = {}
+      this.handleDelEventCall('accountsChanged')
+      this.handleDelEventCall('chainChanged')
+    }
+
+  }
 
   // connect
   this.connect = function () {
@@ -193,6 +263,10 @@ Provider.prototype = {
   removeAllListeners() {
     return this.request({ method: 'removeAllListeners', params: {} })
   },
+  async removeListener(method, call) {
+    await this.handleDelEventCall(method);
+    typeof call == 'function' ? call() : '';
+  },
   getBlockNumber() {
     return this.request({ method: 'eth_blockNumber', params: {} })
   },
@@ -250,25 +324,49 @@ Provider.prototype = {
     }
   },
   handleDelEventCall(method) {
-    if (this._eventCallbacks[method]) {
-      Object.keys(this._eventCallbacks[method]).forEach(callId => {
-        if (callId != this.onEventMainCallId) {
-          delete this._eventCallbacks[method][callId]
-        }
-      })
+    return new Promise((resolve, reject) => {
+      if (this._eventCallbacks[method]) {
+        Object.keys(this._eventCallbacks[method]).forEach(callId => {
+          if (callId != this.onEventMainCallId) {
+            delete this._eventCallbacks[method][callId]
+          }
+        })
+      }
+      resolve()
+    })
 
-    }
   }
 
 }
 
-const ethereum = new Provider()
+// const ethereum = new Provider()
 const wormholes = new Provider()
-window.ethereum = ethereum
+// window.ethereum = ethereum
 window.wormholes = wormholes
-ethereum.init()
+// ethereum.init()
 wormholes.init()
 
 
+// Listen for callback events
+document.addEventListener('wormHoles-callback-event', (res) => {
+  // accepting of data
+  let { type, data, sendId } = res.detail;
 
+  if (type == "wormholes-callback") {
+    const { method, response } = data
+    if (!events.includes(method)) {
+      if (method && sendId && response) {
+        // ethereum.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
+        wormholes.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
+      }
+    } else {
+      let { method } = data
+      if (method) {
+        // ethereum.runCallBackEventByMethod(method, response.data)
+        wormholes.runCallBackEventByMethod(method, response.data)
+      }
+    }
+  }
+
+});
 

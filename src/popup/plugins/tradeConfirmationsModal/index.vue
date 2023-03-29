@@ -1,7 +1,7 @@
 <template>
-  <transition name="fade">
+ <Transition name="modal">
     <div class="trade-dialog-mask flex center" v-if="isShow">
-      <div class="wormholes-dialog">
+      <div class="wormholes-dialog modal-container">
         <div class="text-center tit van-hairline--bottom">
           {{i18n.global.t('transactiondetails.tradeTit')}}
         </div>
@@ -250,6 +250,7 @@ defineExpose({
   bottom: 0;
   z-index: 5002;
   background: rgba($color: #000000, $alpha: 0.5);
+  transition: opacity 0.3s ease;
   .okbtn {
     min-width: 100px;
   }
@@ -299,14 +300,5 @@ defineExpose({
       color: #848484;
     }
   }
-}
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease-in;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 </style>

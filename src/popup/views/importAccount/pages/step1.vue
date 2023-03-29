@@ -26,7 +26,7 @@
               autosize
               type="textarea"
               :class="` content`"
-              :placeholder="$t('import.forexample')"
+              :placeholder="t('import.forexample')"
             />
           </van-cell-group>
           <div class="error mt-6" v-show="errReason">
@@ -52,7 +52,7 @@
               autosize
               type="textarea"
               class="content"
-              :placeholder="$t('import.forexample')"
+              :placeholder="t('import.forexample')"
             />
           </van-cell-group>
 

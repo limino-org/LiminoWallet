@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="`new-nft-card pl-8 pr-8 ${data.MergeLevel === 2 ? 'shining' :''}`"
+    :class="`new-nft-card pl-8 pr-8 ${data.MergeLevel == 2 ? 'shining' :''}`"
   >
     <div class="new-nft-card-box ">
     <!-- 1.info -->
@@ -233,12 +233,20 @@ export default defineComponent({
       const list = compData.value.children
         .filter((item) => item.select)
       const { status, data } = props;
-      let total = 0
       if (status == "2") {
-        list.forEach(item => {
-          total+=item.snfts.length
-        })
-        return total
+
+        let total = 0;
+        list.forEach((item: any) => {
+          if (getDisabled(item) == "") {
+            const {MergeLevel:level,total_hold, MergeNumber} = item
+            if(level === 1 && total_hold) {
+              total += total_hold
+            } else {
+              total += item.snfts.length;
+            }
+          }
+        });
+        return total;
       }
       if (status == "1" || status == "3") {
         let total = 0
@@ -374,9 +382,9 @@ export default defineComponent({
     const chooseAll = (bool: boolean) => {
       console.log('props.data', props.data)
       // @ts-ignore
-      if(props.data.MergeLevel === 2 && props.data.Chipcount && props.status === '1') {
+      if(props.data.MergeLevel === 2 && props.data.Chipcount) {
       // @ts-ignore
-        if(props.status === '1' && compData.value.pledgestate === 'Pledge' && !compData.value.isUnfreeze) {
+        if( compData.value.pledgestate === 'Pledge' && !compData.value.isUnfreeze) {
           Toast(t('common.unisUnfreeze'))
           return
         }
@@ -543,13 +551,15 @@ export default defineComponent({
     }
     const getTipText = (item: any) => {
       const { disabled, MergeLevel, Exchange } = item
+
       if(Exchange) {
         return t('converSnft.converted')
       }
       if(disabled) {
         return t('converSnft.notObtain')
       }
-      if(!disabled && MergeLevel){
+      // @ts-ignore
+      if(!disabled && MergeLevel > 0){
         return t('converSnft.synthesized')
       }
       return t('converSnft.beSyned')
@@ -769,7 +779,7 @@ export default defineComponent({
     }
     & .icon-check_line {
       color: #848484;
-      font-size: 14px;
+      font-size: 16px;
     }
   }
 }

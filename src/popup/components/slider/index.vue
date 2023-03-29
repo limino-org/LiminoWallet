@@ -9,31 +9,102 @@
       <div class="slider-con">
         <div :class="`slider-bg ${hasExchange ? 'blue' : ''}`">
           <div class="flex back-box">
-            <van-icon name="arrow-left hover" @click="showSlider = false" />
+            <van-icon name="cross" class="hover" @click="showSlider = false" />
           </div>
 
-          <div class="user-img">
+          <div :class="`user-img mt-20`">
             <div class="user-img-circle flex center-v hover">
               <AccountIcon
                 :data="accountInfo.icon"
                 @click="toAccountManagement"
               />
               <!-- Label set -->
-              <div class="tag-list flex">
+              <div class="tag-list flex slider" v-if="coinType.value == 0">
+                <van-popover
+                  v-model:show="showPopover3"
+                  trigger="manual"
+                  class="account-pop"
+                  placement="bottom-start"
+                >
+                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"
+                        @mouseover="showPopoverText3 = true"
+                        @mouseleave="handleMouseLeavetext3">
+                        <div> {{ t("creatorSnft.labelPeriod") }}: {{ creatorStatus.count }}</div>
+                      <div>{{ t("creatorSnft.labelProfit") }}: {{ creatorStatus.profitStr }} ERB</div>
+                      <div>{{ t("creatorSnft.labelTimes") }}: {{ creatorStatus.count }}</div>
+                      <div>{{ t("creatorSnft.labelAward") }}: {{ creatorStatus.rewardEth }} ERB</div>
+                      <div>{{ t("creatorSnft.labelWeight") }}: {{ creatorStatus.weight }}</div>
+                  </div>
+                  <template #reference>
+                    <div
+                      class="tag-user type1 position relative hover"
+                      @mouseover="showPopover3 = true"
+                      @mouseleave="handleMouseLeave3"
+                      v-show="
+                        creatorStatus
+                      "
+                    >
+                      <span class="user flex center" @click="toCreator">
+                        <i class="iconfont icon-Add"></i>
+                      </span>
+                      <div class="tag-label flex center-v" @click="toCreator">
+                        <span class="van-ellipsis">{{ t("creatorSnft.creator") }}</span>
+                      </div>
+                    </div>
+                  </template>
+                </van-popover>
                 <van-popover
                   v-model:show="showPopover"
                   trigger="manual"
                   class="account-pop MR-10"
                   placement="bottom-start"
                 >
-                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12">
-                    {{ t("common.right_and_interests") }}
+                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"                         @mouseover="showPopoverText = true"
+                        @mouseleave="handleMouseLeavetext1">
+                    <!-- {{ t("common.right_and_interests") }} -->
+                    <i18n-t
+                      tag="div"
+                      v-if="expresionClass == 'smile'"
+                      keypath="minerspledge.smileTip"
+                    >
+                      <template v-slot:value>{{ Coefficient }}</template>
+                      <template v-slot:btn>
+                        <span class="gotIt" @click="minerpledge">{{
+                          t("minerspledge.gotIt")
+                        }}</span>
+                      </template>
+                    </i18n-t>
+                    <i18n-t
+                      tag="div"
+                      v-if="expresionClass == 'sad'"
+                      keypath="minerspledge.homeTip"
+                    >
+                      <!-- <template v-slot:value>{{Coefficient}}</template> -->
+                      <template v-slot:btn>
+                        <span class="gotIt" @click="minerpledge">{{
+                          t("minerspledge.gotIt")
+                        }}</span>
+                      </template>
+                    </i18n-t>
+                    <i18n-t
+                      tag="div"
+                      v-if="expresionClass == 'neutral'"
+                      keypath="minerspledge.homeTip"
+                    >
+                      <!-- <template v-slot:value>{{Coefficient}}</template> -->
+                      <template v-slot:btn>
+                        <span class="gotIt" @click="minerpledge">{{
+                          t("minerspledge.gotIt")
+                        }}</span>
+                      </template>
+                    </i18n-t>
                   </div>
                   <template #reference>
                     <div
-                      class="tag-user type2 position relative hover mr-8"
+                      class="tag-user type2 position relative hover ml-8"
                       @mouseover="showPopover = true"
-                      @mouseleave="showPopover = false"
+                      @mouseleave="handleMouseLeave1"
+                      @click="minerpledge"
                       v-show="
                         ethAccountInfo
                           ? ethAccountInfo.PledgedBalance > 0
@@ -42,11 +113,12 @@
                           : false
                       "
                     >
-                      <span class="user">
-                        <img src="@/popup/views/home/imgs/wakuang.png" alt />
+                      <span class="user flex center">
+                        <i class="iconfont icon-chuiziicon"></i>
+                        <!-- <img src="@/popup/views/home/imgs/wakuang.png" alt /> -->
                       </span>
                       <div class="tag-label flex center-v">
-                        <span>{{t('common.validator')}}</span>
+                        <span class="van-ellipsis">{{ t("common.validator") }}</span>
                       </div>
                     </div>
                   </template>
@@ -57,23 +129,27 @@
                   class="account-pop"
                   placement="bottom-start"
                 >
-                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12">
+                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"                         @mouseover="showPopoverText2 = true"
+                        @mouseleave="handleMouseLeavetext2">
                     {{ t("common.exchange_pledge") }}
                   </div>
                   <template #reference>
                     <div
-                      class="tag-user type3 position relative mr-8 hover"
+                      class="tag-user type3 position relative ml-8 hover"
                       @mouseover="showPopover2 = true"
-                      @mouseleave="showPopover2 = false"
+                      @mouseleave="handleMouseLeave2"
+                      @click="oneClick"
                       v-show="
                         ethAccountInfo ? ethAccountInfo.ExchangerFlag : false
                       "
                     >
-                      <span class="user">
-                        <img src="@/popup/views/home/imgs/smallhome.png" alt />
+                      <span class="user flex center">
+                        <i
+                          class="iconfont icon-fangwujianzhuwugoujianbeifen"
+                        ></i>
                       </span>
                       <div class="tag-label flex center-v">
-                        <span>{{t('common.marketplace')}}</span>
+                        <span class="van-ellipsis">{{ t("common.marketplace") }}</span>
                       </div>
                     </div>
                   </template>
@@ -81,7 +157,7 @@
               </div>
             </div>
             <!-- Switch account -->
-            <div class="account mt-6">
+            <div :class="`account mt-6 ${pageType === 'Tab' ? 'mt-14' :''}`">
               <div class="flex center-v name" @click="toAccountManagement">
                 {{ accountInfo.name }}
                 <i
@@ -91,10 +167,10 @@
                 ></i>
               </div>
               <!-- Address, copy, QR code-->
-              <div class="address-card flex" @click="toCopy">
+              <div :class="`address-card flex mt-6 ${pageType === 'Tab' ? 'mt-14' :''}`" @click="toCopy">
                 <div class="add">{{ accountInfo.address }}</div>
               </div>
-              <div class="amount mt-8">
+              <div :class="`amount mt-8 ${pageType === 'Tab' ? 'mt-14' :''}`">
                 {{ amount }} {{ currentNetwork.currencySymbol }}
               </div>
             </div>
@@ -109,7 +185,7 @@
           <div class="setting-list">
             <!-- websize -->
             <div
-              class="setting-btn flex between center-v clickActive"
+              :class="`setting-btn flex between center-v clickActive ${pageType}`"
               @click="toOfficiaWebsite"
             >
               <div class="flex center">
@@ -121,21 +197,21 @@
             </div>
 
             <div
-              class="setting-btn flex center-v between clickActive"
-              v-if="currentNetwork.isMain"
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
+              v-if="currentNetwork.isMain && coinType.value == 0"
               @click="minerpledge"
             >
               <div class="flex center">
                 <i class="iconfont icon-chuiziicon"></i>
-                {{ $t("sidebar.minerspledge") }}
+                {{ t("sidebar.minerspledge") }}
               </div>
               <van-icon name="arrow" />
             </div>
 
             <!-- One-click exchange -->
             <div
-              class="setting-btn flex between center-v clickActive"
-              v-if="currentNetwork.isMain"
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
+              v-if="currentNetwork.isMain  && coinType.value == 0"
               @click="oneClick"
             >
               <div class="flex center">
@@ -150,18 +226,21 @@
             </div>
 
             <div
-              class="setting-btn flex between center-v clickActive"
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
               @click="tobrowser"
             >
               <div class="flex center">
                 <i class="iconfont icon-liulanqi"></i>
-                {{ t("sidebar.browser") }}
+                {{ coinType.value == 0 && currentNetwork.isMain ? t("sidebar.browser") : t("common.viewInBrowser")}}
               </div>
 
               <van-icon name="arrow" />
             </div>
+
+            
+
             <div
-              class="setting-btn flex center-v between clickActive"
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
               @click="routerTo('transaction-history')"
             >
               <div class="flex center">
@@ -172,7 +251,7 @@
             </div>
 
             <div
-              class="setting-btn active flex center-v between clickActive"
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
               @click="toHelp"
             >
               <div class="flex center">
@@ -182,7 +261,18 @@
               <van-icon name="arrow" />
             </div>
             <div
-              class="setting-btn flex center-v between clickActive"
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
+              @click="toCreator"
+              v-if="currentNetwork.isMain && creatorStatus"
+            >
+              <div class="flex center">
+                <i class="iconfont icon-Add"></i>
+                <span>{{ t("sidebar.snftCreator") }}</span>
+              </div>
+              <van-icon name="arrow" />
+            </div>
+            <div
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
               @click="routerTo('settings')"
             >
               <div class="flex center">
@@ -230,6 +320,9 @@ import {
   watch,
   getCurrentInstance,
   ComponentInternalInstance,
+  onUnmounted,
+  onActivated,
+  onDeactivated,
 } from "vue";
 import {
   Popup,
@@ -263,6 +356,7 @@ import { useToast } from "@/popup/plugins/toast";
 import { useDialog } from "@/popup/plugins/dialog";
 import BigNumber from "bignumber.js";
 import { getProvider, getWallet } from "@/popup/store/modules/account";
+import { viewAccountByAddress } from "@/popup/utils/utils";
 
 export default defineComponent({
   name: "slider-menu",
@@ -289,6 +383,8 @@ export default defineComponent({
     },
   },
   setup(props: any, context: SetupContext) {
+    // @ts-ignore
+    const pageType = window.pageType
     const showSlider = ref(false);
     const { emit } = context;
     const store = useStore();
@@ -297,6 +393,8 @@ export default defineComponent({
     const { dispatch } = store;
     // Main network account details
     const ethAccountInfo = computed(() => store.state.system.ethAccountInfo);
+    const creatorStatus = computed(() => store.state.account.creatorStatus)
+
     // Exchange status
     const hasExchange = computed(() => {
       const { exchanger_flag, status } = store.state.account.exchangeStatus;
@@ -346,7 +444,7 @@ export default defineComponent({
         console.error(e);
       }
     };
-
+    const coinType = computed(() => store.state.account.coinType)
     const {
       options,
       showAccount,
@@ -355,6 +453,7 @@ export default defineComponent({
       createAccount,
       createLoading,
       accountLoading,
+      
     } = useToggleAccount();
 
     const toAccountManagement = () => {
@@ -362,7 +461,12 @@ export default defineComponent({
     };
     const network = computed(() => store.state.account.currentNetwork);
     const tobrowser = () => {
-      window.open(`${network.value.browser}`);
+      if(coinType.value.value == 0) {
+        window.open(`${network.value.browser}`);
+      } 
+      if(coinType.value.value == 1) {
+        viewAccountByAddress(accountInfo.value.address)
+      }
     };
 
     const routerTo = (name: string) => {
@@ -465,9 +569,99 @@ export default defineComponent({
     // The account label pops up
     const showPopover = ref(false);
     const showPopover2 = ref(false);
+    const showPopover3 = ref(false);
+    const toCreator = () => {
+      router.push({ name: "snft-creator" });
+    };
+
+    const Coefficient = computed(() => {
+      return ethAccountInfo.value.Coefficient;
+    });
+    const expresionClass = computed(() => {
+      const num = Number(Coefficient.value);
+      if (num < 40) return "sad";
+      if (num >= 40 && num <= 50) return "neutral";
+      if (num > 50) return "smile";
+    });
+
+
+    const showPopoverText = ref(false);
+    const showPopoverText2 = ref(false);
+    const showPopoverText3 = ref(false);
+    const handleMouseLeave1 = () => {
+      // showPopover.value
+      let time = setTimeout(() => {
+        if (!showPopoverText.value) {
+          showPopover.value = false;
+        } else {
+          showPopover.value = true;
+        }
+        clearTimeout(time);
+      }, 70);
+    };
+    const handleMouseLeave2 = () => {
+      // showPopover.value
+      let time = setTimeout(() => {
+        if (!showPopoverText2.value) {
+          showPopover2.value = false;
+        } else {
+          showPopover2.value = true;
+        }
+        clearTimeout(time);
+      }, 70);
+    };
+    const handleMouseLeave3 = () => {
+      // showPopover.value
+      let time = setTimeout(() => {
+        if (!showPopoverText3.value) {
+          showPopover3.value = false;
+        } else {
+          showPopover3.value = true;
+        }
+        clearTimeout(time);
+      }, 70);
+    };
+    const handleMouseLeavetext1 = () => {
+      // showPopover.value
+      showPopoverText.value = false;
+      if (showPopover.value) {
+        showPopover.value = false;
+      }
+    };
+    const handleMouseLeavetext2 = () => {
+      // showPopover.value
+      showPopoverText2.value = false;
+      if (showPopover2.value) {
+        showPopover2.value = false;
+      }
+    };
+    const handleMouseLeavetext3 = () => {
+      // showPopover.value
+      showPopoverText3.value = false;
+      if (showPopover3.value) {
+        showPopover3.value = false;
+      }
+    };
+    
+
 
     return {
+      expresionClass,
+      showPopoverText,
+      showPopoverText2,
+      showPopoverText3,
+      handleMouseLeave1,
+      handleMouseLeave2,
+      handleMouseLeave3,
+      handleMouseLeavetext1,
+      handleMouseLeavetext2,
+      handleMouseLeavetext3,
+      coinType,
+      creatorStatus,
+      Coefficient,
       showPopover,
+      showPopover3,
+      toCreator,
       showPopover2,
       toOfficiaWebsite,
       handleShowCode,
@@ -505,6 +699,7 @@ export default defineComponent({
       hasExchange,
       t,
       minerpledge,
+      pageType
     };
   },
 });
@@ -528,10 +723,15 @@ export default defineComponent({
     transform: translateX(0);
   }
 }
+.slider-con {
+  position: relative;
+}
 .back-box {
-  margin-bottom: 15px;
+  position: absolute;
+  right: 15px;
+  top: 15px;
   i {
-    font-size: 16px;
+    font-size: 18px;
   }
 }
 </style>

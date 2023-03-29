@@ -222,16 +222,17 @@ export default defineComponent({
         eventBus.emit('sendComfirm')
    
 
-        const receipt = await txData.wallet.provider.waitForTransaction(txData.hash, null, 60000)
-        await store.dispatch("account/waitTxQueueResponse", {
-          callback(e: any) {
-            waitTime.value = e;
-          },
-        });
+        if(coinType.value.value == 0) {
+          const receipt = await txData.wallet.provider.waitForTransaction(txData.hash, null, 60000)
+        await store.dispatch("account/waitTxQueueResponse");
         if(receipt.status) {
           $tradeConfirm.update({ status: "success", hash:txData.hash });
         } else {
           $tradeConfirm.update({ status: "fail", hash:txData.hash });
+        }
+        } 
+        if(coinType.value.value == 1) {
+          $tradeConfirm.update({ status: "success", hash:txData.hash });
         }
       } catch (err: any) {
         console.warn('idx', err.toString().indexOf("timeout"))

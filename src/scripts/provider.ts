@@ -1,21 +1,3 @@
-
-// required parameter
-interface RequestArguments {
-    readonly method: string;
-    readonly params?: readonly unknown[] | object;
-}
-
-// Message parameter
-interface ProviderMessage {
-    readonly type: string;
-    readonly data: unknown;
-  }
-
-interface ProviderRpcError extends Error {
-    code: number;
-    data?: unknown;
-}
-
 //   error code
 export const errorCode = {
     // The request is successful
@@ -121,49 +103,3 @@ export enum EventInfo {
     // Subscribe to JSON-RPC notifications, GraphQL subscriptions, and/or any other events defined by the Provider. 
     message = "message"
 }
-
-export interface BaseProviderState {
-    accounts: null | string[];
-    isConnected: boolean;
-    isUnlocked: boolean;
-    // initialized: boolean;
-    // isPermanentlyDisconnected: boolean;
-  }
-
-// Provider.request(args: RequestArguments): Promise<unknown>;
-export class BaseProvider {
-    protected _state: BaseProviderState;
-    public chainId: string | null;
-    constructor(){
-        this._state = {
-            accounts:[],
-            isConnected: false,
-            isUnlocked: false
-           }
-    }
-    // Link to the purse
-    public enable = () => {
-
-    }
-    // issue a request
-    public request = (arg: RequestArguments) => {
-
-    }
-    // pass message
-    public message = (arg: ProviderMessage) => {
-
-    }
-    // Listen for an event
-    public on = (event:EventInfo) => {
-
-    }
-    // Chain change event
-    private handleChainChanged = () => {
-
-    }
-    // Account Switching Event
-    private handleAccountsChanged = () => {
-
-    }
-}
-

@@ -27,8 +27,8 @@ service.interceptors.response.use(
       }
     },
     error => {
-      console.error(JSON.stringify(error))
-      Toast(error.message || `Request Error code:${error.code}`)
+      console.error('request: ', JSON.stringify(error))
+      // Toast(error.message || `Request Error code:${error.code}`)
       return Promise.reject(error)
     }
   )
@@ -39,7 +39,7 @@ service.interceptors.response.use(
  * @param {params} Request parameters
  * @param {options} Request configuration for the current request；
  */
- export function request(url: string,params: any,method: Method, headers:Headers, cancelToken = null){
+ export function request(url: string,params: any,method: Method, headers:Headers){
     let data = {}
         // Get request uses params field
         if(method =='get')data = {params}
@@ -50,7 +50,6 @@ service.interceptors.response.use(
             method,
             ...data,
         }
-        cancelToken ? newParams['cancelToken'] = cancelToken : ''
         headers ? newParams['headers'] = headers : ''
         return service(newParams).then((res: any) => {
           const { code, msg } = res
@@ -62,10 +61,10 @@ service.interceptors.response.use(
         })
 }
 // Encapsulate get request
-export function httpGet(url:string,params: any = {}, headers: any = null, cancelToken = null){
+export function httpGet(url:string,params: any = {}, headers: any = null){
     return request(url,params,'get',headers)
 }
 // Encapsulate post request
-export function httpPost(url: string,params: any = {}, headers: any = null, cancelToken = null){
+export function httpPost(url: string,params: any = {}, headers: any = null){
     return request(url,params,'post',headers)
 }

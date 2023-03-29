@@ -1,7 +1,7 @@
 <template>
-  <van-dialog v-model:show="showModalNetwork" teleport="#page-box" class="switch-network-modal" closeOnClickOverlay :showConfirmButton="false">
-    <div class="title text-center text-bold">{{ t("internet.title") }}</div>
-
+  <van-overlay class="switch-network-modal flex center" :show="showModalNetwork" @click="showModalNetwork = false">
+    <div class="switch-net-con">
+      <div class="title text-center text-bold">{{ t("internet.title") }}</div>
     <div class="activited-net">
       <div class="main-tit">{{t("common.mainNetwork")}}</div>
       <NetWorkCard :data="mainNetwork" @handleClick="handleChooseComfirm(mainNetwork)" />
@@ -22,11 +22,36 @@
     <div class="flex center pt-24 pb-24 btn-box">
       <van-button plain @click="emitClose">{{t('network.close')}}</van-button>
     </div>
-  </van-dialog>
+    </div>
+
+  </van-overlay>
+  <!-- <van-dialog v-model:show="showModalNetwork" teleport="#page-box" class="switch-network-modal" closeOnClickOverlay :showConfirmButton="false">
+    <div class="title text-center text-bold">{{ t("internet.title") }}</div>
+    <div class="activited-net">
+      <div class="main-tit">{{t("common.mainNetwork")}}</div>
+      <NetWorkCard :data="mainNetwork" @handleClick="handleChooseComfirm(mainNetwork)" />
+    </div>
+    <div class="other-list" v-if="netWorkList.length">
+      <div class="other-list-tit">{{ t("internet.othertitle") }}</div>
+      <div class="other-list-box">
+        <NetWorkCard
+          v-for="item in netWorkList"
+          :select="item.select"
+          :key="item.value"
+          :data="item"
+          @handleClick="handleChooseComfirm(item)"
+        />
+      </div>
+    </div>
+
+    <div class="flex center pt-24 pb-24 btn-box">
+      <van-button plain @click="emitClose">{{t('network.close')}}</van-button>
+    </div>
+  </van-dialog> -->
 </template>
 
 <script lang="ts">
-import { Dialog, Button } from 'vant'
+import { Dialog, Button, Overlay } from 'vant'
 import NetWorkCard from '../netWorkCard/index.vue'
 import { defineComponent, Ref, ref, watch, SetupContext } from 'vue'
 // @ts-ignore
@@ -37,6 +62,7 @@ export default defineComponent({
   components: {
     [Button.name]: Button,
     [Dialog.Component.name]: Dialog.Component,
+    [Overlay.name]: Overlay,
     NetWorkCard
   },
   props: {
@@ -82,6 +108,13 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.switch-net-con {
+  background: #fff;
+  width:320px;
+  max-height: 420px;
+  border-radius: 12px;
+  overflow: hidden;
+}
 
   .title {
     border-bottom: 1px solid #E4E7E8;

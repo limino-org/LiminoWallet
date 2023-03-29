@@ -33,7 +33,6 @@ window.addEventListener("message", function (ev) {
 const filterEvent = ['accountsChanged', 'chainChanged']
 // Receive messages Sent to the background Receive messages from the background
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-
   if (sender.id == chrome.runtime.id) {
     // The callback event
     const { type, data, origin } = request
@@ -44,20 +43,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return
       }
       const { method } = data
-      if (filterEvent.includes(method)) {
-        const { connectList, address } = data
-        const authAccount = connectList.find(item => item.origin == window.origin)
-        if (!authAccount) {
-          return false
-        }
-        const { accountList } = authAccount
-        if (accountList && accountList.length) {
-          const hasAuth = accountList.find(add => add.toUpperCase() == address.toUpperCase())
-          if (!hasAuth) {
-            return false
-          }
-        }
-      }
+      // if (filterEvent.includes(method)) {
+      //   const { connectList, address } = data
+      //   const authAccount = connectList.find(item => item.origin == window.origin)
+      //   if (!authAccount) {
+      //     return false
+      //   }
+      //   const { accountList } = authAccount
+      //   if (accountList && accountList.length) {
+      //     const hasAuth = accountList.find(add => add.toUpperCase() == address.toUpperCase())
+      //     if (!hasAuth) {
+      //       return false
+      //     }
+      //   }
+      // }
       // Custom events
       const cEvt = new CustomEvent("wormHoles-callback-event", {
         detail: request,

@@ -345,6 +345,7 @@ import { useExchanges } from "@/popup/hooks/useExchanges";
 import { web3 } from "@/popup/utils/web3";
 import { useToast } from "@/popup/plugins/toast";
 import SwitchCoinType from '@/popup/components/switchCoinType/index.vue'
+import { getWallet } from '@/popup/store/modules/account';
 export default {
   name: "wallet",
   components: {
@@ -510,10 +511,17 @@ export default {
       }
     };
 
-    onMounted(() => {
-
+    onMounted(async() => {
+      // const wallet = await getWallet()
+      // const txInfo = await wallet.provider.waitForTransaction('8220018dd803f67b9f5dc10e218969628f2d91ddcc8a5820ea71bef79aadf534')
+      // console.warn('txInfo', txInfo)
       eventBus.on('changeAccount',() => {
         showModal.value = false
+      })
+      eventBus.on('changeCoinType', ({wallet, coinType}) => {
+       clearInterval(time)
+       time = null
+       handleLoopBalance()
       })
       
       if(store.state.account.coinType.value == 0) {
