@@ -1,7 +1,7 @@
 <template>
   <div class="nav-header-container">
     <div :class="`nav-header ${hasExchange ? 'hasExchange' : ''}`">
-      <div class="position relative nav-center van-hairline--bottom">
+      <div class="position relative nav-center van-hairline--bottom container">
         <div :class="`nav-content ${hasExchange ? 'hasExchange' : ''}  ${
             paddingTop ? 'paddingTop' : ''
           }`">
@@ -144,11 +144,12 @@ export default defineComponent({
         chooseNetWork()
       }
     }
+    const coinType = computed(() => state.account.coinType)
     const accountInfo = computed(() => store.state.account.accountInfo)
     // Whether open through the exchange open exchange discoloration
     const hasExchange = computed(() => {
       const flag = store.getters['account/hasExchange']
-      if (route.name == 'wallet' && flag) {
+      if (route.name == 'wallet' && flag && coinType.value.value == 0) {
         return true
       }
       return false

@@ -1,6 +1,6 @@
 Object.defineProperty(global, '_bitcore', {get() { return undefined },set(){}})
 import axios from "axios";
-import { BTCMnemonicAccountInfo, BTCPrivateKeyAccountInfo, FeeRes, RPCBlockRes, RPCHeightRes, RPCOutputRes, RPCTxRes, RPCTxsRes, SelectUtxoRes, sendPrams } from "./type";
+import { BTCMnemonicAccountInfo, BTCPrivateKeyAccountInfo, ChainType, FeeRes, RPCBlockRes, RPCHeightRes, RPCOutputRes, RPCTxRes, RPCTxsRes, SelectUtxoRes, sendPrams } from "./type";
 import { baseUrl, gasFeeUrl, network } from "./config";
 import { getFee, selectUtxo, send, getBalance, fetcher } from './rpc'
 const bitcore = require("bitcore-lib");
@@ -84,8 +84,9 @@ export default () => {
         return new Promise(async (resolve, reject) => {
             try {
                 // const { fastestFee, halfHourFee, hourFee } = await getFee()
-                const { inputs } = await selectUtxo(from, sendVal, fee)
+                const { inputs } = await selectUtxo(from, sendVal, fee, privateKey.publicKey.toString())
                 let list = []
+                console.warn('inputs', inputs)
                 if (inputs && inputs.length) {
                     list = inputs.map(({ mintTxid, script, mintIndex, address, value }) => ({
                         txId: mintTxid,
@@ -97,6 +98,7 @@ export default () => {
                     const tx = new Transaction()
                         .from(list)
                         .to(to, sendVal)
+                        .change(from)
                         .sign(privateKey)
                         .serialize();
                     const txid = await send({ rawTx: tx })
@@ -108,7 +110,7 @@ export default () => {
 
             } catch (err) {
                 reject(err)
-                console.error(err)
+                console.error('send error', err)
             }
         })
 

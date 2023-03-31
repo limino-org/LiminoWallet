@@ -95,6 +95,8 @@ import { useToast } from "@/popup/plugins/toast";
 import { useDialog } from "@/popup/plugins/dialog";
 import Tip from "@/popup/components/tip/index.vue";
 import useClipboard from 'vue-clipboard3'
+import { getWallet } from '@/popup/store/modules/account';
+import { importAddress } from "@/popup/utils/btc/rpc";
 
 export default {
   name: "importAccount-step1",

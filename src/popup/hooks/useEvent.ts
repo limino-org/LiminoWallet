@@ -15,7 +15,7 @@ import { getProvider, getWallet } from '@/popup/store/modules/account'
 // Global Event Management
 export const useEvent = () => {
 
-    const { dispatch, state } = useStore()
+    const { dispatch, state, commit } = useStore()
     const { handleUpdate } = useBroadCast()
     // network Change
     eventBus.on(eventHandler.changeNetwork, async (network: NetWorkData) => {
@@ -34,7 +34,6 @@ export const useEvent = () => {
     })
     // account Change
     eventBus.on(eventHandler.changeAccount, (address: string) => {
-        sendBackground({ method: eventsEmitter.accountsChanged, response: { code: '200', data: [address] } })
         switch (state.account.coinType.value) {
             case 0:
                 dispatch("system/getEthAccountInfo");

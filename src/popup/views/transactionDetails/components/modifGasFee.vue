@@ -180,7 +180,7 @@
       const gasLimitModal = ref(false);
       const { state, dispatch } = useStore();
       // Custom gas, change events
-      const gasFee = ref(0);
+      const gasFee = ref(2);
       const toAddress = ref(to);
       const accountInfo = computed(() => state.account.accountInfo);
   

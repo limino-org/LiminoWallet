@@ -107,6 +107,7 @@ import PrivacyPolicy from '@/popup/components/privacypolicy/index.vue'
 import localforage from 'localforage'
 import WromTransition from '@/popup/components/wromTransition/index.vue'
 import {VUE_APP_TERMSOFUSE,VUE_APP_PRIVACYNOTICE} from '@/popup/enum/env'
+import { getWallet } from '@/popup/store/modules/account'
 
 export default {
 name: 'loginAccount-create-step1',

@@ -1,6 +1,6 @@
 import axios, { Axios } from "axios";
 import { baseUrl, gasFeeUrl, network } from "./config";
-import { BTCMnemonicAccountInfo, BTCPrivateKeyAccountInfo, FeeRes, RPCBalanceRes, RPCBlockRes, RPCHeightRes, RPCOutputRes, RPCTxRes, RPCTxsRes, SelectUtxoRes, sendPrams } from "./type";
+import { AddWalletParams, BTCMnemonicAccountInfo, BTCPrivateKeyAccountInfo, FeeRes, RPCBalanceRes, RPCBlockRes, RPCHeightRes, RPCOutputRes, RPCTxRes, RPCTxsRes, SelectUtxoRes, sendPrams } from "./type";
 const coinSelect = require('coinselect')
 
 
@@ -22,12 +22,13 @@ export const getFee = (): Promise<FeeRes> => {
 }
 
 export const getUtxos = (address: string): Promise<Array<RPCOutputRes>> => {
-    const url = `${baseUrl}/address/${address}/?unspent=true`
+    const url = `${baseUrl}/address/${address}/?limit=9999&unspent=true`
     return fetcher(url);
 }
 
 // Select the optimal UTXOS
-export const selectUtxo = async (address: string, value: number, feeRate: number): Promise<SelectUtxoRes> => {
+export const selectUtxo = async (address: string, value: number, feeRate: number, pubKey: string): Promise<SelectUtxoRes> => {
+    console.log('address', address, value, feeRate)
     const utxos = await getUtxos(address)
     const targets = [
         {
@@ -43,6 +44,18 @@ export const send = async (params: sendPrams): Promise<string> => {
     const url = `${baseUrl}/tx/send`
     const res = await axios.post(url, params);
     return res.data.txid;
+}
+
+
+// Add wallet
+export const addWallet = (params: AddWalletParams) => {
+    const url = `${baseUrl}/wallet/`
+    return axios.post(url, params);
+}
+
+export const importAddress = (pubKey: string, address: string) => {
+    const url = `${baseUrl}/wallet/${pubKey}`
+    return axios.post(url, {address});
 }
 
 export const getTx = (txid: string): Promise<RPCTxRes> => {

@@ -53,6 +53,7 @@ import { sendBackground } from "@/popup/utils/sendBackground";
 import localforage from "localforage";
 import { Wallet, BaseProvider } from "ethers";
 import { Networks, PrivateKey } from "bitcore-lib";
+import { importAddress } from "@/popup/utils/btc/rpc";
 
 
 export interface State {
@@ -1037,6 +1038,7 @@ export default {
          try {
           new PrivateKey(privatekey.startsWith('0x') ? privatekey.substr(2, privatekey.length) : privatekey, network)
           newWallet = new BTCWallet(privatekey, network)
+          // importAddress(newWallet.publicKey, newWallet.address)
          }catch(err) {
           return Promise.reject({ reason: err.toString()});
          }
@@ -1266,6 +1268,7 @@ export default {
         // Update recent contacts
         commit("PUSH_RECENTLIST", to);
         const newwallet = await getWallet();
+        console.warn('newwallet', newwallet)
         let sendData = null
         let btcTXHash = ''
         if(state.coinType.value == 0) {
@@ -1323,10 +1326,10 @@ export default {
           const sendVal = new BigNumber(value).multipliedBy(100000000).toNumber()
           const fee = Number(gasPrice)
           console.warn('sendVal', sendVal, fee, sendVal)
-          try {
           btcTXHash = await newwallet.sendTransaction(to, sendVal, fee);
           // console.warn('txInfo',txInfo)
           // localStorage.setItem('btctx', JSON.stringify(txInfo))
+          console.warn('btcTXHash', btcTXHash)
           sendData = {
             hash: btcTXHash,
             to,
@@ -1337,15 +1340,14 @@ export default {
             sendStatus: 'pendding'
           }
           await PUSH_BTCTXQUEUE(sendData)
-          } catch(err) {
-            console.error('send err', err)
-          }
+ 
         }
-
-
-        console.log("i18n", i18n);
-        sendData.wallet = newwallet
-        return sendData
+        if(sendData) {
+          sendData.wallet = newwallet
+          return Promise.resolve(sendData)
+        }
+        console.log("i18n", i18n, sendData);
+        return Promise.reject(sendData)
       } catch (err) {
         console.error(err)
         return Promise.reject(err)
@@ -1788,12 +1790,13 @@ export default {
           const receiptList = []
           //  const newWallet = await getWallet()
           try {
+            if(state.coinType.value == 0) {
             for await (const iterator of txQueue) {
               let { hash, transitionType, nft_address, blockNumber, network, txType, txId, amount, isCancel, sendData, date, value, nonce } = iterator
               const txInfo: any = await localforage.getItem(txkey)
               let txList: any = []
               let hashArr = []
-              if(state.coinType.value == 0) {
+  
                 if(id === 'wormholes-network-1') {
                   txList = txInfo && txInfo.list ? txInfo.list : []
                 }else {
@@ -1801,11 +1804,7 @@ export default {
                 }
                 const sameNonceTx = txList.find((item: any) => item.nonce === nonce)
                 hashArr = !sameNonceTx ? [hash] : [hash, sameNonceTx.hash]
-              }
-              if(state.coinType.value == 1) {
-                const sameIdTx = txList.find((item: any) => item.txId.toUpperCase() === txId.toUpperCase())
-                hashArr = !sameIdTx ? [hash] : [hash, sameIdTx.hash]
-              }
+   
               console.warn('222', hashArr)
               if (_opt.time != null) {
                 data1 = await waitForTransactions(hashArr, _opt.time)
@@ -1851,28 +1850,45 @@ export default {
                 }
               }
 
-
-
-              if(state.coinType.value == 0) {
-                await DEL_TXQUEUE({ ...iterator, txId, txType })
-                const newtx = {
-                  receipt: data1,
-                  network,
-                  sendData,
-                  txId,
-                  date,
-                  value
-                }
-                if(id === 'wormholes-network-1') {
-                  await UPDATE_TRANSACTION(newtx)
-                }else {
-                  await PUSH_TRANSACTION({...newtx, txId: guid()})
-                }
+              await DEL_TXQUEUE({ ...iterator, txId, txType })
+              const newtx = {
+                receipt: data1,
+                network,
+                sendData,
+                txId,
+                date,
+                value
               }
-              if(state.coinType.value == 1) {
-                await DELBTC_TXQUEUE({ ...iterator, txId, txType })
-                console.warn('wait btc', iterator, data1)
-                await PUSHBTC_TRANSACTION({...data1,...iterator, sendStatus: 'success'})
+              if(id === 'wormholes-network-1') {
+                await UPDATE_TRANSACTION(newtx)
+              }else {
+                await PUSH_TRANSACTION({...newtx, txId: guid()})
+              }
+
+
+            }
+
+
+            }
+            if(state.coinType.value == 1) {
+              for await (const iterator of txQueue) {
+                const {hash,txId} = iterator
+                const txList: any = await localforage.getItem(txkey) || []
+                const sameIdTx = txList.find((item: any) => item.txId.toUpperCase() === txId.toUpperCase())
+                const hashArr = !sameIdTx ? [hash] : [hash, sameIdTx.hash]
+
+                console.warn('wait btc', iterator)
+   
+                if (_opt.time != null) {
+                  data1 = await waitForTransactions(hashArr, _opt.time)
+                  // data1 = await wallet.provider.waitForTransaction(hash, null, _opt.time);
+                } else {
+                  data1 = await waitForTransactions(hashArr)
+                  // data1 = await wallet.provider.waitForTransaction(hash);
+                }
+                await DELBTC_TXQUEUE({ ...iterator, txId })
+                await PUSHBTC_TRANSACTION({...iterator, sendStatus: 'success',...data1})
+                receiptList.push(data1)
               }
             }
             eventBus.emit('waitTxEnd')
@@ -2146,14 +2162,15 @@ export const DELBTC_TXQUEUE = async (tx: any) => {
 
 export const PUSHBTC_TRANSACTION = async (da: any) => {
   console.warn('da--', da)
-  const {network:{name}, from} = da
-  const queryKey = `txBTClist-${name}-${from.toUpperCase()}`
+  const {from} = da
+  const queryKey = `txBTClist-${network.name}-${from.toUpperCase()}`
   const list: any = await localforage.getItem(queryKey) || []
-  if(!list.find(item => item.hash.toUpperCase() == da.hash.toUpperCase())) {
+  const hasTx = list.find(item => item.txId.toUpperCase() == da.txId.toUpperCase())
+  if(!hasTx) {
     list.unshift(da)
     await localforage.setItem(queryKey, list)
+    eventBus.emit('txPush', clone(da))
   }
-
 }
 
 export const PUSH_TRANSACTION = async (da: any) => {

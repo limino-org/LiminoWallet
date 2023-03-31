@@ -38,6 +38,7 @@ i {
 }
   }
 }
+
 :deep(.van-overlay) {
   background: rgba(0, 0, 0, 0.5000);
 }
@@ -181,7 +182,7 @@ i {
     width: 20px;
     height: 20px;
     i {
-      color: rgba(3, 125, 214, 1);
+      color: #037CD6;
       font-size: 22px;
     }
   }

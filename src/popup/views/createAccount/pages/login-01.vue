@@ -163,16 +163,24 @@ export default {
       };
       let errBool = true;
       try {
-        await dispatch("account/createWalletByJson", data);
+        const wallet = await dispatch("account/createWalletByJson", data);
+        commit('account/UPDATE_WALLET', wallet)
+        console.log('1111')
         pwdErr.value = false
         await setCookies("password", password.value);
+        console.log('2222')
+
         dispatch("account/updateAccount", currentNetwork);
-        dispatch("account/updateBalance");
+        console.log('3333')
+        // dispatch("account/updateBalance");
+        console.log('4444')
         const { query } = route;
         const { backUrl }: any = query;
         if (backUrl && backUrl != "/loginAccount/step1" && backUrl != "/") {
+          console.log('5555',backUrl)
           router.replace({ path: backUrl, query });
         } else {
+          console.log('6666',backUrl)
           router.replace({ name: "wallet" });
         }
       } catch (err) {

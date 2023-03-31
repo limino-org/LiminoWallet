@@ -4,7 +4,7 @@ import axios from "axios";
 const { PrivateKey, Address, Networks, Transaction, HDPrivateKey, Mnemonic, Message } = bitcore;
 const bip39 = require('bip39');
 import useBTC from '@/popup/utils/btc/index'
-import { getBalance, getUtxos, getTx, getTxs, getBlock, getHeight, getAuthHead, getBlockHash, getCoins, getFee } from './rpc'
+import { getBalance, getUtxos, getTx, getTxs, getBlock, getHeight, getAuthHead, getBlockHash, getCoins, getFee, addWallet, importAddress } from './rpc'
 import { isProduct } from './config';
 import { RPCBalanceRes, SelectUtxoRes, RPCTxRes, RPCTxsRes, RPCBlockRes, RPCHeightRes, RPCAuthheadRes, RPCBlockHashRes, RPCCoinsRes, RPCOutputRes, FeeRes } from './type';
 const { handleImportMnemonic, handleImportPrivateKey, handleSignWithPrivateKey, handleVerifySign, handleSendTransaction } = useBTC()
@@ -18,7 +18,7 @@ export class BTCWallet {
     // account address
     address: string;
     private wif: string
-    network: string
+    network: any
     baseUrl: string
     provider: Provider
     constructor(privateKey?: string, network?: any) {
@@ -32,6 +32,7 @@ export class BTCWallet {
                 }
                 this.privateKey = pristr
                 const privateKeyIns = new PrivateKey(pristr, network)
+                console.warn('privateKeyIns', privateKeyIns)
                 const address = privateKeyIns.toAddress().toString();
                 // Derive the public key, address, and wif from the private key
                 const wif = privateKeyIns.toWIF()
@@ -40,7 +41,9 @@ export class BTCWallet {
                 this.address = address
                 this.network = network
                 this.publicKey = pubKey
-                this.provider = new Provider(network)
+                this.provider = new Provider(network, address)
+                // this.addWallet()
+                // this.importAddress()
             } catch (err) {
                 throw err
             }
@@ -52,8 +55,23 @@ export class BTCWallet {
     }
     // send transaction
     sendTransaction(to: string, value: number, fee: number = 50): Promise<string> {
-        return handleSendTransaction(this.privateKey, this.address, to, value, 10)
+        return handleSendTransaction(this.privateKey, this.address, to, value, fee)
     }
+    addWallet(): Promise<any> {
+        return addWallet({
+            name: 'name',
+            chain: 'BTC',
+            network: this.network.name,
+            pubKey: this.publicKey,
+            path: ''
+        })
+    }
+    importAddress(): Promise<any>{
+        return importAddress(this.publicKey, this.address)
+    }
+    // getUtxos(): Promise<Array<RPCOutputRes>> {
+    //     return getUtxos(this.publicKey)
+    // }
 }
 
 
@@ -61,29 +79,40 @@ export class BTCWallet {
 class Provider extends BTCWallet {
     isProduct: boolean
     network: any
+    address: string;
     waitIns: any
     timeoutIns: any
     waitSecond: number
     waitPeriod: number
-    constructor(network: any) {
+    constructor(network: any, address) {
         super()
         // this.isProduct = isProduct
         this.network = network
+        this.address = address
         this.waitIns = null
         this.timeoutIns = null
-        this.waitPeriod = 5000
+        this.waitPeriod = 4000
     }
     removeAllListeners() {
-        this.waitIns = null
-        this.timeoutIns = null
+
         clearInterval(this.waitIns)
         clearInterval(this.timeoutIns)
+        this.waitIns = null
+        this.timeoutIns = null
     }
     waitForTransaction(hash: string, bool: null, time: number | null = null ) {
         console.log('this 000', this)
-       return new Promise((resolve, reject) => {
+        let ins = null
+        let ins2 = null
+       return new Promise(async(resolve, reject) => {
+        try {
+            const tx = await this.getTx(hash)
+            resolve(tx)
+        }catch(err) {
+           
+        }
         if(!time) {
-            const ins = setInterval(async() => {
+            ins = setInterval(async() => {
                 console.log('this', this, ins)
                 try {
                     const tx = await this.getTx(hash)
@@ -92,27 +121,28 @@ class Provider extends BTCWallet {
                     clearInterval(this.waitIns)
                     clearInterval(ins)
                 }catch(err) {
-                    reject(err)
+                   
                 }
             }, this.waitPeriod)
             this.waitIns = ins
         } else {
-            const ins = setInterval(async() => {
+            ins2 = setInterval(async() => {
                 console.log('this111', this)
                 try {
                     const tx = await this.getTx(hash)
                     resolve(tx)
-                    clearInterval(this.waitIns)
+                    clearInterval(ins2)
                 }catch(err) {
-                    reject(err)
+                    
                 }
             }, this.waitPeriod)
-            this.waitIns = ins
+            this.waitIns = ins2
             const timeIns = setTimeout(async() => {
                 this.timeoutIns = null
                 this.waitIns = null
                 reject('timeout in obtaining transaction information')
                 clearInterval(ins)
+                clearInterval(ins2)
                 clearInterval(this.waitIns)
                 clearTimeout(timeIns)
                 clearTimeout(this.timeoutIns)
@@ -127,9 +157,7 @@ class Provider extends BTCWallet {
     getBalance(address?: string): Promise<RPCBalanceRes> {
         return getBalance(address || this.address)
     }
-    getUtxos(): Promise<Array<RPCOutputRes>> {
-        return getUtxos(this.address)
-    }
+
     getTx(txid: string): Promise<RPCTxRes> {
         return getTx(txid)
     }

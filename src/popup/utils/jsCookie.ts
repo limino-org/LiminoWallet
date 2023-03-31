@@ -45,7 +45,7 @@ export async function setCookies(key: string = pwdKey, value: any, expiresTime?:
   // Cookies expire 5s 
   // let cookieExpires = new Date(new Date() * 1 + 5 * 1000)
   // Cookies.set(key, pwd, { expires: cookieExpires });
-  sendBackground({method:"login", response:{ password: pwd}})
+  await sendBackground({method:"login", response:{ password: pwd}})
   store.commit('system/UPDATE_WALLET_TOKEN',pwdObj)
   return value
  

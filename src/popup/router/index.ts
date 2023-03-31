@@ -272,6 +272,7 @@ if(hasAccountFlag && !password && name != 'loginAccount-step1' && name != 'reset
 }
 
 if(hasAccountFlag && password && form.fullPath == '/' && to.fullPath == '/' && name != 'wallet'){
+  console.log('33333333333333333333333333',password,hasAccountFlag)
   next({
     name:'wallet'
   })
@@ -286,16 +287,18 @@ if(hasAccountFlag && password && form.fullPath == '/' && name != 'wallet' && !fi
     next({name:"wallet"})
     return
   }
-  console.log('33333333333333333333333333333333')
+  console.log('44444444444444444444444444444444444')
   next()
   return
 }
 
 if(hasAccountFlag && password && filterNames3.includes(to.name.toString())) {
+  console.log('5555555555555555555555555555555555')
+
   next({name:"wallet"})
   return
 }
-console.log('4444444444444444444444444444444444444444444')
+console.log('6666666666666666666666666666666666666666')
 next()
 
 });

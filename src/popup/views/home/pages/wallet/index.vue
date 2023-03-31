@@ -56,21 +56,103 @@
                   <AccountModal v-model="showModal" />
                   <!-- <SnftDetails v-model="showModal" /> -->
                   <GuideModal10></GuideModal10>
-                  <div class="tag-list flex">
+                  <div class="tag-list flex" id="tagList" v-if="coinType.value == 0">
+                    <van-popover
+                      v-model:show="showPopover3"
+                      trigger="manual"
+                      class="account-pop"
+                      placement="bottom-end"
+                    >
+                      <div
+                        class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"
+                        @mouseover="showPopoverText3 = true"
+                        @mouseleave="handleMouseLeavetext3"
+                      >
+                      <div> {{ t("creatorSnft.labelPeriod") }}: {{ creatorStatus.count }}</div>
+                      <div>{{ t("creatorSnft.labelProfit") }}: {{ creatorStatus.profitStr }} ERB</div>
+                      <div>{{ t("creatorSnft.labelTimes") }}: {{ creatorStatus.count }}</div>
+                      <div>{{ t("creatorSnft.labelAward") }}: {{ creatorStatus.rewardEth }} ERB</div>
+                      <div>{{ t("creatorSnft.labelWeight") }}: {{ creatorStatus.weight }}</div>
+                      </div>
+                      <template #reference>
+                        <div
+                          class="tag-user type1 position relative hover"
+                          @mouseover="showPopover3 = true"
+                          @mouseleave="handleMouseLeave3"
+                          @click="toCreator"
+                          v-if="creatorStatus"
+                        >
+                          <span class="user flex center">
+                            <i class="iconfont icon-Add"></i>
+                          </span>
+                        </div>
+                      </template>
+                    </van-popover>
                     <van-popover
                       v-model:show="showPopover"
                       trigger="manual"
                       class="account-pop"
                       placement="bottom-end"
                     >
-                      <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12">
-                        {{ t("common.right_and_interests") }}
+                      <div
+                        class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"
+                        @mouseover="showPopoverText = true"
+                        @mouseleave="handleMouseLeavetext1"
+                      >
+                        <i18n-t
+                          tag="div"
+                          v-if="expresionClass == 'smile'"
+                          keypath="minerspledge.smileTip"
+                        >
+                          <template v-slot:value>{{ Coefficient }}</template>
+                          <template v-slot:btn>
+                            <span class="gotIt" @click="minerpledge">{{
+                              t("minerspledge.gotIt")
+                            }}</span>
+                          </template>
+                        </i18n-t>
+                        <i18n-t
+                          tag="div"
+                          v-if="expresionClass == 'sad'"
+                          keypath="minerspledge.homeTip"
+                        >
+                          <!-- <template v-slot:value>{{Coefficient}}</template> -->
+                          <template v-slot:btn>
+                            <span class="gotIt" @click="minerpledge">{{
+                              t("minerspledge.gotIt")
+                            }}</span>
+                          </template>
+                        </i18n-t>
+                        <i18n-t
+                          tag="div"
+                          v-if="expresionClass == 'neutral'"
+                          keypath="minerspledge.homeTip"
+                        >
+                          <!-- <template v-slot:value>{{Coefficient}}</template> -->
+                          <template v-slot:btn>
+                            <span class="gotIt" @click="minerpledge">{{
+                              t("minerspledge.gotIt")
+                            }}</span>
+                          </template>
+                        </i18n-t>
+
+                        <!-- {{ t("minerspledge.right_and_interests") }} -->
+                        <!-- <div v-if="expresionClass == 'smile'">
+                 {{ t("minerspledge.smileTip", { value: Coefficient }) }}
+               </div>
+               <div v-if="expresionClass == 'sad'">
+                 {{ t("minerspledge.sadTip", { value: Coefficient }) }}
+               </div>
+               <div v-if="expresionClass == 'neutral'">
+                 {{ t("minerspledge.neutralTip", { value: Coefficient }) }}
+               </div> -->
                       </div>
                       <template #reference>
                         <div
-                          class="tag-user type2 position relative hover"
+                          class="tag-user type2 position relative hover ml-8"
                           @mouseover="showPopover = true"
-                          @mouseleave="showPopover = false"
+                          @mouseleave="handleMouseLeave1"
+                          @click="minerpledge"
                           v-show="
                             ethAccountInfo
                               ? ethAccountInfo.PledgedBalance > 0
@@ -79,14 +161,9 @@
                               : false
                           "
                         >
-                          <span class="user">
-                            <img
-                              src="@/popup/views/home/imgs/wakuang.png"
-                            />
+                          <span class="user flex center">
+                            <i class="iconfont icon-chuiziicon"></i>
                           </span>
-                          <div class="tag-label flex center-v">
-                            <span>{{t('common.validator')}}</span>
-                          </div>
                         </div>
                       </template>
                     </van-popover>
@@ -96,28 +173,30 @@
                       class="account-pop"
                       placement="bottom-end"
                     >
-                      <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12">
+                      <div
+                        class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"
+                        @mouseover="showPopoverText2 = true"
+                        @mouseleave="handleMouseLeavetext2"
+                      >
                         {{ t("common.exchange_pledge") }}
                       </div>
                       <template #reference>
                         <div
                           class="tag-user type3 position relative ml-8 hover"
                           @mouseover="showPopover2 = true"
-                          @mouseleave="showPopover2 = false"
+                          @mouseleave="handleMouseLeave2"
+                          @click="toExchange"
                           v-show="
                             ethAccountInfo
                               ? ethAccountInfo.ExchangerFlag
                               : false
                           "
                         >
-                          <span class="user">
-                            <img
-                              src="@/popup/views/home/imgs/smallhome.png"
-                            />
+                          <span class="user flex center">
+                            <i
+                              class="iconfont icon-fangwujianzhuwugoujianbeifen"
+                            ></i>
                           </span>
-                          <div class="tag-label flex center-v">
-                            <span>{{t('common.marketplace')}}</span>
-                          </div>
                         </div>
                       </template>
                     </van-popover>
@@ -480,7 +559,7 @@ export default {
     // Has the exchange been opened? Has the exchange changed color
     const hasExchange = computed(() => {
       const flag = store.getters["account/hasExchange"];
-      if (route.name == "wallet" && flag) {
+      if (route.name == "wallet" && flag  && coinType.value.value == 0) {
         return true;
       }
       return false;
@@ -526,12 +605,16 @@ export default {
       
       if(store.state.account.coinType.value == 0) {
         dispatch("system/getEthAccountInfo");
+        dispatch('account/getCreatorStatus', accountInfo.value.address)
         dispatch("account/getExchangeStatus").then((res) => {
         if (res.status == 2 && res.exchanger_flag) {
           initExchangeData();
         }
       });
       }
+      if(store.state.account.coinType.value == 1) {
+      }
+      
       dispatch("transfer/clearTx");
       handleLoopBalance();
       dispatch("account/updateBalance");
@@ -590,9 +673,7 @@ export default {
       }
       return str;
     });
-    // Account tab Popup
-    const showPopover = ref(false);
-    const showPopover2 = ref(false);
+
     // Control snft
     const handleSetListType = (type: number) => {
       router.push({ name: "coll-list" });
@@ -622,8 +703,8 @@ export default {
 
     const showDots = ref(false)
     const actions = [
-      { text: t('common.extend'), icon:'expand-o', disabled: false, value:0 },
-      { text: t('common.switchCoins'), icon:'idcard', disabled: false, value: 1 },
+      { text: t('common.extend'), icon:'expand-o', disabled: false, value:0, className:"hoverActive" },
+      { text: t('common.switchCoins'), icon:'idcard', disabled: false, value: 1, className:"hoverActive" },
     ]
     // @ts-ignore
     if(window?.pageType == 'Tab') {
@@ -642,7 +723,120 @@ export default {
     }
     const coinType = computed(() => store.state.account.coinType)
 
+    const getStatus = async () => {
+      Toast.loading({
+        message: t("userexchange.loading"),
+        forbidClick: true,
+        loadingType: "spinner",
+      });
+      return dispatch("account/getExchangeStatus").finally(() => Toast.clear());
+    };
+    const toExchange = async () => {
+      const { exchanger_flag, status } = await getStatus();
+      if (exchanger_flag) {
+        router.push({ name: "exchange-management" });
+      } else {
+        router.push({ name: "bourse" });
+      }
+    };
+
+    const minerpledge = () => {
+      router.push({ name: "minersDeal" });
+    };
+    // Account tab Popup
+    const showPopover = ref(false);
+    const showPopover2 = ref(false);
+    const showPopoverText = ref(false);
+    const showPopoverText2 = ref(false);
+    const showPopoverText3 = ref(false);
+    const showPopover3 = ref(false);
+    const handleMouseLeave1 = () => {
+      // showPopover.value
+      let time = setTimeout(() => {
+        if (!showPopoverText.value) {
+          showPopover.value = false;
+        } else {
+          showPopover.value = true;
+        }
+        clearTimeout(time);
+      }, 70);
+    };
+    const handleMouseLeave2 = () => {
+      // showPopover.value
+      let time = setTimeout(() => {
+        if (!showPopoverText2.value) {
+          showPopover2.value = false;
+        } else {
+          showPopover2.value = true;
+        }
+        clearTimeout(time);
+      }, 70);
+    };
+    const handleMouseLeave3 = () => {
+      // showPopover.value
+      let time = setTimeout(() => {
+        if (!showPopoverText3.value) {
+          showPopover3.value = false;
+        } else {
+          showPopover3.value = true;
+        }
+        clearTimeout(time);
+      }, 70);
+    };
+    const handleMouseLeavetext1 = () => {
+      // showPopover.value
+      showPopoverText.value = false;
+      if (showPopover.value) {
+        showPopover.value = false;
+      }
+    };
+    const handleMouseLeavetext2 = () => {
+      // showPopover.value
+      showPopoverText2.value = false;
+      if (showPopover2.value) {
+        showPopover2.value = false;
+      }
+    };
+    const handleMouseLeavetext3 = () => {
+      // showPopover.value
+      showPopoverText3.value = false;
+      if (showPopover3.value) {
+        showPopover3.value = false;
+      }
+    };
+
+    const Coefficient = computed(() => {
+      return ethAccountInfo.value.Coefficient;
+    });
+    const expresionClass = computed(() => {
+      const num = Number(Coefficient.value);
+      if (num < 40) return "sad";
+      if (num >= 40 && num <= 50) return "neutral";
+      if (num > 50) return "smile";
+    });
+
+    const toCreator = () => {
+      router.push({ name: "snft-creator" });
+    };
+
+    const creatorStatus = computed(() => store.state.account.creatorStatus) 
     return {
+      minerpledge,
+      creatorStatus,
+      toExchange,
+      showPopoverText,
+      showPopoverText2,
+      showPopoverText3,
+      showPopover3,
+      handleMouseLeave1,
+      handleMouseLeave2,
+      handleMouseLeave3,
+      handleMouseLeavetext1,
+      handleMouseLeavetext2,
+      handleMouseLeavetext3,
+      Coefficient,
+      expresionClass,
+      toCreator,
       coinType,
       actions,
       showDots,

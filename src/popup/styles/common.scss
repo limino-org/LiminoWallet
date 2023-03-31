@@ -30,7 +30,7 @@ body {
 }
 
 .container {
-  max-width: 820px;
+  max-width: 900px;
   margin: 0 auto;
   position: relative;
 }
@@ -110,6 +110,9 @@ img {
 // Click status
 .clickActive:active {
   background: rgba($color: #cccccc, $alpha: 0.2);
+}
+.hoverActive:hover {
+  color: #037CD6;
 }
 
 .van-toast__text {
@@ -317,6 +320,7 @@ img {
 }
 
 
+
 .error {
   :deep(.van-field__body) {
     border: 1px solid #d73a49 !important;
@@ -393,35 +397,35 @@ img {
 
 // Fixed popover blur
 .server-modal {
-  max-height: 610PX;
+  // max-height: 610PX;
 }
 
 .add-pledge-modal {
-  max-height: 768PX;
+  // max-height: 768PX;
 }
 
 .account-list-modal1 {
-  max-height: 508PX;
+  // max-height: 508PX;
 }
 
 .account-list-modal2 {
-  max-height: 662PX;
+  // max-height: 662PX;
 }
 
 .switch-network-modal {
-  min-height: 250px;
+  // min-height: 250px;
 }
 
 .send-confirm-modal {
-  max-height: 360px;
+  // max-height: 360px;
 }
 
 .transaction-modal {
-  max-height: 520PX;
+  // max-height: 520PX;
 }
 
 .transactionDetailsModal {
-  max-height: 710PX;
+  // max-height: 710PX;
 }
 
 .cancel-modal {
@@ -429,7 +433,7 @@ img {
 }
 
 .minus-pledge-dialog {
-  max-height: 452PX;
+  // max-height: 452PX;
   overflow: initial;
 
   .van-dialog__content {
@@ -443,22 +447,22 @@ img {
 }
 
 .minus-miner-stack-dialog {
-  max-height: 758PX;
+  // max-height: 758PX;
 }
 
 .transfer-NFT-modal {
-  max-height: 606PX;
+  // max-height: 606PX;
   // &.type3 {
   //   height: 566PX;
   // }
 }
 
 .minerAdditionalModal {
-  height: 758PX;
+  // height: 758PX;
 }
 
 .toggleSnftListModal {
-  height: 420PX;
+  // height: 420PX;
 }
 
 .custom-setAmount-modal {
@@ -466,15 +470,15 @@ img {
 }
 
 .guideModalGetStart {
-  height: 392PX;
+  // height: 392PX;
 }
 
 .guideBackupModal {
-  height: 422PX;
+  // height: 422PX;
 }
 
 .modifNameModal {
-  min-height: 298PX;
+  // min-height: 298PX;
 }
 
 .van-popover.account-pop {
@@ -584,10 +588,10 @@ img {
   }
 }
   .minus-miner-stack-dialog {
-    max-height: 758PX;
+    // max-height: 758PX;
   }
   .transfer-NFT-modal {
-    max-height: 606PX;
+    // max-height: 606PX;
     // &.type3 {
     //   height: 566PX;
     // }
@@ -602,13 +606,13 @@ img {
     // height: 290PX;
   }
   .guideModalGetStart {
-    height: 392PX;
+    // height: 392PX;
   }
   .guideBackupModal {
-    height: 422PX;
+    // height: 422PX;
   }
   .modifNameModal {
-    min-height: 298PX;
+    // min-height: 298PX;
   }
   .moreNavModal {
     .van-popover__arrow {
@@ -641,7 +645,7 @@ img {
     }
 
     &.step2 {
-      top: 130px !important;
+      top: 120px !important;
 
       .van-popover__arrow {
         left: 164px;
@@ -649,7 +653,7 @@ img {
     }
 
     &.step3 {
-      top: 130px !important;
+      top: 120px !important;
 
       .van-popover__arrow {
         left: 198px;
@@ -760,11 +764,11 @@ img {
   }
 
   .guideModalGetStart {
-    height: 326PX;
+    // height: 326PX;
   }
 
   .guideBackupModal {
-    height: 422PX;
+    // height: 422PX;
   }
 
   .modifNameModal {
@@ -784,15 +788,18 @@ img {
 
   .popover-dialog {
     width: 250px;
-
+    .serial-number {
+      font-size: 12px !important;
+    }
     &.step1 {
+      top: 125PX !important;
       .van-popover__arrow {
         left: 45px;
       }
     }
 
     &.step2 {
-      top: 130px !important;
+      top: 115px !important;
       left: 18px !important;
 
       .van-popover__arrow {
@@ -801,11 +808,11 @@ img {
     }
 
     &.step3 {
-      top: 130px !important;
+      top: 115px !important;
       left: 18px !important;
 
       .van-popover__arrow {
-        left: 197px;
+        left: 225px;
       }
     }
 
@@ -815,7 +822,7 @@ img {
       left: inherit !important;
 
       .van-popover__arrow {
-        right: 133px;
+        right: 120px;
       }
     }
 
@@ -827,14 +834,14 @@ img {
       right: 20px !important;
 
       .van-popover__arrow {
-        right: 355px !important;
+        right: 50% !important;
         // margin-right: -20px !important;
       }
     }
 
     &.step6 {
-      top: 366px !important;
-      width: calc(100% - 40px) !important;
+      top: 316px !important;
+      // width: calc(100% - 40px) !important;
       left: 20px !important;
       right: 20px !important;
 
@@ -856,7 +863,7 @@ img {
     }
 
     &.step8 {
-      top: 366px !important;
+      top: 316px !important;
 
       // left: 400px !important;
       .van-popover__arrow {
@@ -877,7 +884,8 @@ img {
     }
 
     &.step10 {
-      left: 400px !important;
+      right: 20px !important;
+      left: inherit !important;
     }
 
     &.step11 {
@@ -890,10 +898,10 @@ img {
 
     &.step12 {
       left: 50% !important;
-      margin-left: -175px !important;
-
+      margin-left: -125px !important;
+      top: 48px !important;
       .van-popover__arrow {
-        left: 60% !important;
+        left: 50% !important;
       }
     }
 
@@ -924,7 +932,15 @@ img {
   }
 
 }
+@media screen and (min-width: 2000px) {
+  .container {
+    min-width: 950px;
+  }
+  html {
+    font-size:80PX !important; // ignored
+  }
 
+}
 
 .slider-enter-active {
   animation: slider-in 0.3s ease-in-out;

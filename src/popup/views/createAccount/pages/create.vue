@@ -134,6 +134,7 @@ import PrivacyPolicy from '@/popup/components/privacypolicy/index.vue'
 import WormholesTransition from '@/popup/components/wromTransition/index.vue'
 import localforage from 'localforage';
 import {VUE_APP_TERMSOFUSE,VUE_APP_PRIVACYNOTICE} from '@/popup/enum/env'
+import { getWallet } from '@/popup/store/modules/account';
 export default {
 name: "newwallet",
 components: {
@@ -206,6 +207,11 @@ setup() {
         });
         // await localforage.setItem("mnemonic", mnemonicData);
         commit('mnemonic/UPDATE_MNEMONIC', mnemonicData)
+        let time = setTimeout(async() => {
+              const wall = await getWallet()
+            wall.importAddress()
+            clearTimeout(time)
+            },1500)
         nextTick(() => {
           router.replace({
           name: "loginAccount-createing",

@@ -117,7 +117,7 @@ export default {
       // Split into two-dimensional arrays according to the first letter
       const list = [toRaw(myToken.value), ...tks].map((item: any) => item);
       list.sort((a: any, b: any) => {
-        return (a.name + "").localeCompare(b.name + "");
+        return (a.name + "").localeCompare(b ? b.name : '' + "");
       });
       console.log("list---", list);
       const newl = list.filter((item: any) => {

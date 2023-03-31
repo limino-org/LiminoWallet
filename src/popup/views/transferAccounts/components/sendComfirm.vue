@@ -232,6 +232,7 @@ export default defineComponent({
         }
         } 
         if(coinType.value.value == 1) {
+          await store.dispatch("account/waitTxQueueResponse");
           $tradeConfirm.update({ status: "success", hash:txData.hash });
         }
       } catch (err: any) {
@@ -248,7 +249,7 @@ export default defineComponent({
         } else {
           $tradeConfirm.update({
             status: "fail",
-            failMessage: err.reason,
+            failMessage: err.reason || err.toString(),
           });
         }
       } finally {

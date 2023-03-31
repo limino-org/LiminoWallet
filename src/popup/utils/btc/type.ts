@@ -1,3 +1,5 @@
+import { CoinType } from "@/popup/store/modules/account"
+
 export interface BTCMnemonicAccountInfo {
     // Account privateKey
     privateKey: string
@@ -17,6 +19,11 @@ export interface BTCPrivateKeyAccountInfo {
     // Account address
     address: string
     wif: string
+}
+export enum ChainType {
+    BTC = 'BTC',
+    ETH = 'ETH',
+    BCH = 'BCH'
 }
 
 //Send Raw Transaction params
@@ -141,7 +148,13 @@ export type RPCHeightRes = {
 
 export type RPCBlockRes = RPCHeightRes
 
-
+export interface AddWalletParams {
+    name: string,
+    chain: string,
+    network: CoinType,
+    pubKey: string,
+    path: string
+}
 
 export enum BtcNetwork {
     mainnet = 'mainnet',

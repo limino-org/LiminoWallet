@@ -15,9 +15,14 @@ import { encryptPrivateKey, EncryptPrivateKeyParams } from "@/popup/utils/web3";
 import eventBus from "@/popup/utils/bus";
 import router from "@/popup/router";
 import { Mnemonic } from "ethers/lib/utils";
-import { AccountInfo } from "@/popup/store/modules/account";
+import { AccountInfo, getWallet } from "@/popup/store/modules/account";
 import { useExchanges } from "@/popup/hooks/useExchanges";
+import { useBroadCast } from "@/popup/utils/broadCost";
+import { importAddress } from "@/popup/utils/btc/rpc";
+import { PrivateKey } from "bitcore-lib";
+
 export const useToggleAccount = () => {
+  const { handleUpdate } = useBroadCast()
   const store = useStore();
   const { initExchangeData } = useExchanges()
   const { commit, dispatch, state } = store;
@@ -63,6 +68,7 @@ export const useToggleAccount = () => {
     try {
       const wall = await dispatch("account/createWalletByJson", data);
       commit("account/UPDATE_ACCOUNTINFO", account);
+      commit('account/UPDATE_WALLET', wall)
       // eventBus.emit('changeAccount', wall.address)
       dispatch("account/updateTokensBalances");
       // const wallet = await dispatch("account/getProviderWallet");
@@ -73,9 +79,13 @@ export const useToggleAccount = () => {
           }
         })
       }
+      if(state.account.coinType.value == 1) {
+        commit("account/UPDATE_EXCHANGERSTATUS", {})
+      }
+      
       const { address } = wall
       eventBus.emit("changeAccount", address);
-
+      handleUpdate()
     } catch (err) {
       const errstr = String(err);
       if (errstr.indexOf("password") > -1) {
@@ -141,7 +151,11 @@ export const useToggleAccount = () => {
               }
             })
           }
+          if(state.account.coinType.value == 1) {
+            commit("account/UPDATE_EXCHANGERSTATUS", {})
+          }
           eventBus.emit("changeAccount", wallet.address);
+          handleUpdate()
           resolve(wallet)
         }catch(err){
           reject(err)

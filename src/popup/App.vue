@@ -1,5 +1,5 @@
 <template>
-  <div class="page-box" id="page-box">
+  <div class="page-box container" id="page-box">
 
     <div class="container" id="container">
       <div v-if="route.meta.keepAlive">
@@ -155,7 +155,6 @@ export default {
   min-height: 100vh;
   transition: ease .3s;
   position: relative;
-  max-width: 820px;
   margin: 0 auto;
   overflow-y: hidden;
   background: #fff;

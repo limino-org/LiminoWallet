@@ -296,7 +296,7 @@ export default {
             searchKey = `txBTClist-${network.name}-${targetAddress}`;
           }
 
-          const txInfo: any = await localforage.getItem(searchKey);
+          const txInfo: any = await localforage.getItem(searchKey) || [];
           if(coinType.value.value == 0) {
 
           const queuekey = `txQueue-${id}-${chainId}-${targetAddress.toUpperCase()}`;
@@ -347,7 +347,7 @@ export default {
 
           if(coinType.value.value == 1) {
             const queuekey = `txBTCQueue-${network.name}-${targetAddress.toUpperCase()}`;
-            const txQueue = await localforage.getItem(queuekey);
+            const txQueue = await localforage.getItem(queuekey) || [];
             console.warn('load BTC TXLIST', txInfo, txQueue)
             // @ts-ignore
             txList.value = [...txQueue,...txInfo]
@@ -367,6 +367,7 @@ export default {
     };
     let waitTime: any = ref(null);
     onMounted(async () => {
+
       store.dispatch('account/clearWaitTime')
       if(coinType.value.value == 0) {
         try {
@@ -382,6 +383,10 @@ export default {
       }
       if(coinType.value.value == 1) {
         getPageList();
+        // const wallet = await getWallet()
+        // const list = await wallet.provider.getTxs()
+        // txList.value = [...list]
+        // console.warn('list', list)
         loading.value = false
       }
       store.dispatch("account/waitTxQueueResponse", {

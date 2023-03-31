@@ -526,10 +526,10 @@ export default {
           }
           if(coinType.value.value == 1) {
             const queuekey = `txBTCQueue-${network.name}-${targetAddress.toUpperCase()}`;
-            const txQueue = await localforage.getItem(queuekey);
+            const txQueue = await localforage.getItem(queuekey) || [];
             console.warn('load BTC TXLIST', txInfo, txQueue)
             // @ts-ignore
-            tlist.value = [...txQueue,...txInfo]
+            tlist.value = [...txQueue,...txInfo || []]
           }
 
 

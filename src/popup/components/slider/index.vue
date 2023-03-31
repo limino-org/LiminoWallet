@@ -398,7 +398,10 @@ export default defineComponent({
     // Exchange status
     const hasExchange = computed(() => {
       const { exchanger_flag, status } = store.state.account.exchangeStatus;
-      return exchanger_flag;
+      if(exchanger_flag && coinType.value.value == 0){
+        return true
+      }
+      return false;
     });
     // Account details
     const accountInfo = computed(() => store.state.account.accountInfo);
