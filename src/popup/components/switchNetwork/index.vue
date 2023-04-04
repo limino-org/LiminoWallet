@@ -1,6 +1,7 @@
 <template>
-  <van-overlay class="switch-network-modal flex center" :show="showModalNetwork" @click="showModalNetwork = false">
-    <div class="switch-net-con">
+  <van-overlay class="switch-network-modal" :show="showModalNetwork" @click="showModalNetwork = false">
+    <div class=" flex center switch-network-modal-box">
+      <div class="switch-net-con">
       <div class="title text-center text-bold">{{ t("internet.title") }}</div>
     <div class="activited-net">
       <div class="main-tit">{{t("common.mainNetwork")}}</div>
@@ -23,31 +24,8 @@
       <van-button plain @click="emitClose">{{t('network.close')}}</van-button>
     </div>
     </div>
-
+    </div>
   </van-overlay>
-  <!-- <van-dialog v-model:show="showModalNetwork" teleport="#page-box" class="switch-network-modal" closeOnClickOverlay :showConfirmButton="false">
-    <div class="title text-center text-bold">{{ t("internet.title") }}</div>
-    <div class="activited-net">
-      <div class="main-tit">{{t("common.mainNetwork")}}</div>
-      <NetWorkCard :data="mainNetwork" @handleClick="handleChooseComfirm(mainNetwork)" />
-    </div>
-    <div class="other-list" v-if="netWorkList.length">
-      <div class="other-list-tit">{{ t("internet.othertitle") }}</div>
-      <div class="other-list-box">
-        <NetWorkCard
-          v-for="item in netWorkList"
-          :select="item.select"
-          :key="item.value"
-          :data="item"
-          @handleClick="handleChooseComfirm(item)"
-        />
-      </div>
-    </div>
-
-    <div class="flex center pt-24 pb-24 btn-box">
-      <van-button plain @click="emitClose">{{t('network.close')}}</van-button>
-    </div>
-  </van-dialog> -->
 </template>
 
 <script lang="ts">
@@ -108,6 +86,12 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.switch-network-modal {
+  &-box {
+    width: 100vw;
+    height: 100vh;
+  }
+}
 .switch-net-con {
   background: #fff;
   width:320px;

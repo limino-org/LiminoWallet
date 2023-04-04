@@ -103,7 +103,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { useCountDown } from "@vant/use";
 import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
-import { clone } from "@/popup/store/modules/account";
+import { clone, getWallet } from "@/popup/store/modules/account";
 import { TradeStatus } from "@/popup/plugins/tradeConfirmationsModal/tradeConfirm";
 import { useToast } from "@/popup/plugins/toast";
 import eventBus from "@/popup/utils/bus";
@@ -163,17 +163,17 @@ export default defineComponent({
           // Determine whether it is a contract or an ordinary transaction, and then calculate gas
           const { value, amount, to, address, gasPrice, token, gasLimit } =
             props.data;
-          if (!address) {
-            try {
+          try {
+            if(coinType.value.value == 0) {
+              if (!address) {
+ 
               const num = gasLimit;
               // Dynamic calculation of gas fee
               gasFee.value = new BigNumber(utils.formatEther(num))
                 .multipliedBy(gasPrice)
                 .multipliedBy(1000000000)
                 .toString();
-            } catch (err) {
-              console.error(err);
-            }
+        
           } else {
             try {
               //Get contract token instance object to estimate contract transfer gas
@@ -184,6 +184,20 @@ export default defineComponent({
             } catch (err) {
               console.error(err);
             }
+          }
+            }
+            if(coinType.value.value == 1) {
+              const wallet = await getWallet()
+              const sendVal = new BigNumber(value).multipliedBy(100000000).toNumber()
+          const fee = Number(gasPrice)
+              console.warn('gasPrice', gasPrice)
+          const newfee = await wallet.estimateGas(to, sendVal, fee);
+          console.warn('newfee', newfee)
+          gasFee.value = newfee
+            }
+          }catch(err){
+            countDown.start();
+            console.error('estimate err', err)
           }
           countDown.start();
         }

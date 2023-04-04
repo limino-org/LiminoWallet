@@ -7,7 +7,7 @@ import useBTC from '@/popup/utils/btc/index'
 import { getBalance, getUtxos, getTx, getTxs, getBlock, getHeight, getAuthHead, getBlockHash, getCoins, getFee, addWallet, importAddress } from './rpc'
 import { isProduct } from './config';
 import { RPCBalanceRes, SelectUtxoRes, RPCTxRes, RPCTxsRes, RPCBlockRes, RPCHeightRes, RPCAuthheadRes, RPCBlockHashRes, RPCCoinsRes, RPCOutputRes, FeeRes } from './type';
-const { handleImportMnemonic, handleImportPrivateKey, handleSignWithPrivateKey, handleVerifySign, handleSendTransaction } = useBTC()
+const { handleImportMnemonic, handleImportPrivateKey, handleSignWithPrivateKey, handleVerifySign, handleSendTransaction, handleEstimateFee } = useBTC()
 
 
 export class BTCWallet {
@@ -66,12 +66,9 @@ export class BTCWallet {
             path: ''
         })
     }
-    importAddress(): Promise<any>{
-        return importAddress(this.publicKey, this.address)
+    estimateGas(to: string, value: number, fee: number = 80): Promise<any> {
+        return handleEstimateFee(this.privateKey, this.address, to, value, fee)
     }
-    // getUtxos(): Promise<Array<RPCOutputRes>> {
-    //     return getUtxos(this.publicKey)
-    // }
 }
 
 

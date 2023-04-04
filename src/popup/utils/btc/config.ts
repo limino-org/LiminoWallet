@@ -10,7 +10,7 @@ export const network = isProduct ? Networks.mainnet : Networks.regtest
 
 
 // Blockchain network URL
-export const baseUrl = isProduct? 'https://api.bitcore.io/api/BTC/mainnet' : `http://192.168.5.15:3000/api/BTC/${network.name}`;
+export const baseUrl = isProduct? 'https://api.bitcore.io/api/BTC/mainnet' : `http://192.168.1.237:8888/api/BTC/${network.name}`;
 
 // Get fee url
 export const gasFeeUrl = 'https://bitcoinfees.earn.com/api/v1/fees/recommended'

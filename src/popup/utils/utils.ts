@@ -2,7 +2,8 @@
 import useClipboard from 'vue-clipboard3'
 import { VUE_APP_BTC_SCAN_URL, VUE_APP_SCAN_URL } from "@/popup/enum/env";
 import store from '@/popup/store';
-import { isProduct } from './btc/config';
+import { isProduct, network } from './btc/config';
+import {coinTypes} from '@/popup/enum/coinType'
 
 const { toClipboard } = useClipboard()
 
@@ -164,7 +165,7 @@ export const viewTransactionByHash = (hash:string | null) => {
       }
     }
     if(store.state.account.coinType.value == 1) {
-      window.open(`${VUE_APP_BTC_SCAN_URL}/insight/BTC/${isProduct ? 'mainnet' : 'testnet'}/tx/${hash}`);
+      window.open(`${VUE_APP_BTC_SCAN_URL}/insight/BTC/${isProduct ? 'mainnet' : network.name}/tx/${hash}`);
     }
   } else {
     throw Error('The hash cannot be empty')
@@ -186,7 +187,7 @@ export const viewAccountByAddress = (address:string ) => {
     }
   }
   if(store.state.account.coinType.value == 1) {
-    window.open(`${VUE_APP_BTC_SCAN_URL}/insight/BTC/${isProduct ? 'mainnet' : 'testnet'}/address/${address}`);
+    window.open(`${VUE_APP_BTC_SCAN_URL}/insight/BTC/${isProduct ? 'mainnet' : network.name}/address/${address}`);
   }
   } else {
     throw Error('The address cannot be empty')
@@ -213,4 +214,10 @@ export function debounce(fn: Function, wait = 500) {
       if(timeout !== null) clearTimeout(timeout);
       timeout = setTimeout(fn, wait);
   }
+}
+
+export async function switchETH() {
+  await store.dispatch("account/handleSwitchCoinType", coinTypes[0]);
+  const wallet = await store.dispatch("account/getProviderWallet");
+  location.reload()
 }

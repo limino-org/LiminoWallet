@@ -122,6 +122,8 @@ import { useI18n } from "vue-i18n";
 import { getRandomIcon } from "@/popup/utils/index";
 import { handleType } from "@/scripts/eventType";
 import { sendBackground } from "@/popup/utils/sendBackground";
+import { useDialog } from '@/popup/plugins/dialog';
+import { switchETH } from '@/popup/utils/utils';
 
 export default {
   name: "pageSendComfirm",
@@ -143,6 +145,7 @@ export default {
     const { dispatch } = store;
     const accountInfo = computed(() => store.state.account.accountInfo);
     const formAddr = computed(() => store.state.account.accountInfo.address)
+    const coinType = computed(() => store.state.account.coinType)
     const currentNetwork = computed(() => store.state.account.currentNetwork);
     const route = useRoute();
     const { query } = route;
@@ -201,8 +204,18 @@ export default {
         gonext()
       }
     }
+    const { $dialog } =  useDialog()
     onMounted(() => {
       window.addEventListener('keydown', handleKeydown)
+      if(coinType.value.value != 0) {
+        $dialog.open({
+          type:'warn',
+          message:t('common.switchCoinType', {coinTypeName:coinType.value.name}),
+          callBack(){
+            switchETH()
+          }
+        })
+      }
     })
     onUnmounted(() => {
       window.removeEventListener('keydown', handleKeydown)

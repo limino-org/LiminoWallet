@@ -1204,6 +1204,7 @@
 
 	},
 	common: {
+		switchCoinType:"当前使用的{coinTypeName}钱包，是否切换到ETH钱包?",
 		clearCancheSuccess:"缓存清除成功",
 		clearCanche:"清除缓存",
 		commingsoon: "即将来临",

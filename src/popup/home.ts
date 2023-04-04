@@ -1,6 +1,7 @@
 // @TS-NOCHECK
 
 window.pageType = 'Tab'
+import '@/popup/utils/prototype.ts'
 import 'amfe-flexible'
 import '@vant/touch-emulator';
 import { createApp } from 'vue'

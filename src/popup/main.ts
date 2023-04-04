@@ -1,5 +1,6 @@
 // @TS-NOCHECK
 window.pageType = 'Popup'
+import '@/popup/utils/prototype.ts'
 
 import 'amfe-flexible'
 import '@vant/touch-emulator';

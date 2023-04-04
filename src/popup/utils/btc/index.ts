@@ -3,6 +3,7 @@ import axios from "axios";
 import { BTCMnemonicAccountInfo, BTCPrivateKeyAccountInfo, ChainType, FeeRes, RPCBlockRes, RPCHeightRes, RPCOutputRes, RPCTxRes, RPCTxsRes, SelectUtxoRes, sendPrams } from "./type";
 import { baseUrl, gasFeeUrl, network } from "./config";
 import { getFee, selectUtxo, send, getBalance, fetcher } from './rpc'
+import BigNumber from "bignumber.js";
 const bitcore = require("bitcore-lib");
 console.log('bitcore', bitcore)
 const { PrivateKey, Address, Networks, Transaction, HDPrivateKey, Mnemonic, Message } = bitcore;
@@ -76,6 +77,41 @@ export default () => {
 
     // Generate random 
     // const 
+    const handleEstimateFee = async(privateKeyStr: string, from: string, to: string, sendVal: number, fee: number): Promise<number> => {
+        console.log(privateKeyStr, from, to)
+        const privateKey = new PrivateKey(privateKeyStr);
+        return new Promise(async (resolve, reject) => {
+            try {
+                // const { fastestFee, halfHourFee, hourFee } = await getFee()
+                const { inputs } = await selectUtxo(from, sendVal, fee, privateKey.publicKey.toString())
+                let list = []
+                console.warn('inputs', inputs)
+                if (inputs && inputs.length) {
+                    list = inputs.map(({ mintTxid, script, mintIndex, address, value }) => ({
+                        txId: mintTxid,
+                        outputIndex: mintIndex,
+                        address,
+                        script,
+                        satoshis: value
+                    }))
+                    const tx = new Transaction()
+                        .from(list)
+                        .to(to, sendVal)
+                        .change(from)
+                        .sign(privateKey)
+                        .serialize();
+                    console.log('tx', tx,tx.getBytesLength())
+                    resolve(new BigNumber(tx.getBytesLength()).multipliedBy(fee).div(100000000).toNumber())
+                } else {
+                    reject('estimate error')
+                }
+
+            } catch (err) {
+                reject(err)
+                console.error('estimate error', err)
+            }
+        })
+    }
 
     const handleSendTransaction = async (privateKeyStr: string, from: string, to: string, sendVal: number, fee: number): Promise<string> => {
         // Transaction.UnspentOutput(from)
@@ -122,7 +158,8 @@ export default () => {
         handleSignWithPrivateKey,
         handleImportMnemonic,
         handleVerifySign,
-        handleSendTransaction
+        handleSendTransaction,
+        handleEstimateFee
     }
 }
 

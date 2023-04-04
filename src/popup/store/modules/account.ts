@@ -1872,7 +1872,7 @@ export default {
             }
             if(state.coinType.value == 1) {
               for await (const iterator of txQueue) {
-                const {hash,txId} = iterator
+                const {hash,txId, value} = iterator
                 const txList: any = await localforage.getItem(txkey) || []
                 const sameIdTx = txList.find((item: any) => item.txId.toUpperCase() === txId.toUpperCase())
                 const hashArr = !sameIdTx ? [hash] : [hash, sameIdTx.hash]
@@ -1887,7 +1887,7 @@ export default {
                   // data1 = await wallet.provider.waitForTransaction(hash);
                 }
                 await DELBTC_TXQUEUE({ ...iterator, txId })
-                await PUSHBTC_TRANSACTION({...iterator, sendStatus: 'success',...data1})
+                await PUSHBTC_TRANSACTION({...iterator,...data1,value, sendStatus: 'success'})
                 receiptList.push(data1)
               }
             }

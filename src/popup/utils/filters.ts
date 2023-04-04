@@ -68,7 +68,7 @@ export const formatBTCTxDate =(data: any) => {
     return formatDate(date, "MM/DD")+' ' + i18n.global.t("transactionDetails.at") +' ' + formatDate(date, "HH:mm ")
   }
 
-  return formatDate(blockTime, "MM/DD")+' ' + i18n.global.t("transactionDetails.at")+' ' + formatDate(blockTime, "HH:mm ")
+  return formatDate(date, "MM/DD")+' ' + i18n.global.t("transactionDetails.at")+' ' + formatDate(date, "HH:mm ")
 }
 
 export const formatTxDate = (data: any) => {

@@ -8,7 +8,7 @@
             @click="changeTab(item)"
             v-for="item in tabs.list"
             :key="item.value"
-          >{{ $t(item.name) }}</div>
+          >{{ t(item.name) }}</div>
         </div>
       </div>
     </van-sticky>
@@ -23,20 +23,20 @@
         @handleSend="handleSend"
         @handleCancel="handleCancel"
         :id="item.hash"
-        v-for="item in transactionList"
+        v-for="(item, idx) in transactionList"
         :key="item.address"
         :data="item"
-        :active="route.query.hash?.toString() === item.hash"
+        :active="route.query.hash?.toString() === item.hash && idx == 0"
       />
       </div>
       <div v-if="coinType.value == 1">
         <BTCCollectionCard
         @handleClick="handleView(item)"
-        v-for="item in transactionList"
+        v-for="(item, idx)  in transactionList"
         :id="item.hash"
         :key="item.address"
         :data="item"
-        :active="route.query.hash?.toString() === item.hash"
+        :active="route.query.hash?.toString() === item.hash && idx == 0"
       />
       </div>
 <!-- 
@@ -63,20 +63,20 @@
         @handleSend="handleSend"
         @handleCancel="handleCancel"
         :id="item.hash"
-        v-for="item in sendList"
+        v-for="(item, idx)  in sendList"
         :key="item.address"
         :data="item"
-        :active="route.query.hash?.toString() === item.hash"
+        :active="route.query.hash?.toString() === item.hash  && idx == 0"
       />
       </div>
       <div v-if="coinType.value == 1">
         <BTCCollectionCard
         @handleClick="handleView(item)"
-        v-for="item in sendList"
+        v-for="(item, idx)  in sendList"
         :id="item.hash"
         :key="item.address"
         :data="item"
-        :active="route.query.hash?.toString() === item.hash"
+        :active="route.query.hash?.toString() === item.hash  && idx == 0"
       />
       </div>
 
@@ -98,12 +98,12 @@
         <CollectionCard
         :id="item.hash"
           @handleClick="handleView(item)"
-          v-for="item in swapList"
+          v-for="(item, idx) in swapList"
           :key="item.to"
           :data="item"
           @handleSend="handleSend"
           @handleCancel="handleCancel"
-          :active="route.query.hash?.toString() === item.hash"
+          :active="route.query.hash?.toString() === item.hash  && idx == 0"
         />
       </div>
       <no-data v-if="!loading && !swapList.length" />
@@ -114,12 +114,12 @@
         <CollectionCard
         :id="item.hash"
           @handleClick="handleView(item)"
-          v-for="item in otherList"
+          v-for="(item, idx) in otherList"
           :key="item.to"
           :data="item"
           @handleSend="handleSend"
           @handleCancel="handleCancel"
-          :active="route.query.hash?.toString() === item.hash"
+          :active="route.query.hash?.toString() === item.hash  && idx == 0"
         />
       </div>
       <no-data v-if="!loading && !otherList.length" />
@@ -380,7 +380,10 @@ export default {
         accountInfo.value.address
       );
     };
-    eventBus.on('waitTxEnd', async() => {
+    const coinType = computed(() => store.state.account.coinType)
+
+   
+      eventBus.on('waitTxEnd', async() => {
       store.dispatch('txList/asyncUpdateList',{total: 0})
     })
     eventBus.on("loopTxListUpdata", () => {
@@ -389,54 +392,25 @@ export default {
     eventBus.on("txPush", (data: any) => {
       getPageList();
       console.warn('txPush', data)
-      // const tx = tlist.value.find((item: any) => item.txId.toUpperCase() == data.txId.toUpperCase())
-      // if(!tx) {
-      //   debugger
-      // // @ts-ignore
-      // tlist.value.unshift(data)
-      // }
+
     });
 
     eventBus.on("delTxQueue", (data: any) => {
       getPageList();
-      // @ts-ignore
-      // tlist.value = tlist.value.filter(item => item.txId.toUpperCase() == data.txId.toUpperCase())
     });
     
     eventBus.on("txQueuePush", (data: any) => {
       getPageList();
-      // let time = setTimeout(async() => {
-      //   const tx = tlist.value.find((item: any) => item.txId.toUpperCase() == data.txId.toUpperCase())
-      // if(!tx) {
-      //   tlist.value.unshift(data)
-      // }
-      //   clearTimeout(time)
-      // },300)
+ 
     });
     eventBus.on('sameNonce', () => {
       showSpeedModal.value = false
       getPageList();
     })
-    const coinType = computed(() => store.state.account.coinType)
 
     eventBus.on("txUpdate", (data: any) => {
       console.warn("txUpdate----", data);
       getPageList();
-      // for (let i = 0; i < tlist.value.length; i++) {
-      //   let item = tlist.value[i];
-      //   const { txId } = item;
-      //   if(data.txId) {
-      //     // @ts-ignore
-      //     if (txId && txId.toString().toUpperCase() == data.txId.toUpperCase()) {
-      //     // @ts-ignore
-      //     tlist.value[i] = data;
-      //     }
-      //   }
-      // }
-      // const tx = tlist.value.find((item: any) => item.txId.toUpperCase() == data.txId.toUpperCase())
-      // if(!tx) {
-      //   tlist.value.unshift(data)
-      // }
     });
     eventBus.on('changeNetwork', async(address) => {
       loading.value = true
@@ -452,6 +426,8 @@ export default {
         time: null
       });
     })
+
+
 
     // Current account transaction list
     let tlist: any = ref([]);

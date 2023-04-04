@@ -1203,6 +1203,7 @@
 		network: 'Network'
 	},
 	common: {
+		switchCoinType:"Do you want to switch the current {coinTypeName} wallet to ETH wallet?",
 		clearCancheSuccess:"Cache cleared successfully",
 		clearCanche:"Clear Cache",
 		commingsoon: "Coming Soon!",

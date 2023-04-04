@@ -36,11 +36,11 @@
           <van-field
             v-model="password"
             name="password"
-            :autofocus="autofocus"
+            ref="pwd"
             :class="`text ${pwdErr ? 'error' : ''}`"
             :type="`${switchPassType ? 'text' : 'password'}`"
             @click-right-icon="switchPassType = !switchPassType"
-            :placeholder="$t('createAccountpage.passwordPlaceholder')"
+            :placeholder="t('createAccountpage.passwordPlaceholder')"
             :rules="[{ validator: asynPwd }]"
 
     
@@ -70,14 +70,6 @@
           </template>
         </i18n-t>
       </div>
-      <!-- <div class="text-center f-12">
-        <div class="tit-small lh-20 mb-20">
-          {{ t("createAccountpage.cantLogin") }}
-        </div>
-        <div class="lh-20 tool hover" @click="reset">
-          {{ t("createAccountpage.resentWallet") }}
-        </div>
-      </div> -->
     </div>
     <Resetpopup
       v-model="resetmodule"
@@ -141,7 +133,7 @@ export default {
     const { dispatch, commit, state } = useStore();
     const router = useRouter();
     const route = useRoute();
-    const autofocus = ref(false)
+
     const accountInfo = state.account.accountInfo;
     const { keyStore } = accountInfo;
     const onSubmit = async (value: object) => {
@@ -253,10 +245,13 @@ export default {
         console.log(err);
       }
     };
-
+    const pwd =  ref()
     onMounted(async () => {
       checkConfirmPwd();
-      autofocus.value = true
+      let time = setTimeout(() => {
+        pwd.value.focus()
+        clearTimeout(time)
+      },1000)
     });
 
     const reset_flag = ref(true);
@@ -266,7 +261,7 @@ export default {
       handleComfirm,
       asynPwd,
       cancel,
-      autofocus,
+      pwd,
       reset_flag,
       loading,
       password,
@@ -332,6 +327,9 @@ export default {
     border-radius: 5px;
     transition: ease 0.3s;
     font-size: 12px;
+    &:focus{
+      border-color:#037cd6 ;
+    }
   
   }
 }

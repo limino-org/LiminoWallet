@@ -11,13 +11,10 @@
     </template>
     <template v-slot:right >
       <div>
-        <!-- <i v-if="pageType == 'Popup'" class="iconfont icon-zhankai" @click="extendView" :style="{color:hasExchange ? '#fff' : '#037cd6'}"></i>
-        <van-icon name="other-pay" @click="handleSwitch" size="30" style="color:#fff" /> -->
         <van-popover v-model:show="showDots" class="moreNavModal" :actions="actions" @select="handleDotselect" placement="bottom-end" :offset="[8,15]">
           <template #reference>
             <div>
-              <van-icon name="ellipsis" :style="{color:hasExchange ? '#fff' : '#037cd6', fontWeight:'bold'}" size="24"/>
-              <!-- <i class="iconfont icon-dots" :style="{color:hasExchange ? '#fff' : '#037cd6'}"></i> -->
+              <van-icon name="ellipsis" :style="{color:hasExchange ? '#fff' : '#037cd6', fontWeight:'bold'}" class="dot" />
             </div>
           </template>
         </van-popover>
@@ -128,24 +125,12 @@
                           v-if="expresionClass == 'neutral'"
                           keypath="minerspledge.homeTip"
                         >
-                          <!-- <template v-slot:value>{{Coefficient}}</template> -->
                           <template v-slot:btn>
                             <span class="gotIt" @click="minerpledge">{{
                               t("minerspledge.gotIt")
                             }}</span>
                           </template>
                         </i18n-t>
-
-                        <!-- {{ t("minerspledge.right_and_interests") }} -->
-                        <!-- <div v-if="expresionClass == 'smile'">
-                 {{ t("minerspledge.smileTip", { value: Coefficient }) }}
-               </div>
-               <div v-if="expresionClass == 'sad'">
-                 {{ t("minerspledge.sadTip", { value: Coefficient }) }}
-               </div>
-               <div v-if="expresionClass == 'neutral'">
-                 {{ t("minerspledge.neutralTip", { value: Coefficient }) }}
-               </div> -->
                       </div>
                       <template #reference>
                         <div

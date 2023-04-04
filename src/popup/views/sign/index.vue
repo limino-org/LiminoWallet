@@ -54,6 +54,8 @@ import { useStore } from 'vuex'
 
 import { sendBackground } from '@/popup/utils/sendBackground'
 import { handleType } from '@/scripts/eventType'
+import { useDialog } from '@/popup/plugins/dialog'
+import { switchETH } from '@/popup/utils/utils'
 
 export default {
   name: 'sign',
@@ -76,6 +78,8 @@ export default {
     const back = () => {
       router.replace({ name: 'wallet' })
     }
+    const coinType = computed(() => store.state.account.coinType)
+
     const { toSign, password, sign, address }: any = useSign()
     const signSelect: Ref<boolean> = ref(false)
     const { toClipboard } = useClipboard()
@@ -114,8 +118,18 @@ export default {
         goOn()
       }
     }
+    const { $dialog } =  useDialog()
     onMounted(() => {
       window.addEventListener('keydown', handleKeydown)
+      if(coinType.value.value != 0) {
+        $dialog.open({
+          type:'warn',
+          message:t('common.switchCoinType', {coinTypeName:coinType.value.name}),
+          callBack(){
+            switchETH()
+          }
+        })
+      }
     })
     onUnmounted(() => {
       window.removeEventListener('keydown', handleKeydown)

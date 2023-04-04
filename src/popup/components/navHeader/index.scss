@@ -124,24 +124,24 @@
 
   .nav-icon {
     // padding: 0 14px;
-    width: 60px;
+    width: 50px;
     box-sizing: border-box;
     .icon-box {
       width: 25px;
       height: 20PX;
       i {
-        color: rgba(3, 125, 214, 1);
+        color: #037CD6;
         font-size: 22px;
       }
       i,span:hover {
-        color: rgb(6, 103, 173);
+        // color: rgb(6, 103, 173);
         font-weight: bold;
       }
     }
   }
   .code {
-    color: rgba(3, 125, 214, 1);
-    width: 60px;
+    color:  #037CD6;
+    width: 50px;
     font-size: 12px;
     .icon-box {
       width: 30px;

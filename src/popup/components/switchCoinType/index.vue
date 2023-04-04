@@ -1,28 +1,26 @@
 <template>
   <div class="switch-coin-type">
-    <van-popup
-      v-model:show="showModal"
-      :style="{ height: '28vh' }"
-      position="bottom"
+    <CommonModal
+      v-model="showModal"
       @click.stop="showModal = false"
     >
       <div class="coin-list container">
-        <div class="text-center tit text-bold f-20 pt-20">{{ t('common.walletType') }}</div>
-        <div class="p-20 con-box flex between">
+        <div class="text-center title text-bold van-hairline--bottom">{{ t('common.walletType') }}</div>
+        <div class="p-20 con-box">
           <div
             v-for="item in coinList"
             :key="item.name"
             @click.stop="handleSwitch(item)"
-            :class="`lh-30 hover card clickActive ${coinType.value == item.value ? 'select' : ''}`"
+            :class="`lh-30 hover card clickActive flex ${coinType.value == item.value ? 'select' : ''}`"
             :style="{ backgroundColor: item.color, color: '#fff' }"
           >
-            {{ item.name }} <span class="addr">{{ addressMask(item.address) }}</span>
+            {{ item.name }} <span class="addr ml-14">{{ addressMask(item.address) }}</span>
             <div class="smallc"   :style="{ backgroundColor: item.color}"></div>
             <div class="bigc"></div>
           </div>
         </div>
       </div>
-    </van-popup>
+    </CommonModal>
   </div>
 </template>
 <script lang="ts" setup>
@@ -32,11 +30,9 @@ import { ref, watch, Ref, computed } from "vue";
 import { useStore } from "vuex";
 import { addressMask, decimal, toUsd } from "@/popup/utils/filters";
 import { useI18n } from "vue-i18n";
-
-const coinList: any = ref([
-  { name: "ETH", color: "#037CD6", value: 0, address: '' },
-  { name: "BTC", color: "orange", value: 1, address: '' },
-]);
+import CommonModal from '@/popup/components/commonModal/index.vue'
+import {coinTypes} from '@/popup/enum/coinType'
+const coinList: any = ref(coinTypes);
 const { t } = useI18n()
 const showModal = ref(false);
 const emits = defineEmits(["update:modelValue", "onChange"]);
@@ -85,20 +81,24 @@ const handleSwitch = async (item: CoinType) => {
   .van-popup {
     background: transparent;
   }
-  .tit {
-    
+  .title {
+    color: #000;
+  font-size: 15px;
+  line-height: 62px;
+  background: #f8fcff;
+  font-weight: bold;
   }
   .coin-list {
+    min-height: 230px;
     background: #fff;
-    height: 30vh;
     overflow-y: scroll;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     .con-box {
       .card {
-        flex: 1;
         color: #fff;
-        font-size: 24px;
+        font-size: 20px;
+        margin-bottom: 14px;
         font-weight: bold;
         padding: 14px;
         border-style: solid;
@@ -108,9 +108,6 @@ const handleSwitch = async (item: CoinType) => {
         &.addr {
           font-size: 12px;
           font-weight: normal;
-        }
-        &:nth-of-type(even) {
-          margin-left: 30px;
         }
         .bigc,.smallc {
           display: none;
