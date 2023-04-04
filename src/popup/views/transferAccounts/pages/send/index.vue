@@ -274,6 +274,8 @@ import eventBus from "@/popup/utils/bus";
 import CommonModal from "@/popup/components/commonModal/index.vue";
 import { useToast } from "@/popup/plugins/toast";
 import { btcRpcRequest } from '@/popup/utils/btc/rpc';
+const bitcore = require("bitcore-lib");
+const { PrivateKey, Address, Networks, Transaction, HDPrivateKey, Mnemonic, Message } = bitcore;
 
 export default {
   name: "pageSend",
@@ -439,7 +441,12 @@ export default {
     function checkAddress() {
       if (toAddress.value) {
         try {
+          if(coinType.value.value == 0) {
           utils.getAddress(toAddress.value);
+        } 
+        if(coinType.value.value == 1) {
+          Address.fromString(toAddress.value)
+        }
           checkAddressError.value = false;
           account.data = createCache();
         } catch (err) {

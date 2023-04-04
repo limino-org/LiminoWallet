@@ -11,7 +11,7 @@
           v-model="params.name"
           :class="iptErr1 ? 'error' : ''"
           maxlength="12"
-          :placeholder="$t('contacts.entername')"
+          :placeholder="t('contacts.entername')"
           :rules="[
             // {
             //   required: true,
@@ -23,7 +23,7 @@
         <div class="label text-bold">{{ t("contacts.address") }}</div>
         <van-field
           v-model="params.address"
-          :placeholder="$t('contacts.enteraddress')"
+          :placeholder="t('contacts.enteraddress')"
           :class="iptErr2 ? 'error' : ''"
           maxlength="50"
           :rules="[
@@ -38,7 +38,7 @@
         <van-field
           v-model="params.memo"
           maxlength="30"
-          :placeholder="$t('contacts.entermemo')"
+          :placeholder="t('contacts.entermemo')"
         />
         <!-- Add a Contact -->
         <div class="btn-groups" v-if="!query.address">
@@ -65,7 +65,7 @@
   </div>
 </template>
 <script lang="ts">
-import Vue, { toRaw } from "vue";
+import Vue, { computed, toRaw } from "vue";
 import { Icon, Toast, Button, Sticky, Field, Dialog, Form } from "vant";
 import { useRoute, useRouter } from "vue-router";
 import NetWorkCard from "@/popup/components/netWorkCard/index.vue";
@@ -79,6 +79,8 @@ import { getRandomIcon, guid } from "@/popup/utils";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useBroadCast } from "@/popup/utils/broadCost";
 import { useToast } from "@/popup/plugins/toast";
+const bitcore = require("bitcore-lib");
+const { PrivateKey, Address, Networks, Transaction, HDPrivateKey, Mnemonic, Message } = bitcore;
 
 export default {
   name: "contacts-add",
@@ -107,7 +109,7 @@ export default {
     });
     // Listen to the broadcast of the same source window
     const { handleUpdate } = useBroadCast();
-
+    const coinType = computed(() => state.account.coinType)
     if (query.address) {
       params.value = query;
     }
@@ -122,7 +124,13 @@ export default {
         return t('contacts.addresscannotbeempty')
       }
       try {
-        utils.getAddress(val);
+        if(coinType.value.value == 0) {
+          utils.getAddress(val);
+        } 
+        if(coinType.value.value == 1) {
+          Address.fromString(val)
+        }
+
         return true;
       } catch (err) {
         iptErr2.value = true

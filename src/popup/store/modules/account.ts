@@ -55,7 +55,10 @@ import { Wallet, BaseProvider } from "ethers";
 import { Networks, PrivateKey } from "bitcore-lib";
 import { importAddress } from "@/popup/utils/btc/rpc";
 
-
+type RecentData = {
+  BTC: Array<any>
+  ETH: Array<any>
+}
 export interface State {
   coinType: CoinType
   // Mnemonic words
@@ -78,6 +81,7 @@ export interface State {
   tranactionList: Array<any>;
   // recent contacts
   recentList: Array<any>;
+  recentlistCoinType: RecentData
   contractAddress: string
   firstTime: Boolean,
   exchangeGuidance: boolean
@@ -331,6 +335,10 @@ export default {
       token: [],
     },
     // recent contacts
+    recentlistCoinType: {
+      BTC:[],
+      ETH:[]
+    },
     recentList: [],
     // Status of opening an exchange status 2 the second successful exchange_ Flag true first success
     exchangeStatus: {
@@ -744,32 +752,33 @@ export default {
       const myContact = state.contacts.find(
         (item) => item.address.toUpperCase() == address.toUpperCase()
       );
-
+      
+      const coinName = state.coinType.name
       if (myAccount || myContact) {
         const theAccount = myAccount || myContact
-        const idx = state.recentList.findIndex(
+        const idx = state.recentlistCoinType[coinName].findIndex(
           (item) => item.address.toUpperCase() == address.toUpperCase()
         );
         if (idx > -1) {
-          state.recentList.splice(idx, 1);
+          state.recentlistCoinType[coinName].splice(idx, 1);
         }
-        state.recentList.unshift(theAccount);
+        state.recentlistCoinType[coinName].unshift(theAccount);
       } else {
-        const idx = state.recentList.findIndex(
+        const idx =  state.recentlistCoinType[coinName].findIndex(
           (item) => item.address.toUpperCase() == address.toUpperCase()
         );
         if (idx > -1) {
-          state.recentList.splice(idx, 1);
+          state.recentlistCoinType[coinName].splice(idx, 1);
         }
-        state.recentList.unshift({
+        state.recentlistCoinType[coinName].unshift({
           icon: getRandomIcon(),
           name: '-',
           address,
         });
       }
-      const len = state.recentList.length;
+      const len =  state.recentlistCoinType[coinName].length;
       if (len > 10) {
-        state.recentList.splice(len - 1, 1);
+        state.recentlistCoinType[coinName].splice(len - 1, 1);
       }
       handleUpdate()
     },

@@ -290,9 +290,10 @@ export default {
 
     // recent contacts
     const sortType2 = ref("1");
+    const coinName = state.account.coinType.name
     const alist2 = computed(() => {
       // Split into two-dimensional arrays according to the first letter
-      const list = state.account.recentList.map((item: any) => item);
+      const list = state.account.recentlistCoinType[coinName].map((item: any) => item);
       list.sort((a: any, b: any) => {
         if (sortType2.value == "1") {
           return (a.name + "").localeCompare(b.name + "");

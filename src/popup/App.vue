@@ -159,10 +159,11 @@ export default {
   overflow-y: hidden;
   background: #fff;
   box-sizing: border-box;
+  box-shadow: 0 2px 15px #eaebee;
   // box-shadow: 0 1px 2px #f4f5f7;
-  &:hover {
-    box-shadow: 0 2px 10px #ebedf0;
-  }
+  // &:hover {
+  //   box-shadow: 0 4px 15px #ebedf0;
+  // }
   :deep(.van-toast) {
     word-break: keep-all !important;
   }
