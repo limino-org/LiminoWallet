@@ -63,6 +63,7 @@ export async function loginOut() {
     value:''
   })
   Cookies.set(pwdKey, '')
+  await sendBackground({method:"logout", response:{ password: ''}})
   await chrome.storage.local.set({ password: "" })
   
 }

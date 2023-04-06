@@ -86,6 +86,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
       // initWallet()
       return false
     }
+    console.warn('Popup Msg', method, response)
     if (!handleRpcResponse[method] || !handleRpcResponse[method].sendResponse) {
       const errMsg = errorCode['4200']
       sendMessage(createMsg(errMsg, method || 'unknow'), {}, sender)

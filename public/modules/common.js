@@ -129,13 +129,13 @@ export async function addSenderByAddr(sender, addr) {
   const connectList = await getConnectList()
   const idx = connectList.findIndex(item => item.origin == sender.origin)
   const se = connectList.find(item => item.origin == sender.origin)
-  if(!se) {
-    connectList.unshift({ ...sender, accountList:[addr] })
+  if (!se) {
+    connectList.unshift({ ...sender, accountList: [addr] })
   } else {
     const addrs = connectList[idx].accountList
     console.log('before', addrs)
     const i = addrs.findIndex(add => add == addr)
-    if(i === -1) {
+    if (i === -1) {
       console.log('splic', addr, i)
       addrs.unshift(addr)
     }
@@ -149,12 +149,12 @@ export async function addSenderByAddr(sender, addr) {
 export async function delSenderByAddr(sender, addr) {
   const connectList = await getConnectList()
   const se = connectList.find(item => item.origin == sender.origin)
-  if(se) {
+  if (se) {
     const idx = connectList.findIndex(item => item.origin == sender.origin)
     const addrs = connectList[idx].accountList
     const i = addrs.findIndex(add => add == addr)
-    if(i > -1) {
-      addrs.splice(i,1)
+    if (i > -1) {
+      addrs.splice(i, 1)
     }
     connectList[idx].accountList = addrs
   }
@@ -227,14 +227,14 @@ export async function getPwd() {
 }
 
 // Determine whether the two addresses are the same, return
-export async function handleDiffAddrAndLocalAddr(addr = '', localAddr = ''){
+export async function handleDiffAddrAndLocalAddr(addr = '', localAddr = '') {
   return new Promise((resolve, reject) => {
-    if(!addr || !localAddr) {
+    if (!addr || !localAddr) {
       const errMsg = { code: "-32002", reason: "Resource unavailable", message: "Address capacity null" }
       reject(errMsg)
     }
-    if(addr && localAddr) {
-      if(addr.toUpperCase() != localAddr.toUpperCase()) {
+    if (addr && localAddr) {
+      if (addr.toUpperCase() != localAddr.toUpperCase()) {
         const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The current RPC request address is different from the account address" }
         reject(errMsg)
       } else {
@@ -258,7 +258,7 @@ export async function getLocalAddr() {
     throw errMsg
   }
   const { accountInfo } = local.account;
-  if(accountInfo && accountInfo.address){
+  if (accountInfo && accountInfo.address) {
     return accountInfo.address
   } else {
     throw errMsg
@@ -287,18 +287,18 @@ export async function getProvider() {
   }
   const { currentNetwork } = local.account;
   const { URL } = currentNetwork
-  if(!provider) {
+  if (!provider) {
     provider = ethers.getDefaultProvider(URL);
     return provider
   }
-  if(provider){
-    if(provider.connection.url != URL) {
+  if (provider) {
+    if (provider.connection.url != URL) {
       provider = ethers.getDefaultProvider(URL);
     }
     return provider
   }
   return provider
-} 
+}
 
 export async function initWallet() {
   const local = await localforage.getItem("vuex") || null
@@ -316,23 +316,23 @@ export async function initWallet() {
     const { keyStore } = accountInfo;
     const { URL } = currentNetwork
     const params = { json: keyStore, password: pwdVal };
-    if(!newwallet) {
+    if (!newwallet) {
       const wallet = await createWalletByJson(params);
       provider = ethers.getDefaultProvider(URL);
       newwallet = wallet.connect(provider);
       return newwallet
     }
-    if(!newwallet.provider) {
+    if (!newwallet.provider) {
       provider = ethers.getDefaultProvider(URL);
       newwallet = wallet.connect(provider);
       return newwallet
     }
-    if(newwallet.provider &&(newwallet.provider.connection.url != URL)) {
+    if (newwallet.provider && (newwallet.provider.connection.url != URL)) {
       provider = ethers.getDefaultProvider(URL);
       newwallet.connect(provider);
       return newwallet
     }
-    if(accountInfo.address.toUpperCase() != newwallet.address.toUpperCase()) {
+    if (accountInfo.address.toUpperCase() != newwallet.address.toUpperCase()) {
       const newLocal = await localforage.getItem("vuex") || null
       const { accountInfo: newAccountInfo, currentNetwork: newCurrentNetwork } = newLocal.account;
       const { keyStore } = newAccountInfo;
@@ -389,7 +389,7 @@ export const eventsEmitter = {
 
 // // The type of API that is open to the public
 export const handleType = {
-  eth_getCode:'eth_getCode',
+  eth_getCode: 'eth_getCode',
   // Signature 
   eth_sign: "eth_sign",
   // Get block height
@@ -397,9 +397,9 @@ export const handleType = {
   eth_getBlockByNumber: "eth_getBlockByNumber",
   // trade
   eth_sendTransaction: "eth_sendTransaction",
-  eth_signTransaction:"eth_signTransaction",
-  eth_sendRawTransaction:"eth_sendRawTransaction",
-  eth_send:"eth_send",
+  eth_signTransaction: "eth_signTransaction",
+  eth_sendRawTransaction: "eth_sendRawTransaction",
+  eth_send: "eth_send",
   // Signature Single signature data
   personal_sign: "personal_sign",
   // Signing multiple signature data
@@ -410,7 +410,7 @@ export const handleType = {
   wallet_requestPermissions: 'wallet_requestPermissions',
   // Connect to wallet
   eth_requestAccounts: 'eth_requestAccounts',
-  eth_signTypedData:"eth_signTypedData",
+  eth_signTypedData: "eth_signTypedData",
   // For chain id 
   eth_chainId: 'eth_chainId',
   // Gets the current wallet address
@@ -425,7 +425,7 @@ export const handleType = {
   eth_getTransactionCount: "eth_getTransactionCount",
   eth_getBlockNumber: "eth_getBlockNumber",
   eth_subscribe: "eth_subscribe",
-  eth_getBlockByHash:'eth_getBlockByHash',
+  eth_getBlockByHash: 'eth_getBlockByHash',
   // Remove listening events
   removeAllListeners: 'removeAllListeners',
   // Get account balance
@@ -435,7 +435,7 @@ export const handleType = {
   logout: "logout",
   login: "login",
   handleReject: 'handleReject',
-  eth_call:'eth_call',
+  eth_call: 'eth_call',
   // Obtain the transaction receipt
   waitTxQueueResponse: "waitTxQueueResponse"
 }
@@ -495,16 +495,22 @@ export function sendMessage(msg = {}, opt = {}, sender) {
                 resolve()
               }
             } else {
-              const connectList = await getConnectList()
-              const originList = connectList.map(item => item.origin)
+              // broadCast
+              const filterMethods = ['accountsChanged', 'chainChanged', 'message', 'login', 'logout']
               const hostName = getHostName(tab.url)
-              console.warn('send null', msg)
-              if (originList.includes(hostName)) {
+              if (msg.data.method && filterMethods.includes(msg.data.method)) {
                 chrome.tabs.sendMessage(tab.id, { ...msg, origin: hostName });
-                resolve()
+              } else {
+                // is not broadcast
+                const connectList = await getConnectList()
+                const originList = connectList.map(item => item.origin)
+                if (originList.includes(hostName)) {
+                  chrome.tabs.sendMessage(tab.id, { ...msg, origin: hostName });
+                }
               }
             }
           }
+          resolve()
         }
       }
     );
@@ -517,7 +523,7 @@ export function createMsg(response = null, method = 'unknow', type = 'wormholes-
     type,
     data: {
       method,
-      response: {...response, method}
+      response: { ...response, method }
     }
   }
 }
@@ -550,24 +556,24 @@ export function closeTabs() {
 }
 
 export function hasOpenConnectPopup() {
-  return new Promise((resolve,reject) => {
+  return new Promise((resolve, reject) => {
     chrome.tabs.query(
       {
       }, async (tabs) => {
         let flag = false
         for await (const win of tabs) {
-          if (win.url && (win.url.includes(globalPath)) && (win.url.includes('/loginAccount/step1') > -1 || win.url.includes('/connect') > -1) ) {
+          if (win.url && (win.url.includes(globalPath)) && (win.url.includes('/loginAccount/step1') > -1 || win.url.includes('/connect') > -1)) {
             flag = true
           }
         }
         console.warn('flag', flag)
-       if(!flag){
-        resolve(true)
-       } else {
-        const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The window is already open" }
-        const sendMsg = createMsg(errMsg, 'connect')
-        reject()
-       }
+        if (!flag) {
+          resolve(true)
+        } else {
+          const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The window is already open" }
+          const sendMsg = createMsg(errMsg, 'connect')
+          reject()
+        }
       })
   })
 }
@@ -602,7 +608,7 @@ export async function openPopup(
           height: 700,
         }, async (e) => {
           console.log('open', e)
-   
+
           // await chrome.storage.local.set({ ['tab-params' +e.id]: {...senderParams,method} })
           await chrome.storage.local.set({
             [method]: {
@@ -627,7 +633,7 @@ export async function openTabPopup(
 ) {
   await closeTabs()
   return new Promise(resolve => {
-    chrome.tabs.create({ url: url }, async(e) => {
+    chrome.tabs.create({ url: url }, async (e) => {
       await chrome.storage.local.set({
         [method]: {
           sender,

@@ -54,6 +54,7 @@ import localforage from "localforage";
 import { Wallet, BaseProvider } from "ethers";
 import { Networks, PrivateKey } from "bitcore-lib";
 import { importAddress } from "@/popup/utils/btc/rpc";
+import { coinTypes } from "@/popup/enum/coinType";
 
 type RecentData = {
   BTC: Array<any>
@@ -77,6 +78,7 @@ export interface State {
   // Status of opening an exchange
   exchangeStatus: ExchangeStatus;
   contacts: Array<ContactInfo>;
+  contactsCoinType: RecentData;
   tranactionModel: boolean;
   tranactionList: Array<any>;
   // recent contacts
@@ -334,6 +336,7 @@ export default {
       transactionRecord: [],
       token: [],
     },
+    
     // recent contacts
     recentlistCoinType: {
       BTC:[],
@@ -347,6 +350,10 @@ export default {
     },
     // Address list
     contacts: [],
+    contactsCoinType: {
+      BTC:[],
+      ETH:[]
+    },
     // Transaction progress Popup
     tranactionModel: false,
     // Current transaction queue
@@ -684,17 +691,17 @@ export default {
     },
     // Add address book
     ADD_CONTACTS(state: State, opt: ContactInfo) {
-      state.contacts.unshift(opt);
+      state.contactsCoinType[state.coinType.name].unshift(opt);
       handleUpdate()
     },
     // Delete Contact
     DELETE_CONTACT(state: State, index: number) {
-      state.contacts.splice(index, 1);
+      state.contactsCoinType[state.coinType.name].splice(index, 1);
       handleUpdate()
     },
     // Edit Contact
     MODIF_CONTACT(state: State, { targetIndex, opt }: any) {
-      state.contacts[targetIndex] = opt;
+      state.contactsCoinType[state.coinType.name][targetIndex] = opt;
       handleUpdate()
     },
     // Push to transaction queue
@@ -1645,9 +1652,8 @@ export default {
     // Add address book
     async addContacts({ commit, state }: any, opt: ContactInfo) {
       // Determine whether there is a duplicate address in the address book
-      const { contacts } = state;
       const { address } = opt;
-      const flag = contacts.find(
+      const flag = state.contactsCoinType[state.coinType.name].find(
         (item: any) => item.address.toUpperCase() == address.toUpperCase()
       );
       if (flag) {
@@ -1670,7 +1676,7 @@ export default {
     // Edit Contact
     modifContact({ commit, state }: any, opt: ContactInfo) {
       const { address, id } = opt;
-      const targetIndex = state.contacts.findIndex(
+      const targetIndex = state.contactsCoinType[state.coinType.name].findIndex(
         (item: any) => item.id == id
       );
       if (targetIndex == -1) {

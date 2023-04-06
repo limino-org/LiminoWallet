@@ -42,21 +42,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (origin != location.origin) {
         return
       }
-      const { method } = data
-      // if (filterEvent.includes(method)) {
-      //   const { connectList, address } = data
-      //   const authAccount = connectList.find(item => item.origin == window.origin)
-      //   if (!authAccount) {
-      //     return false
-      //   }
-      //   const { accountList } = authAccount
-      //   if (accountList && accountList.length) {
-      //     const hasAuth = accountList.find(add => add.toUpperCase() == address.toUpperCase())
-      //     if (!hasAuth) {
-      //       return false
-      //     }
-      //   }
-      // }
       // Custom events
       const cEvt = new CustomEvent("wormHoles-callback-event", {
         detail: request,

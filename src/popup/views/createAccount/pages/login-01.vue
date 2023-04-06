@@ -110,6 +110,8 @@ import { getWallet } from "@/popup/store/modules/account";
 import { encrypt, decrypt } from "@/popup/utils/cryptoJS.js";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import WormTransition from "@/popup/components/wromTransition/index.vue";
+import { sendBackground } from '@/popup/utils/sendBackground';
+import { eventsEmitter } from '@/scripts/eventType';
 export default {
   name: "loginAccount-step1",
   components: {
@@ -168,6 +170,8 @@ export default {
         console.log('4444')
         const { query } = route;
         const { backUrl }: any = query;
+        sendBackground({method: eventsEmitter.login, response:{code:'200',data: true}})
+
         if (backUrl && backUrl != "/loginAccount/step1" && backUrl != "/") {
           console.log('5555',backUrl)
           router.replace({ path: backUrl, query });

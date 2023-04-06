@@ -45,7 +45,7 @@
             v-show="!hasChooseAddress"
           >
             <van-field
-              :placeholder="$t('sendNFT.addAddress')"
+              :placeholder="t('sendNFT.addAddress')"
               v-model="toAddress"
               @blur="checkAddress"
             ></van-field>

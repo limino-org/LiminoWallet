@@ -132,9 +132,10 @@ export default {
     // 1 ascending 2 descending
     const sortType = ref("1");
     const name = ref("");
+  
     const alist = computed(() => {
       // Split into two-dimensional arrays according to the first letter
-      const list = state.account.contacts.map((item: any) => item);
+      const list = state.account.contactsCoinType[state.account.coinType.name].map((item: any) => item);
       list.sort((a: any, b: any) => {
         if (sortType.value == "1") {
           return (a.name + "").localeCompare(b.name + "");
@@ -241,7 +242,7 @@ export default {
     right: 6px;
     box-sizing: border-box;
     height: 30px;
-    top: 123px;
+    top:110px;
     z-index: 1000;
     color: #909090;
     cursor: pointer;

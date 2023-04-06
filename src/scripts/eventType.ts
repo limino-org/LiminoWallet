@@ -8,7 +8,9 @@ export enum eventsEmitter {
   // connected
   connect = 'connect',
   // disconnect
-  disconnect = 'disconnect'
+  disconnect = 'disconnect',
+  login = 'login',
+  logout = 'logout'
 }
 
 

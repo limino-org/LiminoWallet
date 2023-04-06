@@ -247,7 +247,7 @@ export default {
     // Contacts not filtered
     const alist = computed(() => {
       // Split into two-dimensional arrays according to the first letter
-      const list = state.account.contacts.map((item: any) => item);
+      const list = state.account.contactsCoinType[state.account.coinType.name].map((item: any) => item);
       list.sort((a: any, b: any) => {
         if (sortType.value == "1") {
           return (a.name + "").localeCompare(b.name + "");

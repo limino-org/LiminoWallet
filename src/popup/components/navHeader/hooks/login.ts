@@ -8,6 +8,7 @@ import { sendBackground } from '@/popup/utils/sendBackground';
 import Vrouter from "@/popup/router";
 import localforage from 'localforage'
 import eventBus from "@/popup/utils/bus"
+import { eventsEmitter } from "@/scripts/eventType"
 export const useLogin = () => {
     const route = Vrouter.currentRoute.value;
     const router = Vrouter;
@@ -17,6 +18,7 @@ export const useLogin = () => {
         await loginOut()
         eventBus.emit('disconnect')
         const query = getQuery()
+        sendBackground({method: eventsEmitter.logout, response:{code:'200',data: false}})
         router.replace({ name: "loginAccount-step1", query: query || {} })
     }
     // authentication

@@ -9,7 +9,8 @@ const events = [
   'accountsChanged',
   'message',
   'pwdExpired',
-  'loginIn'
+  'login',
+  'logout'
   // 'error',
   // 'data'
 ]
@@ -64,8 +65,12 @@ function Provider() {
     this.on('pwdExpired', () => {
       this.state.isUnlocked = false
     }, callId)
-    this.on('loginIn', () => {
+    this.on('login', () => {
       this._state.isUnlocked = true
+    }, callId)
+    this.on('logout', () => {
+      this._state.isUnlocked = false
+      this.selectedAddress = ''
     }, callId)
   }
   this.enable = function () {
@@ -164,8 +169,11 @@ function Provider() {
         case 'pwdExpired':
           this._state.isUnlocked = false
           break;
-        case 'loginIn':
+        case 'login':
           this._state.isUnlocked = true
+          break;
+        case 'logout':
+          this._state.isUnlocked = false
           break;
         default:
           this._state.isConnected = true
@@ -194,6 +202,10 @@ function Provider() {
 
   this.isConnected = function () {
     return this._state.isConnected
+  }
+
+  this.isUnlocked = function(){
+    return this._state.isUnlocked
   }
 
 };
