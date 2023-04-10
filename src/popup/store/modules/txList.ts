@@ -10,41 +10,26 @@ import { web3 } from '@/popup/utils/web3'
 console.warn('web3', web3)
 import BigNumber from 'bignumber.js'
 import { guid } from '@/popup/utils'
+import { getDB, getMainTx, getPenddingList, setMainTx } from '../db'
 
 const page_size = '30'
 const page_size_int = Number(page_size)
 let timeOut = 6000
 let timeOut2 = 2000
-interface State {
-    time: any
-}
+
 let time = null
 let time2 = null
+
+
+
 export default {
-    mutations: {
-        // Update the page to which an address is synchronized
-        PUSH_RECORD_PAGE(state: State, page: number) {
-            const addr = store.state.account.accountInfo.address.toUpperCase()
-            const { id } = store.state.account.currentNetwork
-            const asyncRecordKey = `async-${id}-${addr}`
-            if (!state.asyncRecordPage[addr]) {
-                state.asyncRecordPage[addr] = {
-                    page: page
-                }
-            } else {
-                state.asyncRecordPage[addr]['page'] = page
-            }
-        },
-    },
     actions: {
         async updateRecordPage({ commit, state }: any, { transactions: list, total, chainId, hasRecord }) {
             const typerec = typeof hasRecord
             console.warn('typeof hasRecord', typeof hasRecord, typeof typerec)
             const wallet = await getWallet()
             const addr = store.state.account.accountInfo.address.toUpperCase()
-            const { id } = store.state.account.currentNetwork
-            const asyncRecordKey = `async-${id}-${chainId}-${addr}`
-            let txInfo = await localforage.getItem(asyncRecordKey)
+            let txInfo = await getMainTx(addr)
             if (list && list.length) {
                 const realList = txInfo && txInfo.list.length ?  txInfo.list.filter(item => !item.sendType) : []
                 if ((txInfo && total >= realList.length) || !txInfo) {
@@ -81,7 +66,7 @@ export default {
                     total
                 }
             }
-            await localforage.setItem(asyncRecordKey, txInfo)
+            await setMainTx(addr, txInfo)
             eventBus.emit('loopTxListUpdata', txInfo.list)
             const realList = txInfo && txInfo.list.length ?  txInfo.list.filter(item => !item.sendType) : []
             if (!list || realList.length < page_size_int && typeof hasRecord == 'undefined') {
@@ -106,10 +91,9 @@ export default {
              */
 
             if (addr) {
-                const asyncRecordKey = `async-${id}-${chainId}-${addr}`
                 let txInfo = null
                 try {
-                    txInfo = await localforage.getItem(asyncRecordKey)
+                    txInfo = await getMainTx(addr)
                 } catch (err) {
 
                 }
@@ -157,24 +141,21 @@ export default {
                 if (transactions && transactions.length > page_size_int) {
                     txInfo.page = page_size_int + 1 + '                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          '
                 }
-                await localforage.setItem(asyncRecordKey, txInfo)
+                await setMainTx(addr, txInfo)
                 await dispatch('updateRecordPage', { transactions, total, chainId })
-                return { total, chainId, asyncRecordKey, transactions,...params,txInfo }
+                return { total, chainId, transactions,...params,txInfo,addr }
             }
             return null
         },
         // Synchronize the latest transaction records
         async asyncUpdateList({ commit, stte, dispatch }: any, { total }) {
             const addr = store.state.account.accountInfo.address.toUpperCase()
-            const { id } = store.state.account.currentNetwork
+            const coinType = store.state.account.coinType
+            if(coinType.value != 0){
+                return Promise.reject('please switch network')
+            }
             let page = '1'
-            // const wallet = await getWallet()
-            // const { chainId } = await wallet.provider.getNetwork()
-            const chainId = store.state.account.currentNetwork.chainId
-            const asyncRecordKey = `async-${id}-${chainId}-${addr}`
-            const txInfo = await localforage.getItem(asyncRecordKey)
-            // const totalPage = Math.ceil(total/10)
-            // const listTotalPage = Math.ceil(txInfo.list.length/10)
+            const txInfo = await getMainTx(addr)
             const realList = txInfo && txInfo.list.length ?  txInfo.list.filter(item => !item.sendType) : []
             return new Promise(async(resolve) => {
                 if (total !== realList.length) {
@@ -204,29 +185,10 @@ export default {
                     page_size: 10,
                     page
                 }
-                const txInfo = await localforage.getItem(asyncRecordKey)
+                const txInfo = await getMainTx(addr)
                 const hashList = txInfo.list.map(item => item.hash.toUpperCase())
                 const { total, transactions } = await getTransitionsPage(params)
-                const { id, chainId } = store.state.account.currentNetwork
-                // Clear the transaction history of the current account
-                const qstr1 = `async-${id}-${chainId}-${addr.toUpperCase()}`
-                const qstr2 = `txQueue-${id}-${chainId}-${addr.toUpperCase()}`
-                if(!total && txInfo.list && txInfo.list.length) {
-                    await localforage.iterate(async(value, key, iterationNumber) => {
-                        console.log('clear cancel', key)
-                        if (key !== "vuex") {
-                            if(key == qstr1 || key == qstr2) {
-                                console.log('clear cancel', key)
-                               await localforage.removeItem(key);
-                            }
-                        } else {
-                          [key, value]
-                        }
-                    });
-                    return false
-                }
                 if(transactions && transactions.length) {
-
                     for(let i=0;i<transactions.length;i++){
                         const item = transactions[i]
                         item.txId = guid()
@@ -242,18 +204,17 @@ export default {
                             }
                         }
                         let diffList = txInfo.list && txInfo.list.length ? txInfo.list.slice(0, 10) : txInfo.list
-                        const txQueue = await localforage.getItem(qstr2) || []
+                        const txQueue = await getPenddingList(addr) || []
                         for await (let [sameIdx,child] of diffList.entries()) {
                             console.log('sameIdx', sameIdx, child)
                             if(child.hash.toUpperCase() == item.hash.toUpperCase() && item.status != child.status){
                                 if(sameIdx > -1) {
-                                    txInfo.list[sameIdx] = item
-                                    await localforage.setItem(qstr1, txInfo)
+                                    await getDB(addr).listTable.setItem(child.txId, child)
                                     eventBus.emit('sameNonce', child.hash)
                                     for await (const [idx,iterator] of txQueue.entries()) {
                                         if(iterator.nonce === diffList[sameIdx].nonce) {
                                             txQueue.splice(idx,1)
-                                            await localforage.setItem(qstr2, txQueue)
+                                            getDB(addr).pendding.removeItem(iterator.txId)
                                         }
                                     }
                                 }
@@ -279,53 +240,59 @@ export default {
                     hasRecord = false
                 }
                 
-                await dispatch('updateRecordPage', { transactions: newList, total, chainId, hasRecord })
+                await dispatch('updateRecordPage', { transactions: newList, total, hasRecord })
                 return hasRecord
             }
 
         },
         async loopAsyncTxList({ commit, state, dispatch }: any) {
             const network = store.state.account.currentNetwork
+            const coinType = store.state.account.coinType
+            const addr = store.state.account.accountInfo.address.toUpperCase()
+            console.log('coinType', coinType)
+            if(coinType.value != 0){
+                return Promise.reject('please switch network')
+            }
             const wallet = await getWallet()
             // When you are currently on a wormholes network, synchronize transaction records from the block browser
             return new Promise(async(resolve) => {
                 if (network.id === 'wormholes-network-1') {
-                    
                     try {
                         const res = await dispatch('asyncAddrRecord')
                         console.warn('res', res)
-                    const txInfo = await localforage.getItem(res.asyncRecordKey)
-                    const realList = txInfo && txInfo.list.length ?  txInfo.list.filter(item => !item.sendType) : []
+                        const txInfo = await getMainTx(addr)
+                        const realList = txInfo && txInfo.list.length ?  txInfo.list.filter(item => !item.sendType) : []
                     if(realList.length === res.total) {
-                        resolve({total:res.total,asyncRecordKey: res.asyncRecordKey})
+                        resolve({total:res.total, addr})
                     }
                     if(res){
-                        const { asyncRecordKey, total } = res
+                        const { total } = res
                             time = setInterval(async () => {
-                                const txInfo = await localforage.getItem(asyncRecordKey)
+                                const txInfo = await getMainTx(addr)
                                 const realList = txInfo && txInfo.list.length ?  txInfo.list.filter(item => !item.sendType) : []
                                 if (res && realList.length < total) {
                                     const info = await dispatch('asyncAddrRecord')
                                     if(info.total === info.txInfo.list.length) {
-                                        resolve({ total: info.total, asyncRecordKey })
+                                        resolve({ total: info.total, addr })
                                         clearInterval(time)
                                     }
                                 } else {
-                                    resolve({ total, asyncRecordKey })
+                                    resolve({ total, addr })
                                     clearInterval(time)
                                 }
                                
                             }, timeOut)
                             
                     } else {
-                        resolve({ total: 0, asyncRecordKey: '' })
+                        resolve({ total: 0, addr })
                         clearInterval(time)
                     }
                     } catch(err){
                         console.error(err)
+                        resolve({ total: 0, addr })
                     }
                 }
-                resolve({total:0, asyncRecordKey:''}) 
+                resolve({total:0, addr}) 
             })
 
         },

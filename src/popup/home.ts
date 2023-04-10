@@ -15,6 +15,7 @@ import store from './store'
 import 'vant/lib/index.css'
 import './styles/index.scss'
 import '@/popup/utils/web3.ts'
+
 import CancelBtn from '@/popup/components/cancelBtn/index.vue'
 // import '@/popup/plugins/vconsole'
 import TradeConfirm from '@/popup/plugins/tradeConfirmationsModal/tradeConfirm'

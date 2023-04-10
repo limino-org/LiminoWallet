@@ -126,6 +126,7 @@ import { useBroadCast } from "@/popup/utils/broadCost";
 import { useToast } from "@/popup/plugins/toast";
 import { getWallet } from "@/popup/store/modules/account";
 import { useDialog } from "@/popup/plugins/dialog";
+import { addNetWork, deleteNetWork, modifNetWork } from '@/popup/store/db';
 
 
 export default {
@@ -270,8 +271,9 @@ export default {
         return t('addNetwork.inputnetworknameoptional')
       }
     }
+    const coinType = computed(() => state.account.coinType)
     const loading: Ref<boolean> = ref(false);
-    const saveData = () => {
+    const saveData = async () => {
 
       // Verify whether the URL Chain ID is duplicate
 
@@ -285,13 +287,16 @@ export default {
         chainId: Number(chainId.value),
         tokens: {},
         id: id || guid(),
-        isMain: false
+        isMain: false,
+        type: coinType.value.name
       };
       console.log("netWork", netWork, qicon);
-      store.commit(
-        isModif.value ? "account/MODIF_NETWORK" : "account/PUSH_NETWORK",
-        netWork
-      );
+      
+      if(isModif.value) {
+        await modifNetWork(netWork)
+      } else {
+        await addNetWork(netWork)
+      }
       dispatch("account/getProviderWallet");
       handleUpdate();
       loading.value = false;
@@ -314,9 +319,9 @@ export default {
         confirmBtnText: t("common.no"),
         cancelBtnText: t("common.yes"),
         callBack() {},
-        cancelBack() {
-                  // on confirm
-        store.commit("account/DETETE_NETWORK", id);
+        async cancelBack() {
+        // on confirm
+        await deleteNetWork(id)
         $toast.success(
           t("addNetwork.deletingnetworksucceeded", { qlabel: qlabel })
         );

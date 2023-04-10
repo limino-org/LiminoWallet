@@ -309,8 +309,8 @@ import eventBus from "@/popup/utils/bus";
 import { utils } from 'ethers';
 import { stopLoop } from '@/popup/store/modules/txList';
 import { handleTxType, handleTxTypeString } from '@/popup/utils/filters';
-import { network } from "@/popup/utils/btc/config";
 import BTCCollectionCard from "@/popup/views/account/components/collectionCard/BTC.vue";
+import { getPenddingList, getTxList } from '@/popup/store/db';
 
 export default {
   name: "transaction-history",
@@ -473,41 +473,42 @@ export default {
       // showSpeedModal.value = false;
         const chainId = currentNetwork.value.chainId;
         try {
-          const id = currentNetwork.value.id;
-          const targetAddress = accountInfo.value.address.toUpperCase();
-          let searchKey = "";
+          // const id = currentNetwork.value.id;
+          // const targetAddress = accountInfo.value.address.toUpperCase();
+          // let searchKey = "";
   
-          if(coinType.value.value == 0) {
-            if (id === "wormholes-network-1") {
-            searchKey = `async-${id}-${chainId}-${targetAddress}`;
-          } else {
-            searchKey = `txlist-${id}-${chainId}-${targetAddress}`;
-          }
-          }
-          if(coinType.value.value == 1) {
-            searchKey = `txBTClist-${network.name}-${targetAddress}`;
-          }
-          const txInfo: any = await localforage.getItem(searchKey);
-          if(coinType.value.value == 0) {
-            const queuekey = `txQueue-${id}-${chainId}-${targetAddress.toUpperCase()}`;
-          const txQueue = await localforage.getItem(queuekey);
-          let tx = [];
-          if (id === "wormholes-network-1") {
-            tx = txInfo ? txInfo.list : [];
-          } else {
-            tx = txInfo;
-          }
-          Array.isArray(tx) ? tlist.value = [...tx] : '';
-          Array.isArray(txQueue) ? tlist.value.unshift(...txQueue) : "";
-          }
-          if(coinType.value.value == 1) {
-            const queuekey = `txBTCQueue-${network.name}-${targetAddress.toUpperCase()}`;
-            const txQueue = await localforage.getItem(queuekey) || [];
-            console.warn('load BTC TXLIST', txInfo, txQueue)
-            // @ts-ignore
-            tlist.value = [...txQueue,...txInfo || []]
-          }
-
+          // if(coinType.value.value == 0) {
+          //   if (id === "wormholes-network-1") {
+          //   searchKey = `async-${id}-${chainId}-${targetAddress}`;
+          // } else {
+          //   searchKey = `txlist-${id}-${chainId}-${targetAddress}`;
+          // }
+          // }
+          // if(coinType.value.value == 1) {
+          //   searchKey = `txBTClist-${network.name}-${targetAddress}`;
+          // }
+          // const txInfo: any = await localforage.getItem(searchKey);
+          // if(coinType.value.value == 0) {
+          //   const queuekey = `txQueue-${id}-${chainId}-${targetAddress.toUpperCase()}`;
+          // const txQueue = await localforage.getItem(queuekey);
+          // let tx = [];
+          // if (id === "wormholes-network-1") {
+          //   tx = txInfo ? txInfo.list : [];
+          // } else {
+          //   tx = txInfo;
+          // }
+          // Array.isArray(tx) ? tlist.value = [...tx] : '';
+          // Array.isArray(txQueue) ? tlist.value.unshift(...txQueue) : "";
+          // }
+          // if(coinType.value.value == 1) {
+          //   // const queuekey = `txBTCQueue-${network.name}-${targetAddress.toUpperCase()}`;
+          //   // const txQueue = await localforage.getItem(queuekey) || [];
+          //   // console.warn('load BTC TXLIST', txInfo, txQueue)
+          //   // // @ts-ignore
+          //   // tlist.value = [...txQueue,...txInfo || []]
+          //   tlist.value =[...(await getPenddingList() || []),...(await getTxList() || [])] 
+          // }
+          tlist.value =[...(await getPenddingList() || []),...(await getTxList() || [])] 
 
         } finally {
           loading.value = false;
@@ -518,11 +519,6 @@ export default {
           if(tx) {
             transactionData.data = tx
             showTransactionModal.value = true;
-            // let time = setTimeout(() => {
-            //   const ele = document.getElementById(hash?.toString())
-            //  ele ? ele.scrollIntoView() : ''
-            //  clearTimeout(time)
-            // })
           }
         }
     };

@@ -57,7 +57,7 @@
   </div>
 </template>
 <script lang="ts">
-import Vue, { computed } from "vue";
+import Vue, { computed, onMounted } from "vue";
 import { Icon, Toast, Button, Sticky, Field, Dialog } from "vant";
 import { useRoute, useRouter } from "vue-router";
 import NetWorkCard from "@/popup/components/netWorkCard/index.vue";
@@ -67,6 +67,8 @@ import NavHeader from "@/popup/components/navHeader/index.vue";
 import NoData from "@/popup/components/noData/index.vue";
 import { useI18n } from "vue-i18n";
 import { useStore } from "vuex";
+import { getNetworkList } from '@/popup/store/db'
+
 export default {
   name: "settings",
   components: {
@@ -87,8 +89,9 @@ export default {
       return store.state.account.currentNetwork;
     });
     const { emit } = context;
+    const netWorkList = ref([])
+    const mainNetwork = ref([])
     const {
-      netWorkList,
       currentNetwork,
       showModalNetwork,
       chooseNetWork,
@@ -103,11 +106,26 @@ export default {
       }
     );
     
-    const mainNetwork = computed(() =>{
-      const { netWorkList } = store.state.account
-      return netWorkList.find((item:any) => item.isMain)
-    } )
 
+
+    onMounted(() => {
+      getNetworkList().then(res => {
+          // @ts-ignore
+          netWorkList.value = res.filter((item: any) => {
+            if(!item.isMain){
+              item.id == currentNetwork.value.id ? item.select = true : item.select = false
+              return item
+            }
+          })
+           // @ts-ignore
+          mainNetwork.value = res.filter((item: any) => {
+            if(item.isMain){
+              item.id == currentNetwork.value.id ? item.select = true : item.select = false
+              return item
+            }
+          })[0]
+      })
+    })
     const emitClose = () => {
       emit("close");
     };

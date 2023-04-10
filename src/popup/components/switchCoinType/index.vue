@@ -32,6 +32,7 @@ import { addressMask, decimal, toUsd } from "@/popup/utils/filters";
 import { useI18n } from "vue-i18n";
 import CommonModal from '@/popup/components/commonModal/index.vue'
 import {coinTypes} from '@/popup/enum/coinType'
+
 const coinList: any = ref(coinTypes);
 const { t } = useI18n()
 const showModal = ref(false);
@@ -71,8 +72,6 @@ const coinType = computed(() => store.state.account.coinType)
 const handleSwitch = async (item: CoinType) => {
   await store.dispatch("account/handleSwitchCoinType", item);
   const wallet = await store.dispatch("account/getProviderWallet");
-  store.dispatch("account/updateBalance");
-  store.dispatch("account/updateAllBalance");
   showModal.value = false;
 };
 </script>

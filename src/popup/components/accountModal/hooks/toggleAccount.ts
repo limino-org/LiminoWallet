@@ -70,9 +70,9 @@ export const useToggleAccount = () => {
       commit("account/UPDATE_ACCOUNTINFO", account);
       commit('account/UPDATE_WALLET', wall)
       // eventBus.emit('changeAccount', wall.address)
-      dispatch("account/updateTokensBalances");
-      // const wallet = await dispatch("account/getProviderWallet");
+
       if(state.account.coinType.value == 0) {
+        dispatch("account/updateTokensBalances");
         dispatch("account/getExchangeStatus").then(res => {
           if(res.status == 2 && res.exchanger_flag){
             initExchangeData()
@@ -102,10 +102,12 @@ export const useToggleAccount = () => {
   const createWalletByPath = async (callBack: Function = () => {}) => {
     // Get the current BIP44 path
     const { pathIndex, path }: any = { ...store.state.account.mnemonic };
+    console.log('create...', pathIndex , path)
     const password: string = await getCookies("password") || "";
     let phrase: string = await parseMnemonic(password, store.state.mnemonic.keyStore);
     let mnemonic: CreateWalletByMnemonicParams = { pathIndex, phrase, path };
     let wallet = await dispatch("account/createWallet", mnemonic);
+    console.log('path', wallet)
     let { privateKey, address } = wallet;
     // Check whether the account exists. If the account exists, pathIndex + 1 generates a new account 
     const hasAccount = await dispatch("account/hasAccountByAddress", address);
@@ -131,6 +133,7 @@ export const useToggleAccount = () => {
     return new Promise((resolve,reject) => {
       createWalletByPath(async(wallet: any, mnemonic: Mnemonic) => {
         const { privateKey, address } = wallet;
+        console.warn('createAccount', wallet)
         const params: EncryptPrivateKeyParams = {
           privateKey,
           password,
@@ -158,8 +161,8 @@ export const useToggleAccount = () => {
           handleUpdate()
           resolve(wallet)
         }catch(err){
+          console.error('create wallet fail',err)
           reject(err)
-          console.error(err)
         }
       });
     })

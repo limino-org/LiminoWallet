@@ -7,9 +7,10 @@ import useBTC from '@/popup/utils/btc/index'
 import { getBalance, getUtxos, getTx, getTxs, getBlock, getHeight, getAuthHead, getBlockHash, getCoins, getFee, addWallet, importAddress } from './rpc'
 import { isProduct } from './config';
 import { RPCBalanceRes, SelectUtxoRes, RPCTxRes, RPCTxsRes, RPCBlockRes, RPCHeightRes, RPCAuthheadRes, RPCBlockHashRes, RPCCoinsRes, RPCOutputRes, FeeRes } from './type';
+import store from "@/popup/store";
 const { handleImportMnemonic, handleImportPrivateKey, handleSignWithPrivateKey, handleVerifySign, handleSendTransaction, handleEstimateFee } = useBTC()
 
-
+console.warn('bitcore', bitcore)
 export class BTCWallet {
     // private key
     private privateKey: string;
@@ -19,7 +20,6 @@ export class BTCWallet {
     address: string;
     private wif: string
     network: any
-    baseUrl: string
     provider: Provider
     constructor(privateKey?: string, network?: any) {
         if (privateKey && network) {
@@ -32,7 +32,7 @@ export class BTCWallet {
                 }
                 this.privateKey = pristr
                 const privateKeyIns = new PrivateKey(pristr, network)
-                console.warn('privateKeyIns', privateKeyIns)
+
                 const address = privateKeyIns.toAddress().toString();
                 // Derive the public key, address, and wif from the private key
                 const wif = privateKeyIns.toWIF()
@@ -69,6 +69,7 @@ export class BTCWallet {
     estimateGas(to: string, value: number, fee: number = 80): Promise<any> {
         return handleEstimateFee(this.privateKey, this.address, to, value, fee)
     }
+
 }
 
 
@@ -80,13 +81,14 @@ class Provider extends BTCWallet {
     waitIns: any
     timeoutIns: any
     waitSecond: number
+    baseUrl: string
     waitPeriod: number
     constructor(network: any, address) {
         super()
         // this.isProduct = isProduct
         this.network = network
         this.address = address
-        this.waitIns = null
+        this.waitIns = null 
         this.timeoutIns = null
         this.waitPeriod = 4000
     }

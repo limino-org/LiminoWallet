@@ -15,7 +15,7 @@ import txList from './modules/txList'
 import configuration from './modules/configuration'
 import VuexPersistence from 'vuex-persist';
 
-const vuexLocal = new VuexPersistence({
+export const vuexLocal = new VuexPersistence({
   storage: localforage,
   asyncStorage: true,
   reducer: (store) => {
@@ -126,6 +126,7 @@ const store = createStore({
 
 
 window.store = store
+
 export default store
 export interface StoreReturns {
   [key: string]: any

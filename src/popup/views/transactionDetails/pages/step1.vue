@@ -234,9 +234,10 @@ import { useDialog } from "@/popup/plugins/dialog";
 import eventBus from "@/popup/utils/bus";
 import { stopLoop } from '@/popup/store/modules/txList';
 import localforage from "localforage";
+import storeDBIns, { getPenddingList, getTxList, getDB } from '@/popup/store/db'
 
 import CommonModal from "@/popup/components/commonModal/index.vue";
-import { network } from "@/popup/utils/btc/config";
+
 export default {
   components: {
     [Icon.name]: Icon,
@@ -279,80 +280,8 @@ export default {
     const loading = ref(true);
     txList.value = [];
     const getPageList = async () => {
-      // showSpeedModal.value = false;
       try {
-          const chainId = currentNetwork.value.chainId;
-          const id = currentNetwork.value.id;
-          const targetAddress = accountInfo.value.address.toUpperCase();
-          let searchKey = "";
-          if(coinType.value.value == 0) {
-            if (id === "wormholes-network-1") {
-            searchKey = `async-${id}-${chainId}-${targetAddress}`;
-          } else {
-            searchKey = `txlist-${id}-${chainId}-${targetAddress}`;
-          }
-          }
-          if(coinType.value.value == 1) {
-            searchKey = `txBTClist-${network.name}-${targetAddress}`;
-          }
-
-          const txInfo: any = await localforage.getItem(searchKey) || [];
-          if(coinType.value.value == 0) {
-
-          const queuekey = `txQueue-${id}-${chainId}-${targetAddress.toUpperCase()}`;
-          const txQueue = await localforage.getItem(queuekey);
-          let tx = [];
-            if (id === "wormholes-network-1") {
-            tx = txInfo ? txInfo.list : [];
-          } else {
-            tx = txInfo;
-          }
-          
-          if (tx && tx.length) {
-            const list = tx || [];
-            if (tokenContractAddress) {
-              txList.value = list.filter((item: any) => {
-                if(item.to){
-                  return item.to.toUpperCase() == tokenContractAddress.toString().toUpperCase()
-                }
-              });
-              
-            } else {
-              const tokens = currentNetwork.value.tokens[accountInfo.value.address.toUpperCase()]
-              const tokenAddrs = tokens && tokens.length ? tokens.map((item: any) => item.tokenContractAddress.toUpperCase()) : []
-              console.warn('tokenAddrs', tokenAddrs,list)
-              txList.value = list
-            }
-          }
-          if(!tokenContractAddress) {
-            if(Array.isArray(txQueue)) {
-            txQueue.forEach(item => {
-              if(!item.tokenAddress){
-                // @ts-ignore
-                txList.value.unshift(item)
-              }
-            })
-          }
-          } else {
-            if(Array.isArray(txQueue)) {
-            txQueue.forEach(item => {
-              if(item.tokenAddress.toUpperCase() == tokenContractAddress.toString().toUpperCase()){
-                // @ts-ignore
-                txList.value.unshift(item)
-              }
-            })
-          }
-          }
-          }
-
-          if(coinType.value.value == 1) {
-            const queuekey = `txBTCQueue-${network.name}-${targetAddress.toUpperCase()}`;
-            const txQueue = await localforage.getItem(queuekey) || [];
-            console.warn('load BTC TXLIST', txInfo, txQueue)
-            // @ts-ignore
-            txList.value = [...txQueue,...txInfo]
-          }
-
+          txList.value =[...(await getPenddingList() || []),...(await getTxList() || [])] 
         } catch (err) {
         } finally {
           loading.value = false;
@@ -367,11 +296,13 @@ export default {
     };
     let waitTime: any = ref(null);
     onMounted(async () => {
-
+      console.log('coinType.value.value', coinType.value.value)
       store.dispatch('account/clearWaitTime')
       if(coinType.value.value == 0) {
+        console.warn('0', coinType.value.value)
+
         try {
-       const { total, asyncRecordKey} = await handleAsyncTxList();
+       const { total} = await handleAsyncTxList();
        console.warn('onMounted 1', total)
         await store.dispatch('txList/asyncUpdateList',{total})
       }catch(err: any){
@@ -382,11 +313,9 @@ export default {
       }
       }
       if(coinType.value.value == 1) {
+        console.warn(' 1', coinType.value.value)
+
         getPageList();
-        // const wallet = await getWallet()
-        // const list = await wallet.provider.getTxs()
-        // txList.value = [...list]
-        // console.warn('list', list)
         loading.value = false
       }
       store.dispatch("account/waitTxQueueResponse", {
@@ -452,12 +381,14 @@ export default {
     eventBus.on('changeNetwork', async(address) => {
       loading.value = true
       txList.value = [];
-      try {
+      if(coinType.value.value == 0) {
+        try {
         const { total, asyncRecordKey} = await handleAsyncTxList();
         await store.dispatch('txList/asyncUpdateList',{total})
         await getPageList();
       }finally {
         loading.value = false
+      }
       }
       store.dispatch("account/waitTxQueueResponse", {
         time: null

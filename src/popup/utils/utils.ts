@@ -2,7 +2,6 @@
 import useClipboard from 'vue-clipboard3'
 import { VUE_APP_BTC_SCAN_URL, VUE_APP_SCAN_URL } from "@/popup/enum/env";
 import store from '@/popup/store';
-import { isProduct, network } from './btc/config';
 import {coinTypes} from '@/popup/enum/coinType'
 
 const { toClipboard } = useClipboard()
@@ -147,7 +146,7 @@ export function guid() {
   function S4() {
     return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
   }
-  return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+  return (S4() + S4()+ S4()+ S4() + S4() + S4() + S4() + S4());
 }
 
 export const viewTransactionByHash = (hash:string | null) => {
@@ -165,7 +164,7 @@ export const viewTransactionByHash = (hash:string | null) => {
       }
     }
     if(store.state.account.coinType.value == 1) {
-      window.open(`${VUE_APP_BTC_SCAN_URL}/insight/BTC/${isProduct ? 'mainnet' : network.name}/tx/${hash}`);
+      window.open(`${VUE_APP_BTC_SCAN_URL}/insight/BTC/${store.state.account.currentNetwork.value}/tx/${hash}`);
     }
   } else {
     throw Error('The hash cannot be empty')
@@ -187,7 +186,7 @@ export const viewAccountByAddress = (address:string ) => {
     }
   }
   if(store.state.account.coinType.value == 1) {
-    window.open(`${VUE_APP_BTC_SCAN_URL}/insight/BTC/${isProduct ? 'mainnet' : network.name}/address/${address}`);
+    window.open(`${VUE_APP_BTC_SCAN_URL}/insight/BTC/${store.state.account.currentNetwork.value}/address/${address}`);
   }
   } else {
     throw Error('The address cannot be empty')

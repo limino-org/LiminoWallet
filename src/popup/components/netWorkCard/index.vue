@@ -79,11 +79,7 @@ export default defineComponent({
       emit("handleModif", props.data);
     };
     const select = computed(() => {
-      const currentNetwork = store.state.account.currentNetwork;
-      if (currentNetwork.id == props.data.id) {
-        return true;
-      }
-      return false;
+      return props.data.select
     });
     return {
       t,

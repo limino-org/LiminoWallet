@@ -31,10 +31,12 @@
 <script lang="ts">
 import { Dialog, Button, Overlay } from 'vant'
 import NetWorkCard from '../netWorkCard/index.vue'
-import { defineComponent, Ref, ref, watch, SetupContext } from 'vue'
+import { defineComponent, Ref, ref, watch, SetupContext, computed } from 'vue'
 // @ts-ignore
 import { useNetWork } from '@/popup/components/navHeader/hooks/netWork'
 import { useI18n } from 'vue-i18n'
+import { getNetworkList } from '@/popup/store/db'
+import { useStore } from 'vuex'
 export default defineComponent({
   name: 'switchnetwork',
   components: {
@@ -52,11 +54,36 @@ export default defineComponent({
   setup(props: any, context: SetupContext) {
     const { t } = useI18n()
     const { emit } = context
-    const { netWorkList, currentNetwork, showModalNetwork, chooseNetWork, handleChooseComfirm, mainNetwork, networkLoading } = useNetWork()
+    const { showModalNetwork, chooseNetWork, handleChooseComfirm, networkLoading } = useNetWork()
+    const store = useStore()
+    const currentNetwork = computed(() => store.state.account.currentNetwork)
+    const mainNetwork = ref({})
+    const netWorkList = ref([])
     watch(
       () => props.modelValue,
       n => {
         showModalNetwork.value = n
+        getNetworkList().then(res => {
+          console.log('netlist', res, currentNetwork.value)
+          // @ts-ignore
+          netWorkList.value = res.filter((item: any) => {
+            if(!item.isMain){
+              item.id == currentNetwork.value.id ? item.select = true : item.select = false
+              return item
+            }
+          })
+          console.log('netWorkList.value', netWorkList.value)
+          mainNetwork.value = res.filter((item: any) => {
+            if(item.isMain){
+              item.id == currentNetwork.value.id ?item.select = true:item.select = false
+              return item
+            }
+          })[0]
+          console.log('mainNetwork.value', mainNetwork.value)
+
+          console.warn('res', res)
+          console.warn('mainNetwork', mainNetwork.value)
+        })
       }
     )
     watch(

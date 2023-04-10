@@ -30,7 +30,7 @@
             </div>
             <div class="value">
               <span class="text-bold"
-                >≈ {{ gasData[gasFee] }} Gwei,</span
+                >≈ {{ gasData[gasFee] }} {{ gasText }},</span
               >
               <span v-if="coinType.value == 0" class="second pl-6"
                 >≈ {{ second }} {{ t("sendto.second") }}</span
@@ -341,14 +341,26 @@ setup(props: any) {
     };
     router.replace({ name: backUrl || "send", query });
   };
-  onActivated(async () => {
-    gasFee.value = query?.gasFee != undefined ? Number(query?.gasFee) : 0
+  const gasText = computed(() => {
     if(coinType.value.value == 0) {
-      calcGasLimit();
-      initGas();
+      return 'Gwei'
     }
     if(coinType.value.value == 1) {
-      initBTCGas()
+      return 'Satoshi'
+    }
+  })
+  onMounted(async () => {
+    console.log('onActivated',query?.gasFee)
+    if(coinType.value.value == 0) {
+      await calcGasLimit();
+      await initGas();
+      gasFee.value = query?.gasFee != undefined ? Number(query?.gasFee): 2
+
+    } 
+    if(coinType.value.value == 1) {
+      await initBTCGas()
+      gasFee.value = query?.gasFee != undefined ? Number(query?.gasFee): 0
+
     }
 
   });
@@ -375,6 +387,7 @@ setup(props: any) {
     coinType,
     gasData,
     second,
+    gasText,
     gasFee,
     calcGasLimit,
     accountInfo,

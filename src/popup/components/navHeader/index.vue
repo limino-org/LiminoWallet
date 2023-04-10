@@ -75,6 +75,7 @@ import { useStore } from 'vuex'
 import { getWallet } from '@/popup/store/modules/account'
 import { useI18n } from 'vue-i18n'
 import GuideModal12 from '@/popup/components/guideModal/step12.vue'
+import eventBus from "@/popup/utils/bus";
 
 export default defineComponent({
   name: 'NavHeader',
@@ -138,7 +139,9 @@ export default defineComponent({
     const { dispatch, getters } = store
     const { state } = store
     const { t } = useI18n()
-    const { netWorkList, currentNetwork, showModalNetwork, chooseNetWork, handleChoose, handleChooseComfirm } = useNetWork()
+    const { currentNetwork, showModalNetwork, chooseNetWork, handleChoose, handleChooseComfirm } = useNetWork()
+    
+    
     const handleNet = () => {
       if(props.hasNet) {
         chooseNetWork()
@@ -154,6 +157,7 @@ export default defineComponent({
       }
       return false
     })
+
     const { emit } = context
     const clickLeft = () => {
       // If backUrl exists and the current route name is not the name of the cancelled route
@@ -209,7 +213,6 @@ export default defineComponent({
       handleNet,
       // toImport,
       network,
-      netWorkList,
       currentNetwork,
       handleChoose,
       handleChooseComfirm,

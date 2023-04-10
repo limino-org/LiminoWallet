@@ -249,8 +249,6 @@ export function transactionStatus(txData: any){
     if(txType === 'wormholes') {
        const data = getInput(input)
        if(data){
-
-        console.warn('data', data)
         if(data.type == 6) {
           const { nft_address } = data
           const level = getSNFTLevel(nft_address)

@@ -1,14 +1,15 @@
 // Enumeration of network data
 
-import { TransactionData } from '@/popup/store/modules/index'
+import { TransactionData } from '@/popup/store/index.d.ts'
 import { Token } from '@/popup/utils/token'
 import { guid } from '@/popup/utils/index'
 import i18n from "@/popup/language/index";
-import { TransactionReceipt } from '@/popup/store/modules/account';
+import { CoinTypeName, TransactionReceipt } from '@/popup/store/modules/account';
 import { VUE_APP_NODE_WORM_URL } from './env';
+console.log('CoinTypeName', CoinTypeName)
 const URL =  VUE_APP_NODE_WORM_URL
 export const netWorklist: Array<NetWorkData> = [
-    { color:'rgb(14, 126, 33)', label: "Wormholes", select: false ,URL, chainId: 51888, currencySymbol: 'ERB', browser:'https://www.wormholesscan.com',tokens:{},id: 'wormholes-network-1', isMain: true  },
+    { color:'rgb(14, 126, 33)', label: "Wormholes", select: true ,URL, chainId: 51888, currencySymbol: 'ERB', browser:'https://www.wormholesscan.com',tokens:{},id: 'wormholes-network-1', isMain: true ,type: 'ETH' },
     // {color:'rgb(3, 125, 214)', label: 'homestead', select: false,URL:'https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161', chainId: 1, currencySymbol: 'ETH', browser:'https://etherscan.io',transactionList: {},tokens:{} },
     // {color:'rgb(80, 120, 8)', label: 'rinkeby', select: false,URL:'https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161', chainId: 4, currencySymbol: 'ETH', browser:'https://rinkeby.etherscan.io',transactionList:{},tokens:{},id:guid()   },
     // { color:'rgb(123, 72, 41)', label: 'Ropsten', select: false,URL:'https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161', chainId: 3, currencySymbol: 'ETH', browser:'https://ropsten.etherscan.io',transactionList:{},tokens:{},id: guid()   },
@@ -33,7 +34,8 @@ export interface NetWorkData {
     tokens: TokenList
     // unique identifier
     id: string,
-    isMain?: boolean
+    isMain?: boolean,
+    type: string
 }
 
 export type TokenList = {

@@ -1,5 +1,5 @@
 <template>
-  <NavHeader :hasNet="!coinType.value ? true : false" :title="coinType.name">
+  <NavHeader :hasNet="true" :title="coinType.name">
     <template v-slot:left>
       <div
         :class="`flex center icon-box ${hasExchange ? 'hasExchange' : ''}`"
@@ -581,13 +581,20 @@ export default {
       // console.warn('txInfo', txInfo)
       eventBus.on('changeAccount',() => {
         showModal.value = false
+        dispatch("account/updateBalance");
       })
       eventBus.on('changeCoinType', ({wallet, coinType}) => {
        clearInterval(time)
        time = null
+       console.log('changeCoinType')
+       dispatch("account/updateAllBalance");
        handleLoopBalance()
       })
+
+
+      eventBus.on('storeUpdate', () => {
       
+      })
       if(store.state.account.coinType.value == 0) {
         dispatch("system/getEthAccountInfo");
         dispatch('account/getCreatorStatus', accountInfo.value.address)
@@ -598,6 +605,7 @@ export default {
       });
       }
       if(store.state.account.coinType.value == 1) {
+        dispatch("account/updateBalance");
       }
       
       dispatch("transfer/clearTx");

@@ -1,7 +1,7 @@
 Object.defineProperty(global, '_bitcore', {get() { return undefined },set(){}})
 import axios from "axios";
 import { BTCMnemonicAccountInfo, BTCPrivateKeyAccountInfo, ChainType, FeeRes, RPCBlockRes, RPCHeightRes, RPCOutputRes, RPCTxRes, RPCTxsRes, SelectUtxoRes, sendPrams } from "./type";
-import { baseUrl, gasFeeUrl, network } from "./config";
+import { getBTCNetwork } from "./config";
 import { getFee, selectUtxo, send, getBalance, fetcher } from './rpc'
 import BigNumber from "bignumber.js";
 const bitcore = require("bitcore-lib");
@@ -16,7 +16,7 @@ export default () => {
             const privateKeyInstance = new PrivateKey(privateKey)
             const privateKeyStr = privateKeyInstance.toString()
             const wif = privateKeyInstance.toWIF()
-            const address = privateKeyInstance.toAddress(network).toString();
+            const address = privateKeyInstance.toAddress(getBTCNetwork()).toString();
             const publicKey = privateKeyInstance.publicKey.toString()
             return {
                 privateKey: privateKeyStr,
@@ -32,7 +32,7 @@ export default () => {
 
     // Sign with the private key
     const handleSignWithPrivateKey = (message: string, privateKey: string): string => {
-        const privateKeyIns = new PrivateKey(privateKey, network);
+        const privateKeyIns = new PrivateKey(privateKey, getBTCNetwork());
         const messageIns = new Message(message);
         const signature = messageIns.sign(privateKeyIns);
         return signature
@@ -57,7 +57,7 @@ export default () => {
                 const root = bitcore.HDPrivateKey.fromSeed(seedHex);
                 const pri = root.deriveChild(index);
                 const privateKeyStr = pri.privateKey.toString()
-                const address = pri.privateKey.toAddress(network).toString()
+                const address = pri.privateKey.toAddress(getBTCNetwork()).toString()
                 const pubKeyStr = pri.privateKey.publicKey.toString()
                 return {
                     privateKey: privateKeyStr,

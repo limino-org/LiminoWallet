@@ -1,6 +1,7 @@
 import axios, { Axios } from "axios";
-import { baseUrl, gasFeeUrl, network } from "./config";
+import { gasFeeUrl } from "./config";
 import { AddWalletParams, BTCMnemonicAccountInfo, BTCPrivateKeyAccountInfo, FeeRes, RPCBalanceRes, RPCBlockRes, RPCHeightRes, RPCOutputRes, RPCTxRes, RPCTxsRes, SelectUtxoRes, sendPrams } from "./type";
+import store from "@/popup/store";
 const coinSelect = require('coinselect')
 
 
@@ -9,9 +10,13 @@ const coinSelect = require('coinselect')
 export const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 export const post = (url: string) => axios.post(url).then((res) => res.data);
 
+export const getBaseUrl = () => {
+   return store.state.account.currentNetwork.URL
+}
+
 // Get balance for address
 export const getBalance = (address: string):Promise<RPCBalanceRes> => {
-    const url = `${baseUrl}/address/${address}/balance`;
+    const url = `${getBaseUrl()}/address/${address}/balance`;
     return fetcher(url);
 };
 
@@ -22,7 +27,7 @@ export const getFee = (): Promise<FeeRes> => {
 }
 
 export const getUtxos = (address: string): Promise<Array<RPCOutputRes>> => {
-    const url = `${baseUrl}/address/${address}/?limit=9999&unspent=true`
+    const url = `${getBaseUrl()}/address/${address}/?limit=9999&unspent=true`
     return fetcher(url);
 }
 
@@ -41,7 +46,7 @@ export const selectUtxo = async (address: string, value: number, feeRate: number
 
 // Send a transaction
 export const send = async (params: sendPrams): Promise<string> => {
-    const url = `${baseUrl}/tx/send`
+    const url = `${getBaseUrl()}/tx/send`
     const res = await axios.post(url, params);
     return res.data.txid;
 }
@@ -49,49 +54,50 @@ export const send = async (params: sendPrams): Promise<string> => {
 
 // Add wallet
 export const addWallet = (params: AddWalletParams) => {
-    const url = `${baseUrl}/wallet/`
+    const url = `${getBaseUrl()}/wallet/`
     return axios.post(url, params);
 }
 
 export const importAddress = (pubKey: string, address: string) => {
-    const url = `${baseUrl}/wallet/${pubKey}`
+    const url = `${getBaseUrl()}/wallet/${pubKey}`
     return axios.post(url, {address});
 }
 
 export const getTx = (txid: string): Promise<RPCTxRes> => {
-    const url = `${baseUrl}/tx/${txid}`
+    const url = `${getBaseUrl()}/tx/${txid}`
     return fetcher(url)
 }
 
 export const getTxs = (address: string): Promise<RPCTxsRes> => {
-    const url = `${baseUrl}/address/${address}/txs`
+    const url = `${getBaseUrl()}/address/${address}/txs`
     return fetcher(url)
 }
 
 // Get Block
 export const getBlock = (blockId: string): Promise<RPCBlockRes> => {
-    const url = `${baseUrl}/block/${blockId}`
+    const url = `${getBaseUrl()}/block/${blockId}`
     return fetcher(url)
 }
 
 // Get Current Height
 export const getHeight = (): Promise<RPCHeightRes> => {
-    const url = `${baseUrl}/block/tip`
+    console.warn('tip...')
+    const url = `${getBaseUrl()}/block/tip`
     return fetcher(url)
 }
 
 export const getAuthHead = (txid: string) => {
-    const url = `${baseUrl}/tx/${txid}/authhead`
+    const url = `${getBaseUrl()}/tx/${txid}/authhead`
     return fetcher(url)
 }
 
 export const getBlockHash = (blockHash: string) => {
-    const url = `${baseUrl}/tx?blockHash=${blockHash}`
+    const url = `${getBaseUrl()}/tx?blockHash=${blockHash}`
     return fetcher(url)
 }
 
 export const getCoins = (txid: string) => {
-    const url = `${baseUrl}/tx/${txid}/coins`
+    const url = `${getBaseUrl()}/tx/${txid}/coins`
     return fetcher(url)
 }
 
@@ -136,29 +142,5 @@ export function btcRpcRequest(method: string, params: Array<any> = []): Promise<
 
     })
 }
-
-// {"jsonrpc":"1.0","id":"rpc","method":"getmempoolinfo", "params":[]}  
-// {"jsonrpc":"1.0","id":"rpc","method":"getrawtransaction", "params":["' + transactionid + '"]} 
-// {"jsonrpc":"1.0","id":"rpc","method":"decoderawtransaction", "params":["' + rawtransactiondata + '"]} 
-// {"jsonrpc":"1.0","id":"rpc","method":"GetBestBlockHash", "params":[]} 返回最优链上最近区块的哈希
-// {"jsonrpc":"1.0","id":"rpc","method":"GetBlock", "params":[]} 返回具有指定哈希的区块
-// {"jsonrpc":"1.0","id":"rpc","method":"getblockchaininfo", "params":[]}  返回区块链当前状态信息
-// {"jsonrpc":"1.0","id":"rpc","method":"GetBlockCount", "params":[]}  返回本地最优链上的区块数量
-// {"jsonrpc":"1.0","id":"rpc","method":"GetBlockHash", "params":[]} 返回本地最有区块链上指定高度区块的哈希
-// {"jsonrpc":"1.0","id":"rpc","method":"GetBlockHeader", "params":[]} 返回指定区块头
-// {"jsonrpc":"1.0","id":"rpc","method":"GetChainTips", "params":[]} 返回每个本地区块链的最高位区块（tip）信息
-// {"jsonrpc":"1.0","id":"rpc","method":"GetDifficulty", "params":[]} 返回POW难度
-// {"jsonrpc":"1.0","id":"rpc","method":"GetMemPoolAncestors", "params":[]} 返回交易池内指定交易的所有祖先
-// {"jsonrpc":"1.0","id":"rpc","method":"GetMemPoolDescendants", "params":[]} 返回交易池内指定交易的所有后代
-// {"jsonrpc":"1.0","id":"rpc","method":"GetMemPoolEntry", "params":[]} 返回交易池内指定交易的池数据
-// {"jsonrpc":"1.0","id":"rpc","method":"GetRawMemPool", "params":[]} 返回交易池内的所有交易
-// {"jsonrpc":"1.0","id":"rpc","method":"GetTxOut", "params":[]} 返回指定交易输出的详细信息
-// {"jsonrpc":"1.0","id":"rpc","method":"GetTxOutProof", "params":[]} 返回一个或多个交易的证明数据
-// {"jsonrpc":"1.0","id":"rpc","method":"GetTxOutSetInfo", "params":[]} 返回UTXO集合的统计信息
-// {"jsonrpc":"1.0","id":"rpc","method":"PreciousBlock", "params":[]} 
-// {"jsonrpc":"1.0","id":"rpc","method":"PruneBlockChain", "params":[]} 对区块链执行剪枝操作
-// {"jsonrpc":"1.0","id":"rpc","method":"VerifyChain", "params":[]}  验证本地区块链的每个记录
-// {"jsonrpc":"1.0","id":"rpc","method":"VerifyTxOutProof", "params":[]} 验证交易输出证明
-
 
 

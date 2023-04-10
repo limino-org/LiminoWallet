@@ -687,6 +687,7 @@ export default {
         amount: amount.value,
         tokenContractAddress,
         backUrl: "send",
+        gasFee: gasFee.value
       };
       router.push({
         name: "gasFee",
@@ -708,10 +709,9 @@ export default {
       gasLimit.value = limit;
       second.value = sec;
     };
-    onActivated(() => {
-      reCalc(route.query);
-    });
+
     onMounted(async() => {
+      reCalc(route.query);
       const wallet = await getWallet()
       // const txInfo = await wallet.provider.getCoins('42d7c7795d29d92333391718f6f15392cf76f16e7eb40445e2832e772de8c806')
       // const txHashInfo = await wallet.provider.getBlockHash('2860101b6b69881ceff298decc9361cf8eaf9ee9e5d6d2447b8165d214687e67')

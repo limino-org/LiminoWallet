@@ -6,6 +6,8 @@ import { Toast } from "vant";
 import { useI18n } from 'vue-i18n'
 import i18n from '@/popup/language/index'
 import eventBus from '@/popup/utils/bus'
+import { watch } from "vue";
+import { getNetworkList } from "@/popup/store/db";
 // import { getWallet, NetStatus } from "@/popup/store/modules/account";
 export const useNetWork = () => {
     const {t}=useI18n()
@@ -14,17 +16,18 @@ export const useNetWork = () => {
     // Currently selected network
     const currentNetwork = computed(() => store.state.account.currentNetwork)
     // List of network
+
+    const allNetworks = ref([])
+    onMounted(async() => {
+       allNetworks.value = await getNetworkList()
+    })
+
     const netWorkList = computed(() => {
-        const { netWorkList, currentNetwork } = store.state.account
         // The network that filters out the main network
-        return netWorkList.filter((item: NetWorkData) => {
-            if (item.id != 'wormholes-network-1') {
-                return item
-            }
-        })
+        return allNetworks.value.filter((item: NetWorkData) => !item.isMain)
     })
     const mainNetwork = computed(() => {
-        return store.state.account.netWorkList.find((item:NetWorkData) => item.id == 'wormholes-network-1')
+        return allNetworks.value.find((item:NetWorkData) => item.isMain)
     })
     const networkLoading: Ref<boolean> = ref(false)
     // Select the network popover
@@ -51,7 +54,6 @@ export const useNetWork = () => {
             networkLoading.value = true
             try {
                 await dispatch('account/setNetWork', chooseN).finally(() => networkLoading.value = false)
-                dispatch("account/updateAllBalance")
                 showModalNetwork.value = false
                 eventBus.emit('changeNetwork',chooseN)
             } catch (err) {

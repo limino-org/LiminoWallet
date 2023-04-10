@@ -1,6 +1,5 @@
 <template>
   <div class="page-box container" id="page-box">
-
     <div class="container" id="container">
       <div v-if="route.meta.keepAlive">
         <router-view v-slot="{ Component }">
@@ -17,7 +16,7 @@
 </template>
 <script lang="ts">
 import { provide as appProvide } from "@/popup/provides/app";
-import {  useRoute, useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import {
   Ref,
   ref,
@@ -27,7 +26,7 @@ import {
   onMounted,
   computed,
   provide,
-  nextTick
+  nextTick,
 } from "vue";
 import { useStore, mapActions } from "vuex";
 import { Button, Loading } from "vant";
@@ -41,10 +40,11 @@ import { version } from "@/popup/enum/version";
 import { useEvent } from "@/popup/hooks/useEvent";
 import CommonModal from "@/popup/components/commonModal/index.vue";
 import { addressMask, transactionStatus } from "./utils/filters";
-import { guid } from '@/popup/utils/utils'
-import { useBroadCast } from '@/popup/utils/broadCost'
-import localforage from 'localforage'
+import { guid } from "@/popup/utils/utils";
+import { useBroadCast } from "@/popup/utils/broadCost";
+import localforage from "localforage";
 import { getAccountAddr } from "@/popup/http/modules/common";
+import { initDBData } from './store/db';
 export default {
   components: {
     [Button.name]: Button,
@@ -54,42 +54,48 @@ export default {
     const { t } = useI18n();
     const route = useRoute();
     const store = useStore();
-    const { commit, dispatch, state, getters } = store
+    const { commit, dispatch, state, getters } = store;
     const { initWallet } = useWallet();
     const currentNetwork = computed(() => state.account.currentNetwork);
-    const coinType = computed(() => state.account.coinType)
-  
-    provide("appProvide", appProvide());
-    onMounted(async()=>{
-      console.log('this', this)
-     // update browser session window id
-     dispatch('system/setConversationid', guid())
-     // Listen to the broadcast of the same source window
-      const { broad } = useBroadCast()
-      broad.onmessage = async(e) => {
-        const { data }: any = e
-        const { action, id } = data
-        if(data && action) {
-          // If the same-origin window updates the account
-          if(action == 'wromHoles-update' && id != state.system.conversationId) {
-           window.location.reload()
-          }
-        }
-      }
-      window.onload = () => {
-        store.dispatch('account/handleSwitchCoinType', store.state.account.coinType)
-        // @ts-ignore
-        chrome.storage.local.set({comfirm_password: ''})
-        let time = setTimeout(() => {
-          document.getElementById('loading-page-box').style.display = 'none'
-          document.getElementById('app').style.display = 'block'
-          clearTimeout(time)
-        },200)
-        
-      }
+    const coinType = computed(() => state.account.coinType);
 
-            // move mnemonic to indexDB
-            (function () {
+    provide("appProvide", appProvide());
+    onMounted(async () => {
+      console.log("this", this);
+      // update browser session window id
+      dispatch("system/setConversationid", guid());
+      // Listen to the broadcast of the same source window
+      // const { broad } = useBroadCast();
+      // broad.onmessage = async (e) => {
+      //   const { data }: any = e;
+      //   const { action, id } = data;
+      //   if (data && action) {
+      //     // If the same-origin window updates the account
+      //     if (
+      //       action == "wromHoles-update" &&
+      //       id != state.system.conversationId
+      //     ) {
+      //       window.location.reload();
+      //     }
+      //   }
+      // };
+      window.onload = () => {
+        store.dispatch(
+          "account/handleSwitchCoinType",
+          store.state.account.coinType
+        );
+        // @ts-ignore
+        chrome.storage.local.set({ comfirm_password: "" });
+        let time = setTimeout(async() => {
+          await initDBData()
+          document.getElementById("loading-page-box").style.display = "none";
+          document.getElementById("app").style.display = "block";
+          clearTimeout(time);
+        }, 200);
+      };
+
+      // move mnemonic to indexDB
+      (function () {
         let time = setTimeout(async () => {
           const mnemonic = await localforage.getItem("mnemonic");
           if (!state.mnemonic.keyStore && mnemonic) {
@@ -98,7 +104,7 @@ export default {
           clearTimeout(time);
         }, 5000);
       })();
-    })
+    });
     // Initialize wallet instance
     onBeforeMount(async () => {
       initWallet();
@@ -108,29 +114,23 @@ export default {
       useEvent();
     });
 
-
-    eventBus.on('walletReady',newwallet => {
+    eventBus.on("walletReady", (newwallet) => {
       let time = setTimeout(() => {
-        if(store.state.account.coinType.value == 0) {
-        console.warn('state.account.coinType', coinType.value)
-        console.log('--=-=-=', newwallet)
-        dispatch('system/getChainVersion', newwallet);
-      }
-      clearTimeout(time)
-      }, 1000)
- 
-    })
+        if (store.state.account.coinType.value == 0) {
+          console.warn("state.account.coinType", coinType.value);
+          console.log("--=-=-=", newwallet);
+          dispatch("system/getChainVersion", newwallet);
+        }
+        clearTimeout(time);
+      }, 1000);
+    });
 
-
-    const animation = ref("slide");
-    
     return {
       t,
       route,
       addressMask,
       currentNetwork,
       transactionStatus,
-      animation,
     };
   },
 };
@@ -149,21 +149,17 @@ export default {
   position: absolute;
 }
 :deep(.van-overlay) {
-  background: rgba(0, 0, 0, 0.5000);
+  background: rgba(0, 0, 0, 0.5);
 }
 .page-box {
   min-height: 100vh;
-  transition: ease .3s;
+  transition: ease 0.3s;
   position: relative;
   margin: 0 auto;
   overflow-y: hidden;
   background: #fff;
   box-sizing: border-box;
   box-shadow: 0 2px 15px #eaebee;
-  // box-shadow: 0 1px 2px #f4f5f7;
-  // &:hover {
-  //   box-shadow: 0 4px 15px #ebedf0;
-  // }
   :deep(.van-toast) {
     word-break: keep-all !important;
   }
@@ -181,7 +177,7 @@ export default {
     }
     .num1 {
       background: #037cd6;
-      border: 1PX solid #037cd6;
+      border: 1px solid #037cd6;
       color: #fff;
     }
     &.receive {
@@ -191,13 +187,13 @@ export default {
       }
       .num3 {
         background: #037cd6;
-        border: 1PX solid #037cd6;
+        border: 1px solid #037cd6;
         color: #fff;
       }
     }
     .num2 {
       background: #037cd6;
-      border: 1PX solid #037cd6;
+      border: 1px solid #037cd6;
       color: #fff;
     }
     &.pending {
@@ -206,7 +202,7 @@ export default {
       }
       .num2 {
         background: #68b1e6;
-        border: 1PX solid #68b1e6;
+        border: 1px solid #68b1e6;
         color: #fff;
       }
     }
@@ -243,7 +239,7 @@ export default {
     font-size: 12px;
     border-radius: 9px;
     color: #979797;
-    border: 1PX solid #b3b3b3;
+    border: 1px solid #b3b3b3;
   }
   .line {
     height: 1px;
@@ -257,7 +253,7 @@ export default {
   }
 }
 .receive-info {
-  border: 1PX solid #E4E7E8;
+  border: 1px solid #e4e7e8;
   border-radius: 5px;
   * {
     transition: ease all 0.3s;
@@ -284,4 +280,13 @@ export default {
   }
 }
 
+.pageSlider-enter-from {
+  transform: translateX(-100vw);
+}
+.pageSlider-enter-to {
+  transform: translateX(0);
+}
+.pageSlider-enter-active {
+  transition: ease 0.5s;
+}
 </style>
