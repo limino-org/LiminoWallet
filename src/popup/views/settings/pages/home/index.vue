@@ -70,6 +70,7 @@ import ToggleLanguageModal from '@/popup/views/settings/components/toggleLanguag
 import ToggleCurrencyModal from '@/popup/views/settings/components/toggleCurrency.vue'
 import { useToast } from '@/popup/plugins/toast'
 import localforage from "localforage";
+import { clearCache } from '@/popup/store/db'
 export default {
   name: 'settings',
   components: {
@@ -121,15 +122,7 @@ export default {
     const handleClearCanche = async () => {
       loading.value = true;
       try {
-        localforage.iterate((value, key, iterationNumber) => {
-          console.log('clear cancel', key)
-          if (key !== "vuex") {
-            console.log('clear cancel', key)
-            localforage.removeItem(key);
-          } else {
-            [key, value]
-          }
-        });
+        await clearCache()
         $toast.success(t("common.clearCancheSuccess"));
       } finally {
         loading.value = false;

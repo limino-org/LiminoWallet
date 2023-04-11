@@ -112,6 +112,8 @@ import NavHeader from "@/popup/components/navHeader/index.vue";
 import WormTransition from "@/popup/components/wromTransition/index.vue";
 import { sendBackground } from '@/popup/utils/sendBackground';
 import { eventsEmitter } from '@/scripts/eventType';
+import { useBroadCast } from '@/popup/utils/broadCost'
+
 export default {
   name: "loginAccount-step1",
   components: {
@@ -135,7 +137,7 @@ export default {
     const { dispatch, commit, state } = useStore();
     const router = useRouter();
     const route = useRoute();
-
+    const { handleUpdate } = useBroadCast()
     const accountInfo = state.account.accountInfo;
     const { keyStore } = accountInfo;
     const onSubmit = async (value: object) => {
@@ -171,7 +173,7 @@ export default {
         const { query } = route;
         const { backUrl }: any = query;
         sendBackground({method: eventsEmitter.login, response:{code:'200',data: true}})
-
+        handleUpdate()
         if (backUrl && backUrl != "/loginAccount/step1" && backUrl != "/") {
           console.log('5555',backUrl)
           router.replace({ path: backUrl, query });

@@ -279,7 +279,7 @@ export const  getProvider =async () => {
   return pro
 }
 export const getWallet = () => {
-  if (!wallet || !wallet.provider) {
+  if (!wallet || !wallet.provider || wallet.address.toUpperCase() != store.state.account.accountInfo.address.toUpperCase()) {
     const { dispatch } = storeObj;
     const w = dispatch("account/getWallet");
     return w;
@@ -393,6 +393,9 @@ export default {
     },
     // Whether to open the exchange
     hasExchange(state: State) {
+      if(state.coinType.value != 0) {
+        return false
+      }
       if (!state.exchangeStatus) {
         return false
       }
@@ -934,7 +937,7 @@ export default {
         const { phrase, pathIndex } = params;
         wallet = await createWalletByMnemonic({ phrase, pathIndex });
         if(state.coinType.value == 1) {
-          wallet = new BTCWallet(wallet.privateKey, getBTCNetwork())
+          wallet = new BTCWallet(wallet.privateKey, await getBTCNetwork())
         }
         return Promise.resolve(wallet);
       } catch ({ reason }) {
@@ -1026,7 +1029,7 @@ export default {
 
             break;
           case 1:
-            newwllet = new BTCWallet(privateKey, getBTCNetwork())
+            newwllet = new BTCWallet(privateKey, await getBTCNetwork())
           break;
         }
         return Promise.resolve(newwllet);
@@ -1048,8 +1051,8 @@ export default {
         }
         if(state.coinType.value == 1) {
          try {
-          new PrivateKey(privatekey.startsWith('0x') ? privatekey.substr(2, privatekey.length) : privatekey, getBTCNetwork())
-          newWallet = new BTCWallet(privatekey, getBTCNetwork())
+          new PrivateKey(privatekey.startsWith('0x') ? privatekey.substr(2, privatekey.length) : privatekey, await getBTCNetwork())
+          newWallet = new BTCWallet(privatekey, await getBTCNetwork())
           // importAddress(newWallet.publicKey, newWallet.address)
          }catch(err) {
           return Promise.reject({ reason: err.toString()});
@@ -1166,10 +1169,12 @@ export default {
     async getProviderWallet({ commit, state, dispatch }: any) {
       const { URL } = state.currentNetwork;
  
-      if(state.coinType.value == 0 && wallet && wallet.provider && wallet.provider.connection && (wallet.provider.connection.url == URL)){
+      if(state.coinType.value == 0 && wallet && wallet.provider && wallet.provider.connection && (wallet.provider.connection.url == URL) && wallet.address.toUpperCase() == state.accountInfo.address.toUpperCase()){
         return wallet
       }
-
+      if(state.coinType.value == 1 && wallet && wallet.provider && wallet.address.toUpperCase() == state.accountInfo.address.toUpperCase() && state.currentNetwork.value == wallet.provider.network.name){
+        return wallet
+      }
       let newWallet = null
       const { accountInfo } = state;
       const { keyStore } = accountInfo;
@@ -1188,9 +1193,9 @@ export default {
           case 1:
             // BTC
             const wall = await dispatch("createWalletByJson", { password, json });
-            newWallet = new BTCWallet(wall.privateKey, getBTCNetwork())
+            newWallet = new BTCWallet(wall.privateKey, await getBTCNetwork())
             console.warn('newWallet--- Btc', newWallet)
-            const hei = await newWallet.provider.getHeight()
+            // const hei = await newWallet.provider.getHeight()
             commit("UPDATE_WALLET", newWallet);
             commit('UPDATE_NETSTATUS', NetStatus.success)
             break;
@@ -1284,7 +1289,7 @@ export default {
             from: state.accountInfo.address,
             fee,
             value: sendVal,
-            network: getBTCNetwork(),
+            network: await getBTCNetwork(),
             sendStatus: 'pendding'
           }
           await PUSH_BTCTXQUEUE(sendData)
@@ -1670,11 +1675,7 @@ export default {
     },
     //Determines whether the current hash has a transaction queue
     async checkHashHasQueue({ commit, state }, hash: string) {
-      const { id } = state.currentNetwork
-      const from = state.accountInfo.address
-      // @ts-ignore
-      const queuekey = `txQueue-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
-      const list: Array<any> = await localforage.getItem(queuekey)
+      const list = await getPenddingList()
       let hasExits = false
       if(list && list.length) {
         hasExits = list.find((item) => item.hash.toUpperCase() === hash.toUpperCase())
@@ -1818,14 +1819,44 @@ export default {
     },
     // Indicates that the current transaction exists in the transaction queue
     async checkIsTxHash({commit, state}: any, hash: string) {
-      const { id } = state.currentNetwork
-      const from = state.accountInfo.address
-      const queuekey = `txQueue-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
-      const list: any = await localforage.getItem(queuekey)
+      const list: any = await getPenddingList()
       if(!list || !list.length) {
         return false
       }
       return list.some((item: any) => item.hash.toUpperCase() == hash.toUpperCase())
+    },
+    async switchBTCNet({commit, state, dispatch}, coinType: CoinType){
+      const {value} = coinType
+      const password = await getCookies()
+      const myStore = state.accountInfo.keyStore
+      console.log('switch', coinType)
+      switch(value){
+        case 0:
+          // ETH
+          await dispatch("createWalletByJson", { password, json: myStore }).then(wall => {
+            state.accountInfo.address = toAddrByPrivateKeyETH(wall.privateKey)
+          })
+          for await(const iterator of state.accountList) {
+            await dispatch("createWalletByJson", { password, json: iterator.keyStore }).then(wall => {
+              iterator.address = toAddrByPrivateKeyETH(wall.privateKey)
+            })
+          }
+          break;
+        case 1:
+          // BTC
+          await dispatch("createWalletByJson", { password, json: myStore }).then(async(wall) => {
+            state.accountInfo.address = await toAddrByPrivateKeyBTC(wall.privateKey)
+          })
+          for await(const iterator of state.accountList) {
+            await dispatch("createWalletByJson", { password, json: iterator.keyStore }).then(async(wall) => {
+              iterator.address = await toAddrByPrivateKeyBTC(wall.privateKey)
+            })
+          }
+          break;
+      }
+      eventBus.emit('switchBTCNet')
+      handleUpdate()
+      return Promise.resolve()
     },
     // Switch cointype
     async handleSwitchCoinType({commit, state,dispatch}, coinType: CoinType) {
@@ -1839,38 +1870,15 @@ export default {
       }
       return new Promise(async(resolve,reject) => {
         try {
-          switch(value){
-            case 0:
-              // ETH
-              await dispatch("createWalletByJson", { password, json: state.accountInfo.keyStore }).then(wall => {
-                state.accountInfo.address = toAddrByPrivateKeyETH(wall.privateKey)
-              })
-              for await(const iterator of state.accountList) {
-                await dispatch("createWalletByJson", { password, json: iterator.keyStore }).then(wall => {
-                  iterator.address = toAddrByPrivateKeyETH(wall.privateKey)
-                })
-              }
-              break;
-            case 1:
-              // BTC
-              await dispatch("createWalletByJson", { password, json: state.accountInfo.keyStore }).then(wall => {
-                state.accountInfo.address = toAddrByPrivateKeyBTC(wall.privateKey)
-              })
-              for await(const iterator of state.accountList) {
-                await dispatch("createWalletByJson", { password, json: iterator.keyStore }).then(wall => {
-                  iterator.address = toAddrByPrivateKeyBTC(wall.privateKey)
-                })
-              }
-              break;
-          }
+          await dispatch('switchBTCNet', coinType)
           if(coinType.value == 0) {
-            const isETH = state.currentNetwork.type == 'ETH'
-            commit('UPDATE_NETWORK',isETH ? state.currentNetwork : netWorklist[0])
+            const ETHnetworks = await getNetworkList('ETH')
+            commit('UPDATE_NETWORK', ETHnetworks.filter(item => item.isMain)[0])
           } 
           if(coinType.value == 1){
-            const isBTC = state.currentNetwork.type == 'BTC'
-            const BTCnetworks = await getNetworkList()
-            commit('UPDATE_NETWORK',isBTC ? state.currentNetwork : BTCnetworks[0])
+            const BTCnetworks = await getNetworkList('BTC')
+            console.log('BTCnetworks', BTCnetworks)
+            commit('UPDATE_NETWORK', BTCnetworks.filter(item => item.isMain)[0])
           }
 
           const newwallet = await dispatch('getProviderWallet')
@@ -1895,16 +1903,15 @@ export function toAddrByPrivateKeyETH(privateKey: string){
   const newWallet = new ethers.Wallet(privateKey)
   return newWallet.address
 }
-export function toAddrByPrivateKeyBTC(privateKey: string){
+export async function  toAddrByPrivateKeyBTC(privateKey: string){
   let pristr = ''
   if(privateKey.toString().startsWith('0x')) {
       pristr = privateKey.substr(2, privateKey.length)
   } else {
       pristr = privateKey
   }
-  console.warn('transfer-BTC addr', pristr)
-  const privateKeyInstance = new PrivateKey(pristr,getBTCNetwork())
-  console.warn('BTC network addr', privateKeyInstance.toAddress().toString())
+  const network = await getBTCNetwork()
+  const privateKeyInstance = new PrivateKey(pristr,network)
   return privateKeyInstance.toAddress().toString();
 }
 

@@ -394,6 +394,13 @@
   .nav-header-slider-box {
     width: 380px !important;
   }
+  .nav-content.paddingTop {
+    padding-top: 8PX;
+  }
 }
 
-
+@media screen  and (max-width: 756px){
+  .title-small {
+    margin-top: 4px;
+  }
+}

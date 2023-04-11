@@ -15,9 +15,12 @@
         </div>
       </div>
       <div class="amount text-center text-bold pl-14 pr-14">
-        {{ decimal(pageData.data.balance) }} {{symbol}}
+        {{ decimal(pageData.data.balance) }} {{ symbol }}
       </div>
-      <div class="f-12 text-center lh-16 mt-6 balance" v-if="coinType.value == 0">
+      <div
+        class="f-12 text-center lh-16 mt-6 balance"
+        v-if="coinType.value == 0"
+      >
         {{ toUsd(pageData.data.balance) }}
       </div>
       <div class="flex center">
@@ -57,21 +60,21 @@
     <div class="swap-list" v-show="!loading">
       <div v-if="coinType.value == 0">
         <CollectionCard
-        @handleClick="handleView(item)"
-        @handleSend="handleSend"
-        @handleCancel="handleCancel"
-        v-for="item in txList"
-        :key="item.address"
-        :data="item"
-      />
+          @handleClick="handleView(item)"
+          @handleSend="handleSend"
+          @handleCancel="handleCancel"
+          v-for="item in txList"
+          :key="item.address"
+          :data="item"
+        />
       </div>
       <div v-if="coinType.value == 1">
         <BTCCollectionCard
-        @handleClick="handleView(item)"
-        v-for="item in txList"
-        :key="item.address"
-        :data="item"
-      />
+          @handleClick="handleView(item)"
+          v-for="item in txList"
+          :key="item.address"
+          :data="item"
+        />
       </div>
 
       <NoData v-if="!txList.length" :message="t('wallet.no')" />
@@ -173,24 +176,22 @@
   </CommonModal>
 
   <Transition name="slider">
-      <i18n-t
-        tag="div"
-        v-if="showBuyTip"
-        keypath="wallet.toBrowser"
-        :class="`flex center scan-link fixed-bottom ${bugTipClass}`"
-      >
-        <template v-slot:link>
-          <span
-            @click="viewAccountByAddress(accountInfo.address)"
-            class="f-12 view-history hover"
-            rel="noopener noreferrer"
-            >{{ t("wallet.scanLink") }}</span
-          >
-        </template>
-      </i18n-t>
+    <i18n-t
+      tag="div"
+      v-if="showBuyTip"
+      keypath="wallet.toBrowser"
+      :class="`flex center scan-link fixed-bottom ${bugTipClass}`"
+    >
+      <template v-slot:link>
+        <span
+          @click="viewAccountByAddress(accountInfo.address)"
+          class="f-12 view-history hover"
+          rel="noopener noreferrer"
+          >{{ t("wallet.scanLink") }}</span
+        >
+      </template>
+    </i18n-t>
   </Transition>
-
-
 </template>
 <script lang="ts">
 import {
@@ -209,7 +210,16 @@ import { ethers } from "ethers";
 import { VUE_APP_SCAN_URL } from "@/popup/enum/env";
 import NoData from "@/popup/components/noData/index.vue";
 
-import { Icon, Popup, Empty, Dialog, Button, Skeleton, List, Toast } from "vant";
+import {
+  Icon,
+  Popup,
+  Empty,
+  Dialog,
+  Button,
+  Skeleton,
+  List,
+  Toast,
+} from "vant";
 import CollectionCard from "@/popup/views/account/components/collectionCard/index.vue";
 import BTCCollectionCard from "@/popup/views/account/components/collectionCard/BTC.vue";
 import { addressMask, decimal, toUsd } from "@/popup/utils/filters";
@@ -232,9 +242,13 @@ import { utils } from "ethers";
 import { web3 } from "@/popup/utils/web3";
 import { useDialog } from "@/popup/plugins/dialog";
 import eventBus from "@/popup/utils/bus";
-import { stopLoop } from '@/popup/store/modules/txList';
+import { stopLoop } from "@/popup/store/modules/txList";
 import localforage from "localforage";
-import storeDBIns, { getPenddingList, getTxList, getDB } from '@/popup/store/db'
+import storeDBIns, {
+  getPenddingList,
+  getTxList,
+  getDB,
+} from "@/popup/store/db";
 
 import CommonModal from "@/popup/components/commonModal/index.vue";
 
@@ -255,7 +269,7 @@ export default {
     TransactionBTCDetail,
     CommonModal,
     ModifGasFee,
-    NoData
+    NoData,
   },
   setup() {
     const { t } = useI18n();
@@ -264,7 +278,7 @@ export default {
     const { query } = useRoute();
     const { tokenContractAddress } = query;
     const accountInfo = computed(() => store.state.account.accountInfo);
-    const coinType = computed(() => store.state.account.coinType)
+    const coinType = computed(() => store.state.account.coinType);
     const currentNetwork = computed(() => store.state.account.currentNetwork);
     const transactionList = ref([]);
     const pageData = reactive({ data: {} });
@@ -281,11 +295,14 @@ export default {
     txList.value = [];
     const getPageList = async () => {
       try {
-          txList.value =[...(await getPenddingList() || []),...(await getTxList() || [])] 
-        } catch (err) {
-        } finally {
-          loading.value = false;
-        }
+        txList.value = [
+          ...((await getPenddingList()) || []),
+          ...((await getTxList()) || []),
+        ];
+      } catch (err) {
+      } finally {
+        loading.value = false;
+      }
     };
 
     const handleAsyncTxList = () => {
@@ -296,33 +313,35 @@ export default {
     };
     let waitTime: any = ref(null);
     onMounted(async () => {
-      console.log('coinType.value.value', coinType.value.value)
-      store.dispatch('account/clearWaitTime')
-      if(coinType.value.value == 0) {
-        console.warn('0', coinType.value.value)
-
+      console.log("coinType.value.value", coinType.value.value, currentNetwork.value.id);
+      store.dispatch("account/clearWaitTime");
+      if (
+        coinType.value.value == 0 &&
+        currentNetwork.value.id == "wormholes-network-1"
+      ) {
+        console.warn('loading page list...')
         try {
-       const { total} = await handleAsyncTxList();
-       console.warn('onMounted 1', total)
-        await store.dispatch('txList/asyncUpdateList',{total})
-      }catch(err: any){
-        console.error(err)
-      }finally {
+          const { total } = await handleAsyncTxList();
+          console.warn("onMounted 1", total);
+          await store.dispatch("txList/asyncUpdateList", { total });
+        } catch (err: any) {
+          console.error(err);
+        } finally {
+          getPageList();
+          loading.value = false;
+        }
+      } else {
         getPageList();
-        loading.value = false
+        loading.value = false;
       }
-      }
-      if(coinType.value.value == 1) {
-        console.warn(' 1', coinType.value.value)
-
+      if (coinType.value.value == 1) {
         getPageList();
-        loading.value = false
+        loading.value = false;
       }
       store.dispatch("account/waitTxQueueResponse", {
         time: null,
       });
-      window.addEventListener('scroll', deFun)
-
+      window.addEventListener("scroll", deFun);
     });
     const toSend = () => {
       router.push({ name: "send", query });
@@ -378,82 +397,78 @@ export default {
         cancelSend();
       }
     };
-    eventBus.on('changeNetwork', async(address) => {
-      loading.value = true
+    eventBus.on("changeNetwork", async (address) => {
+      loading.value = true;
       txList.value = [];
-      if(coinType.value.value == 0) {
+      if (coinType.value.value == 0 && currentNetwork.value.id == "wormholes-network-1") {
         try {
-        const { total, asyncRecordKey} = await handleAsyncTxList();
-        await store.dispatch('txList/asyncUpdateList',{total})
-        await getPageList();
-      }finally {
-        loading.value = false
-      }
+          const { total, asyncRecordKey } = await handleAsyncTxList();
+          await store.dispatch("txList/asyncUpdateList", { total });
+          await getPageList();
+        } finally {
+          loading.value = false;
+        }
       }
       store.dispatch("account/waitTxQueueResponse", {
-        time: null
+        time: null,
       });
-    })
+    });
     eventBus.on("loopTxListUpdata", () => {
       getPageList();
     });
-    eventBus.on('sameNonce', () => {
-      showSpeedModal.value = false
+    eventBus.on("sameNonce", () => {
+      showSpeedModal.value = false;
       getPageList();
-    })
+    });
 
-    
     eventBus.on("txQueuePush", (data: any) => {
-      getPageList()
+      getPageList();
     });
-    eventBus.on('waitTxEnd', async() => {
-      store.dispatch('txList/asyncUpdateList',{total: 0})
-
-    })
-    eventBus.on("txUpdate", (data: any) => {
-      console.warn("txUpdate----", data);
-      getPageList()
-
+    eventBus.on("waitTxEnd", async () => {
+      if (coinType.value.value == 0 && currentNetwork.value.id == "wormholes-network-1") {
+        store.dispatch("txList/asyncUpdateList", { total: 0 });
+      }
     });
     eventBus.on("txUpdate", (data: any) => {
       console.warn("txUpdate----", data);
-      getPageList()
-
+      getPageList();
+    });
+    eventBus.on("txUpdate", (data: any) => {
+      console.warn("txUpdate----", data);
+      getPageList();
     });
     eventBus.on("txPush", (data: any) => {
-      getPageList()
-
+      getPageList();
     });
     eventBus.on("delTxQueue", (data: any) => {
-      getPageList()
+      getPageList();
     });
     onUnmounted(() => {
       // console.warn('waitTime.value', waitTime.value)
       if (waitTime.value) {
         clearInterval(waitTime.value);
       }
-      stopLoop()
+      stopLoop();
       eventBus.off("txPush");
       eventBus.off("txUpdate");
       eventBus.off("loopTxListUpdata");
       eventBus.off("txQueuePush");
       eventBus.off("delTxQueue");
-      eventBus.off('waitTxEnd')
-      eventBus.off('sameNonce')
-      window.removeEventListener('scroll', deFun)
-      store.dispatch('account/clearWaitTime')
-      eventBus.off('changeNetwork')
-
+      eventBus.off("waitTxEnd");
+      eventBus.off("sameNonce");
+      window.removeEventListener("scroll", deFun);
+      store.dispatch("account/clearWaitTime");
+      eventBus.off("changeNetwork");
     });
     const symbol = computed(() => {
-      if(coinType.value.value == 0) {
+      if (coinType.value.value == 0) {
         // @ts-ignore
-        return pageData.data.name
+        return pageData.data.name;
       }
-      if(coinType.value.value == 1) {
-        return coinType.value.name
+      if (coinType.value.value == 1) {
+        return coinType.value.name;
       }
-    })
+    });
     const cancelSend = async () => {
       try {
         const wallet = await getWallet();
@@ -474,37 +489,44 @@ export default {
         const tx = {
           to: wallet.address,
           nonce,
-          gasPrice: gasPrice.value || '1.2',
+          gasPrice: gasPrice.value || "1.2",
           gasLimit: gasLimit.value,
           value: ethers.utils.parseEther("0"),
-          data: sendData.data
+          data: sendData.data,
         };
         let data = null;
         if (tokenAddress) {
           const transferParams = {
             nonce,
-            gasPrice: gasPrice.value || '1.2',
+            gasPrice: gasPrice.value || "1.2",
             gasLimit: gasLimit.value,
             to: toAddress,
             checkTxQueue: false,
             address: tokenAddress,
-            amount
+            amount,
           };
-          data = await store.dispatch('account/tokenTransaction', transferParams)
+          data = await store.dispatch(
+            "account/tokenTransaction",
+            transferParams
+          );
         } else {
-          data = await store.dispatch('account/transaction', {
+          data = await store.dispatch("account/transaction", {
             ...tx,
-            checkTxQueue: false
-          })
+            checkTxQueue: false,
+          });
         }
-        let txType = 'normal'
-        if(tokenAddress) {
-          txType = 'contract'
+        let txType = "normal";
+        if (tokenAddress) {
+          txType = "contract";
         } else {
-          txType = !newData ? 'normal' : (newData.indexOf('wormholes') > -1 ? 'wormholes' : 'contract')
+          txType = !newData
+            ? "normal"
+            : newData.indexOf("wormholes") > -1
+            ? "wormholes"
+            : "contract";
         }
         const { hash, from, type, value: newVal, contractAddress } = data;
-        const txInfo =  {
+        const txInfo = {
           ...sendTx.value,
           receipt: {
             blockHash: null,
@@ -512,7 +534,7 @@ export default {
             cumulativeGasUsed: { type: "BigNumber", hex: "0x0" },
             effectiveGasPrice: { type: "BigNumber", hex: "0x0" },
             gasUsed: { type: "BigNumber", hex: "0x0" },
-                 // @ts-ignore
+            // @ts-ignore
             transactionHash: sendTx.value.hash,
             from,
             to,
@@ -523,24 +545,24 @@ export default {
           gasPrice: gasLimit,
           gasLimit: gasLimit.value,
           value: ethers.utils.formatUnits(value, "wei"),
-          txType
-        }
-        await DEL_TXQUEUE(txInfo)
+          txType,
+        };
+        await DEL_TXQUEUE(txInfo);
         const newres = {
           ...clone(txInfo),
           txId: guid(),
           sendData: data,
-          sendType: 'cancel',
-        }
-        await PUSH_TRANSACTION(newres)
+          sendType: "cancel",
+        };
+        await PUSH_TRANSACTION(newres);
         const receipt = await data.wallet.provider.waitForTransaction(
           data.hash,
           null,
           60000
         );
-        store.dispatch('account/clearWaitTime')
+        store.dispatch("account/clearWaitTime");
         await store.dispatch("account/waitTxQueueResponse");
-        handleAsyncTxList()
+        handleAsyncTxList();
       } catch (err) {
         console.error(err);
         Toast(err.reason);
@@ -576,39 +598,46 @@ export default {
         const tx: any = {
           to,
           nonce,
-          gasPrice: gasPrice.value || '1.2',
+          gasPrice: gasPrice.value || "1.2",
           gasLimit: gasLimit.value,
-          data: sendData.data
+          data: sendData.data,
         };
         console.warn("tx", tx);
         let data = null;
         if (tokenAddress) {
           const transferParams = {
             nonce,
-            gasPrice: gasPrice.value || '1.2',
+            gasPrice: gasPrice.value || "1.2",
             gasLimit: gasLimit.value,
             to: toAddress,
             checkTxQueue: false,
             address: tokenAddress,
-            amount
+            amount,
           };
-          data = await store.dispatch('account/tokenTransaction', transferParams)
+          data = await store.dispatch(
+            "account/tokenTransaction",
+            transferParams
+          );
         } else {
           tx.value = utils.formatEther(value);
-          data = await store.dispatch('account/transaction', {
+          data = await store.dispatch("account/transaction", {
             ...tx,
-            checkTxQueue: false
-          })
+            checkTxQueue: false,
+          });
         }
         // step1  Set the original transaction status to false and unshift to the transaction record
         const { hash, from, type, value: newVal, contractAddress } = data;
-        let txType = 'normal'
-        if(tokenAddress) {
-          txType = 'contract'
+        let txType = "normal";
+        if (tokenAddress) {
+          txType = "contract";
         } else {
-          txType = !newData ? 'normal' : (newData.indexOf('wormholes') > -1 ? 'wormholes' : 'contract')
+          txType = !newData
+            ? "normal"
+            : newData.indexOf("wormholes") > -1
+            ? "wormholes"
+            : "contract";
         }
-        const txInfo =  {
+        const txInfo = {
           ...sendTx.value,
           receipt: {
             blockHash: null,
@@ -616,7 +645,7 @@ export default {
             cumulativeGasUsed: { type: "BigNumber", hex: "0x0" },
             effectiveGasPrice: { type: "BigNumber", hex: "0x0" },
             gasUsed: { type: "BigNumber", hex: "0x0" },
-                 // @ts-ignore
+            // @ts-ignore
             transactionHash: sendTx.value.hash,
             from,
             to,
@@ -628,20 +657,22 @@ export default {
           txType,
           gasPrice: gasLimit,
           gasLimit: gasLimit.value,
-        }
-        await DEL_TXQUEUE(txInfo)
+        };
+        await DEL_TXQUEUE(txInfo);
         // store.commit("account/DEL_TXQUEUE",txInfo);
         const newres = {
           ...clone(txInfo),
           txId: guid(),
           sendData: data,
-          sendType: 'speed',
-        }
-        await PUSH_TRANSACTION(newres)
-        const receipt = await data.wallet.provider.waitForTransaction(data.hash);
-        store.dispatch('account/clearWaitTime')
+          sendType: "speed",
+        };
+        await PUSH_TRANSACTION(newres);
+        const receipt = await data.wallet.provider.waitForTransaction(
+          data.hash
+        );
+        store.dispatch("account/clearWaitTime");
         await store.dispatch("account/waitTxQueueResponse");
-        handleAsyncTxList()
+        handleAsyncTxList();
       } catch (err) {
         console.error(err);
         // store.dispatch('account/clearWaitTime')
@@ -652,39 +683,40 @@ export default {
       }
     };
 
-    const showBuyTip = ref(true)
-    const bugTipClass = ref('')
+    const showBuyTip = ref(true);
+    const bugTipClass = ref("");
     const watchList = (val: any) => {
-      if(val && val.length >= 10) {
-        !bugTipClass.value ? bugTipClass.value = 'fixed' : ''
+      if (val && val.length >= 10) {
+        !bugTipClass.value ? (bugTipClass.value = "fixed") : "";
       } else {
-        bugTipClass.value ? bugTipClass.value = '' :''
+        bugTipClass.value ? (bugTipClass.value = "") : "";
       }
-    }
-    
-    watch(()=> txList.value, watchList , {
+    };
+
+    watch(() => txList.value, watchList, {
       deep: true,
-      immediate: true
-    })
-    let oldScrollTop = 0
+      immediate: true,
+    });
+    let oldScrollTop = 0;
     const scrolling = () => {
-      if(txList.value.length < 10) {
-        return
+      if (txList.value.length < 10) {
+        return;
       }
-        let scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
+      let scrollTop =
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop;
       let scrollStep = scrollTop - oldScrollTop;
       oldScrollTop = scrollTop;
       if (scrollStep < 0) {
-        console.log("scroll up.")
-        if(!showBuyTip.value)showBuyTip.value = true
-
-
+        console.log("scroll up.");
+        if (!showBuyTip.value) showBuyTip.value = true;
       } else {
-        if(showBuyTip.value)showBuyTip.value = false
-        console.log("scroll down.")
+        if (showBuyTip.value) showBuyTip.value = false;
+        console.log("scroll down.");
       }
-    }
-    const deFun = debounce(scrolling, 300)
+    };
+    const deFun = debounce(scrolling, 300);
 
     return {
       showBuyTip,
@@ -723,7 +755,6 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-
 .swap-list {
   // height: calc(100vh - 48PX - 245px - 50PX);
   overflow-y: scroll;
@@ -745,7 +776,7 @@ export default {
 .tx-tit {
   height: 30px;
   color: #848484;
-  background: #F1F3F4;
+  background: #f1f3f4;
 }
 .view-history {
   color: #037cd6;
@@ -807,7 +838,4 @@ export default {
 .iconfont {
   color: #fff;
 }
-
-
-
 </style>

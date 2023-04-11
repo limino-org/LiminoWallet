@@ -139,8 +139,8 @@ export default defineComponent({
     const { dispatch, getters } = store
     const { state } = store
     const { t } = useI18n()
-    const { currentNetwork, showModalNetwork, chooseNetWork, handleChoose, handleChooseComfirm } = useNetWork()
-    
+    const { showModalNetwork, chooseNetWork, handleChoose, handleChooseComfirm } = useNetWork()
+    const currentNetwork = computed(() => store.state.account.currentNetwork)
     
     const handleNet = () => {
       if(props.hasNet) {

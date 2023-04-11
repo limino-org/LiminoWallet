@@ -410,6 +410,8 @@ import { web3 } from "@/popup/utils/web3";
 import { useToast } from "@/popup/plugins/toast";
 import SwitchCoinType from '@/popup/components/switchCoinType/index.vue'
 import { getWallet } from '@/popup/store/modules/account';
+import { debounce } from '@/popup/utils/utils';
+import { eventHandler } from '@/popup/hooks/useEvent';
 export default {
   name: "wallet",
   components: {
@@ -576,25 +578,39 @@ export default {
     };
 
     onMounted(async() => {
-      // const wallet = await getWallet()
-      // const txInfo = await wallet.provider.waitForTransaction('8220018dd803f67b9f5dc10e218969628f2d91ddcc8a5820ea71bef79aadf534')
-      // console.warn('txInfo', txInfo)
-      eventBus.on('changeAccount',() => {
+      eventBus.on('changeAccount',debounce(() => {
         showModal.value = false
         dispatch("account/updateBalance");
-      })
-      eventBus.on('changeCoinType', ({wallet, coinType}) => {
+      }))
+      eventBus.on('changeNetwork', debounce(() =>{
+        dispatch('account/switchBTCNet', store.state.account.coinType)
+      }))
+      eventBus.on('changeCoinType', debounce(() => {
+        if(coinType.value.value == 0) {
+          dispatch('account/getCreatorStatus', accountInfo.value.address)
+          dispatch("system/getEthAccountInfo");
+          dispatch("account/getExchangeStatus").then((res) => {
+        if (res.status == 2 && res.exchanger_flag) {
+          initExchangeData();
+        }
+      });
+        }
        clearInterval(time)
        time = null
-       console.log('changeCoinType')
        dispatch("account/updateAllBalance");
        handleLoopBalance()
-      })
-
-
-      eventBus.on('storeUpdate', () => {
-      
-      })
+      }))
+      eventBus.on('switchBTCNet', debounce(() => {
+        dispatch("account/updateAllBalance");
+      }))
+      eventBus.on('storeUpdate', debounce(() => {
+        clearInterval(time)
+        time = null
+        getWallet().then(() => {
+          dispatch("account/updateBalance");
+          handleLoopBalance()
+        })
+      }))
       if(store.state.account.coinType.value == 0) {
         dispatch("system/getEthAccountInfo");
         dispatch('account/getCreatorStatus', accountInfo.value.address)
@@ -621,6 +637,9 @@ export default {
     onUnmounted(() => {
       eventBus.off('changeAccount')
       eventBus.off('walletReady')
+      eventBus.off('storeUpdate')
+      eventBus.off('switchBTCNet')
+      eventBus.off(eventHandler.changeNetwork)
       clearInterval(time);
       time = null
     });

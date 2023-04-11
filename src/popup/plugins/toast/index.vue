@@ -4,7 +4,7 @@
       <div
         class="wormholes-toast pl-14 pr-14 pt-26 pb-26 f-12 lh-16 toast-container"
       >
-        <div :class="`icon flex center mt-12  ${type}`" v-if="type">
+        <div :class="`icon flex center mt-12  ${type}`" v-show="type">
           <i v-show="type == 'success'" class="iconfont icon-duihao2"></i>
           <i v-show="type == 'warn'" class="iconfont icon-gantanhao"></i>
           <i v-show="type == 'fail'" class="iconfont icon-gantanhao"></i>

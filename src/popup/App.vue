@@ -60,10 +60,14 @@ export default {
     const coinType = computed(() => state.account.coinType);
 
     provide("appProvide", appProvide());
+    onBeforeMount(() => {
+
+    })
     onMounted(async () => {
       console.log("this", this);
       // update browser session window id
       dispatch("system/setConversationid", guid());
+
       // Listen to the broadcast of the same source window
       // const { broad } = useBroadCast();
       // broad.onmessage = async (e) => {
@@ -80,10 +84,6 @@ export default {
       //   }
       // };
       window.onload = () => {
-        store.dispatch(
-          "account/handleSwitchCoinType",
-          store.state.account.coinType
-        );
         // @ts-ignore
         chrome.storage.local.set({ comfirm_password: "" });
         let time = setTimeout(async() => {

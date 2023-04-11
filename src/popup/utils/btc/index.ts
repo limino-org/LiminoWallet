@@ -4,6 +4,7 @@ import { BTCMnemonicAccountInfo, BTCPrivateKeyAccountInfo, ChainType, FeeRes, RP
 import { getBTCNetwork } from "./config";
 import { getFee, selectUtxo, send, getBalance, fetcher } from './rpc'
 import BigNumber from "bignumber.js";
+import store from "@/popup/store";
 const bitcore = require("bitcore-lib");
 console.log('bitcore', bitcore)
 const { PrivateKey, Address, Networks, Transaction, HDPrivateKey, Mnemonic, Message } = bitcore;
@@ -16,7 +17,7 @@ export default () => {
             const privateKeyInstance = new PrivateKey(privateKey)
             const privateKeyStr = privateKeyInstance.toString()
             const wif = privateKeyInstance.toWIF()
-            const address = privateKeyInstance.toAddress(getBTCNetwork()).toString();
+            const address = privateKeyInstance.toAddress(await getBTCNetwork()).toString();
             const publicKey = privateKeyInstance.publicKey.toString()
             return {
                 privateKey: privateKeyStr,
@@ -32,7 +33,7 @@ export default () => {
 
     // Sign with the private key
     const handleSignWithPrivateKey = (message: string, privateKey: string): string => {
-        const privateKeyIns = new PrivateKey(privateKey, getBTCNetwork());
+        const privateKeyIns = new PrivateKey(privateKey, Networks[store.state.account.currentNetwork.value || 'mainnet']);
         const messageIns = new Message(message);
         const signature = messageIns.sign(privateKeyIns);
         return signature
@@ -57,7 +58,7 @@ export default () => {
                 const root = bitcore.HDPrivateKey.fromSeed(seedHex);
                 const pri = root.deriveChild(index);
                 const privateKeyStr = pri.privateKey.toString()
-                const address = pri.privateKey.toAddress(getBTCNetwork()).toString()
+                const address = pri.privateKey.toAddress(await getBTCNetwork()).toString()
                 const pubKeyStr = pri.privateKey.publicKey.toString()
                 return {
                     privateKey: privateKeyStr,

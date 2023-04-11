@@ -38,7 +38,7 @@
           :hasDot="true"
           :data="item"
           :isShowSelect="false"
-          :hasModif="true"
+          :hasModif="coinType.value == 0 ? true : false"
           :class="[item.id == selectNetwork.id ? 'selected' : '']"
           :hasSelect="false"
           @handleModif="handleModif"
@@ -50,7 +50,7 @@
     </div>
   </div>
 
-  <div class="btn-groups">
+  <div class="btn-groups" v-if="coinType.value == 0">
     <div class="container pl-26 pr-26 flex center mt-20">
       <van-button type="default" plain block @click="toAdd">{{t('internet.addnetwork')}}</van-button>
     </div>
@@ -88,6 +88,7 @@ export default {
     const selectNetwork = computed(() => {
       return store.state.account.currentNetwork;
     });
+    const coinType = computed(() => store.state.account.coinType)
     const { emit } = context;
     const netWorkList = ref([])
     const mainNetwork = ref([])
@@ -154,6 +155,7 @@ export default {
       toAdd,
       handleModif,
       appProvide,
+      coinType,
     };
   },
 };

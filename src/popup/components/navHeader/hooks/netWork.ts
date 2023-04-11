@@ -45,6 +45,7 @@ export const useNetWork = () => {
         commit('account/UPDATE_NETWORKSTATUS', chooseN)
     }
     const handleChooseComfirm = async (data: NetWorkData) => {
+        console.warn('handleChooseComfirm', data)
         // commit('account/UPDATE_NETSTATUS', NetStatus.pendding)
         chooseN = data
         // Updated the network selection status in vuEX

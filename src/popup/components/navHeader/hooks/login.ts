@@ -9,7 +9,10 @@ import Vrouter from "@/popup/router";
 import localforage from 'localforage'
 import eventBus from "@/popup/utils/bus"
 import { eventsEmitter } from "@/scripts/eventType"
+import { useBroadCast } from '@/popup/utils/broadCost'
+
 export const useLogin = () => {
+    const { handleUpdate } = useBroadCast()
     const route = Vrouter.currentRoute.value;
     const router = Vrouter;
     // logout
@@ -19,6 +22,7 @@ export const useLogin = () => {
         eventBus.emit('disconnect')
         const query = getQuery()
         sendBackground({method: eventsEmitter.logout, response:{code:'200',data: false}})
+        handleUpdate()
         router.replace({ name: "loginAccount-step1", query: query || {} })
     }
     // authentication

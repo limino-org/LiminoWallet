@@ -186,6 +186,7 @@ export default {
     // Set language
     setLanguage({ commit, state, dispatch }: any, lang: string) {
       commit("UPDATE_LANGUAGE", lang);
+      handleUpdate()
       return Promise.resolve(lang);
     },
     // Set NFT collection list arrangement
@@ -226,6 +227,7 @@ export default {
       for(let i = 1;i<14;i++){
         commit('UPDATA_HIDE', i)
       }
+      handleUpdate()
     },
     // Update login time
     setLoginTime({commit, state}: any, time: string) {

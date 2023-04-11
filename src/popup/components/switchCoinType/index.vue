@@ -47,12 +47,12 @@ watch(
     showModal.value = n;
     if(n) {
       const wallet = await getWallet()
-      coinList.value.forEach(item => {
+      coinList.value.forEach(async(item) => {
         if(item.value == 0) {
           item.address = toAddrByPrivateKeyETH(wallet.privateKey)
         }
         if(item.value == 1) {
-          item.address = toAddrByPrivateKeyBTC(wallet.privateKey)
+          item.address = await toAddrByPrivateKeyBTC(wallet.privateKey)
         }
       })
     }
@@ -70,6 +70,7 @@ watch(
 
 const coinType = computed(() => store.state.account.coinType)
 const handleSwitch = async (item: CoinType) => {
+  console.warn('switch', item)
   await store.dispatch("account/handleSwitchCoinType", item);
   const wallet = await store.dispatch("account/getProviderWallet");
   showModal.value = false;

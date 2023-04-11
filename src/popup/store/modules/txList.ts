@@ -250,7 +250,7 @@ export default {
             const coinType = store.state.account.coinType
             const addr = store.state.account.accountInfo.address.toUpperCase()
             console.log('coinType', coinType)
-            if(coinType.value != 0){
+            if(coinType.value != 0 || network.id != "wormholes-network-1"){
                 return Promise.reject('please switch network')
             }
             const wallet = await getWallet()

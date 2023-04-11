@@ -5,6 +5,7 @@ import { toRaw } from "vue";
 import { NetWorkData, netWorklist } from "../enum/network";
 import { clone } from "./modules/account";
 import { useBroadCast } from '@/popup/utils/broadCost'
+import { coinTypes } from "../enum/coinType";
 
 const { handleUpdate } = useBroadCast()
 
@@ -15,13 +16,12 @@ interface DBRes {
     networksTable: LocalForage
 }
 
-export const getDB = (address = ''): DBRes => {
-    const coinType = store.state.account.coinType
-    const networkId = store.state.account.currentNetwork.id
-    const net = getBTCNetwork()
-    console.warn('net', net)
-    const netType =coinType.value == 0 ? networkId : getBTCNetwork().name
-    const name = `TX-${coinType.name}-${netType.toUpperCase()}`
+
+export const getDB = (address = '', netId = store.state.account.currentNetwork.id, coinTypeName = store.state.account.coinType.name): DBRes => {
+    const newNetId = netId || store.state.account.currentNetwork.id
+    const newCoinTypeName = coinTypeName || store.state.account.coinType.name
+    const name = `TX-${newCoinTypeName}-${newNetId.toUpperCase()}`
+    console.log('storeName', name)
     const addr = (address ? address : store.state.account.accountInfo.address).toUpperCase()
     const searchParamsTable = localforage.createInstance({
         name,
@@ -50,20 +50,20 @@ export const getDB = (address = ''): DBRes => {
 }
 
 
-export const getNetworkList = async() => {
+export const getNetworkList = async (type = '') => {
     const { networksTable } = getDB()
     const keys = await networksTable.keys()
     const nets = await Promise.all(keys.map(id => networksTable.getItem(id)))
-    return nets.filter((item: any) => item.type == store.state.account.coinType.name)
+    return nets.filter((item: any) => item.type == (type ||store.state.account.coinType.name))
 }
 
 export const modifNetWork = (network: NetWorkData) => {
     const { networksTable } = getDB()
     return networksTable.setItem(network.id, clone(network))
-    
+
 }
 
-export const deleteNetWork = (id : string) => {
+export const deleteNetWork = (id: string) => {
     const { networksTable } = getDB()
     return networksTable.removeItem(id)
 }
@@ -75,7 +75,7 @@ export const addNetWork = (network: NetWorkData) => {
     return networksTable.setItem(network.id, clone(network))
 }
 
-export const initDBData = async() => {
+export const initDBData = async () => {
     console.warn('init DB Data...')
     const { networksTable } = getDB()
     // ETH add type: ETH property
@@ -83,14 +83,14 @@ export const initDBData = async() => {
     // BTC btcNetworks
     console.log('networksTable.keys()', toRaw(localNetworkList), await networksTable.keys())
     const keys = await networksTable.keys()
-    if(!keys.length) {
+    if (!keys.length) {
         const ethList = toRaw(localNetworkList).length ? toRaw(localNetworkList) : netWorklist
         console.log('ethList', ethList)
         for await (const item of ethList) {
-           await networksTable.setItem(item.id, clone(item))
+            await networksTable.setItem(item.id, clone(item))
         }
         for await (const item of btcNetworks) {
-           await networksTable.setItem(item.id, clone(item))
+            await networksTable.setItem(item.id, clone(item))
         }
 
     }
@@ -104,12 +104,12 @@ const ins = {
 
 }
 
-export const getTxList = async(address: string = ''): Promise<any> => {
+export const getTxList = async (address: string = ''): Promise<any> => {
     const listTable = getDB(address).listTable
     const keys = await listTable.keys() || []
-    
-    return new Promise(async(resolve, reject) => {
-        if(!keys.length){
+
+    return new Promise(async (resolve, reject) => {
+        if (!keys.length) {
             resolve([])
             return
         }
@@ -117,22 +117,22 @@ export const getTxList = async(address: string = ''): Promise<any> => {
         for await (const txId of keys) {
             list.push(await listTable.getItem(txId))
         }
-        if(store.state.account.coinType.value == 0) {
-            resolve(list.sort((a,b) => b.blockNumber - a.blockNumber))
+        if (store.state.account.coinType.value == 0) {
+            resolve(list.sort((a, b) => b.blockNumber - a.blockNumber))
         }
-        if(store.state.account.coinType.value == 1) {
-            resolve(list.sort((a,b) => b.date - a.date))
+        if (store.state.account.coinType.value == 1) {
+            resolve(list.sort((a, b) => b.date - a.date))
         }
     })
 }
 
-export const saveTxList = async(address: string = '', list: Array<any>): Promise<any> => {
+export const saveTxList = async (address: string = '', list: Array<any>): Promise<any> => {
     console.warn('save list', address, list)
     const listTable = getDB(address || store.state.account.account.address).listTable
-    return new Promise((resolve,reject) => {
-        if(address) {
+    return new Promise((resolve, reject) => {
+        if (address) {
             list.forEach(item => {
-                if(item.txId) {
+                if (item.txId) {
                     listTable.setItem(item.txId, item)
                 }
             })
@@ -144,12 +144,12 @@ export const saveTxList = async(address: string = '', list: Array<any>): Promise
 
 }
 
-export const getPenddingList =async (address: string = ''): Promise<any> => {
+export const getPenddingList = async (address: string = ''): Promise<any> => {
     const penddingTable = getDB(address).penddingTable
     console.warn('penddingTable', penddingTable)
     const keys = await penddingTable.keys() || []
-    return new Promise(async(resolve, reject) => {
-        if(!keys.length){
+    return new Promise(async (resolve, reject) => {
+        if (!keys.length) {
             resolve([])
             return
         }
@@ -162,31 +162,49 @@ export const getPenddingList =async (address: string = ''): Promise<any> => {
 }
 
 
-export const getSearchParams = async (address : string = ''): Promise<any> => {
+export const getSearchParams = async (address: string = ''): Promise<any> => {
     const searchParamsTable = getDB(address).searchParamsTable
     return searchParamsTable.getItem(`SEARCH-PARAMS`)
 }
 
 
-export const setSearchParams = async (address : string = '', pageInfo: any = {}): Promise<any> => {
+export const setSearchParams = async (address: string = '', pageInfo: any = {}): Promise<any> => {
     const searchParamsTable = getDB(address).searchParamsTable
     return searchParamsTable.setItem(`SEARCH-PARAMS`, pageInfo)
 }
 
 
-export const getMainTx = async (address: string = ''):Promise<any> => {
-   const pageInfo = await getSearchParams(address)
-   const list = await getTxList(address)
-   return {
-    list,
-    ...pageInfo
-   }
+export const getMainTx = async (address: string = ''): Promise<any> => {
+    const pageInfo = await getSearchParams(address)
+    const list = await getTxList(address)
+    return {
+        list,
+        ...pageInfo
+    }
 }
 
 export const setMainTx = async (address: string = '', info: any): Promise<any> => {
-    const {list,page,total} = info
+    const { list, page, total } = info
     await saveTxList(address, list)
-    await setSearchParams(address, {page,total})
+    await setSearchParams(address, { page, total })
+}
+
+
+
+export const clearCache = async () => {
+    const { networksTable } = getDB()
+    const keys = await networksTable.keys()
+    const nets: any = await Promise.all(keys.map(id => networksTable.getItem(id)))
+        for await (const coin of coinTypes) {
+            for await (const net of nets) {
+                const { id, type, value } = net
+                const name = `TX-${type}-${id.toUpperCase()}`
+                await localforage.dropInstance({
+                    name,
+                })
+            }
+        }
+
 }
 
 export default ins

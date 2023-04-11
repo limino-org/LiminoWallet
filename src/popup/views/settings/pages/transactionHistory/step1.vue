@@ -384,7 +384,10 @@ export default {
 
    
       eventBus.on('waitTxEnd', async() => {
-      store.dispatch('txList/asyncUpdateList',{total: 0})
+        if(coinType.value.value == 0 && currentNetwork.value.id == "wormholes-network-1") {
+          store.dispatch('txList/asyncUpdateList',{total: 0})
+
+        }
     })
     eventBus.on("loopTxListUpdata", () => {
       getPageList();
@@ -415,13 +418,20 @@ export default {
     eventBus.on('changeNetwork', async(address) => {
       loading.value = true
       tlist.value = []
-      try {
-        const { total, asyncRecordKey} = await handleAsyncTxList();
+      if(coinType.value.value == 0 && currentNetwork.value.id == "wormholes-network-1") {
+        try {
+        const { total} = await handleAsyncTxList();
         await store.dispatch('txList/asyncUpdateList',{total})
         await getPageList();
       }finally {
         loading.value = false
       }
+      }
+      if(coinType.value.value == 1){
+        await getPageList();
+        loading.value = false
+      }
+
       store.dispatch("account/waitTxQueueResponse", {
         time: null
       });
@@ -438,9 +448,7 @@ export default {
       window.addEventListener('scroll', deFun)
 
       try {
-
-
-        if(coinType.value.value == 0) {
+        if(coinType.value.value == 0 && currentNetwork.value.id == "wormholes-network-1") {
         try {
        const { total, asyncRecordKey} = await handleAsyncTxList();
        console.warn('onMounted 1', total)
@@ -470,46 +478,8 @@ export default {
     });
     const loading = ref(true);
     const getPageList = async () => {
-      // showSpeedModal.value = false;
-        const chainId = currentNetwork.value.chainId;
         try {
-          // const id = currentNetwork.value.id;
-          // const targetAddress = accountInfo.value.address.toUpperCase();
-          // let searchKey = "";
-  
-          // if(coinType.value.value == 0) {
-          //   if (id === "wormholes-network-1") {
-          //   searchKey = `async-${id}-${chainId}-${targetAddress}`;
-          // } else {
-          //   searchKey = `txlist-${id}-${chainId}-${targetAddress}`;
-          // }
-          // }
-          // if(coinType.value.value == 1) {
-          //   searchKey = `txBTClist-${network.name}-${targetAddress}`;
-          // }
-          // const txInfo: any = await localforage.getItem(searchKey);
-          // if(coinType.value.value == 0) {
-          //   const queuekey = `txQueue-${id}-${chainId}-${targetAddress.toUpperCase()}`;
-          // const txQueue = await localforage.getItem(queuekey);
-          // let tx = [];
-          // if (id === "wormholes-network-1") {
-          //   tx = txInfo ? txInfo.list : [];
-          // } else {
-          //   tx = txInfo;
-          // }
-          // Array.isArray(tx) ? tlist.value = [...tx] : '';
-          // Array.isArray(txQueue) ? tlist.value.unshift(...txQueue) : "";
-          // }
-          // if(coinType.value.value == 1) {
-          //   // const queuekey = `txBTCQueue-${network.name}-${targetAddress.toUpperCase()}`;
-          //   // const txQueue = await localforage.getItem(queuekey) || [];
-          //   // console.warn('load BTC TXLIST', txInfo, txQueue)
-          //   // // @ts-ignore
-          //   // tlist.value = [...txQueue,...txInfo || []]
-          //   tlist.value =[...(await getPenddingList() || []),...(await getTxList() || [])] 
-          // }
           tlist.value =[...(await getPenddingList() || []),...(await getTxList() || [])] 
-
         } finally {
           loading.value = false;
         }

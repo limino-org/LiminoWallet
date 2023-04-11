@@ -1,11 +1,10 @@
 import { NetWorkData } from '@/popup/enum/network'
 import eventBus from '@/popup/utils/bus'
 import { useStore } from 'vuex'
-import { useBroadCast } from '@/popup/utils/broadCost'
 import { eventsEmitter } from '@/scripts/eventType';
 import { web3 } from '@/popup/utils/web3'
 import { sendBackground } from '../utils/sendBackground';
-
+import { useBroadCast } from '@/popup/utils/broadCost'
 const { broad } = useBroadCast();
 
 export enum eventHandler {
@@ -17,6 +16,9 @@ export enum eventHandler {
 import { getProvider, getWallet } from '@/popup/store/modules/account'
 import store, {vuexLocal} from '../store';
 import localforage from 'localforage';
+import { getCookies } from '../utils/jsCookie';
+import router from '../router';
+import { useRoute } from 'vue-router';
 // Global Event Management
 export const useEvent = () => {
 
@@ -33,7 +35,7 @@ export const useEvent = () => {
                 dispatch("system/getEthAccountInfo");
                 break;
             case 1:
-                dispatch("account/handleSwitchCoinType", store.state.account.coinType);
+                dispatch("account/switchBTCNet", store.state.account.coinType);
                 break;
         }
         handleUpdate()
@@ -62,18 +64,35 @@ export const useEvent = () => {
 //  vuex hot update
 broad.onmessage = async (e) => {
     const { data }: any = e;
-    const { action, id } = data;
+    console.warn('onmessage', data,store.state.system.conversationId)
+    const { action, id, states } = data;
+
     if (data && action) {
       // If the same-origin window updates the account
       if (
         action == "wromHoles-update" &&
         id != store.state.system.conversationId
       ) {
-        console.log('store', store)
-        const states = await localforage.getItem('vuex') || {}
-        console.log('states', states)
-        store.replaceState(states)
-  
+        console.warn('receipt states', states)
+        const pwd = await getCookies()
+        // Logon but route stay in login Page
+        if(router.currentRoute.value.name == 'loginAccount-step1' && pwd){
+            router.replace({name:'wallet'})
+        }
+        // pwd invalid
+        if(!pwd) {
+            router.replace({name:'loginAccount-step1'})
+        }
+
+        // store update
+        const localStore = await localforage.getItem('vuex') || {}
+        const newStore = states || localStore
+        newStore.system.conversationId = store.state.system.conversationId
+        store.replaceState(newStore)
+        let time = setTimeout(() => {
+            eventBus.emit('storeUpdate')
+            clearTimeout(time)
+        },1000)
       }
     }
   };
