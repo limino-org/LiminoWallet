@@ -798,7 +798,7 @@ export default {
       const list: any = await localforage.getItem(queuekey)
       const txQueue = list && list.length ? list : []
       txQueue.push(tx)
-      await localforage.setItem(queuekey, txQueue)
+      await localforage.setItem(queuekey, clone(txQueue))
     },
     // Delete data from a queue
     // Delete data from a queue
@@ -808,7 +808,7 @@ export default {
       const list: any = await localforage.getItem(queueKey)
       const txQueue = list && list.length ? list : []
       const newList = txQueue.filter((item: any) => item.hash.toUpperCase() != tx.hash.toUpperCase())
-      await localforage.setItem(queueKey, newList)
+      await localforage.setItem(queueKey, clone(newList))
     },
   },
   actions: {
@@ -1195,7 +1195,7 @@ export default {
             const wall = await dispatch("createWalletByJson", { password, json });
             newWallet = new BTCWallet(wall.privateKey, await getBTCNetwork())
             console.warn('newWallet--- Btc', newWallet)
-            // const hei = await newWallet.provider.getHeight()
+            const hei = await newWallet.provider.getHeight()
             commit("UPDATE_WALLET", newWallet);
             commit('UPDATE_NETSTATUS', NetStatus.success)
             break;
@@ -1229,9 +1229,9 @@ export default {
         const newwallet = await getWallet();
         let sendData = null
         let btcTXHash = ''
+        const { currentNetwork } = state
         if(state.coinType.value == 0) {
           const newData = data || ''
-          const { currentNetwork } = state
           let tx: any = {
             to,
             value: utils.parseEther(value && Number(value) ? value.toString() : '0')
@@ -1289,7 +1289,7 @@ export default {
             from: state.accountInfo.address,
             fee,
             value: sendVal,
-            network: await getBTCNetwork(),
+            network: clone(currentNetwork),
             sendStatus: 'pendding'
           }
           await PUSH_BTCTXQUEUE(sendData)
@@ -1353,7 +1353,8 @@ export default {
           sendData: clone(data),
           tokenAddress,
           amount,
-          toAddress: to
+          toAddress: to,
+          cointype: state.coinType
         })
         data.wallet = wallet
         return data
@@ -1773,6 +1774,7 @@ export default {
                 sendData,
                 txId,
                 date,
+                cointype: state.coinType,
                 value
               }
               await PUSH_TRANSACTION({...newtx, txId: guid()})
@@ -1800,8 +1802,8 @@ export default {
                   data1 = await waitForTransactions(hashArr)
                   // data1 = await wallet.provider.waitForTransaction(hash);
                 }
-                await DELBTC_TXQUEUE({ ...txInfo})
-                await PUSHBTC_TRANSACTION({...txInfo,...data1,value, sendStatus: 'success'})
+                await DELBTC_TXQUEUE({ ...txInfo, cointype: state.coinType})
+                await PUSHBTC_TRANSACTION({...txInfo,...data1,value, sendStatus: 'success',cointype: state.coinType})
                 receiptList.push(data1)
               }
             }
@@ -1828,6 +1830,7 @@ export default {
     async switchBTCNet({commit, state, dispatch}, coinType: CoinType){
       const {value} = coinType
       const password = await getCookies()
+      const oldCoinType = {...state.coinType}
       const myStore = state.accountInfo.keyStore
       console.log('switch', coinType)
       switch(value){
@@ -1854,20 +1857,20 @@ export default {
           }
           break;
       }
-      eventBus.emit('switchBTCNet')
+      eventBus.emit('switchBTCNet',{ coinType, oldCoinType })
       handleUpdate()
       return Promise.resolve()
     },
     // Switch cointype
     async handleSwitchCoinType({commit, state,dispatch}, coinType: CoinType) {
-      console.warn('coinType 111', coinType)
-      commit('UPDATE_COINTYPE', coinType)
       const { value } = coinType
       const password = await getCookies()
       // Rederive the address and update it
       if(!password || !state.accountInfo.keyStore) {
         return Promise.reject()
       }
+      const oldCoinType = {...state.coinType}
+      commit('UPDATE_COINTYPE', coinType)
       return new Promise(async(resolve,reject) => {
         try {
           await dispatch('switchBTCNet', coinType)
@@ -1884,7 +1887,7 @@ export default {
           const newwallet = await dispatch('getProviderWallet')
           console.warn('newwallet---', newwallet)
           commit('UPDATE_WALLET', newwallet)
-          eventBus.emit('changeCoinType', {wallet: newwallet,coinType})
+          eventBus.emit('changeCoinType', {coinType: clone(coinType), oldCoinType })
           handleUpdate()
           resolve(newwallet)
         }catch(err){
@@ -2030,48 +2033,49 @@ export const PUSH_TXQUEUE = async (tx: any) => {
   tx.txId = guid()
   tx.date = new Date()
   const { from ,txId} = tx
-  await getDB(from).penddingTable.setItem(txId, tx)
+  const { id, type } = store.state.account.currentNetwork
+  await getDB(from,id,type).penddingTable.setItem(txId, clone(tx))
   eventBus.emit('txQueuePush', tx)
   return tx
 }
 
 
 export const PUSH_BTCTXQUEUE =async (tx: any) => {
-  const { from, network: { name }  } = tx
+  const { from, network: { id, type }  } = tx
   tx.txId = guid()
   tx.date = new Date()
-      await getDB(from).penddingTable.setItem(tx.txId, tx)
+      await getDB(from,id,type).penddingTable.setItem(tx.txId, clone(tx))
       eventBus.emit('txQueuePush', tx)
       return tx
 }
 
 export const DEL_TXQUEUE = async (tx: any) => {
-  const { network: { id, chainId }, txId, from } = tx
+  const { network: { id,type }, txId, from } = tx
   if (txId && from) {
-    await getDB(from).penddingTable.removeItem(txId)
+    await getDB(from,id,type).penddingTable.removeItem(txId)
     eventBus.emit('delTxQueue', tx)
   }
   return tx
 }
 
 export const DELBTC_TXQUEUE = async (tx: any) => {
-  const { txId,from} = tx
+  const { txId,from,network:{id,type}} = tx
   if (txId) {
-    await getDB(from).penddingTable.removeItem(txId)
+    await getDB(from,id,type).penddingTable.removeItem(txId)
     eventBus.emit('delTxQueue', tx)
   }
   return tx
 }
 
 export const PUSHBTC_TRANSACTION = async (da: any) => {
-    const {from} = da
-    await getDB(from).listTable.setItem(da.txId, da)
+    const {from,network:{id,type}} = da
+    await getDB(from,id,type).listTable.setItem(da.txId, clone(da))
     eventBus.emit('txPush', clone(da))
 }
 
 export const PUSH_TRANSACTION = async (da: any) => {
   // const state = store.state.account
-  const { receipt, sendData, network, txId, value, date, sendType, txType } = da
+  const { receipt, sendData, network, txId, value, date, sendType, txType, network:{id,type} } = da
   const { convertAmount, nonce, data } = sendData
   const {
     blockHash,
@@ -2130,7 +2134,7 @@ export const PUSH_TRANSACTION = async (da: any) => {
     const convertAmount = await getConverAmount(wallet, { input: data, blockNumber })
     newReceipt['convertAmount'] = convertAmount
   }
-  await getDB(from).listTable.setItem(txId, clone(newReceipt))
+  await getDB(from,id,type).listTable.setItem(txId, clone(newReceipt))
   // await localforage.setItem(txListKey, clone(txList))
   eventBus.emit('txPush', clone(newReceipt))
   return newReceipt
@@ -2140,7 +2144,7 @@ export const PUSH_TRANSACTION = async (da: any) => {
 export const UPDATE_TRANSACTION = async (da: any) => {
   const state = store.state.account
   const { receipt, sendData, network, txId, value, date } = da
-  const { id, currencySymbol } = network
+  const { id,type } = network
   const { convertAmount, nonce, data } = sendData
   const {
     blockHash,
@@ -2197,9 +2201,9 @@ export const UPDATE_TRANSACTION = async (da: any) => {
     const convertAmount = await getConverAmount(wallet, { input: data, blockNumber })
     newReceipt['convertAmount'] = convertAmount
   }
-  await getDB(formAdd).listTable.setItem(txId,newReceipt)
+  await getDB(formAdd,id,type).listTable.setItem(txId, clone(newReceipt))
   if (newReceipt.status) {
-    await DEL_TXQUEUE(da)
+    await DEL_TXQUEUE(da,id,type)
   }
   eventBus.emit('txUpdate', newReceipt)
   return newReceipt

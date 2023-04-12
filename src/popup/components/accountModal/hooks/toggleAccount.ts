@@ -56,6 +56,8 @@ export const useToggleAccount = () => {
     if (createLoading.value) {
       return;
     }
+    const oldWallet = await getWallet()
+    oldWallet.provider.removeAllListeners()
     accountLoading.value = true;
     clickAccountIdx.value = idx;
     const { currentNetwork } = store.state.account;
@@ -84,7 +86,8 @@ export const useToggleAccount = () => {
       }
       
       const { address } = wall
-      eventBus.emit("changeAccount", address);
+      const params = {address, oldAddress: oldWallet.address}
+      eventBus.emit("changeAccount", params);
       handleUpdate()
     } catch (err) {
       const errstr = String(err);
@@ -130,6 +133,8 @@ export const useToggleAccount = () => {
     if (!password) {
       router.replace({ name: "loginAccount-step1" });
     }
+    const oldWallet = await getWallet()
+    oldWallet.provider.removeAllListeners()
     return new Promise((resolve,reject) => {
       createWalletByPath(async(wallet: any, mnemonic: Mnemonic) => {
         const { privateKey, address } = wallet;
@@ -157,7 +162,8 @@ export const useToggleAccount = () => {
           if(state.account.coinType.value == 1) {
             commit("account/UPDATE_EXCHANGERSTATUS", {})
           }
-          eventBus.emit("changeAccount", wallet.address);
+          const params = {address, oldAddress: oldWallet.address}
+          eventBus.emit("changeAccount", params);
           handleUpdate()
           resolve(wallet)
         }catch(err){

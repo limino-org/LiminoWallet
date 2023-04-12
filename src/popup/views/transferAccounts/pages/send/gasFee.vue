@@ -163,13 +163,13 @@ setup(props: any) {
   const { t } = useI18n();
   const router = useRouter();
   const { query } = useRoute();
-  const { toAddress: to, amount: am, backUrl }: any = query;
+  const { toAddress: to, amount: am, backUrl,gasFee: fee }: any = query;
   const loading = ref(true);
   const gasPriceModal = ref(false);
   const gasLimitModal = ref(false);
   const { state, dispatch } = useStore();
   // Custom gas, change events
-  const gasFee = ref(2);
+  const gasFee = ref(fee || 2);
   const amount = ref(Number(am));
   const toAddress = ref(to);
   const currentNetwork = computed(() => state.account.currentNetwork);

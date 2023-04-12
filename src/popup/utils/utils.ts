@@ -210,8 +210,12 @@ export function throttle(fn: Function, delay = 200) {
 export function debounce(fn: Function, wait = 500) {
   let timeout: any = null;
   return function() {
+    let _this = this
+    let args = arguments;
       if(timeout !== null) clearTimeout(timeout);
-      timeout = setTimeout(fn, wait);
+      timeout = setTimeout(function(){
+        fn.apply(_this, args)
+      }, wait);
   }
 }
 

@@ -78,7 +78,7 @@ class Provider extends BTCWallet {
     isProduct: boolean
     network: any
     address: string;
-    waitIns: any
+    waitIns: Array<any>
     timeoutIns: any
     waitSecond: number
     baseUrl: string
@@ -88,15 +88,17 @@ class Provider extends BTCWallet {
         // this.isProduct = isProduct
         this.network = network
         this.address = address
-        this.waitIns = null 
+        this.waitIns = [] 
         this.timeoutIns = null
         this.waitPeriod = 4000
     }
     removeAllListeners() {
-
-        clearInterval(this.waitIns)
-        clearInterval(this.timeoutIns)
-        this.waitIns = null
+        console.warn('remove listeners', this.waitIns, this.timeoutIns)
+        this.waitIns.forEach(id => {
+            clearInterval(id)
+        })
+        clearTimeout(this.timeoutIns)
+        this.waitIns = []
         this.timeoutIns = null
     }
     waitForTransaction(hash: string, bool: null, time: number | null = null ) {
@@ -116,14 +118,16 @@ class Provider extends BTCWallet {
                 try {
                     const tx = await this.getTx(hash)
                     resolve(tx)
-                    this.waitIns = null
-                    clearInterval(this.waitIns)
+                    this.waitIns.forEach(id => {
+                        clearInterval(id)
+                    })
+            
                     clearInterval(ins)
                 }catch(err) {
                    
                 }
             }, this.waitPeriod)
-            this.waitIns = ins
+            this.waitIns.push(ins)
         } else {
             ins2 = setInterval(async() => {
                 console.log('this111', this)
@@ -135,16 +139,18 @@ class Provider extends BTCWallet {
                     
                 }
             }, this.waitPeriod)
-            this.waitIns = ins2
+            this.waitIns.push(ins2)
             const timeIns = setTimeout(async() => {
-                this.timeoutIns = null
-                this.waitIns = null
                 reject('timeout in obtaining transaction information')
                 clearInterval(ins)
                 clearInterval(ins2)
-                clearInterval(this.waitIns)
+                this.waitIns.forEach(id => {
+                    clearInterval(id)
+                })
                 clearTimeout(timeIns)
                 clearTimeout(this.timeoutIns)
+                this.timeoutIns = null
+                this.waitIns = []
             }, time)
             this.timeoutIns = timeIns
         }

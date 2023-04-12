@@ -71,6 +71,8 @@ watch(
 const coinType = computed(() => store.state.account.coinType)
 const handleSwitch = async (item: CoinType) => {
   console.warn('switch', item)
+  const oldWallet = await getWallet()
+  oldWallet.provider.removeAllListeners()
   await store.dispatch("account/handleSwitchCoinType", item);
   const wallet = await store.dispatch("account/getProviderWallet");
   showModal.value = false;

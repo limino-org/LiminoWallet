@@ -7,19 +7,22 @@
 }
 
 .modal-container {
-    transition: all 0.3s ease;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
 .modal-enter-from .modal-container,
 .modal-leave-to .modal-container {
     -webkit-transform: scale(.7);
     transform: scale(.7);
+    opacity: 0;
 }
 
 
 
 .toast-container {
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    opacity: 1;
 
 }
 
@@ -36,6 +39,7 @@
 .toast-leave-to .toast-container {
     -webkit-transform: scale(.7);
     transform: scale(.7);
+    opacity: 0;
 }
 
 // .toast-enter-active .toast-container {

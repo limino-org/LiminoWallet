@@ -179,7 +179,7 @@
             </div>
             <div class="value">
               <span class="text-bold"
-                >≈ {{ gasPriceNum }} Gwei,</span
+                >≈ {{ gasPriceNum }} {{ gasText }},</span
               >
               <!-- <span class="second pl-6"
                 >≈ {{ second }} {{ t("sendto.second") }}</span
@@ -581,6 +581,11 @@ export default {
           hourFee
         } = await wallet.provider.getFee()
         gasData.value = [hourFee,halfHourFee,fastestFee ];
+        const {gasFee} = route.query
+        if(gasFee) {
+          gasPriceNum.value = gasData.value[Number(gasFee)]
+          return
+        }
         gasPriceNum.value = fastestFee;
       }catch(err){
         console.error(err)
@@ -659,7 +664,14 @@ export default {
       gasLimit.value = 21000;
     }
   };
-
+  const gasText = computed(() => {
+    if(coinType.value.value == 0) {
+      return 'Gwei'
+    }
+    if(coinType.value.value == 1) {
+      return 'Satoshi'
+    }
+  })
     const amountErr = ref(false);
     const handleAmountBlur = async () => {
       calcGasLimit();
@@ -791,6 +803,7 @@ export default {
   })
     return {
       btcTime,
+      gasText,
       back,
       coinSymbol,
       gasLimitModal,

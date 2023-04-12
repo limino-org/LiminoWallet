@@ -121,7 +121,7 @@ export const getTxList = async (address: string = ''): Promise<any> => {
             resolve(list.sort((a, b) => b.blockNumber - a.blockNumber))
         }
         if (store.state.account.coinType.value == 1) {
-            resolve(list.sort((a, b) => b.date - a.date))
+            resolve(list.sort((a, b) => new Date(b.blockTime).getTime() - new Date(a.blockTime).getTime()))
         }
     })
 }
@@ -133,7 +133,7 @@ export const saveTxList = async (address: string = '', list: Array<any>): Promis
         if (address) {
             list.forEach(item => {
                 if (item.txId) {
-                    listTable.setItem(item.txId, item)
+                    listTable.setItem(item.txId, clone(item))
                 }
             })
             resolve(list)
@@ -170,7 +170,7 @@ export const getSearchParams = async (address: string = ''): Promise<any> => {
 
 export const setSearchParams = async (address: string = '', pageInfo: any = {}): Promise<any> => {
     const searchParamsTable = getDB(address).searchParamsTable
-    return searchParamsTable.setItem(`SEARCH-PARAMS`, pageInfo)
+    return searchParamsTable.setItem(`SEARCH-PARAMS`, clone(pageInfo))
 }
 
 

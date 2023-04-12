@@ -8,10 +8,15 @@ import { useBroadCast } from '@/popup/utils/broadCost'
 const { broad } = useBroadCast();
 
 export enum eventHandler {
+    beforeChangeNetwork = 'beforeChangeNetwork',
     changeNetwork = 'changeNetwork',
     changeAccount = 'changeAccount',
     connect = 'connect',
-    disconnect = 'disconnect'
+    disconnect = 'disconnect',
+    changeCoinType = 'changeCoinType',
+    switchBTCNet = 'switchBTCNet',
+    storeUpdate = 'storeUpdate',
+    walletReady = 'walletReady'
 }
 import { getProvider, getWallet } from '@/popup/store/modules/account'
 import store, {vuexLocal} from '../store';
@@ -24,6 +29,15 @@ export const useEvent = () => {
 
     const { dispatch, commit } = useStore()
     const { handleUpdate } = useBroadCast()
+    eventBus.on(eventHandler.switchBTCNet, () => {
+
+    })
+    eventBus.on(eventHandler.changeCoinType, () => {
+
+    })
+    eventBus.on(eventHandler.beforeChangeNetwork, async() => {
+
+    })
     // network Change
     eventBus.on(eventHandler.changeNetwork, async (network: NetWorkData) => {
         switch (store.state.account.coinType.value) {

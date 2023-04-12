@@ -8,6 +8,8 @@ import i18n from '@/popup/language/index'
 import eventBus from '@/popup/utils/bus'
 import { watch } from "vue";
 import { getNetworkList } from "@/popup/store/db";
+import { eventHandler } from "@/popup/hooks/useEvent";
+import { clone, getWallet } from "@/popup/store/modules/account";
 // import { getWallet, NetStatus } from "@/popup/store/modules/account";
 export const useNetWork = () => {
     const {t}=useI18n()
@@ -45,7 +47,11 @@ export const useNetWork = () => {
         commit('account/UPDATE_NETWORKSTATUS', chooseN)
     }
     const handleChooseComfirm = async (data: NetWorkData) => {
+        const oldNetwork = {...store.state.account.currentNetwork}
         console.warn('handleChooseComfirm', data)
+        const wallet = await getWallet()
+        wallet.provider.removeAllListeners()
+        eventBus.emit(eventHandler.beforeChangeNetwork, data)
         // commit('account/UPDATE_NETSTATUS', NetStatus.pendding)
         chooseN = data
         // Updated the network selection status in vuEX
@@ -56,7 +62,7 @@ export const useNetWork = () => {
             try {
                 await dispatch('account/setNetWork', chooseN).finally(() => networkLoading.value = false)
                 showModalNetwork.value = false
-                eventBus.emit('changeNetwork',chooseN)
+                eventBus.emit(eventHandler.changeNetwork,{network: clone(chooseN), oldNetwork })
             } catch (err) {
                 Toast(JSON.stringify(err))
             } finally { () => networkLoading.value = false }

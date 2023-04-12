@@ -578,15 +578,28 @@ export default {
     };
 
     onMounted(async() => {
-      eventBus.on('changeAccount',debounce(() => {
+      eventBus.on(eventHandler.changeAccount,debounce(({address, oldAddress}) => {
+        if(address == oldAddress) {
+          return
+        }
         showModal.value = false
         dispatch("account/updateBalance");
+        dispatch('account/waitTxQueueResponse')
       }))
-      eventBus.on('changeNetwork', debounce(() =>{
-        dispatch('account/switchBTCNet', store.state.account.coinType)
+      eventBus.on(eventHandler.changeNetwork, debounce(async({network, oldNetwork}) =>{
+        if(network.id == oldNetwork.id){
+          return
+        }
+        console.warn('change network...', network, oldNetwork)
+        await dispatch('account/switchBTCNet', store.state.account.coinType)
+        dispatch("account/updateAllBalance");
       }))
-      eventBus.on('changeCoinType', debounce(() => {
-        if(coinType.value.value == 0) {
+      eventBus.on(eventHandler.changeCoinType, debounce(({coinType: newCoinType, oldCoinType}) => {
+        console.log('coinType', newCoinType, oldCoinType)
+        if(newCoinType.value == oldCoinType.value){
+          return
+        }
+        if(newCoinType.value == 0) {
           dispatch('account/getCreatorStatus', accountInfo.value.address)
           dispatch("system/getEthAccountInfo");
           dispatch("account/getExchangeStatus").then((res) => {
@@ -600,10 +613,10 @@ export default {
        dispatch("account/updateAllBalance");
        handleLoopBalance()
       }))
-      eventBus.on('switchBTCNet', debounce(() => {
-        dispatch("account/updateAllBalance");
-      }))
-      eventBus.on('storeUpdate', debounce(() => {
+      // eventBus.on(eventHandler.switchBTCNet, debounce(() => {
+      //   dispatch("account/updateAllBalance");
+      // }))
+      eventBus.on(eventHandler.storeUpdate, debounce(() => {
         clearInterval(time)
         time = null
         getWallet().then(() => {
@@ -635,10 +648,10 @@ export default {
     });
 
     onUnmounted(() => {
-      eventBus.off('changeAccount')
-      eventBus.off('walletReady')
-      eventBus.off('storeUpdate')
-      eventBus.off('switchBTCNet')
+      eventBus.off(eventHandler.changeAccount)
+      eventBus.off(eventHandler.walletReady)
+      eventBus.off(eventHandler.storeUpdate)
+      eventBus.off(eventHandler.switchBTCNet)
       eventBus.off(eventHandler.changeNetwork)
       clearInterval(time);
       time = null
