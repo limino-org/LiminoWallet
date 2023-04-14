@@ -607,7 +607,7 @@ export default {
   position: relative;
   .icon-num {
     position: absolute;
-    font-size: 10px;
+    font-size: 12px;
     &::after {
       border-radius: 16px;
       border-color: #acacac;

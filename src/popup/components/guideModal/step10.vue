@@ -21,7 +21,8 @@
         {{ t("bootstrapwindow.identifierMessage") }}
       </div>
       <span class="tip4">
-        <img class="user" src="@/popup/views/home/imgs/smallhome.png" alt="" />
+        <i class=" user iconfont icon-fangwujianzhuwugoujianbeifen"></i>
+        <!-- <img class="user" src="@/popup/views/home/imgs/smallhome.png" alt="" /> -->
       </span>
       <div class="flex center">
         <van-button type="primary" @click="handleClick(10)">{{
@@ -120,8 +121,8 @@ export default defineComponent({
     height: 12px;
     right: 20px;
     .user {
-      width: 15px;
-      height: 15px;
+      font-size: 12px;
+      color: #fff;
     }
   }
   .small-tit {

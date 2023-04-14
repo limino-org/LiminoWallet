@@ -143,7 +143,7 @@ export default {
         line-height: 20px;
       }
       &-t {
-        font-size: 10px;
+        font-size: 12px;
         color: #848484;
       }
       &-m {
@@ -151,7 +151,7 @@ export default {
         font-size: 12px;
       }
       &-b {
-        font-size: 10px;
+        font-size: 12px;
         color: #848484;
       }
     }

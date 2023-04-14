@@ -214,7 +214,7 @@ i {
 .tip1 {
   .toCreate {
     color: #037cd6;
-    font-size: 10px;
+    font-size: 12px;
     &:hover {
       text-decoration: underline;
     }

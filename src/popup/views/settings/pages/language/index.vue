@@ -75,7 +75,7 @@ export default {
       border: 1PX solid #1989fa;
     }
     .tit {
-      font-size: 10px;
+      font-size: 12px;
       line-height: 14px;
     }
     .tit2 {

@@ -212,14 +212,14 @@ export default defineComponent({
       border-radius: 10px;
       color: #fff;
       text-align: center;
-      font-size: 10px;
+      font-size: 12px;
       position: absolute;
       right: 0px;
       top: -16px;
       .num {
         color: #3AAE55;
         padding: 0 4px;
-        font-size: 10px;
+        font-size: 12px;
         // transform: scale(0.8);
       }
     }
