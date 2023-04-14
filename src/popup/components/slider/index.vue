@@ -7,12 +7,12 @@
       class="nav-header-slider-box"
     >
       <div class="slider-con">
-        <div :class="`slider-bg ${hasExchange ? 'blue' : ''}`">
+        <div :class="`slider-bg ${pageType == 'Tab' ? 'Tab' : ''} ${hasExchange ? 'blue' : ''}`">
           <div class="flex back-box">
             <van-icon name="cross" class="hover" @click="showSlider = false" />
           </div>
 
-          <div :class="`user-img mt-20`">
+          <div :class="`user-img  ${pageType == 'Tab' ? '' : 'mt-20'}`">
             <div class="user-img-circle flex center-v hover">
               <AccountIcon
                 :data="accountInfo.icon"
@@ -157,7 +157,7 @@
               </div>
             </div>
             <!-- Switch account -->
-            <div :class="`account mt-6 ${pageType === 'Tab' ? 'mt-14' :''}`">
+            <div :class="`account mt-6 ${pageType === 'Tab' ? 'mt-4' :''}`">
               <div class="flex center-v name" @click="toAccountManagement">
                 {{ accountInfo.name }}
                 <i
@@ -167,10 +167,10 @@
                 ></i>
               </div>
               <!-- Address, copy, QR code-->
-              <div :class="`address-card flex mt-6 ${pageType === 'Tab' ? 'mt-14' :''}`" @click="toCopy">
+              <div :class="`address-card flex mt-6 ${pageType === 'Tab' ? 'mt-4' :''}`" @click="toCopy">
                 <div class="add">{{ accountInfo.address }}</div>
               </div>
-              <div :class="`amount mt-8 ${pageType === 'Tab' ? 'mt-14' :''}`">
+              <div :class="`amount mt-8 ${pageType === 'Tab' ? 'mt-4' :''}`">
                 {{ amount }} {{ currentNetwork.currencySymbol }}
               </div>
             </div>

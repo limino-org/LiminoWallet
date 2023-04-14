@@ -43,7 +43,7 @@
   </div>
 </template>
 <script lang="ts">
-import Vue, { computed, reactive } from "vue";
+import Vue, { computed, onMounted, reactive } from "vue";
 import {
   Icon,
   Toast,
@@ -94,7 +94,7 @@ export default {
     const appProvide = inject('appProvide')
     // Display the default token of the current network
     const myToken = computed(() => {
-      const symbol = currentNetwork.value.currencySymbol;
+      const symbol = currentNetwork.value.currencySymbol || '';
       const balance = accountInfo.value.amount;
       const data = {
         balance,

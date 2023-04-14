@@ -110,7 +110,7 @@ export default {
 
 
     onMounted(() => {
-      getNetworkList().then(res => {
+      getNetworkList(store.state.account.coinType.name).then(res => {
           // @ts-ignore
           netWorkList.value = res.filter((item: any) => {
             if(!item.isMain){

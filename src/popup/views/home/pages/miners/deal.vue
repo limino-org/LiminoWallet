@@ -1736,7 +1736,7 @@ export default defineComponent({
         font-weight: bold;
       }
       .ipt-server {
-        font-size: 10px;
+        font-size: 12px;
         color: #8f8f8f;
         font-weight: bold;
         span {

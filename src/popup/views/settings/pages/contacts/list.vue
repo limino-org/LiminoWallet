@@ -86,7 +86,7 @@
   </div>
 </template>
 <script lang="ts">
-import Vue, { computed, reactive } from "vue";
+import Vue, { computed, onMounted, reactive } from "vue";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 
 import {
@@ -111,6 +111,7 @@ import ContactsList from "@/popup/views/settings/pages/contacts/components/conta
 import { vantLangs } from "@/popup/language/index";
 import { Locale } from "vant";
 import { regEnglish } from "@/popup/enum/regexp";
+import { getContactsList } from '@/popup/store/db';
 export default {
   name: "contacts-list",
   components: {
@@ -132,10 +133,11 @@ export default {
     // 1 ascending 2 descending
     const sortType = ref("1");
     const name = ref("");
-  
-    const alist = computed(() => {
+    const alist = ref([])
+
+    onMounted(async() => {
       // Split into two-dimensional arrays according to the first letter
-      const list = state.account.contactsCoinType[state.account.coinType.name].map((item: any) => item);
+      const list = await getContactsList()
       list.sort((a: any, b: any) => {
         if (sortType.value == "1") {
           return (a.name + "").localeCompare(b.name + "");
@@ -167,8 +169,8 @@ export default {
           arr.push({ label, children: [{ ...item }] });
         }
       });
-      return arr;
-    });
+      alist.value = arr;
+    })
 
     let contacts = alist;
 

@@ -192,7 +192,7 @@
   </div>
 </template>
 <script lang="ts">
-import Vue, { computed, reactive } from "vue";
+import Vue, { computed, onMounted, reactive } from "vue";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 
 import {
@@ -220,6 +220,7 @@ import ContactsList from "@/popup/views/settings/pages/contacts/components/conta
 import { vantLangs } from "@/popup/language/index";
 import { Locale } from "vant";
 import { regEnglish } from "@/popup/enum/regexp";
+import { getContactsList, getRecentList } from '@/popup/store/db';
 export default {
   name: "contacts-choose-list",
   components: {
@@ -244,10 +245,12 @@ export default {
     // 1 ascending 2 descending
     const sortType = ref("1");
     const name = ref("");
+    const alist = ref([])
     // Contacts not filtered
-    const alist = computed(() => {
+    onMounted(async() => {
       // Split into two-dimensional arrays according to the first letter
-      const list = state.account.contactsCoinType[state.account.coinType.name].map((item: any) => item);
+(async() => {
+  const list = await getContactsList()
       list.sort((a: any, b: any) => {
         if (sortType.value == "1") {
           return (a.name + "").localeCompare(b.name + "");
@@ -279,21 +282,12 @@ export default {
           arr.push({ label, children: [{ ...item }] });
         }
       });
-      return arr;
-    });
+      alist.value = arr;
 
-    let contacts = alist;
-
-    const indexList = computed(() => {
-      return contacts.value.map((item: any) => item.label);
-    });
-
-    // recent contacts
-    const sortType2 = ref("1");
-    const coinName = state.account.coinType.name
-    const alist2 = computed(() => {
-      // Split into two-dimensional arrays according to the first letter
-      const list = state.account.recentlistCoinType[coinName].map((item: any) => item);
+})();
+      (async() => {
+// Split into two-dimensional arrays according to the first letter
+const {list} = await getRecentList()
       list.sort((a: any, b: any) => {
         if (sortType2.value == "1") {
           return (a.name + "").localeCompare(b.name + "");
@@ -325,8 +319,21 @@ export default {
           arr.push({ label, children: [{ ...item }] });
         }
       });
-      return arr;
+      alist2.value = arr;
+
+      })()
+    })
+
+    let contacts = alist;
+
+    const indexList = computed(() => {
+      return contacts.value.map((item: any) => item.label);
     });
+
+    // recent contacts
+    const sortType2 = ref("1");
+    const alist2 = ref([])
+
 
     let contacts2 = alist2;
 
@@ -459,7 +466,7 @@ export default {
     }
   }
 :deep(.van-tab) {
-  height: 46px;
+  height: 46PX;
   padding: 0;
   margin-right: 20px;
 }
@@ -469,7 +476,7 @@ export default {
   padding-right: 14px;
 }
 :deep(.van-tabs--line .van-tabs__wrap) {
-  height: 46px !important;
+  height: 46PX !important;
 }
 :deep(.van-tab--active) {
   color: rgba(3, 125, 214, 1);
@@ -515,7 +522,7 @@ export default {
     cursor: pointer;
   }
   .list {
-    height: calc(100vh - 48px - 16px);
+    height: calc(100vh - 48PX);
     overflow-y: scroll;
   }
   .search-box {

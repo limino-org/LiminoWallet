@@ -151,6 +151,9 @@
   height: 100%;
   .slider-bg {
     padding: 20px 0 14px 15px;
+    &.Tab {
+      padding: 10px 0 10px 15px;
+    }
     box-sizing: border-box;
     &.blue {
       background: #037CD6;
@@ -189,13 +192,13 @@
       margin-left: 14px;
     }
     .account-amount-box {
-      font-size: 10px;
+      font-size: 12px;
       line-height: 15px;
       margin-top: 6px;
     }
     .account-address-box-1 {
       line-height: 15px;
-      font-size: 10px;
+      font-size: 12px;
       margin-top: 5px;
       transition: ease .3s;
       color: #fff;
@@ -280,9 +283,9 @@
         font-size: 12px;
         font-weight: 600;
         line-height: 42px;
-        // &.Tab {
-        //   line-height: 48px;
-        // }
+        &.Tab {
+          line-height: 32px;
+        }
         // &.Popup {
         //   line-height: 42px;
         // }

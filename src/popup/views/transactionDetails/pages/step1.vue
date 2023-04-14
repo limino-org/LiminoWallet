@@ -4,13 +4,16 @@
       <div class="flex center">
         <div
           class="flex center currency-icon"
-          v-for="item in accountInfo.token"
-          :key="item"
         >
           <img
             class="currency-symbol"
-            v-if="item"
+            v-if="coinType.value == 0"
             src="@/assets/icon_black.svg"
+          />
+          <img
+            class="currency-symbol"
+            v-if="coinType.value == 1"
+            src="@/popup/assets/token/BTC.svg"
           />
         </div>
       </div>
@@ -659,7 +662,6 @@ export default {
           gasLimit: gasLimit.value,
         };
         await DEL_TXQUEUE(txInfo);
-        // store.commit("account/DEL_TXQUEUE",txInfo);
         const newres = {
           ...clone(txInfo),
           txId: guid(),
@@ -794,6 +796,10 @@ export default {
     border-radius: 50%;
     width: 40px;
     height: 40px;
+    img {
+      width: 100%;
+      display: block;
+    }
   }
 
   &-icon {

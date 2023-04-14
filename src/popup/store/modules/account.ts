@@ -10,7 +10,7 @@ import { btcNetworks, getBTCNetwork } from "@/popup/utils/btc/config";
 const { handleUpdate } = useBroadCast()
 import eventBus from "@/popup/utils/bus";
 import { BTCWallet } from '@/popup/utils/btc/BTCWallet'
-import storeDBIns, { getDB, getNetworkList, getPenddingList, getTxList, updateNetWork } from '@/popup/store/db'
+import storeDBIns, { addRecentList, getDB, getNetworkList, getPenddingList, getTxList, updateNetWork } from '@/popup/store/db'
 console.log('storeDBIns', storeDBIns)
 console.log('BTCWallet', BTCWallet)
 // @ts-ignore
@@ -24,7 +24,7 @@ import {
   createRandomWallet,
   parsekeystore,
 } from "@/popup/utils/ether";
-import { getRandomIcon } from "@/popup/utils/index";
+import { IconData, getRandomIcon } from "@/popup/utils/index";
 import { toRaw } from "vue";
 import { TransactionData, TransactionParams } from "../index";
 import { ETH, Token } from "@/popup/utils/token";
@@ -58,6 +58,7 @@ import { Wallet, BaseProvider } from "ethers";
 import { Networks, PrivateKey } from "bitcore-lib";
 import { importAddress } from "@/popup/utils/btc/rpc";
 import { coinTypes } from "@/popup/enum/coinType";
+import { modifNetWork } from "@/popup/store/db";
 
 type RecentData = {
   BTC: Array<any>
@@ -87,7 +88,6 @@ export interface State {
   // Status of opening an exchange
   exchangeStatus: ExchangeStatus;
   contacts: Array<ContactInfo>;
-  contactsCoinType: RecentData;
   tranactionModel: boolean;
   tranactionList: Array<any>;
   // recent contacts
@@ -108,6 +108,8 @@ export type ContactInfo = {
   memo?: string;
   name: string;
   id: string;
+  date?: number
+  icon?: IconData
 };
 export type ExchangeStatus = {
   status: number;
@@ -364,10 +366,6 @@ export default {
     },
     // Address list
     contacts: [],
-    contactsCoinType: {
-      BTC:[],
-      ETH:[]
-    },
     // Transaction progress Popup
     tranactionModel: false,
     // Current transaction queue
@@ -559,37 +557,6 @@ export default {
         }
       })
     },
-    // Transaction list pushed to current account
-    async PUSH_TRANSACTION(state: State, value: TransactionReceipt) {
-      const { to, from, tokenAddress, network } = value;
-      const txNetwork: NetWorkData = { ...network };
-      const { id, currencySymbol } = txNetwork
-      const formAdd = from.toUpperCase();
-      const txListKey = `txlist-${id}`
-      let txList: any = await localforage.getItem(txListKey)
-      console.log('txList', txList)
-      if (txList && typeof txList == 'object') {
-        const receipt = { ...value, symbol: currencySymbol }
-        delete receipt.network
-        if (txList[formAdd] && txList[formAdd].length) {
-          const hasHash = txList[formAdd].find((tx: any) => tx.hash.toUpperCase() == value.hash.toUpperCase())
-          !hasHash ? txList[formAdd].unshift(clone(receipt)) : ''
-        } else {
-          txList[formAdd] = [clone(receipt)]
-        }
-      } else {
-        const receipt = { ...value, symbol: currencySymbol }
-        delete receipt.network
-        txList = {
-          [formAdd]: [clone(receipt)]
-        }
-      }
-      store.commit('account/DEL_TXQUEUE', value)
-      console.log('set txList', txList)
-      // save txlist
-      localforage.setItem(txListKey, clone(txList))
-      handleUpdate()
-    },
     // Update balance
     UPDATE_BALANCE(state: State, balance: string) {
       const address = state.accountInfo.address.toUpperCase();
@@ -684,131 +651,62 @@ export default {
       }
       handleUpdate()
     },
-    // Add address book
-    ADD_CONTACTS(state: State, opt: ContactInfo) {
-      state.contactsCoinType[state.coinType.name].unshift(opt);
-      handleUpdate()
-    },
-    // Delete Contact
-    DELETE_CONTACT(state: State, index: number) {
-      state.contactsCoinType[state.coinType.name].splice(index, 1);
-      handleUpdate()
-    },
-    // Edit Contact
-    MODIF_CONTACT(state: State, { targetIndex, opt }: any) {
-      state.contactsCoinType[state.coinType.name][targetIndex] = opt;
-      handleUpdate()
-    },
-    // Push to transaction queue
-    ADD_TRANACTIONLIST(state: State, data: any) {
-      const { hash } = data;
-      const f = state.tranactionList.find((item) => item.hash == hash);
-      const list = state.tranactionList
-      if (!f) {
-        list.unshift({ ...data, code: "pending" });
-        const len = list.length;
-        if (len > 10) {
-          // The length of the control queue is 10
-          state.tranactionList = list.slice(0, 10)
-        } else {
-          state.tranactionList = list
-        }
-        state.tranactionModel = true;
-      }
-      handleUpdate()
-    },
-    // Update transaction queue data
-    UPDATE_TRANACTIONLIST(state: State, data: TransactionReceipt) {
-      const { hash } = data;
-      const list = state.tranactionList;
-      const len = list.length;
-      for (let i = 0; i < len; i++) {
-        if (list[i].hash == hash) {
-          // Update queue data
-          list[i] = { ...data, code: "receive" };
-        }
-      }
-      state.tranactionModel = true;
-      handleUpdate()
-    },
-    // Remove a transaction from the transaction queue according to the hash
-    DELETE_TRANACTIONLIST(state: State, hash: string) {
-      const list = state.tranactionList;
-      let idx = list.find((item) => item.hash == hash);
-      list.splice(idx, 1);
-      handleUpdate()
+
+    CLEAR_CONTACT(state: State){
+      state.contacts = []
     },
     // Close the transaction queue pending pop-up window
     CLOSE_TRANACTIONMODAL(state: State) {
       state.tranactionModel = false;
     },
-    // Update the most recent contacts, with a maximum of 10 reserved
-    PUSH_RECENTLIST(state: State, address: string) {
-      if (!address) {
-        return;
-      }
-      // Find your own accounts and contacts
-      const myAccount = state.accountList.find(
-        (item) => item.address.toUpperCase() == address.toUpperCase()
-      );
-      const myContact = state.contacts.find(
-        (item) => item.address.toUpperCase() == address.toUpperCase()
-      );
+    // // Update the most recent contacts, with a maximum of 10 reserved
+    // PUSH_RECENTLIST(state: State, address: string) {
+    //   if (!address) {
+    //     return;
+    //   }
+    //   // Find your own accounts and contacts
+    //   const myAccount = state.accountList.find(
+    //     (item) => item.address.toUpperCase() == address.toUpperCase()
+    //   );
+    //   const myContact = state.contacts.find(
+    //     (item) => item.address.toUpperCase() == address.toUpperCase()
+    //   );
       
-      const coinName = state.coinType.name
-      if (myAccount || myContact) {
-        const theAccount = myAccount || myContact
-        const idx = state.recentlistCoinType[coinName].findIndex(
-          (item) => item.address.toUpperCase() == address.toUpperCase()
-        );
-        if (idx > -1) {
-          state.recentlistCoinType[coinName].splice(idx, 1);
-        }
-        state.recentlistCoinType[coinName].unshift(theAccount);
-      } else {
-        const idx =  state.recentlistCoinType[coinName].findIndex(
-          (item) => item.address.toUpperCase() == address.toUpperCase()
-        );
-        if (idx > -1) {
-          state.recentlistCoinType[coinName].splice(idx, 1);
-        }
-        state.recentlistCoinType[coinName].unshift({
-          icon: getRandomIcon(),
-          name: '-',
-          address,
-        });
-      }
-      const len =  state.recentlistCoinType[coinName].length;
-      if (len > 10) {
-        state.recentlistCoinType[coinName].splice(len - 1, 1);
-      }
-      handleUpdate()
-    },
+    //   const coinName = state.coinType.name
+    //   if (myAccount || myContact) {
+    //     const theAccount = myAccount || myContact
+    //     const idx = state.recentlistCoinType[coinName].findIndex(
+    //       (item) => item.address.toUpperCase() == address.toUpperCase()
+    //     );
+    //     if (idx > -1) {
+    //       state.recentlistCoinType[coinName].splice(idx, 1);
+    //     }
+    //     state.recentlistCoinType[coinName].unshift(theAccount);
+    //   } else {
+    //     const idx =  state.recentlistCoinType[coinName].findIndex(
+    //       (item) => item.address.toUpperCase() == address.toUpperCase()
+    //     );
+    //     if (idx > -1) {
+    //       state.recentlistCoinType[coinName].splice(idx, 1);
+    //     }
+    //     state.recentlistCoinType[coinName].unshift({
+    //       icon: getRandomIcon(),
+    //       name: '-',
+    //       address,
+    //     });
+    //   }
+    //   const len =  state.recentlistCoinType[coinName].length;
+    //   if (len > 10) {
+    //     state.recentlistCoinType[coinName].splice(len - 1, 1);
+    //   }
+    //   handleUpdate()
+    // },
     // Update contractAddress
     UPDATE_CONTRACTADDRESS(state: State, ERBPay: string) {
       state.contractAddress = ERBPay
     },
     UPDATE_FIRSTTIME(state: State, bool: Boolean) {
       state.firstTime = bool
-    },
-    // New trades are pushed to the trade queue
-    async PUSH_TXQUEUE(state: State, tx: any) {
-      const { network: { id } } = tx
-      const queuekey = `txQueue-${id}`
-      const list: any = await localforage.getItem(queuekey)
-      const txQueue = list && list.length ? list : []
-      txQueue.push(tx)
-      await localforage.setItem(queuekey, clone(txQueue))
-    },
-    // Delete data from a queue
-    // Delete data from a queue
-    async DEL_TXQUEUE(state: State, tx: any) {
-      const { network: { id } } = tx
-      const queueKey = `txQueue-${id}`
-      const list: any = await localforage.getItem(queueKey)
-      const txQueue = list && list.length ? list : []
-      const newList = txQueue.filter((item: any) => item.hash.toUpperCase() != tx.hash.toUpperCase())
-      await localforage.setItem(queueKey, clone(newList))
     },
   },
   actions: {
@@ -1103,8 +1001,23 @@ export default {
           (item: AccountInfo) => item.address
         );
         console.warn('updateAllBalance')
-        const asyncList = list.map((address) => dispatch("getBalanceByAddress", { address }));
+        let delay = -100;
+        const delayIncrement = 100
+        const timeArr = []
+        const asyncList = list.map((address) => {
+          delay += delayIncrement
+          return new Promise((resolve, reject) => {
+            const t = setTimeout(resolve, delay)
+            timeArr.push(t)
+            return t
+          })
+          .then(() => {
+           return dispatch("getBalanceByAddress", { address })
+          })
+        }
+        );
         const data = await Promise.all(asyncList);
+        timeArr.forEach(id => clearTimeout(id))
         const banList: any = {};
         list.forEach((address, index) => {
           banList[address] = data[index]
@@ -1225,7 +1138,8 @@ export default {
       try {
        
         // Update recent contacts
-        commit("PUSH_RECENTLIST", to);
+        addRecentList(to)
+        // commit("PUSH_RECENTLIST", to);
         const newwallet = await getWallet();
         let sendData = null
         let btcTXHash = ''
@@ -1318,7 +1232,8 @@ export default {
       try {
         const { currentNetwork } = state
         // Update recent contacts
-        commit("PUSH_RECENTLIST", to);
+        // commit("PUSH_RECENTLIST", to);
+        addRecentList(to)
         debugger
         // Get contract token instance object
         const { contractWithSigner, contract } = await dispatch(
@@ -1372,11 +1287,12 @@ export default {
           console.log('newtx', tx)
           const { to } = tx
           // Update recent contacts
-          commit("PUSH_RECENTLIST", to);
+          // commit("PUSH_RECENTLIST", to);
+          addRecentList(to)
           const symbol = state.currentNetwork.currencySymbol
           const data = await wallet.sendTransaction(tx);
           const { from, gasLimit, gasPrice, hash, nonce, type, value } = data;
-          commit("PUSH_TXQUEUE", {
+          PUSH_TXQUEUE({
             date: new Date(),
             hash,
             from,
@@ -1390,25 +1306,18 @@ export default {
             network: clone(state.currentNetwork),
             txType: TransactionTypes.default,
 
-          });
-          // const penddingRep = handleGetPenddingTranactionReceipt(TransactionTypes.default,data, symbol)
-          // commit("PUSH_TRANSACTION", penddingRep);
+          })
+
+    
           const receipt = await wallet.provider.waitForTransaction(data.hash)
-          const { currentNetwork } = state
-          const rep: TransactionReceipt = handleGetTranactionReceipt(
-            TransactionTypes.default,
-            receipt,
-            data,
-            currentNetwork
-          );
+          await dispatch('waitTxQueueResponse')
           // Update transaction queue
-          commit("UPDATE_TRANACTIONLIST", rep);
-          // Add to transaction
-          commit("UPDATE_TRANSACTION", rep);
-          resolve(data)
+          
+          resolve(receipt)
          }
          if(state.coinType.value == 1) {
           const data = await wallet.sendTransaction(tx);
+          resolve(data)
          }
    
         } catch (err) {
@@ -1481,31 +1390,36 @@ export default {
         // Link contract
         if (hasAddress) {
           // Add if not
-          network.tokens[key].push({
+          const net = {
             symbol,
             logoUrl,
             name,
             precision: decimal,
             tokenContractAddress,
             balance: balance.toString(),
-          });
-          commit('UPDATE_NETWORK', net)
+          }
+          network.tokens[key].push(net);
+          commit('UPDATE_NETWORK', network)
+          await modifNetWork(network)
           return Promise.resolve();
         } else {
           // Current network current address has no token
           network.tokens[key] = [];
-          network.tokens[key].push({
+          const net = {
             symbol,
             logoUrl,
             name,
             precision: decimal,
             tokenContractAddress,
             balance: balance.toString(),
-          });
-          commit('UPDATE_NETWORK', net)
+          }
+          network.tokens[key].push(net);
+          commit('UPDATE_NETWORK', network)
+          await modifNetWork(network)
           return Promise.resolve();
         }
       } catch (err) {
+        console.error('import err', err)
         return Promise.reject(i18n.global.t("currencyList.error"))
       }
     },
@@ -1582,41 +1496,6 @@ export default {
         return Promise.reject(err);
       }
     },
-    // Add address book
-    async addContacts({ commit, state }: any, opt: ContactInfo) {
-      // Determine whether there is a duplicate address in the address book
-      const { address } = opt;
-      const flag = state.contactsCoinType[state.coinType.name].find(
-        (item: any) => item.address.toUpperCase() == address.toUpperCase()
-      );
-      if (flag) {
-        return Promise.reject(i18n.global.t("contacts.alreadyexists"));
-      } else {
-        commit("ADD_CONTACTS", opt);
-        return Promise.resolve();
-      }
-    },
-    // Delete address book contact
-    deleteContact({ commit, state }: any, id: any) {
-      const { contacts } = state;
-      const targetIdx = contacts.findIndex((item: any) => item.id == id);
-      if (targetIdx == -1) {
-        return Promise.reject("Contact not found");
-      }
-      commit("DELETE_CONTACT", targetIdx);
-      return Promise.resolve();
-    },
-    // Edit Contact
-    modifContact({ commit, state }: any, opt: ContactInfo) {
-      const { address, id } = opt;
-      const targetIndex = state.contactsCoinType[state.coinType.name].findIndex(
-        (item: any) => item.id == id
-      );
-      if (targetIndex == -1) {
-        return Promise.reject("Contact not found");
-      }
-      commit("MODIF_CONTACT", { targetIndex, opt });
-    },
     // Encrypt the new keystore according to all new passwords
     async updateKeyStoreByPwd({ commit, state }: any, password: string) {
       if (!password) {
@@ -1692,8 +1571,7 @@ export default {
     },
     // The result of polling the transaction queue
     // The result of polling the transaction queue
-    async waitTxQueueResponse({ commit, state }: any, opt?: Object) {
-      console.warn('waitTxQueueResponse---')
+    async waitTxQueueResponse({ commit, state, dispatch }: any, opt?: Object) {
       const _opt = {
         time: 60000,
         callback: (e: any) => { },
@@ -1807,6 +1685,7 @@ export default {
                 receiptList.push(data1)
               }
             }
+            dispatch('updateBalance')
             eventBus.emit('waitTxEnd')
             resolve(receiptList)
           } catch (err) {

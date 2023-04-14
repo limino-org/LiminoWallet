@@ -63,7 +63,7 @@ export default defineComponent({
       () => props.modelValue,
       n => {
         showModalNetwork.value = n
-        getNetworkList().then(res => {
+        getNetworkList(store.state.account.coinType.name).then(res => {
           console.log('netlist', res, currentNetwork.value)
           // @ts-ignore
           netWorkList.value = res.filter((item: any) => {

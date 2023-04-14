@@ -311,24 +311,31 @@ export async function initWallet() {
     const errMsg = { code: "-32002", reason: "Resource unavailable", message: "The wallet has not been initialized. Please initialize the wallet first" }
     throw errMsg
   }
+  const { accountInfo, currentNetwork, coinType } = local.account;
   try {
-    const { accountInfo, currentNetwork } = local.account;
     const { keyStore } = accountInfo;
     const { URL } = currentNetwork
+    const networksTable = localforage.createInstance({
+      name: 'localforage',
+      storeName: `NETWORKS-TABLE`
+  })
+  const keys = await networksTable.keys()
+  const nets = await Promise.all(keys.map(id => networksTable.getItem(id)))
+    let newUrl = coinType.value != 0 ? nets.find(item => item.id == 	"wormholes-network-1").URL : URL
     const params = { json: keyStore, password: pwdVal };
     if (!newwallet) {
       const wallet = await createWalletByJson(params);
-      provider = ethers.getDefaultProvider(URL);
+      provider = ethers.getDefaultProvider(newUrl);
       newwallet = wallet.connect(provider);
       return newwallet
     }
     if (!newwallet.provider) {
-      provider = ethers.getDefaultProvider(URL);
+      provider = ethers.getDefaultProvider(newUrl);
       newwallet = wallet.connect(provider);
       return newwallet
     }
-    if (newwallet.provider && (newwallet.provider.connection.url != URL)) {
-      provider = ethers.getDefaultProvider(URL);
+    if (newwallet.provider && (newwallet.provider.connection.url != newUrl)) {
+      provider = ethers.getDefaultProvider(newUrl);
       newwallet.connect(provider);
       return newwallet
     }

@@ -21,7 +21,8 @@ export const useNetWork = () => {
 
     const allNetworks = ref([])
     onMounted(async() => {
-       allNetworks.value = await getNetworkList()
+       const store = useStore()
+       allNetworks.value = await getNetworkList(store.state.account.coinType.name)
     })
 
     const netWorkList = computed(() => {

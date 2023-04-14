@@ -3,6 +3,8 @@ import useClipboard from 'vue-clipboard3'
 import { VUE_APP_BTC_SCAN_URL, VUE_APP_SCAN_URL } from "@/popup/enum/env";
 import store from '@/popup/store';
 import {coinTypes} from '@/popup/enum/coinType'
+import { getNetworkList } from '../store/db';
+import { NetWorkData } from '../enum/network';
 
 const { toClipboard } = useClipboard()
 
@@ -149,7 +151,7 @@ export function guid() {
   return (S4() + S4()+ S4()+ S4() + S4() + S4() + S4() + S4());
 }
 
-export const viewTransactionByHash = (hash:string | null) => {
+export const viewTransactionByHash = async (hash:string | null) => {
   if(hash) {
     if(store.state.account.coinType.value == 0) {
       if(store.state.account.currentNetwork.id === 'wormholes-network-1') {
@@ -164,7 +166,8 @@ export const viewTransactionByHash = (hash:string | null) => {
       }
     }
     if(store.state.account.coinType.value == 1) {
-      window.open(`${VUE_APP_BTC_SCAN_URL}/insight/BTC/${store.state.account.currentNetwork.value}/tx/${hash}`);
+      const { browser } = store.state.account.currentNetwork
+      window.open(`${browser}/tx/${hash}`);
     }
   } else {
     throw Error('The hash cannot be empty')
@@ -186,7 +189,8 @@ export const viewAccountByAddress = (address:string ) => {
     }
   }
   if(store.state.account.coinType.value == 1) {
-    window.open(`${VUE_APP_BTC_SCAN_URL}/insight/BTC/${store.state.account.currentNetwork.value}/address/${address}`);
+    const { browser } = store.state.account.currentNetwork
+    window.open(`${browser}/address/${address}`);
   }
   } else {
     throw Error('The address cannot be empty')

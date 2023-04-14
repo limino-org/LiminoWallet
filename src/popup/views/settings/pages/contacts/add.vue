@@ -79,6 +79,7 @@ import { getRandomIcon, guid } from "@/popup/utils";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useBroadCast } from "@/popup/utils/broadCost";
 import { useToast } from "@/popup/plugins/toast";
+import { addContact, deleteContact, modifContact } from '@/popup/store/db';
 const bitcore = require("bitcore-lib");
 const { PrivateKey, Address, Networks, Transaction, HDPrivateKey, Mnemonic, Message } = bitcore;
 
@@ -152,7 +153,9 @@ export default {
       }).then(async () => {
         // on confirm
         try {
-          await dispatch(`account/deleteContact`, query.id);
+          const id: string = query.id ? query.id.toString() : ''
+          await deleteContact(id)
+          // await dispatch(`account/deleteContact`, query.id);
           handleUpdate();
           $toast.success(t("contacts.contactdeletedsuccessfully"));
           router.back();
@@ -169,10 +172,15 @@ export default {
       };
 
       try {
-        await store.dispatch(
-          `account/${query.address ? "modifContact" : "addContacts"}`,
-          opt
-        );
+        if(query.address) {
+          await modifContact(opt)
+        } else {
+          await addContact(opt)
+        }
+        // await store.dispatch(
+        //   `account/${query.address ? "modifContact" : "addContacts"}`,
+        //   opt
+        // );
         handleUpdate();
         $toast.success(
           query.address

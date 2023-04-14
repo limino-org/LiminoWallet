@@ -63,12 +63,12 @@ export const formatDate = (time: number, format = 'MMMM-DD') => {
 }
 
 export const formatBTCTxDate =(data: any) => {
-  const {blockTime,sendStatus,date} = data
+  const {blockTime,sendStatus,date,blockTimeNormalized} = data
   if(sendStatus === 'pendding') {
     return formatDate(date, "MM/DD")+' ' + i18n.global.t("transactionDetails.at") +' ' + formatDate(date, "HH:mm ")
   }
 
-  return formatDate(date, "MM/DD")+' ' + i18n.global.t("transactionDetails.at")+' ' + formatDate(date, "HH:mm ")
+  return formatDate(blockTime, "MM/DD")+' ' + i18n.global.t("transactionDetails.at")+' ' + formatDate(blockTime, "HH:mm ")
 }
 
 export const formatTxDate = (data: any) => {

@@ -315,7 +315,7 @@ export default {
           font-weight: bold;
         }
         .ipt-server {
-          font-size: 10px;
+          font-size: 12px;
           color: #8f8f8f;
           font-weight: bold;
           span {
@@ -424,7 +424,7 @@ export default {
   width: 285px;
   padding: 10px 5px 10px 15px;
 
-  font-size: 10px;
+  font-size: 12px;
   color: #000000 !important;
   background: #fcf0f5;
   border-radius: 4px 4px 4px 4px;

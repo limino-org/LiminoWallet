@@ -164,6 +164,7 @@ import { addressMask, snftToErb, toUsd } from "@/popup/utils/filters";
 import {
   getGasFee,
   getWallet,
+  PUSH_TXQUEUE,
   TransactionTypes,
 } from "@/popup/store/modules/account";
 import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
@@ -173,6 +174,7 @@ import { web3 } from "@/popup/utils/web3";
 import { clone } from "pouchdb-utils";
 import { useToast } from "@/popup/plugins/toast";
 import { getAccountAddr } from "@/popup/http/modules/common";
+import store from "@/popup/store";
 //   Pledge redemption of a single SNFT
 export default defineComponent({
   name: "transfer-NFT-modal",
@@ -337,22 +339,7 @@ export default defineComponent({
             to: address,
             data: `0x${data3}`,
           };
-          const receipt: any = await wallet.sendTransaction(tx1);
-          const { from, gasLimit, gasPrice, hash, nonce, to, type, value } =
-            receipt;
-          commit("account/PUSH_TXQUEUE", {
-            hash,
-            from,
-            gasLimit,
-            gasPrice,
-            nonce,
-            to,
-            type,
-            value,
-            nft_address: nftAdd,
-            network: clone(currentNetwork),
-            txType: TransactionTypes.other,
-          });
+          const receipt: any = await store.dispatch('account/transaction',tx1);
           $tradeConfirm.update({
             status: "approve",
           });

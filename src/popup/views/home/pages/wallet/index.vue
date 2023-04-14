@@ -573,7 +573,7 @@ export default {
         time = setInterval(() => {
         dispatch("account/updateBalance");
         dispatch("account/updateTokensBalances");
-      }, 10000);
+      }, 8000);
       }
     };
 
@@ -655,6 +655,7 @@ export default {
       eventBus.off(eventHandler.changeNetwork)
       clearInterval(time);
       time = null
+      handleLoopBalance()
     });
     onDeactivated(() => {
       clearInterval(time);
