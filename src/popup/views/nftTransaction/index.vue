@@ -81,7 +81,7 @@
     <!-- Click to go to the next step-->
     <div class="btn-boxs">
       <div class="container pl-26 pr-26 flex evenly">
-        <van-button @click="calcel" class="mr-10" plain block>{{
+        <van-button @click="cancel" class="mr-10" plain block>{{
           t("common.cancel")
         }}</van-button>
         <van-button
@@ -183,7 +183,9 @@ export default {
         sendBackground({
           method: handleType.eth_sendTransaction,
           response: { code: "200", data: receipt, sendId },
-        });
+        }).then(() => {
+            router.replace({name:'wallet'})
+          });
       } catch (err: any) {
         showToast(err.reason);
       } finally {
@@ -191,11 +193,13 @@ export default {
       }
     };
     const nextLoading: Ref<boolean> = ref(false);
-    const calcel = () => {
+    const cancel = () => {
       sendBackground({
         method: handleType.handleReject,
         response: { method: handleType.eth_sendTransaction, sendId },
-      });
+      }).then(() => {
+            router.replace({name:'wallet'})
+          });
     };
 
     const handleKeydown = (e: any) => {
@@ -221,7 +225,7 @@ export default {
     })
     return {
       t,
-      calcel,
+      cancel,
       clickRight,
       clickLeft,
       txJSON,
@@ -245,7 +249,7 @@ export default {
   padding-top: 20px;
 }
 .json-box {
-  max-height: 270px;
+  max-height: 200px;
   overflow-y: scroll;
   margin:0 20px 20px;
 }

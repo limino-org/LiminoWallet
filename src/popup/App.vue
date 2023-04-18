@@ -1,5 +1,5 @@
 <template>
-  <div class="page-box container" id="page-box">
+  <div :class="`page-box container ${pageType}`" id="page-box">
     <div class="container" id="container">
       <div v-if="route.meta.keepAlive">
         <router-view v-slot="{ Component }">
@@ -58,7 +58,8 @@ export default {
     const { initWallet } = useWallet();
     const currentNetwork = computed(() => state.account.currentNetwork);
     const coinType = computed(() => state.account.coinType);
-
+    // @ts-ignore
+    const pageType = ref(window?.pageType)
     provide("appProvide", appProvide());
     onBeforeMount(() => {
 
@@ -68,21 +69,6 @@ export default {
       // update browser session window id
       dispatch("system/setConversationid", guid());
 
-      // Listen to the broadcast of the same source window
-      // const { broad } = useBroadCast();
-      // broad.onmessage = async (e) => {
-      //   const { data }: any = e;
-      //   const { action, id } = data;
-      //   if (data && action) {
-      //     // If the same-origin window updates the account
-      //     if (
-      //       action == "wromHoles-update" &&
-      //       id != state.system.conversationId
-      //     ) {
-      //       window.location.reload();
-      //     }
-      //   }
-      // };
       window.onload = () => {
         // @ts-ignore
         chrome.storage.local.set({ comfirm_password: "" });
@@ -131,6 +117,7 @@ export default {
       addressMask,
       currentNetwork,
       transactionStatus,
+      pageType
     };
   },
 };
@@ -140,10 +127,14 @@ export default {
   position: relative;
   box-sizing: border-box;
   padding-bottom: 30px;
-  // &::-webkit-scrollbar {
-  //   display: none;
-  //   /* Chrome Safari */
-  // }
+}
+.container.Popup {
+  max-width: 375px;
+}
+:deep() {
+  .container.Popup .container {
+    max-width: 375px;
+  }
 }
 :deep(.van-popup) {
   position: absolute;
@@ -157,7 +148,7 @@ export default {
   position: relative;
   margin: 0 auto;
   overflow-y: hidden;
-  background: #fff;
+  background: #ffffff;
   box-sizing: border-box;
   box-shadow: 0 2px 15px #eaebee;
   :deep(.van-toast) {

@@ -1,6 +1,8 @@
 import { ethers } from './ethers.js';
 import { localforage } from './localforage.js'
 import { encrypt, decrypt } from './cryptojs.js'
+import { resetBadge, setBadge } from './actions.js';
+import { removeAllListeners } from './useGetTxReceipt.js';
 
 
 
@@ -8,7 +10,7 @@ export const handleGetPwd = (str, time) => {
   return decrypt(str, time)
 }
 
-export function createWalletByJson(params) {
+export async function createWalletByJson(params) {
   const { password, json } = params
   if (!password || !json) {
     return Promise.reject()
@@ -269,7 +271,8 @@ export const eventTypes = {
   // Password failure event
   pwdExpired: "password-expired-event",
   initWallet: "init-wallet",
-  openTabPopup: "open-tabPopup"
+  openTabPopup: "open-tabPopup",
+  
 }
 
 let newwallet = null
@@ -335,11 +338,13 @@ export async function initWallet() {
       return newwallet
     }
     if (newwallet.provider && (newwallet.provider.connection.url != newUrl)) {
+      await removeAllListeners()
       provider = ethers.getDefaultProvider(newUrl);
       newwallet.connect(provider);
       return newwallet
     }
     if (accountInfo.address.toUpperCase() != newwallet.address.toUpperCase()) {
+      await removeAllListeners()
       const newLocal = await localforage.getItem("vuex") || null
       const { accountInfo: newAccountInfo, currentNetwork: newCurrentNetwork } = newLocal.account;
       const { keyStore } = newAccountInfo;
@@ -535,6 +540,13 @@ export function createMsg(response = null, method = 'unknow', type = 'wormholes-
   }
 }
 
+
+export function sendToPopup(msg = {}, method, sender, code = '200') {
+  const bgMsg = { ...errorCode[code], data: msg }
+  const sendBgMsg = createBgMsg(bgMsg, method)
+  chrome.runtime.sendMessage(sender.id, sendBgMsg);
+}
+
 //   service worker response data
 export function createBgMsg(response = null, method = 'unknow', type = 'serviceWorker-callback') {
   return {
@@ -553,6 +565,7 @@ export function closeTabs() {
       }, async (tabs) => {
         for await (const win of tabs) {
           if (win.url && (win.url.includes(globalPath) || win.url.includes(globalHomePath))) {
+            // resetBadge()
             await chrome.tabs.remove(win.id)
           }
         }
@@ -595,11 +608,6 @@ export async function openPopup(
 ) {
   await closeTabs()
   const senderParams = await getLocalParams(method)
-  // console.log('openPopup 2', senderParams)
-  // const { status } = senderParams
-  // if (status && status != 'close') {
-  //   return
-  // }
   console.log('openPopup 3', method, url)
   senderParams.status = 'pendding'
   await chrome.storage.local.set({ [method]: senderParams })
@@ -611,11 +619,11 @@ export async function openPopup(
           type: 'popup',
           left: e.width - 355,
           top: -10,
-          width: 390,
+          width: 430,
           height: 700,
         }, async (e) => {
           console.log('open', e)
-
+          setBadge({url, sender, method, window: e})
           // await chrome.storage.local.set({ ['tab-params' +e.id]: {...senderParams,method} })
           await chrome.storage.local.set({
             [method]: {

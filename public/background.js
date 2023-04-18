@@ -104,20 +104,6 @@ chrome.runtime.onInstalled.addListener(async () => {
 
 //  Listen window closed
 chrome.tabs.onRemoved.addListener(async function (tabid, { windowId }) {
-  //  try {
-  //   const popupData = await chrome.storage.local.get(['tab-params' + windowId])
-  //   const data = popupData['tab-params' + windowId]
-  //   const { method, sender } = data
-  //   const pendingUrl = data.window.tabs[0].pendingUrl
-  //   const query = getQuery(pendingUrl)
-  //   const { address, sendId } = query
-  //   const errMsg = { code: "-32002", reason: "Cancel request", message: "The user canceled the request" }
-  //   const sendMsg = createMsg(errMsg, method)
-  //   sendMessage({...sendMsg, sendId}, {}, sender)
-  //  } catch(err){
-  //   console.log('err remove', err)
-  //  }
-
   Object.keys(handleRpcResponse).forEach(method => {
     if (handleRpcResponse[method] && handleRpcResponse[method].window && handleRpcResponse[method].window.id == windowId) {
       resetParamsData(method)
@@ -139,3 +125,4 @@ export const getQuery = (url) => {
   }
   return obj
 }
+

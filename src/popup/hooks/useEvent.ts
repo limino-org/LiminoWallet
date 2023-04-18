@@ -110,3 +110,8 @@ broad.onmessage = async (e) => {
       }
     }
   };
+
+
+export const useBackgroundEvent = () => {
+
+}

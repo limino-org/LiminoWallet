@@ -104,13 +104,17 @@ export default {
         sig: sig,
         isAdmin: false,
         call: (str: string) => {
-          sendBackground({method:signType,response:{code:'200',data: str, sendId}})
+          sendBackground({method:signType,response:{code:'200',data: str, sendId}}).then(() => {
+            router.replace({name:'wallet'})
+          })
         }
       })
     }
 
     const cancel = () => {
-      sendBackground({method:handleType.handleReject,response:{method:signType, sendId}})
+      sendBackground({method:handleType.handleReject,response:{method:signType, sendId}}).then(() => {
+            router.replace({name:'wallet'})
+          })
 
     }
     const handleKeydown = (e: any) => {

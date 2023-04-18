@@ -106,10 +106,14 @@ export default {
     const next = () => {
       console.warn('checkedList.value', checkedList.value)
       loading.value = true
-      sendBackground({method,response: {code:'200',data:[...checkedList.value],sendId}})
+      sendBackground({method,response: {code:'200',data:[...checkedList.value],sendId}}).then(() => {
+            router.replace({name:'wallet'})
+          })
     }
     const cancel = () => {
-      sendBackground({method:handleType.handleReject,response:{method,sendId}})
+      sendBackground({method:handleType.handleReject,response:{code:'200',data:{}, method,sendId}}).then(() => {
+            router.replace({name:'wallet'})
+          })
     }
     return {
       loading,

@@ -656,7 +656,6 @@ export default defineComponent({
     };
 
     const changeServerIndex = (value: number) => {
-      serverIndex.value = value
       if(value && insufficientMoney.value) {
         return
       }
@@ -668,7 +667,9 @@ export default defineComponent({
         exchangeStatus.value.status != 2
       ) {
         serverIndex.value = value;
+        return
       }
+
     };
     const successFn = () => {
       successDialog.value = false;
@@ -863,6 +864,7 @@ export default defineComponent({
       console.log('serverIndex:', n)
       console.log('isExchangeStatusStatus', isExchangeStatusStatus.value, visible2.value)
       console.log('isExchanger_flag', isExchanger_flag.value, visible1.value)
+  
     },{
       deep: true,
       immediate: true

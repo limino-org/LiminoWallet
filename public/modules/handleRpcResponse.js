@@ -2,6 +2,7 @@
 const clone = (data) => {
     return JSON.parse(JSON.stringify(data))
 }
+import { removeBadge } from './actions.js'
 import {
     getLocalParams,
     closeTabs,
@@ -24,9 +25,10 @@ import {
     eventTypes,
     eventsEmitter,
     delSenderByAddr,
-    addSenderByAddr
+    addSenderByAddr,
+    sendToPopup
 } from './common.js'
-import { useGetTxReceipt } from './useGetTxReceipt.js'
+import { removeAllListeners, useGetTxReceipt } from './useGetTxReceipt.js'
 const { waitTxQueueResponse } = useGetTxReceipt()
 // Distributed event
 export const handleRpcResponse = {
@@ -37,29 +39,32 @@ export const handleRpcResponse = {
             try {
                 const res = await waitTxQueueResponse()
                 console.warn('wait....', res)
-                const bgMsg = { ...errorCode['200'], data: res }
-                const sendBgMsg = createBgMsg(bgMsg, method)
-                chrome.runtime.sendMessage(sender.id, sendBgMsg);
+                sendToPopup(res, method, sender, '200')
 
             } catch (err) {
                 console.error('err wait', err)
-                const bgMsg = { ...errorCode['-32003'], data: null }
-                const sendBgMsg = createBgMsg(bgMsg, method)
-                chrome.runtime.sendMessage(sender.id, sendBgMsg);
+                sendToPopup(res, method, sender, '-32003')
             }
 
         }
     },
     [handleType.handleReject]: {
         sendResponse: async (data, sendResponse, sender) => {
+            console.warn('reject', sender, data)
             const { method, sendId } = data
             const senderParams = await getLocalParams(method)
             const errMsg = { ...errorCode['4001'], data: null }
             const sendMsg = createMsg(errMsg, method)
+            console.warn('reject 1', sendMsg)
+
             await sendMessage({...sendMsg, sendId}, {}, senderParams.sender)
-            const bgMsg = { ...errorCode['200'], data: null }
-            const sendBgMsg = createBgMsg(bgMsg, method)
-            await chrome.runtime.sendMessage(sender.id, sendBgMsg);
+            console.warn('reject 2')
+            // const bgMsg = { ...errorCode['200'], data: null }
+            // const sendBgMsg = createBgMsg(bgMsg, method)
+            // await chrome.runtime.sendMessage(senderParams.sender.id, sendBgMsg);
+            sendToPopup({}, 'handleReject', sender, '200')
+            console.warn('reject 3')
+            removeBadge(senderParams.sender, method)
             closeTabs()
         }
     },
@@ -122,6 +127,8 @@ export const handleRpcResponse = {
             const errMsg = { ...errorCode['200'], data: clone(data.data) }
             const sendMsg = createMsg(errMsg, method)
             await sendMessage(sendMsg, {}, sender)
+            sendToPopup({}, method, senderParams.sender, '200')
+            removeBadge(senderParams.sender, method)
             closeTabs()
         }
     },
@@ -138,6 +145,8 @@ export const handleRpcResponse = {
             const errMsg = { ...errorCode['200'], data: clone(data.data) }
             const sendMsg = createMsg(errMsg, method)
             await sendMessage({ ...sendMsg, sendId }, {}, sender)
+            sendToPopup({}, method, senderParams.sender, '200')
+            removeBadge(senderParams.sender, method)
             closeTabs()
         }
     },
@@ -156,6 +165,8 @@ export const handleRpcResponse = {
             const bgMsg = { ...errorCode['200'], data: null }
             const sendGgMsg = createBgMsg(bgMsg, method)
             await sendMessage({ ...sendGgMsg, sendId }, {}, sender)
+            sendToPopup({}, method, senderParams.sender, '200')
+            removeBadge(senderParams.sender, method)
             closeTabs()
         },
     },
@@ -170,6 +181,8 @@ export const handleRpcResponse = {
             const sendMsg = createMsg(errMsg, handleType.eth_sign)
             const senderParams = await getLocalParams(method)
             await sendMessage({ ...sendMsg, sendId }, {}, senderParams.sender)
+            sendToPopup({}, method, senderParams.sender, '200')
+            removeBadge(senderParams.sender, method)
             closeTabs()
         },
     },
@@ -185,6 +198,8 @@ export const handleRpcResponse = {
             const sendMsg = createMsg(errMsg, handleType.multiple_sign)
             const senderParams = await getLocalParams(method)
             await sendMessage({ ...sendMsg, sendId }, {}, senderParams.sender)
+            sendToPopup({}, method, senderParams.sender, '200')
+            removeBadge(senderParams.sender, method)
             closeTabs()
         },
     },
@@ -246,9 +261,11 @@ export const handleRpcResponse = {
             const senderParams = await getLocalParams(method)
             const sendMsg = createMsg(errMsg, method)
             await sendMessage({ ...sendMsg, sendId }, {}, senderParams.sender)
-            const bgMsg = { ...errorCode['200'], data: null }
-            const sendGgMsg = createBgMsg(bgMsg, method)
-            await sendMessage({ ...sendGgMsg, sendId }, {}, sender)
+            // const bgMsg = { ...errorCode['200'], data: null }
+            // const sendGgMsg = createBgMsg(bgMsg, method)
+            // await sendMessage({ ...sendGgMsg, sendId }, {}, sender)
+            sendToPopup({}, method, senderParams.sender, '200')
+            removeBadge(senderParams.sender, method)
             closeTabs()
 
         },

@@ -1,4 +1,5 @@
 
+import { setBadge } from './actions.js';
 import {
     getLocalParams,
     closeTabs,
@@ -124,7 +125,6 @@ export const handleRequest = {
              // Sign the hexadecimal data and sign the account address
             let str = `sig=${newParams}`;
             const newurl = `${globalPath}#/multipleSign?sendId=${sendId}&${str}&sender=${encodeURIComponent(JSON.stringify(sender))}&address=${address}`;
-
             await openPopup(handleType.multiple_sign, newurl, sendResponse, sender)
         } catch (err) {
             sendMessage({...err, sendId}, {}, sender)

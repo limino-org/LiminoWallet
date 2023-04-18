@@ -11,7 +11,7 @@ export const toTradeHistory = (hash) => {
   chrome.tabs.create({ url: url })
 }
 
-export const useGetTxReceipt = () => {
+export const useGetTxReceipt = (time = 300000) => {
   async function waitTxQueueResponse() {
     console.log('waitTxQueueResponse...')
     const store = await getStore()
@@ -34,7 +34,7 @@ export const useGetTxReceipt = () => {
             const sameNonceTx = txList.find((item) => item.nonce === nonce)
             hashArr = !sameNonceTx ? [hash] : [hash, sameNonceTx.hash]
             console.warn('222', iterator)
-            const {list, wallet} = await waitForTransactions(hashArr, 60000)
+            const {list, wallet} = await waitForTransactions(hashArr, time)
 
             for await (const data1 of list) {
               console.log('wait..', receiptList)
@@ -73,7 +73,6 @@ export const useGetTxReceipt = () => {
                   convertAmount = new BigNumber(MergeNumber).multipliedBy(t3).toNumber()
                 }
               }
-              console.warn('等待数据 3', data1)
               await DEL_TXQUEUE({ ...iterator, txId, txType })
               const newtx = {
                 receipt: data1,
@@ -84,7 +83,6 @@ export const useGetTxReceipt = () => {
                 cointype: store.account.coinType,
                 value
               }
-              console.warn('等待数据 4', data1)
               await PUSH_TRANSACTION({ ...newtx, txId: guid() })
             }
           }
@@ -102,7 +100,7 @@ export const useGetTxReceipt = () => {
             const { value } = txInfo
             const hashArr = [txInfo.hash]
             console.warn('wait btc', iterator)
-            const {list, wallet} = await waitForTransactions(hashArr, 60000)
+            const {list, wallet} = await waitForTransactions(hashArr, time)
             for await (const data1 of list) {
               await DELBTC_TXQUEUE({ ...txInfo, cointype: store.account.coinType })
               await PUSHBTC_TRANSACTION({ ...txInfo, ...data1, value, sendStatus: 'success', cointype: store.account.coinType })
@@ -293,6 +291,7 @@ export const useGetTxReceipt = () => {
 
 export async function waitForTransactions(hashs, time = null) {
   const wallet = await getWallet()
+  wallet.provider.removeAllListeners()
   let data = null
   const list = []
   if (hashs.length && wallet.provider) {
@@ -312,9 +311,21 @@ export async function waitForTransactions(hashs, time = null) {
     }catch(err){
 
     }
-    wallet.provider.removeAllListeners()
+    removeAllListeners(wallet)
   }
   return Promise.resolve({list, wallet})
+}
+
+
+export async function removeAllListeners(wallet) {
+  console.warn('remove', wallet)
+  if(wallet && wallet.provider) {
+    wallet?.provider?.removeAllListeners()
+  } else {
+    const oldWallet = await getWallet()
+    oldWallet?.oldWallet?.removeAllListeners()
+  }
+
 }
 
 function clone(obj) {

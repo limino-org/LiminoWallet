@@ -47,7 +47,7 @@ export const transactionTarget = (accountInfo: AccountInfo, item: any) => {
         if (address.toUpperCase() == from.toUpperCase()) {
             return (t('wallet.send'))
         }
-        if (address.toUpperCase() == to.toUpperCase()) {
+        if (address.toUpperCase() == to ? to.toUpperCase() : '') {
             return (t('wallet.takeover'))
         }
     } catch (err) {
@@ -257,7 +257,7 @@ export function transactionStatus(txData: any){
         if(data.type == 1) {
           const { nft_address } = data
           const level = getSNFTLevel(nft_address)
-          if(to.toUpperCase() == myAddr) {
+          if(to ? to.toUpperCase() : '' == myAddr) {
             return `S-NFT(${level}) ` + i18n.global.t('transactiondetails.recive')
           } else {
             return `S-NFT(${level}) ` + i18n.global.t('transationHistory.send')
@@ -276,7 +276,8 @@ export function transactionStatus(txData: any){
     }
   
     if(txType === 'contract') return i18n.global.t('transationHistory.contract')
-    const bigTo = to.toUpperCase()
+    console.warn('item', item)
+    const bigTo = to ? to.toUpperCase() : ''
     const bigFrom = from.toUpperCase()
     if(bigTo === bigFrom)return i18n.global.t('transationHistory.send')
     if(bigTo === bigFrom || myAddr === bigTo) return i18n.global.t('transactiondetails.recive')
@@ -342,7 +343,7 @@ export function transactionStatus(txData: any){
         return 'Conver'
       }
       if(data.type == 1) {
-        if(to.toUpperCase() == myAddr) {
+        if(to ? to.toUpperCase() : '' == myAddr) {
           return 'S-NFT ' + i18n.global.t('transactiondetails.recive')
         } else {
           return 'S-NFT ' + i18n.global.t('transationHistory.send')
