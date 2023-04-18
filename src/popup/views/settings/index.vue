@@ -7,7 +7,7 @@
 </template>
 <script lang="ts">
 import Vue, { computed, ref } from "vue";
-import { Icon, Toast, Button, Sticky, Field } from "vant";
+import { Icon, Button, Sticky, Field } from "vant";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n'

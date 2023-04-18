@@ -35,7 +35,8 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, Ref, watch, SetupContext, reactive, onMounted } from 'vue'
-import { Dialog, Field, Form, Button, Toast,Icon } from 'vant'
+import { Field, Form, Button, Toast,Icon, showToast } from 'vant'
+import {Dialog} from '@vant/compat'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import { useBroadCast } from '@/popup/utils/broadCost'
@@ -101,7 +102,7 @@ export default defineComponent({
         name: name.value
       })
       handleUpdate()
-      Toast(t('account.successful'))
+      showToast(t('account.successful'))
       cancel()
     }
 

@@ -30,7 +30,7 @@
 </template>
 <script lang="ts" setup>
 import { Ref, ref } from "vue";
-import { Dialog, Icon, Button } from "vant";
+import { Button, Icon } from 'vant'
 import i18n from "@/popup/language";
 // import
 console.warn("i18n-------", i18n);

@@ -31,7 +31,9 @@
 
 <script lang="ts">
 import { defineComponent, ref, Ref, watch, SetupContext, computed } from "vue";
-import { Popover, Dialog, Button } from "vant";
+import { Popover, Button } from "vant";
+import {Dialog} from '@vant/compat'
+
 import WormTransition from "@/popup/components/wromTransition/index.vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";

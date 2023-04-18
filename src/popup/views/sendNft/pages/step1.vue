@@ -63,14 +63,16 @@ import {
   Tabs,
   Popup,
   Icon,
-  Dialog,
   Sticky,
-  Toast,
   Loading,
   Image,
   Empty,
   ImagePreview,
+  showImagePreview,
+  showToast
 } from "vant";
+import {Dialog} from '@vant/compat';
+
 import {
   ref,
   Ref,
@@ -114,10 +116,10 @@ export default {
       });
     };
     const tomore = () => {
-      Toast(t("sendNFT.tomore"));
+      showToast(t("sendNFT.tomore"));
     };
     const showImg = () => {
-      ImagePreview({ images: [nftInfo.value.info.meta_url], closeable: true });
+      showImagePreview({ images: [nftInfo.value.info.meta_url], closeable: true });
     };
 
     return {

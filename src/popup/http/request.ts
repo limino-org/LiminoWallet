@@ -1,5 +1,5 @@
 import axios, { Method } from 'axios'
-import { Toast } from 'vant'
+import { Toast, showToast } from 'vant'
 const service = axios.create({
     // Set the baseur address. If you cross domains through proxy, you can directly fill in the base address
     baseURL: '/',
@@ -22,7 +22,7 @@ service.interceptors.response.use(
       if(status == 200) {
         return response.data
       } else {
-        Toast(JSON.stringify(response))
+        showToast(JSON.stringify(response))
         return Promise.reject(response)
       }
     },
@@ -56,7 +56,7 @@ service.interceptors.response.use(
           if(code == '200' || code == 'true' || code == 'false' || code == true || !code) {
             return Promise.resolve(res)
           }
-          Toast(msg || 'Interface request failed')
+          showToast(msg || 'Interface request failed')
           return Promise.reject(res)
         })
 }

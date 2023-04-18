@@ -39,7 +39,7 @@ export const useEvent = () => {
 
     })
     // network Change
-    eventBus.on(eventHandler.changeNetwork, async (network: NetWorkData) => {
+    eventBus.on(eventHandler.changeNetwork, async ({network}) => {
         switch (store.state.account.coinType.value) {
             case 0:
                 const provider = await getProvider();
@@ -55,7 +55,7 @@ export const useEvent = () => {
         handleUpdate()
     })
     // account Change
-    eventBus.on(eventHandler.changeAccount, (address: string) => {
+    eventBus.on(eventHandler.changeAccount, ({address, oldAddress}) => {
         console.warn('account change', store.state.account.coinType.value)
         switch (store.state.account.coinType.value) {
             case 0:

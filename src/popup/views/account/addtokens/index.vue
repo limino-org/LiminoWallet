@@ -42,9 +42,11 @@ import {
   Button,
   Cell,
   CellGroup,
-  Dialog,
-  Toast,
+  showConfirmDialog,
+  showLoadingToast,
+  showToast
 } from "vant";
+import {Dialog} from '@vant/compat'
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { getWallet } from "@/popup/store/modules/account";
 import ChooseTokenCard from "@/popup/views/account/components/chooseTokenCard/index.vue";
@@ -86,12 +88,12 @@ export default {
     // Click to add connectConstract
     const onSubmit = (data: any) => {
       console.log("submit", data);
-      Dialog.confirm({
+      showConfirmDialog({
         message: t("currencyList.sure"),
       }).then(async () => {
         const { address } = await getWallet();
         try {
-          Toast.loading({
+          showLoadingToast({
             message: t("userexchange.loading"),
             forbidClick: true,
             loadingType: "spinner",
@@ -100,10 +102,10 @@ export default {
             tokenContractAddress: tokenContractAddress.value,
             address,
           });
-          Toast(t("currencyList.Importsuccessful"));
+          showToast(t("currencyList.Importsuccessful"));
           router.replace({ name: "wallet" });
         } catch (err) {
-          Toast(err.toString());
+          showToast(err.toString());
         }
       });
     };

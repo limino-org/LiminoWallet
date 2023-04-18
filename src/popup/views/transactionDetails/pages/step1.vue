@@ -160,6 +160,7 @@
         >
       </div>
     </div>
+
     <ModifGasFee
       :show="showSpeedModal"
       :to="sendTx.to"
@@ -177,7 +178,7 @@
       }}</van-button>
     </div>
   </CommonModal>
-
+  <van-back-top right="20" top="20" />
   <Transition name="slider">
     <i18n-t
       tag="div"
@@ -217,12 +218,14 @@ import {
   Icon,
   Popup,
   Empty,
-  Dialog,
   Button,
   Skeleton,
   List,
-  Toast,
+  showToast,
+  BackTop
 } from "vant";
+import {Dialog} from '@vant/compat';
+
 import CollectionCard from "@/popup/views/account/components/collectionCard/index.vue";
 import BTCCollectionCard from "@/popup/views/account/components/collectionCard/BTC.vue";
 import { addressMask, decimal, toUsd } from "@/popup/utils/filters";
@@ -258,6 +261,7 @@ import CommonModal from "@/popup/components/commonModal/index.vue";
 export default {
   components: {
     [Icon.name]: Icon,
+    [BackTop.name]: BackTop,
     [Popup.name]: Popup,
     [Empty.name]: Empty,
     [Button.name]: Button,
@@ -568,7 +572,7 @@ export default {
         handleAsyncTxList();
       } catch (err) {
         console.error(err);
-        Toast(err.reason);
+        showToast(err.reason);
       } finally {
         showSpeedModal.value = false;
         reloading.value = false;
@@ -678,7 +682,7 @@ export default {
       } catch (err) {
         console.error(err);
         // store.dispatch('account/clearWaitTime')
-        Toast(err.reason);
+        showToast(err.reason);
       } finally {
         showSpeedModal.value = false;
         reloading.value = false;

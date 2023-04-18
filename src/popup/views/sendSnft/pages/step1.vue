@@ -64,7 +64,7 @@
 <script lang="ts">
 import { showSlider, show } from '@/popup/components/navHeader/hooks/slider'
 
-import { Tab, Tabs, Popup, Icon, Dialog, Sticky, Toast, Loading, Image, Empty } from 'vant'
+import { Tab, Tabs, Popup, Icon, Sticky, Toast, Loading, Image, showToast } from 'vant'
 import { ref, Ref, reactive, onMounted, computed, toRefs, watch, onBeforeMount } from 'vue'
 import NavHeader from '@/popup/components/navHeader/index.vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -99,7 +99,7 @@ export default {
       })
     }
     const tomore = () => {
-      Toast('Coming soon!')
+      showToast('Coming soon!')
     }
     return {
       t,

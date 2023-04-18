@@ -64,7 +64,8 @@ import {
   SetupContext,
 } from "vue";
 import { useStore } from "vuex";
-import { List, Toast, Button, PullRefresh, Sticky, Icon } from "vant";
+import { List, Button, PullRefresh, Sticky, Icon, showToast } from "vant";
+import { Dialog } from '@vant/compat';
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { web3 } from "@/popup/utils/web3";
@@ -129,7 +130,7 @@ export default defineComponent({
         }
       } catch (err) {
         nftErr.value = true;
-        Toast(JSON.stringify(err));
+        showToast(JSON.stringify(err));
       }
     };
 

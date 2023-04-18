@@ -110,7 +110,9 @@
 </template>
 <script lang="ts">
 import Vue, { computed, inject, toRaw } from "vue";
-import { Icon, Toast, Button, Sticky, Field, Dialog, Form } from "vant";
+import { Icon, Button, Sticky, Field,Form } from "vant";
+import {Dialog} from '@vant/compat';
+
 import { useRoute, useRouter } from "vue-router";
 import { defineComponent, Ref, ref, watch, SetupContext } from "vue";
 import { useStore } from "vuex";

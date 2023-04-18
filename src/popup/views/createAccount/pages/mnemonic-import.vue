@@ -90,7 +90,7 @@
 <script lang="ts">
 import Vue, { nextTick, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
-import { Icon, Toast, Button, Sticky, Field, Form, CellGroup, Switch, Checkbox, CheckboxGroup } from 'vant'
+import { Icon, Toast, Button, Sticky, Field, Form, CellGroup, Switch, Checkbox, CheckboxGroup, showToast } from 'vant'
 import { encryptPrivateKey, EncryptPrivateKeyParams } from '@/popup/utils/web3'
 import { ref, Ref, computed, toRaw, SetupContext, onMounted } from 'vue'
 import { setCookies } from '@/popup/utils/jsCookie'
@@ -214,18 +214,18 @@ setup() {
           handleUpdate()
         } else {
           // The entered passwords are inconsistent
-          Toast(t('importByMnemonic.notmatch'))
+          showToast(t('importByMnemonic.notmatch'))
           loading.value = false
         }
 
       } catch (err) {
         console.error(err)
         loading.value = false
-        Toast(t('createwallet.failed'))
+        showToast(t('createwallet.failed'))
       }
     } else {
       // The entered passwords are inconsistent
-      Toast(t('createwallet.notmatch'))
+      showToast(t('createwallet.notmatch'))
     }
   }
   const pwd1Err= ref(false)

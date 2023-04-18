@@ -125,7 +125,8 @@ import {
   SetupContext,
 } from "@vue/runtime-core";
 import { watch } from "vue";
-import { Dialog, Icon, Button, Popover } from "vant";
+import { Icon, Button, Popover } from "vant";
+import {Dialog} from '@vant/compat'
 import { useI18n } from "vue-i18n";
 import { toUsd } from "@/popup/utils/filters";
 import Bignumber from "bignumber.js";

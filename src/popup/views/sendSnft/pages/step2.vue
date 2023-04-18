@@ -153,7 +153,6 @@ import {
 } from "vue";
 import {
   Icon,
-  Toast,
   Button,
   Sticky,
   Field,
@@ -161,6 +160,7 @@ import {
   Tab,
   Tabs,
   Empty,
+  showToast
 } from "vant";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -182,7 +182,6 @@ export default {
   name: "sendSnft-step2",
   components: {
     [Icon.name]: Icon,
-    [Toast.name]: Toast,
     [Button.name]: Button,
     [Sticky.name]: Sticky,
     [Field.name]: Field,
@@ -275,7 +274,7 @@ export default {
             dispatch('account/waitTxQueueResponse')
             showSendSuccessModal.value = true;
           } catch (err) {
-            Toast(err.reason);
+            showToast(err.reason);
           } finally {
             loading.value = false;
           }
@@ -283,7 +282,7 @@ export default {
           // await dispatch("nft/send", tx);
         } catch (err: any) {
           console.error(err);
-          Toast(err?.reason);
+          showToast(err?.reason);
         } finally {
           loading.value = false;
         }

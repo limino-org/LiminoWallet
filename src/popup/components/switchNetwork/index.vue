@@ -29,7 +29,8 @@
 </template>
 
 <script lang="ts">
-import { Dialog, Button, Overlay } from 'vant'
+import { Button, Overlay } from 'vant'
+import {Dialog} from '@vant/compat'
 import NetWorkCard from '../netWorkCard/index.vue'
 import { defineComponent, Ref, ref, watch, SetupContext, computed } from 'vue'
 // @ts-ignore

@@ -58,7 +58,7 @@
 </template>
 <script lang="ts">
 import Vue, { computed, ref } from 'vue'
-import { Icon, Toast, Button, Sticky, Field, } from 'vant'
+import { Icon, Toast, Button, Sticky, Field } from 'vant'
 import { useRoute, useRouter } from 'vue-router'
 import SettingCard from '@/popup/views/settings/components/settingCard.vue'
 import SettingClass from '@/popup/views/settings/components/settingClass.vue'

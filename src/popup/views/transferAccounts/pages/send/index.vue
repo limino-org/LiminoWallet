@@ -251,8 +251,12 @@ import {
   Field,
   Slider,
   Popover,
-  Dialog,
+  showConfirmDialog,
+  showLoadingToast,
+  showToast
 } from "vant";
+import {Dialog} from '@vant/compat';
+
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import NavHeader from "@/popup/components/navHeader/index.vue";
@@ -450,7 +454,7 @@ export default {
           checkAddressError.value = false;
           account.data = createCache();
         } catch (err) {
-          Toast(t("sendto.wrongaddressformat"));
+          showToast(t("sendto.wrongaddressformat"));
           toAddress.value = "";
           checkAddressError.value = true;
         }
@@ -748,13 +752,13 @@ export default {
         //debugger;
         console.warn("token-----------", token);
         if (tokenContractAddress && tokenContractAddress != "null" && !token) {
-          Dialog.confirm({
+          showConfirmDialog({
             title: tokenContractAddress,
             message: t("addtokens.tokenImportTip"),
           }).then(async () => {
             const { address } = await getWallet();
             try {
-              Toast.loading({
+              showLoadingToast({
                 message: t("userexchange.loading"),
                 forbidClick: true,
                 loadingType: "spinner",
@@ -765,9 +769,9 @@ export default {
               });
               console.log("impot-----token----", newToken);
               commit("transfer/UPDATE_CHOOSETOKEN", newToken);
-              Toast(t("currencyList.Importsuccessful"));
+              showToast(t("currencyList.Importsuccessful"));
             } catch (err: any) {
-              Toast(err.toString());
+              showToast(err.toString());
             }
           });
         } else {

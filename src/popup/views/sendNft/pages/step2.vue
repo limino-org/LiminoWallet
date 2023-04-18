@@ -145,7 +145,7 @@ import {
   SetupContext,
   onUnmounted,
 } from "vue";
-import { Icon, Toast, Button, Sticky, Field, Slider, Tab, Tabs } from "vant";
+import { Icon, Button, Sticky, Field, Slider, Tab, Tabs, showToast } from "vant";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import NavHeader from "@/popup/components/navHeader/index.vue";
@@ -165,7 +165,6 @@ export default {
   name: "sendNft-step2",
   components: {
     [Icon.name]: Icon,
-    [Toast.name]: Toast,
     [Button.name]: Button,
     [Sticky.name]: Sticky,
     [Field.name]: Field,
@@ -372,7 +371,7 @@ export default {
           await dispatch("nft/send", tx);
           showSendSuccessModal.value = true;
         } catch (err: any) {
-          Toast(err?.reason);
+          showToast(err?.reason);
         } finally {
           loading.value = false;
         }
@@ -403,7 +402,7 @@ export default {
         }
         return Promise.resolve();
       } catch (err) {
-        Toast(t("sendto.wrongaddressformat"));
+        showToast(t("sendto.wrongaddressformat"));
         addressErr.value = true;
         // toAddress.value = ''
         return Promise.reject();

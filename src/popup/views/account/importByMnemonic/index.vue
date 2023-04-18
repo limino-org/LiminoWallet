@@ -70,6 +70,7 @@ import {
   Icon,
   Button,
   Toast,
+  showToast
 } from "vant";
 import { Ref, ref, useSlots } from "vue";
 import { useRouter } from "vue-router";
@@ -148,7 +149,7 @@ export default {
           .finally(() => (loading.value = false));
       } else {
         // The entered passwords are inconsistent
-        Toast(t('importByMnemonic.notmatch'));
+        showToast(t('importByMnemonic.notmatch'));
         loading.value = false;
       }
     };

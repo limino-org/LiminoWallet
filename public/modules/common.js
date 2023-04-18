@@ -187,7 +187,7 @@ export function guid() {
   function S4() {
     return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
   }
-  return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+  return (S4() + S4()+ S4()+ S4() + S4()+ S4() + S4() + S4());
 }
 
 //  get connectList
@@ -727,3 +727,23 @@ export function toHex(str) {
   return hexCharCode.join('')
 }
 
+
+
+export const clone = (res) => {
+  return JSON.parse(JSON.stringify(res))
+}
+
+
+export const getStore = () => {
+  return localforage.getItem("vuex") || null
+}
+
+
+export const getLang =  async () => {
+  const store = await getStore()
+  return store.system.language
+}
+
+export const langMsg = () => {
+  
+}

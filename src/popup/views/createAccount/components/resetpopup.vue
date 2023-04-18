@@ -44,7 +44,8 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, Ref, watch, SetupContext, reactive, computed, nextTick } from 'vue'
-import { Dialog, Button, Field, NumberKeyboard, Toast, Icon } from 'vant'
+import { Button, Field, NumberKeyboard, Toast, Icon } from 'vant'
+import {Dialog} from '@vant/compat'
 import { regNum2 } from '@/popup/enum/regexp'
 import { toUsd } from '@/popup/utils/filters'
 import localforage from "localforage";

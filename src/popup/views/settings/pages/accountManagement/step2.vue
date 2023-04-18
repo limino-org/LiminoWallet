@@ -27,7 +27,9 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, Ref, watch, SetupContext, reactive } from "vue";
-import { Dialog, Field, Form, Button, Toast, Sticky } from "vant";
+import {Field, Form, Button , Sticky, showToast } from "vant";
+import {Dialog} from '@vant/compat';
+
 import { useI18n } from "vue-i18n";
 import { useStore } from "vuex";
 import { useRouter, useRoute } from "vue-router";
@@ -63,7 +65,7 @@ export default {
         name: name.value,
       });
       handleUpdate()
-      Toast(t("account.successful"));
+      showToast(t("account.successful"));
       cancel();
     };
 

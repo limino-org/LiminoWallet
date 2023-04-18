@@ -36,7 +36,8 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, Ref, watch, SetupContext, reactive, computed } from 'vue'
-import { Dialog, Toast, Image, Button } from 'vant'
+import { Toast, Image, Button } from 'vant'
+import {Dialog} from '@vant/compat'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'

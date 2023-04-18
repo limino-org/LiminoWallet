@@ -27,8 +27,9 @@ import {
   reactive,
   computed,
 } from "vue";
-import { Dialog, Toast,Button } from "vant";
+import {Button } from "vant";
 import { useI18n } from "vue-i18n";
+import {Dialog} from '@vant/compat'
 
 export default defineComponent({
   name: "common-modal",

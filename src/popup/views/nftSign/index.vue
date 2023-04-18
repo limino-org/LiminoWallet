@@ -39,7 +39,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Loading, Sticky, Icon, Field, Button, Toast } from "vant";
+import { Loading, Sticky, Icon, Field, Button,  showToast, showSuccessToast } from "vant";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useSign } from "./hooks/sign";
@@ -68,20 +68,20 @@ export default {
     const { toClipboard } = useClipboard();
     const toCopy = async () => {
       if (!sign.value) {
-        Toast(t('sign.ready'));
+        showToast(t('sign.ready'));
         return;
       }
       try {
         await toClipboard(`${sign.value}`);
         signSelect.value = true;
-        Toast.success(t('sign.copy'));
+        showSuccessToast(t('sign.copy'));
       } catch (e) {
         console.error(e);
       }
     };
     const goOn = () => {
       if (!sign.value) {
-        Toast(t('sign.ready'));
+        showToast(t('sign.ready'));
         return;
       }
       router.replace({name:'wallet'})

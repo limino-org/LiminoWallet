@@ -26,9 +26,11 @@ import {
   Button,
   Cell,
   CellGroup,
-  Dialog,
   Toast,
+  showConfirmDialog,
+  showToast
 } from "vant";
+import {Dialog} from '@vant/compat'
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import ChooseTokenCard from "@/popup/views/account/components/chooseTokenCard/index.vue";
 import { useRouter } from "vue-router";
@@ -59,7 +61,7 @@ export default {
     };
     const hancleChoose = (data: any) => {
       console.log("token", data);
-      Dialog.confirm({
+      showConfirmDialog({
         message: t("currencyList.sure"),
       }).then(async () => {
         // Add tokens to current account
@@ -82,10 +84,10 @@ export default {
             tokenContractAddress,
             address,
           });
-          Toast(t("currencyList.Importsuccessful"));
+          showToast(t("currencyList.Importsuccessful"));
           router.replace({name:'wallet'})
         } catch (err) {
-          Toast (t("currencyList.error"));
+          showToast(t("currencyList.error"));
         }
       });
     };

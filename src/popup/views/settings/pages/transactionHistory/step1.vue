@@ -227,7 +227,7 @@
       }}</van-button>
     </div>
   </CommonModal>
-
+  <van-back-top right="20" bottom="20" />
   <Transition name="slider">
       <i18n-t
         tag="div"
@@ -269,14 +269,16 @@ import {
   Button,
   Tab,
   Tabs,
-  Dialog,
   IndexBar,
   IndexAnchor,
   Sticky,
-  Toast,
   Empty,
+  showToast,
   Skeleton,
+  BackTop,
 } from "vant";
+import {Dialog} from '@vant/compat';
+
 import TokenCard from "@/popup/views/account/components/tokenCard/index.vue";
 import TransactionDetail from "@/popup/views/account/components/transactionDetail/index.vue";
 import ModifGasFee from "@/popup/views/transactionDetails/components/modifGasFee.vue";
@@ -316,6 +318,7 @@ export default {
   name: "transaction-history",
   components: {
     [Icon.name]: Icon,
+    [BackTop.name]: BackTop,
     [Form.name]: Form,
     [Field.name]: Field,
     [Button.name]: Button,
@@ -671,7 +674,7 @@ export default {
         handleAsyncTxList()
       } catch (err) {
         console.error(err);
-        Toast(err.reason);
+        showToast(err.reason);
       } finally {
         showSpeedModal.value = false;
         reloading.value = false;
@@ -773,7 +776,7 @@ export default {
         handleAsyncTxList()
       } catch (err) {
         console.error(err);
-        Toast(err.reason);
+        showToast(err.reason);
       } finally {
         showSpeedModal.value = false;
         reloading.value = false;

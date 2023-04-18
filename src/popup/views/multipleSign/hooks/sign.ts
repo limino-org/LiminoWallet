@@ -1,6 +1,6 @@
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex';
-import { Toast } from 'vant';
+import { Toast, showToast } from 'vant';
 import { onMounted, ref, Ref } from 'vue';
 import { ethers } from 'ethers';
 import { ConnectWalletByPwdAddress, getWallet } from '@/popup/store/modules/account'
@@ -22,11 +22,11 @@ export const useSign = () => {
     const toSign = async () => {
         const password = await getCookies('password')
         if(!queryStr){
-            Toast(i18n.global.t('sign.signature'))
+            showToast(i18n.global.t('sign.signature'))
             return
         }
         if(!password){
-            Toast(i18n.global.t('sign.password'))
+            showToast(i18n.global.t('sign.password'))
             router.replace({name: "loginAccount-step1",})
             return 
         }
@@ -38,11 +38,11 @@ export const useSign = () => {
         dispatch('account/connectWalletByPwdAddress', params).then(async (wallet) => {
             console.log('wallet', wallet)
             try {
-                sign.value = await wallet.signMessage(queryStr).catch((err: Error) => Toast(err)).finally(() => loading.value = false)
+                sign.value = await wallet.signMessage(queryStr).catch((err: Error) => showToast(err)).finally(() => loading.value = false)
             } catch(err: any){
-                Toast(err || t('sign.unknownmistake'))
+                showToast(err || t('sign.unknownmistake'))
             }
-        }).catch(err => Toast(err)).finally(() => loading.value = false)
+        }).catch(err => showToast(err)).finally(() => loading.value = false)
     }
     return {
         toSign,

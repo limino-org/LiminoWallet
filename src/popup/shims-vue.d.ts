@@ -15,3 +15,4 @@ declare module 'crypto-js'
 declare module 'bigNumber.js'
 
 declare module 'js-base64'
+

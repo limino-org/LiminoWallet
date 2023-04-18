@@ -141,7 +141,6 @@ import {
   onMounted,
 } from "vue";
 import {
-  Dialog,
   Button,
   Field,
   NumberKeyboard,
@@ -150,6 +149,7 @@ import {
   Skeleton,
   Popover,
 } from "vant";
+import {Dialog} from '@vant/compat'
 import { regNum2 } from "@/popup/enum/regexp";
 import { toUsd } from "@/popup/utils/filters";
 import { useI18n } from "vue-i18n";

@@ -1,6 +1,6 @@
 import { getWallet, handleGetTranactionReceipt, TransactionReceipt } from "./account";
 import { toHex } from "@/popup/utils/utils";
-import { Toast } from "vant";
+import { Toast, showToast } from "vant";
 import { utils } from "ethers";
 import { web3 } from "@/popup/utils/web3";
 import { clone } from 'pouchdb-utils';
@@ -107,7 +107,7 @@ export default {
       try {
         const { nfts, total } = await getSnftOwner(opt)
       } catch (err) {
-        Toast(err)
+        showToast(err)
       }
     }
   },

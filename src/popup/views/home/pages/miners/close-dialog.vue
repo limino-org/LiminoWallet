@@ -90,7 +90,7 @@
 import { emit } from "process";
 import { clone } from 'pouchdb-utils';
 
-import { Icon, Checkbox, Button, Toast, CellGroup, Cell } from "vant";
+import { Icon, Checkbox, Button, Toast, CellGroup, Cell, showLoadingToast, closeToast } from "vant";
 import {
   ref,
   nextTick,
@@ -187,7 +187,7 @@ export default {
 
     watch(()=>show.value, async(n) => {
       if(n) {
-        Toast.loading({duration:0})
+        showLoadingToast({duration:0})
            try {
              const wallet = await getWallet();
       const { address } = wallet;
@@ -198,7 +198,7 @@ export default {
       //debugger
       select.value = ethAccountInfo.RewardFlag;
            }finally{
-            Toast.clear()
+            closeToast()
       }
       }
     },{

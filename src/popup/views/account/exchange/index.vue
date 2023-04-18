@@ -67,7 +67,7 @@
 </template>
 
 <script lang="ts">
-import { Button, Overlay, Field, Slider, Toast, Checkbox } from 'vant'
+import { Button, Overlay, Field, Slider, Toast, Checkbox, showToast } from 'vant'
 import { ref, SetupContext, computed, watch, onBeforeMount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useExchanges } from '@/popup/hooks/useExchanges'
@@ -148,16 +148,16 @@ export default {
     }
     const minersConfirm = async () => {
       if (!name.value) {
-        Toast(t('common.nftname'))
+        showToast(t('common.nftname'))
         return
       }
       const reg = /[\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDE4F]/
       if (reg.test(name.value)) {
-        Toast(t('common.emojiTip'))
+        showToast(t('common.emojiTip'))
         return
       }
       if (!checked.value) {
-        Toast(t('common.agreementfirst'))
+        showToast(t('common.agreementfirst'))
         return
       }
       try {
@@ -165,7 +165,7 @@ export default {
         await toCreate(name.value, money.value)
         emit('minersConfirm')
       } catch (err) {
-        Toast(JSON.stringify(err))
+        showToast(JSON.stringify(err))
       }
     }
     const changeServerIndex = (value: number) => {

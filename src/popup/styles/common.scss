@@ -143,7 +143,9 @@ img {
 .actions-list-card {
   cursor: pointer;
 }
-
+.van-button {
+  border-radius: 24px;
+}
 .van-button--plain:hover,
 .van-button--default:hover {
   border: 1px solid #037CD6;
@@ -154,7 +156,7 @@ img {
 .van-dialog {
   overflow: scroll;
   top: 50%;
-
+  border-radius: 10px;
   .van-dialog__content {
     border-radius: 10px;
     // overflow-x: hidden;

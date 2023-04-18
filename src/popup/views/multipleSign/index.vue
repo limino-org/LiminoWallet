@@ -37,7 +37,7 @@
 </template>
 <script lang="ts">
 // Multiple signature data
-import { Loading, Sticky, Icon, Field, Button, Toast } from "vant";
+import { Loading, Sticky, Icon, Field, Button, Toast, showToast } from "vant";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useSign } from "./hooks/sign";
@@ -76,7 +76,7 @@ export default {
     const needSigList: any = JSON.parse(sig.toString()) || []
     const goOn = () => {
       if (!list.value.length || (list.value.length != needSigList.length)) {
-        Toast(t('sign.ready'));
+        showToast(t('sign.ready'));
         return;
       }
       // @ts-ignore

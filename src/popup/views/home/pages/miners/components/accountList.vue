@@ -42,7 +42,8 @@
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, Ref, ref, watch } from "vue";
-import { Dialog, Icon as vanIcon, Popup as vanPopup } from "vant";
+import {  Icon as vanIcon, Popup as vanPopup } from "vant";
+import {Dialog} from '@vant/compat';
 import AccountIcon from "@/popup/components/accountIcon/index.vue";
 import { useStore } from "vuex";
 import { AccountInfo, getWallet } from "@/popup/store/modules/account";

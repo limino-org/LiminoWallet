@@ -108,7 +108,7 @@ import {
   nextTick,
   onUnmounted,
 } from "vue";
-import { Icon, Toast, Button, Sticky, Field } from "vant";
+import { Icon, Button, Sticky, Field, showToast } from "vant";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import NavHeader from "@/popup/components/navHeader/index.vue";
@@ -129,7 +129,6 @@ export default {
   name: "pageSendComfirm",
   components: {
     [Icon.name]: Icon,
-    [Toast.name]: Toast,
     [Button.name]: Button,
     [Sticky.name]: Sticky,
     [Field.name]: Field,
@@ -186,7 +185,7 @@ export default {
           response: { code: "200", data: receipt, sendId },
         });
       } catch (err: any) {
-        Toast(err.reason);
+        showToast(err.reason);
       } finally {
         nextLoading.value = false;
       }

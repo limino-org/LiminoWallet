@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts">
-import { Button, Overlay, Field, Toast } from 'vant'
+import { Button, Overlay, Field, Toast, showToast } from 'vant'
 import { ref, SetupContext, computed } from 'vue'
 import { ethers, utils } from 'ethers'
 import { formatEther, toUsd } from '@/popup/utils/filters'
@@ -87,15 +87,15 @@ export default {
     const submit = () => {
       if (amount.value) {
         if (amount.value > Number(props.moneyMax)) {
-          Toast(t('amountreminder.my'))
+          showToast(t('amountreminder.my'))
           return
         }
         if (props.isPladge && amount.value < 100000) {
-          Toast(t('amountreminder.maximum'))
+          showToast(t('amountreminder.maximum'))
           return
         }
         if (!props.isPladge && amount.value < Number(props.moneyMinF)) {
-          Toast(t('amountreminder.minimum', { data: props.moneyMinF }))
+          showToast(t('amountreminder.minimum', { data: props.moneyMinF }))
 
           return
         }

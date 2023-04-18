@@ -51,7 +51,8 @@ import {
   nextTick,
 } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { Icon, Dialog, Button, Loading, Toast } from "vant";
+import { Icon, Button, Loading, Toast } from "vant";
+import {Dialog} from '@vant/compat'
 import { decimal } from "@/popup/utils/filters";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";

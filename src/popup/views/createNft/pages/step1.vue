@@ -26,7 +26,8 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import { Icon, Toast, Button,Tab, Tabs,Uploader,Form, Field, CellGroup,Dialog,Step,Steps  } from "vant";
+import { Icon, Toast, Button,Tab, Tabs,Uploader,Form, Field, CellGroup,Step,Steps  } from "vant";
+import {Dialog} from '@vant/compat'
 import { ref, Ref, computed, toRaw, SetupContext, onMounted } from 'vue'
 import { useRouter } from 'vue-router';
 

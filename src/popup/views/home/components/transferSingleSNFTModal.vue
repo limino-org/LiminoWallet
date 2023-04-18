@@ -148,7 +148,6 @@ import {
   toRaw,
 } from "vue";
 import {
-  Dialog,
   Button,
   Field,
   NumberKeyboard,
@@ -156,6 +155,7 @@ import {
   CountDown,
   Popover,
 } from "vant";
+import {Dialog} from '@vant/compat'
 import { regNum2 } from "@/popup/enum/regexp";
 import BigNumber from "bignumber.js";
 import { useStore } from "vuex";

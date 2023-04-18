@@ -152,7 +152,6 @@ import {
   toRaw,
 } from "vue";
 import {
-  Dialog,
   Button,
   Field,
   NumberKeyboard,
@@ -160,6 +159,7 @@ import {
   CountDown,
   Popover,
 } from "vant";
+import {Dialog} from '@vant/compat'
 import { regNum2 } from "@/popup/enum/regexp";
 import BigNumber from "bignumber.js";
 import { useStore } from "vuex";
@@ -559,6 +559,8 @@ export default defineComponent({
                   data: `0x${data3}`,
                   value: ethers.utils.parseEther("0"),
                   checkTxQueue: false,
+                  transitionType: '6',
+                  nft_address
                 };
                 const receipt = await dispatch("account/transaction", tx1);
                 txQueue.push(receipt);
@@ -566,6 +568,7 @@ export default defineComponent({
             }
             $tradeConfirm.update({ status: "approve" });
             const receiptList = await dispatch("account/waitTxQueueResponse");
+            console.warn('111', receiptList)
             const successList = receiptList.map((item: any) => item.status);
             if (successList.length == count) {
               $tradeConfirm.update({
@@ -635,6 +638,8 @@ export default defineComponent({
           }
           $tradeConfirm.update({ status: "approve" });
           const receiptList = await dispatch("account/waitTxQueueResponse");
+          console.warn('222', receiptList)
+
           const successList = receiptList.map((item: any) => item.status);
           if (successList.length == count) {
             $tradeConfirm.update({

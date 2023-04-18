@@ -1,6 +1,6 @@
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
-import { Toast } from "vant";
+import { Toast, showToast } from "vant";
 import { computed, onMounted, ref, Ref, watch } from "vue";
 import { ethers } from "ethers";
 import { ExchangeStatus, getWallet, TransactionReceipt, handleGetTranactionReceipt, TransactionTypes, clone, TransactionSendStatus } from "@/popup/store/modules/account";
@@ -51,21 +51,19 @@ export const useExchanges = () => {
       });
 
       callBack ? callBack() : "";
-      localStorage.setItem('tx2', JSON.stringify(data))
+      store.dispatch('account/waitTxQueueResponse')
       // debugger
       $tradeConfirm.update({ status: "approve" })
       const receipt = await wallet.provider.waitForTransaction(data.hash, null, 60000)
-      localStorage.setItem('receipt2', JSON.stringify(receipt))
       const { status } = receipt;
       if (status == 0) {
         $tradeConfirm.update({ status: "fail" })
         resetData();
-        Toast(i18n.global.t("userexchange.transactionfailed"));
+        showToast(i18n.global.t("userexchange.transactionfailed"));
         return Promise.reject()
       }
       dispatch("account/updateAllBalance");
       // commit("account/PUSH_TRANSACTION", rep);
-      store.dispatch('account/waitTxQueueResponse')
       return Promise.resolve(receipt)
     } catch (err: any) {
       if (err.toString().indexOf("timeout") > -1) {
@@ -81,7 +79,7 @@ export const useExchanges = () => {
       }
       console.log(err)
       console.log("==========err2=============")
-      Toast(err.toString());
+      showToast(err.toString());
       resetData();
       return Promise.reject()
     }
@@ -108,7 +106,7 @@ export const useExchanges = () => {
       if (status == 0) {
         $tradeConfirm.update({ status: "fail" })
         resetData();
-        Toast(i18n.global.t("userexchange.transactionfailed"));
+        showToast(i18n.global.t("userexchange.transactionfailed"));
         return;
       }
       const params = await generateSign(exchange_name);
@@ -333,7 +331,7 @@ export const useExchanges = () => {
       localStorage.setItem('receipt1', JSON.stringify(receipt2))
       if (status == 0) {
         $tradeConfirm.update({ status: "fail", hash: transactionHash  })
-        Toast(i18n.global.t('userexchange.transferfailed'))
+        showToast(i18n.global.t('userexchange.transferfailed'))
         return false
       } else {
         localStorage.setItem('receipt', JSON.stringify(receipt2))

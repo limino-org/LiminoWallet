@@ -140,6 +140,7 @@ Field,
 Slider,
 Popover,
 Skeleton,
+showToast
 } from "vant";
 
 import { useStore } from "vuex";
@@ -316,7 +317,7 @@ setup(props: any) {
       // minus
       // Not less than 1000
       if (bigLimit.lt(21000)) {
-        Toast(t("sendto.lessthan"));
+        showToast(t("sendto.lessthan"));
         return;
       }
       // If minus 1000 is less than 21000, rewrite it directly as 21000

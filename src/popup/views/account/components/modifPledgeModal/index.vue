@@ -94,7 +94,8 @@ import {
   reactive,
 } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { Icon, Dialog, Button, Loading, Field,Popover } from "vant";
+import { Icon, Button, Loading, Field,Popover } from "vant";
+import {Dialog} from '@vant/compat'
 import { ElSlider,ElTooltip } from "element-plus";
 import { decimal } from "@/popup/utils/filters";
 import { useStore } from "vuex";

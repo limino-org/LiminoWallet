@@ -223,14 +223,16 @@ import {
   Form,
   Field,
   CellGroup,
-  Dialog,
   Step,
   Steps,
   Popover,
   Picker,
   Popup,
   Loading,
+  showConfirmDialog,
+  showToast
 } from "vant";
+import {Dialog} from '@vant/compat'
 import { ref, Ref, computed, toRaw, SetupContext, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -280,7 +282,7 @@ export default {
       const desc1 = desc.value.toString()
       console.log("111", name1);
       if (new BigNumber(royalty.value).lte(0)) {
-        Toast(t("castingnft.royaltyTip"));
+        showToast(t("castingnft.royaltyTip"));
         return;
       }
       loading.value = true;
@@ -295,18 +297,18 @@ export default {
           category: category.value.value
         });
         if(receipt.status == 1) {
-          Toast(t("castingnft.success"));
+          showToast(t("castingnft.success"));
         router.replace({ name: "createNft-step3" });
         }
 
       } catch (err) {
-        Toast(err.error.message);
+        showToast(err.error.message);
       } finally {
         loading.value = false;
       }
     };
     const toreturn = () => {
-      Dialog.confirm({
+      showConfirmDialog({
         message: "Are you sure to cancel ?",
       }).then(() => {
         router.back();

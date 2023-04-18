@@ -155,7 +155,11 @@ import {
   SwipeInstance,
   Toast,
   ImagePreview,
+  showImagePreview,
   Sticky,
+  showLoadingToast,
+  closeToast,
+  showToast
 } from "vant";
 import {
   computed,
@@ -258,7 +262,7 @@ export default {
 
     // Query NFT fragment details
     const getNft256 = (params = {}) => {
-      Toast.loading({ message: t("sendSNFT.loading") });
+      showLoadingToast({ message: t("sendSNFT.loading") });
       const allList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
       return QuerySnftChip(params)
         .then(({ data }) => {
@@ -309,7 +313,7 @@ export default {
           mySnfts.value = [];
         })
         .finally(() => {
-          Toast.clear();
+          closeToast();
         });
     };
     const canRedeem = ref(false);
@@ -392,7 +396,7 @@ export default {
       const arr2 = pageData.value.children.map(
         (item) => metaDomain.value + item.source_url
       );
-      ImagePreview({
+      showImagePreview({
         images: [...arr2],
         startPosition: idx,
         closeable: true,
@@ -578,7 +582,7 @@ export default {
       if (actionType.value == "1" && !canRedeem.value) return;
       if (actionType.value == "2") {
         if (!chooseNum.value) {
-          Toast(t("sendSNFT.pleaseselect"));
+          showToast(t("sendSNFT.pleaseselect"));
           return;
         }
         const newSelectList = selectList.value.map((item) => {
@@ -611,7 +615,7 @@ export default {
           // Determine whether there are selected snft fragments
           router.push({ name: "sendSnft-step2" });
         } else {
-          Toast(t("sendSNFT.notselected"));
+          showToast(t("sendSNFT.notselected"));
           return;
         }
       }
@@ -631,7 +635,7 @@ export default {
     const handleConvert = () => {
       console.log("selectList:", selectList.value);
       if (!chooseNum.value) {
-        Toast(t("sendSNFT.notselected"));
+        showToast(t("sendSNFT.notselected"));
         return;
       }
       console.warn("selectList----------------", selectList.value);
@@ -879,7 +883,7 @@ export default {
         );
         showStakingModal.value = true;
       } else {
-        Toast(t("sendSNFT.notselected"));
+        showToast(t("sendSNFT.notselected"));
         return;
       }
     };
@@ -911,7 +915,7 @@ export default {
         // stakingTotalAmount.value = new BigNumber(snfts.length).multipliedBy(0.143).toFixed(6)
         showStakingModal.value = true;
       } else {
-        Toast(t("sendSNFT.notselected"));
+        showToast(t("sendSNFT.notselected"));
       }
     };
 

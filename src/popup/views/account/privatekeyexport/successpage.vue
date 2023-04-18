@@ -38,7 +38,7 @@
 
 <script lang="ts">
 import { ref, Ref, computed, toRaw, SetupContext, onMounted } from 'vue'
-import { Icon, NavBar, Form, Field, CellGroup, Button, Tab, Tabs, Toast } from 'vant'
+import { Icon, NavBar, Form, Field, CellGroup, Button, Tab, Tabs, Toast, showSuccessToast } from 'vant'
 import { useRouter, useRoute } from 'vue-router'
 import useClipboard from 'vue-clipboard3'
 import QrcodeVue from 'qrcode.vue'

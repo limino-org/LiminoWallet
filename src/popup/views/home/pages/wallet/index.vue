@@ -344,7 +344,6 @@ import {
   Tabs,
   Popup,
   Icon,
-  Dialog,
   Sticky,
   Toast,
   Loading,
@@ -352,7 +351,10 @@ import {
   List,
   Popover,
   Button,
+  showLoadingToast,
+  closeToast
 } from "vant";
+import {Dialog} from '@vant/compat';
 import {
   ref,
   Ref,
@@ -750,12 +752,12 @@ export default {
     const coinType = computed(() => store.state.account.coinType)
 
     const getStatus = async () => {
-      Toast.loading({
+      showLoadingToast({
         message: t("userexchange.loading"),
         forbidClick: true,
         loadingType: "spinner",
       });
-      return dispatch("account/getExchangeStatus").finally(() => Toast.clear());
+      return dispatch("account/getExchangeStatus").finally(() => closeToast());
     };
     const toExchange = async () => {
       const { exchanger_flag, status } = await getStatus();

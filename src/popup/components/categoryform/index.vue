@@ -45,14 +45,16 @@ import {
 import SelectCard from "@/popup/components/selectCard/index.vue";
 
 import {
-  Dialog,
   Button,
   Field,
   NumberKeyboard,
   Toast,
+  showToast,
   RadioGroup,
   Radio,
 } from "vant";
+import {Dialog} from '@vant/compat'
+
 import { regNum2 } from "@/popup/enum/regexp";
 import { useI18n } from "vue-i18n";
 import BigNumber from "bignumber.js";
@@ -182,7 +184,7 @@ export default defineComponent({
         emit("handleComfirm", data);
         showModal.value = false;
       } else {
-        Toast(t("categoryform.categoryform"));
+        showToast(t("categoryform.categoryform"));
       }
     };
 

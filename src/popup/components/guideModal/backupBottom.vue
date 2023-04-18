@@ -17,7 +17,9 @@
 
 <script lang="ts">
 import { defineComponent, ref, Ref, watch, SetupContext, computed } from "vue";
-import { Popover, Dialog, Button, Popup } from "vant";
+import { Popover, Button, Popup } from "vant";
+import {Dialog} from '@vant/compat'
+
 import WormTransition from "@/popup/components/wromTransition/index.vue";
 import { useStore } from "vuex";
 import { mnemonicExpires } from "@/popup/enum/time";

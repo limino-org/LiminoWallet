@@ -67,7 +67,7 @@
 </template>
 <script lang="ts">
 import WormTransition from '@/popup/components/wromTransition/index.vue'
-import { Icon, Toast, Button, Sticky, Field, Form, CellGroup, Switch, Checkbox, CheckboxGroup } from 'vant'
+import { Icon, Toast, Button, Sticky, Field, Form, CellGroup, Switch, Checkbox, showToast } from 'vant'
 import NavHeader from '@/popup/components/navHeader/index.vue'
 import { createWalletByJson, CreateWalletByJsonParams } from '@/popup/utils/ether'
 import { defineComponent, Ref, ref, watch, SetupContext, onBeforeMount, onBeforeUpdate, onMounted, nextTick } from 'vue'
@@ -174,7 +174,7 @@ export default {
 
     const onSubmit = async () => {
       if (password.value != password2.value) {
-        Toast(t('createwallet.notmatch'))
+        showToast(t('createwallet.notmatch'))
         return
       }
       try {

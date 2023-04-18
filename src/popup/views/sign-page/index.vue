@@ -17,7 +17,7 @@
     </div>
 </template>
 <script lang="ts">
-import { Loading, Sticky, Icon, Field, Button, Toast } from "vant";
+import { Loading, Sticky, Icon, Field, Button, showToast } from "vant";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useSign } from "../sign/hooks/sign";
@@ -46,7 +46,7 @@ export default {
 
         const handleSig = async () => {
             if (!sign.value) {
-                Toast(t("sign.nodatatosign"));
+                showToast(t("sign.nodatatosign"));
                 return;
             }
             const wallet = await getWallet();
@@ -60,11 +60,11 @@ export default {
         const handleCopy = (v) => {
             if (v == 1) {
                 toClipboard(sig1.value);
-                Toast(t("sign.copysuccessfully"));
+                showToast(t("sign.copysuccessfully"));
             }
             if (v == 2) {
                 toClipboard(sig2.value);
-                Toast(t("sign.copysuccessfully"));
+                showToast(t("sign.copysuccessfully"));
             }
         };
         return {

@@ -2,5 +2,13 @@
   "extName": {
     "message": "LiminoWallet",
     "description": ""
+  },
+  "sendSuccessed": {
+    "message":"Transaction sent successfully",
+    "description":""
+  },
+  "sendFailed": {
+    "message":"Transaction sending failure",
+    "description":""
   }
 }

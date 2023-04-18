@@ -105,7 +105,7 @@ import {
   defineComponent,
   computed,
 } from "vue";
-import { Icon, Toast, Button, Popover } from "vant";
+import { Icon, Toast, Button, Popover, showSuccessToast } from "vant";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { utils } from "ethers";

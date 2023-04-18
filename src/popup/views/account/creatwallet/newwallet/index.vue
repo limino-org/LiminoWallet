@@ -50,6 +50,7 @@ import {
   Sticky,
   Icon,
   Toast,
+  showToast
 } from "vant";
 import { ethers } from "ethers";
 import { Ref, ref } from "vue";
@@ -125,13 +126,13 @@ export default {
           });
         } catch (err) {
           
-          Toast(t('createwallet.failed'));
+          showToast(t('createwallet.failed'));
         }finally{
           loading.value= false
         }
       } else {
         // The entered passwords are inconsistent
-          Toast(t('createwallet.notmatch'));
+        showToast(t('createwallet.notmatch'));
 
       }
     };

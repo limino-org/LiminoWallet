@@ -87,14 +87,14 @@ import {
   onUnmounted,
 } from "vue";
 import {
-  Dialog,
   Button,
   Field,
   NumberKeyboard,
-  Toast,
   Icon,
   Popover,
 } from "vant";
+import {Dialog} from '@vant/compat';
+
 import { addressMask, decimal } from "@/popup/utils/filters";
 import { ethers, utils } from "ethers";
 import { useI18n } from "vue-i18n";
@@ -234,19 +234,13 @@ export default defineComponent({
         );
         $tradeConfirm.update({ status: "approve" });
         eventBus.emit('sendComfirm')
-   
-
+        store.dispatch('account/waitTxQueueResponse')
         if(coinType.value.value == 0) {
           const receipt = await txData.wallet.provider.waitForTransaction(txData.hash, null, 60000)
-        await store.dispatch("account/waitTxQueueResponse");
-        if(receipt.status) {
-          $tradeConfirm.update({ status: "success", hash:txData.hash });
-        } else {
-          $tradeConfirm.update({ status: "fail", hash:txData.hash });
-        }
+          $tradeConfirm.update({ status:receipt.status?"success": "fail", hash:txData.hash });
         } 
         if(coinType.value.value == 1) {
-          await store.dispatch("account/waitTxQueueResponse");
+          const receipt = await txData.wallet.provider.waitForTransaction(txData.hash, null, 60000)
           $tradeConfirm.update({ status: "success", hash:txData.hash });
         }
       } catch (err: any) {

@@ -40,7 +40,7 @@
 
 <script lang="ts">
 import { ref, Ref, computed, toRaw, SetupContext, onMounted } from 'vue'
-import { Icon, NavBar, Form, Field, CellGroup, Button, Tab, Tabs, Toast } from 'vant'
+import { Icon, NavBar, Form, Field, CellGroup, Button, Tab, Tabs, Toast, showSuccessToast } from 'vant'
 import useClipboard from 'vue-clipboard3'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'

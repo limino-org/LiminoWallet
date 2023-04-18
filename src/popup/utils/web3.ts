@@ -1,4 +1,4 @@
-import { Toast } from "vant";
+import { showToast } from "vant";
 import Web3 from "web3";
 export const web3 = new Web3(Web3.givenProvider);
 console.log('web3', web3)
@@ -75,7 +75,7 @@ export const parseMnemonic = async (password: string, json: any): Promise<string
     const str = web3.utils.toUtf8(s.privateKey);
     return str;
   } catch (err) {
-    Toast(i18n.global.t("wallet.wrongpassword"));
+    showToast(i18n.global.t("wallet.wrongpassword"));
     return Promise.reject(err);
   }
 };

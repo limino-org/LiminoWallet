@@ -60,10 +60,10 @@ import {
   Button,
   Tab,
   Tabs,
-  Dialog,
   IndexBar,
   IndexAnchor,
-  Toast,
+  showLoadingToast,
+  closeToast
 } from "vant";
 import TokenCard from "@/popup/views/account/components/tokenCard/index.vue";
 import { useToast } from "@/popup/plugins/toast/index";
@@ -120,7 +120,7 @@ export default {
           debugger
           const { address } = await getWallet();
         try {
-          Toast.loading({
+          showLoadingToast({
             message: t("userexchange.loading"),
             forbidClick: true,
             loadingType: "spinner",
@@ -137,19 +137,19 @@ export default {
         } catch (err: any) {
           $toast.fail(err.toString());
         } finally {
-          Toast.clear();
+          closeToast();
         }
         },
         cancelBack:() => {
 
         }
       })
-      // Dialog.confirm({
+      // showConfirmDialog({
       //   message: t("currencyList.sure",{tokenName: name.value}),
       // }).then(async () => {
       //   const { address } = await getWallet();
       //   try {
-      //     Toast.loading({
+      //     showLoadingToast({
       //       message: t("userexchange.loading"),
       //       forbidClick: true,
       //       loadingType: "spinner",
@@ -166,7 +166,7 @@ export default {
       //   } catch (err: any) {
       //     $toast.fail(err.toString());
       //   } finally {
-      //     Toast.clear();
+      //     closeToast();
       //   }
       // });
     };
@@ -211,7 +211,7 @@ export default {
           tokenError.value = true
           return t('addCurrency.errTip')
         }finally {
-        Toast.clear()
+        closeToast()
       }
     };
     // Import function

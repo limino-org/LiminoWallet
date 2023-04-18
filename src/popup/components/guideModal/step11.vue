@@ -31,7 +31,8 @@
 
 <script lang="ts">
 import { defineComponent, ref, Ref, watch, SetupContext, computed } from "vue";
-import { Popover, Dialog, Button } from "vant";
+import { Popover, Button, showConfirmDialog } from "vant";
+import {Dialog} from '@vant/compat'
 import WormTransition from "@/popup/components/wromTransition/index.vue";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
@@ -63,7 +64,7 @@ export default defineComponent({
       { immediate: true, deep: true }
     );
     const beforeClose = async () => {
-      const flag = await Dialog.confirm({
+      const flag = await showConfirmDialog({
         className: "closeGuideModal",
         allowHtml: true,
         message: `<div class="icon-inner flex center mb-14"><i class="van-badge__wrapper van-icon van-icon-warning" style="font-size:44px;color:#f7bf03;"></i></div><div class="unboot">${t(

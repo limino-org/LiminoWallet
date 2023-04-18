@@ -118,7 +118,6 @@ import { useExchanges } from "@/popup/hooks/useExchanges";
 import BigNumber from "bignumber.js";
 import { ExchangeStatus } from "@/popup/store/modules/account";
 import {
-  Dialog,
   Form,
   Field,
   CellGroup,
@@ -127,7 +126,10 @@ import {
   Circle,
   Toast,
   Slider,
+  showSuccessToast,
+  showToast
 } from "vant";
+import {Dialog} from '@vant/compat'
 import useClipboard from "vue-clipboard3";
 import { getWallet, wallet } from "@/popup/store/modules/account";
 import { useI18n } from "vue-i18n";
@@ -186,7 +188,7 @@ export default defineComponent({
               showExchange.value = n;
               createExchanges(props.name, props.amount, props.amount2,1);
             } else {
-              Toast(t('createExchange.alreadyopenedanexchange'));
+              showToast(t('createExchange.alreadyopenedanexchange'));
             }
           });
         }
@@ -255,7 +257,7 @@ export default defineComponent({
               return;
             }
             if (amount) {
-              Toast(t("createExchange.oneclickexchangewascreatedsuccessfully"));
+              showToast(t("createExchange.oneclickexchangewascreatedsuccessfully"));
             }
             router.replace({ name: "wallet" });
 

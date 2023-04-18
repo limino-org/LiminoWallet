@@ -91,15 +91,15 @@ import NavHeader from "@/popup/components/navHeader/index.vue";
 
 import {
   Icon,
-  Toast,
   Button,
   Sticky,
   Field,
-  Dialog,
   IndexBar,
   IndexAnchor,
   Cell,
 } from "vant";
+import {Dialog} from '@vant/compat';
+
 import { useRoute, useRouter } from "vue-router";
 import { Language, languages } from "@/popup/enum/language";
 import { defineComponent, Ref, ref, watch, SetupContext } from "vue";
@@ -226,10 +226,15 @@ export default {
   * {
     box-sizing: border-box;
   }
-
+  :deep(){
+    .van-sticky{
+      position: relative;
+    }
+  }
   :deep(.van-sticky--fixed) {
+    position: fixed;
     .sort-box {
-      max-width: 820px;
+      width: 100%;
       margin: 0 auto;
       position: relative;
     }
@@ -244,7 +249,7 @@ export default {
     right: 6px;
     box-sizing: border-box;
     height: 30px;
-    top:110px;
+    top: 0;
     z-index: 1000;
     color: #909090;
     cursor: pointer;

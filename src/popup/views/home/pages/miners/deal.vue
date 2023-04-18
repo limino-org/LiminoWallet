@@ -501,7 +501,6 @@ import { AccountInfo, ExchangeStatus } from "@/popup/store/modules/account";
 import CommonModal from "@/popup/components/commonModal/index.vue";
 
 import {
-  Dialog,
   Form,
   Field,
   CellGroup,
@@ -514,8 +513,12 @@ import {
   Slider,
   Checkbox,
   Loading,
-  Popover
+  Popover,
+  showLoadingToast,
+  closeToast
 } from "vant";
+import {Dialog} from '@vant/compat'
+
 import useClipboard from "vue-clipboard3";
 import { getWallet, wallet, getGasFee } from "@/popup/store/modules/account";
 import { useI18n } from "vue-i18n";
@@ -924,7 +927,7 @@ export default defineComponent({
       }
       if (RegUrl.test(name.value)) {
         //Verify node chainId
-        Toast.loading({
+        showLoadingToast({
           message: t("common.veriPwd"),
         });
         try {
@@ -945,7 +948,7 @@ export default defineComponent({
           isError.value = true;
           return t("minerspledge.invalidNode");
         } finally {
-          Toast.clear();
+          closeToast();
         }
       } else {
         isError.value = true;
@@ -1198,7 +1201,7 @@ export default defineComponent({
         return;
       }
       try {
-        Toast.loading({ duration: 0,forbidClick: true });
+        showLoadingToast({ duration: 0,forbidClick: true });
         const tx = {
           to: accountInfo.value.address,
           value: ethers.utils.parseEther(sendAmount.toString()),
@@ -1215,7 +1218,7 @@ export default defineComponent({
       }catch(err: any){
         $toast.warn(err.reason)
       } finally {
-        Toast.clear();
+        closeToast();
       }
     };
 

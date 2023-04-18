@@ -93,7 +93,7 @@ import { encode, decode } from "js-base64";
 import { useExchanges } from '@/popup/hooks/useExchanges'
 import Tip from "@/popup/components/tip/index.vue";
 import { computed, defineComponent, onMounted, Ref, ref } from "@vue/runtime-core";
-import { Button, Icon, Loading } from "vant";
+import { Button, Icon, Loading, showLoadingToast, closeToast } from "vant";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
@@ -229,7 +229,7 @@ export default {
     
     const {$toast} = useToast()
     const handleAddModel = async() => {
-      Toast.loading({
+      showLoadingToast({
         duration:0
       })
       const wallet = await getWallet()
@@ -237,10 +237,10 @@ export default {
       const ethBalance = ethers.utils.formatEther(balance)
       if(new BigNumber(ethBalance).lt(201)) {
         $toast.warn(t('createExchange.nomoney'))
-        Toast.clear()
+        closeToast()
         return
       }
-      Toast.clear()
+      closeToast()
       showServerModal.value = true
     }
     return {

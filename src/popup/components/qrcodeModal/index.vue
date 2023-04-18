@@ -26,7 +26,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, Ref, watch, SetupContext, reactive, computed } from 'vue'
-import { Dialog } from 'vant'
+import {Dialog} from '@vant/compat'
 import QrcodeVue from 'qrcode.vue'
 import { downloadBase64Img } from '@/popup/utils/utils'
 export default defineComponent({

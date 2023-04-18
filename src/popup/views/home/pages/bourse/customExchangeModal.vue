@@ -82,7 +82,6 @@ import {
   ComponentInternalInstance,
 } from "vue";
 import {
-  Dialog,
   Button,
   Field,
   NumberKeyboard,
@@ -90,6 +89,7 @@ import {
   Icon,
   Popover,
 } from "vant";
+import {Dialog} from '@vant/compat'
 import { toUsd } from "@/popup/utils/filters";
 import { useI18n } from "vue-i18n";
 import BigNumber from "bignumber.js";

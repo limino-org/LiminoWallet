@@ -61,7 +61,6 @@ import { useRouter, useRoute } from "vue-router";
 import { useStore, mapState } from "vuex";
 import { useNetWork } from "@/popup/components/navHeader/hooks/netWork";
 import {
-  Dialog,
   Form,
   Cell,
   Field,
@@ -73,7 +72,11 @@ import {
   Toast,
   Slider,
   Checkbox,
+  showSuccessToast,
+  showToast
 } from "vant";
+import {Dialog} from '@vant/compat'
+
 import eventBus from "@/popup/utils/bus";
 import SwitchNetwork from "@/popup/components/switchNetwork/index.vue";
 import { RegUrl, RegNum1 } from "@/popup/enum/regexp";
@@ -157,7 +160,7 @@ export default defineComponent({
     const toCopyCMS = async () => {
       try {
         await toClipboard(`${exchangeUrl.value}`);
-        Toast.success(t("copy.copy"));
+        showSuccessToast(t("copy.copy"));
       } catch (e) {
         console.error(e);
       }
@@ -169,7 +172,7 @@ export default defineComponent({
     const toCopyAmount = async () => {
       try {
         await toClipboard(`${adminUrl.value}`);
-        Toast.success(t("copy.copy"));
+        showSuccessToast(t("copy.copy"));
       } catch (e) {
         console.error(e);
       }

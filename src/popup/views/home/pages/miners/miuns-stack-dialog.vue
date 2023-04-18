@@ -134,7 +134,8 @@
 </template>
 
 <script lang="ts">
-import { Button, Overlay, Field, Toast, Icon,Dialog } from "vant";
+import { Button, Overlay, Field, Toast, Icon } from "vant";
+import {Dialog} from '@vant/compat'
 import { ref, SetupContext, computed, nextTick, watch } from "vue";
 import { ethers, utils } from "ethers";
 import { formatEther, toUsd, transactionStatus } from "@/popup/utils/filters";

@@ -43,7 +43,7 @@
 </template>
 <script lang="ts">
 // Single signature data
-import { Loading, Sticky, Icon, Field, Button, Toast } from 'vant'
+import { Loading, Sticky, Icon, Field, Button, Toast, showToast, showSuccessToast } from 'vant'
 import NavHeader from '@/popup/components/navHeader/index.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSign } from './hooks/sign'
@@ -85,13 +85,13 @@ export default {
     const { toClipboard } = useClipboard()
     const toCopy = async () => {
       if (!sig) {
-        Toast(t('sign.ready'))
+        showToast(t('sign.ready'))
         return
       }
       try {
         await toClipboard(`${sig}`)
         signSelect.value = true
-        Toast.success(t('sign.copy'))
+        showSuccessToast(t('sign.copy'))
       } catch (e) {
         console.error(e)
       }

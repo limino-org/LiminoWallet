@@ -62,7 +62,7 @@
 <script lang="ts">
   import Vue, { nextTick } from 'vue'
   import { useStore } from 'vuex'
-  import { Icon, Toast, Button, Sticky, Field, Form, CellGroup, Switch, Checkbox, CheckboxGroup, } from 'vant'
+  import { Icon, Toast, Button, Sticky, Field, Form, CellGroup, Switch, Checkbox, CheckboxGroup, showToast } from 'vant'
   import { ref, Ref, computed, toRaw, SetupContext, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import WormTransition from '@/popup/components/wromTransition/index.vue'
@@ -166,7 +166,7 @@
         const check = list.value.find(item => item.validator)
         const len = list.value.filter(item => item.value.trim()).length
         if (check || !mnemonic || len != 12) {
-          Toast(t('createAccountpage.memErr'))
+          showToast(t('createAccountpage.memErr'))
           return
         }
         try {

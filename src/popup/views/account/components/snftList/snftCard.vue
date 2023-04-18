@@ -91,7 +91,7 @@ import {
 } from "@/popup/utils/filters";
 import { useStore } from "vuex";
 import { computed } from "vue";
-import { Image, Toast } from "vant";
+import { Image, Toast, showToast } from "vant";
 import { useRoute, useRouter } from "vue-router";
 import ProgressBar from "@/popup/views/account/components/snftList/progressBar.vue";
 import BigNumber from "bignumber.js";
@@ -316,7 +316,7 @@ export default defineComponent({
       const { status } = props;
 
       if (!loaded) {
-        Toast(t("sendSNFT.loadchip"));
+        showToast(t("sendSNFT.loadchip"));
         return;
       }
       if (status == "3" || status == "1") {
@@ -385,7 +385,7 @@ export default defineComponent({
       if(props.data.MergeLevel === 2 && props.data.Chipcount) {
       // @ts-ignore
         if( compData.value.pledgestate === 'Pledge' && !compData.value.isUnfreeze) {
-          Toast(t('common.unisUnfreeze'))
+          showToast(t('common.unisUnfreeze'))
           return
         }
         compData.value.select = bool;

@@ -126,13 +126,13 @@
   import { web3 } from "@/popup/utils/web3";
   import {
     Icon,
-    Toast,
     Button,
     Sticky,
     Field,
     Slider,
     Popover,
     Skeleton,
+    showToast,
   } from "vant";
   import store from "@/popup/store";
   import { useStore } from "vuex";
@@ -144,7 +144,6 @@
     components: {
       [Icon.name]: Icon,
       [Popover.name]: Popover,
-      [Toast.name]: Toast,
       [Button.name]: Button,
       [Field.name]: Field,
       [Slider.name]: Slider,
@@ -311,12 +310,12 @@
         if (v == -1) {
           // minus
           if (bigLimit.lt(21000)) {
-            Toast(t("sendto.lessthan"));
+            showToast(t("sendto.lessthan"));
             return;
           }
           // Not less than 1000
           if (bigLimit.lte(props.gasLimit)) {
-            Toast(t("sendto.lessthanPrev", { value: props.gasLimit }));
+            showToast(t("sendto.lessthanPrev", { value: props.gasLimit }));
             return;
           }
           // If minus 1000 is less than 21000, rewrite it directly as 21000

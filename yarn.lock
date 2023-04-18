@@ -3086,6 +3086,11 @@
   resolved "https://registry.npmmirror.com/@types/estree/-/estree-0.0.51.tgz"
   integrity sha512-CuPgU6f3eT/XgKKPqKd/gLZV1Xmvf1a2R5POBOGQa6uv82xpls89HU5zKeVoyR8XzHd1RGNOlQlvUe3CFkjWNQ==
 
+"@types/estree@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmmirror.com/@types/estree/-/estree-1.0.0.tgz#5fb2e536c1ae9bf35366eed879e827fa59ca41c2"
+  integrity sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==
+
 "@types/express-serve-static-core@*", "@types/express-serve-static-core@^4.17.33":
   version "4.17.33"
   resolved "https://registry.npmmirror.com/@types/express-serve-static-core/-/express-serve-static-core-4.17.33.tgz"
@@ -3393,9 +3398,9 @@
     source-map "^0.6.1"
 
 "@types/webpack@*":
-  version "5.28.0"
-  resolved "https://registry.npmmirror.com/@types/webpack/-/webpack-5.28.0.tgz#78dde06212f038d77e54116cfe69e88ae9ed2c03"
-  integrity sha512-8cP0CzcxUiFuA9xGJkfeVpqmWTk9nx6CWwamRGCj95ph1SmlRRk9KlCZ6avhCbZd4L68LvYT6l1kpdEnQXrF8w==
+  version "5.28.1"
+  resolved "https://registry.npmmirror.com/@types/webpack/-/webpack-5.28.1.tgz#c369baeff31abe54b45f7f29997e1623604198d6"
+  integrity sha512-qw1MqGZclCoBrpiSe/hokSgQM/su8Ocpl3L/YHE0L6moyaypg4+5F7Uzq7NgaPKPxUxUbQ4fLPLpDWdR27bCZw==
   dependencies:
     "@types/node" "*"
     tapable "^2.2.0"
@@ -3439,12 +3444,12 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@vant/icons@^1.8.0":
-  version "1.8.0"
-  resolved "https://registry.npmmirror.com/@vant/icons/-/icons-1.8.0.tgz"
-  integrity sha512-sKfEUo2/CkQFuERxvkuF6mGQZDKu3IQdj5rV9Fm0weJXtchDSSQ+zt8qPCNUEhh9Y8shy5PzxbvAfOOkCwlCXg==
+"@vant/compat@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmmirror.com/@vant/compat/-/compat-1.0.0.tgz"
+  integrity sha512-u3YOaLkz/5qtF+57hhveZWYdPHSpaN01WNbuS5WZAD7PNTeF7AqKvQ7Ws8KK4e2lCWN+FeRWfNuCk0xv6TxAvw==
 
-"@vant/popperjs@^1.2.1":
+"@vant/popperjs@^1.3.0":
   version "1.3.0"
   resolved "https://registry.npmmirror.com/@vant/popperjs/-/popperjs-1.3.0.tgz"
   integrity sha512-hB+czUG+aHtjhaEmCJDuXOep0YTZjdlRR+4MSmIFnkCQIxJaXLQdSsR90XWvAI2yvKUI7TCGqR8pQg2RtvkMHw==
@@ -3454,7 +3459,7 @@
   resolved "https://registry.npmmirror.com/@vant/touch-emulator/-/touch-emulator-1.4.0.tgz"
   integrity sha512-Zt+zISV0+wpOew2S1siOJ3G22y+hapHAKmXM+FhpvWzsRc4qahaYXatCAITuuXt0EcDp7WvEeTO4F7p9AtX/pw==
 
-"@vant/use@^1.4.2":
+"@vant/use@^1.5.1":
   version "1.5.1"
   resolved "https://registry.npmmirror.com/@vant/use/-/use-1.5.1.tgz"
   integrity sha512-Zxd7lDz/LliVYEQi3PR9a8CQa/kGCVzF0u9hqDMaTlgXlbG0wHMFPllrcG0ThR6bfs8xrYVuSFM9pJn6HSoUGQ==
@@ -5126,11 +5131,6 @@ bn.js@=4.11.8, bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.11.6, bn.js@^4.4.0:
   version "4.11.8"
   resolved "https://registry.npmmirror.com/bn.js/-/bn.js-4.11.8.tgz"
   integrity sha512-ItfYfPLkWHUjckQCk8xC+LwxgK8NYcXywGigJgSwOP8Y2iyWT4f2vsZnoOXTTbo+o5yXmIUJ4gn5538SO5S3gA==
-
-bn.js@^2.0.0:
-  version "2.2.0"
-  resolved "https://registry.npmmirror.com/bn.js/-/bn.js-2.2.0.tgz#12162bc2ae71fc40a5626c33438f3a875cd37625"
-  integrity sha512-nlotTGN6qr+NpeCb8d5mdXR47r6GXiyoX4fEeqBF2u9wp/3XgzIwyftMX9TE+StQRJSOUJtyYr9MVk0rn2ftAg==
 
 bn.js@^4.11.9:
   version "4.12.0"
@@ -7299,6 +7299,11 @@ es-module-lexer@^0.9.0:
   version "0.9.3"
   resolved "https://registry.npmmirror.com/es-module-lexer/-/es-module-lexer-0.9.3.tgz"
   integrity sha512-1HQ2M2sPtxwnvOvT1ZClHyQDiggdNjURWpY2we6aMKCQiUVxTmVs2UYPLIrD84sS+kMdUwfBSylbJPwNnBrnHQ==
+
+es-module-lexer@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.npmmirror.com/es-module-lexer/-/es-module-lexer-1.2.1.tgz#ba303831f63e6a394983fde2f97ad77b22324527"
+  integrity sha512-9978wrXM50Y4rTMmW5kXIC09ZdXQZqkE4mxhwkd8VbzsGkXGPgV4zWuqQJgCEzYngdo2dYDa0l8xhX4fkSwJSg==
 
 es-set-tostringtag@^2.0.1:
   version "2.0.1"
@@ -14347,9 +14352,9 @@ terser-webpack-plugin@^4.2.3:
     terser "^5.3.4"
     webpack-sources "^1.4.3"
 
-terser-webpack-plugin@^5.0.3, terser-webpack-plugin@^5.1.3:
+terser-webpack-plugin@^5.0.3, terser-webpack-plugin@^5.1.3, terser-webpack-plugin@^5.3.7:
   version "5.3.7"
-  resolved "https://registry.npmmirror.com/terser-webpack-plugin/-/terser-webpack-plugin-5.3.7.tgz"
+  resolved "https://registry.npmmirror.com/terser-webpack-plugin/-/terser-webpack-plugin-5.3.7.tgz#ef760632d24991760f339fe9290deb936ad1ffc7"
   integrity sha512-AfKwIktyP7Cu50xNjXF/6Qb5lBNzYaWpU6YfoX3uZicTx0zTy0stDDCsvjDapKsSDvOeWo5MEq4TmdBy2cNoHw==
   dependencies:
     "@jridgewell/trace-mapping" "^0.3.17"
@@ -15115,14 +15120,13 @@ validate-npm-package-license@^3.0.1:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
 
-vant@^3.4.2:
-  version "3.6.11"
-  resolved "https://registry.npmmirror.com/vant/-/vant-3.6.11.tgz"
-  integrity sha512-ueEu4rOePQUoeP6mjuVHogmg3t05yejrYkFCG/NMWY2haOscvQTFGDVuUazmNdjgizqL1D9rH6xV0qy2aRWF9Q==
+vant@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.npmmirror.com/vant/-/vant-4.2.0.tgz"
+  integrity sha512-x8kYAxoXjlXZnilBx/0Np3XhcOLdPzqerZWwOl7DsqgLu17OCYFzkoLuFDbxXM8fciX15xFITqdmtBcgqaWQWg==
   dependencies:
-    "@vant/icons" "^1.8.0"
-    "@vant/popperjs" "^1.2.1"
-    "@vant/use" "^1.4.2"
+    "@vant/popperjs" "^1.3.0"
+    "@vant/use" "^1.5.1"
 
 varint@^5.0.0:
   version "5.0.2"
@@ -15927,12 +15931,12 @@ webpack@4, webpack@^4.0.0, webpack@^4.16.0:
     webpack-sources "^3.2.3"
 
 webpack@^5:
-  version "5.76.2"
-  resolved "https://registry.npmmirror.com/webpack/-/webpack-5.76.2.tgz#6f80d1c1d1e3bf704db571b2504a0461fac80230"
-  integrity sha512-Th05ggRm23rVzEOlX8y67NkYCHa9nTNcwHPBhdg+lKG+mtiW7XgggjAeeLnADAe7mLjJ6LUNfgHAuRRh+Z6J7w==
+  version "5.79.0"
+  resolved "https://registry.npmmirror.com/webpack/-/webpack-5.79.0.tgz#8552b5da5a26e4e25842c08a883e08fc7740547a"
+  integrity sha512-3mN4rR2Xq+INd6NnYuL9RC9GAmc1ROPKJoHhrZ4pAjdMFEkJJWrsPw8o2JjCIyQyTu7rTXYn4VG6OpyB3CobZg==
   dependencies:
     "@types/eslint-scope" "^3.7.3"
-    "@types/estree" "^0.0.51"
+    "@types/estree" "^1.0.0"
     "@webassemblyjs/ast" "1.11.1"
     "@webassemblyjs/wasm-edit" "1.11.1"
     "@webassemblyjs/wasm-parser" "1.11.1"
@@ -15941,7 +15945,7 @@ webpack@^5:
     browserslist "^4.14.5"
     chrome-trace-event "^1.0.2"
     enhanced-resolve "^5.10.0"
-    es-module-lexer "^0.9.0"
+    es-module-lexer "^1.2.1"
     eslint-scope "5.1.1"
     events "^3.2.0"
     glob-to-regexp "^0.4.1"
@@ -15952,7 +15956,7 @@ webpack@^5:
     neo-async "^2.6.2"
     schema-utils "^3.1.0"
     tapable "^2.1.1"
-    terser-webpack-plugin "^5.1.3"
+    terser-webpack-plugin "^5.3.7"
     watchpack "^2.4.0"
     webpack-sources "^3.2.3"
 

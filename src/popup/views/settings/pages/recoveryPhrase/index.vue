@@ -90,7 +90,6 @@ import {
   Field,
   CellGroup,
   Button,
-  Toast,
   Sticky,
 } from "vant";
 import useClipboard from "vue-clipboard3";

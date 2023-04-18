@@ -58,7 +58,9 @@
 </template>
 <script lang="ts">
 import Vue, { computed, onMounted } from "vue";
-import { Icon, Toast, Button, Sticky, Field, Dialog } from "vant";
+import { Icon, Button, Sticky, Field } from "vant";
+import {Dialog} from '@vant/compat';
+
 import { useRoute, useRouter } from "vue-router";
 import NetWorkCard from "@/popup/components/netWorkCard/index.vue";
 import { defineComponent, Ref, ref, watch, SetupContext, inject } from "vue";

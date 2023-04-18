@@ -328,15 +328,16 @@ import {
   Popup,
   Icon,
   ActionSheet,
-  Dialog,
   Button,
   Loading,
   Circle,
-  Toast,
   Slider,
   Popover,
+  showLoadingToast,
   Overlay,
+  closeToast
 } from "vant";
+import {Dialog} from '@vant/compat'
 import { addressMask, decimal } from "@/popup/utils/filters";
 import AddressQRModal from "@/popup/components/addressQRModal/index.vue";
 import { version } from "@/popup/enum/version";
@@ -474,6 +475,7 @@ export default defineComponent({
 
     const routerTo = (name: string) => {
       showSlider.value = false;
+      console.log('name', name)
       let time = setTimeout(() => {
         router.push({ name });
         clearTimeout(time);
@@ -511,12 +513,13 @@ export default defineComponent({
     };
     // One-click exchange click events
     const oneClick = async () => {
-      Toast.loading({
+      showLoadingToast({
         duration: 0,
       });
       showSlider.value = false;
-      const exchangeStatus = await dispatch("account/getExchangeStatus");
-      Toast.clear();
+      try {
+        const exchangeStatus = await dispatch("account/getExchangeStatus");
+      closeToast();
       if (exchangeStatus.exchanger_flag) {
         router.push({
           name: "exchange-management",
@@ -525,6 +528,11 @@ export default defineComponent({
         router.push({
           name: "bourse",
         });
+      }
+      }catch(err){
+        $toast.warn(err.reason)
+      }finally{
+        closeToast()
       }
     };
 
@@ -536,10 +544,13 @@ export default defineComponent({
 
     const { $dialog } = useDialog();
     const minerpledge = async () => {
+      showLoadingToast({
+        duration: 0,
+      })
       showSlider.value = false;
-      
-      const provider = await getProvider();
-      const ethAccountInfo = await provider.send("eth_getAccountInfo", [
+      try {
+        const provider = await getProvider();
+        const ethAccountInfo = await provider.send("eth_getAccountInfo", [
         accountInfo.value.address,
         "latest",
       ]);
@@ -563,10 +574,15 @@ export default defineComponent({
         // isWarnings.value = true;
         return;
       }
+      }catch(err){
+        $toast.warn(err.reason)
+      }finally {
+        closeToast()
+      }
+
     };
 
     const toHelp = () => {
-      // $toast.warn(t('common.commingsoon'))
       window.open("https://www.wormholes.com/docs/wallet/");
     };
     // The account label pops up

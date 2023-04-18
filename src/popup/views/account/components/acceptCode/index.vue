@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import { SetupContext, Ref, ref, reactive, defineComponent, computed } from 'vue'
-import { Icon, Button, Popup, Toast } from 'vant'
+import { Icon, Button, Popup, Toast, showSuccessToast } from 'vant'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { addressMask } from '@/popup/utils/filters'

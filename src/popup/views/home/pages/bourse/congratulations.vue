@@ -105,7 +105,6 @@ import { useRouter, useRoute } from "vue-router";
 import { useStore, mapState } from "vuex";
 import { useNetWork } from "@/popup/components/navHeader/hooks/netWork";
 import {
-  Dialog,
   Form,
   Field,
   CellGroup,

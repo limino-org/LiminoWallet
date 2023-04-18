@@ -120,6 +120,7 @@ CellGroup,
 Switch,
 Checkbox,
 CheckboxGroup,
+showToast
 } from "vant";
 import { encryptPrivateKey, EncryptPrivateKeyParams } from "@/popup/utils/web3";
 import { ref, Ref, computed, toRaw, SetupContext, onMounted } from "vue";
@@ -220,11 +221,11 @@ setup() {
       } catch (err) {
         console.error(err);
         loading.value = false;
-        Toast(t("createwallet.failed"));
+        showToast(t("createwallet.failed"));
       }
     } else {
       // The entered passwords are inconsistent
-      Toast(t("createwallet.notmatch"));
+      showToast(t("createwallet.notmatch"));
     }
   };
   const pw1Error = ref(false);

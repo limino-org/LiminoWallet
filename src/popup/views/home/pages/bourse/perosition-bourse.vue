@@ -44,7 +44,6 @@ import { useRouter, useRoute } from "vue-router";
 import { useStore, mapState } from "vuex";
 import { useNetWork } from "@/popup/components/navHeader/hooks/netWork";
 import {
-  Dialog,
   Form,
   Cell,
   Field,
@@ -56,6 +55,7 @@ import {
   Toast,
   Slider,
   Checkbox,
+  showSuccessToast
 } from "vant";
 import SwitchNetwork from "@/popup/components/switchNetwork/index.vue";
 import { VUE_APP_EXCHANGESMANAGEMENT_URL, VUE_APP_EXCHANGES_URL } from '@/popup/enum/env';

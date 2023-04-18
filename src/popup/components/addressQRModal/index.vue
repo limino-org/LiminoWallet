@@ -34,7 +34,8 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, Ref, watch, SetupContext, reactive, computed } from 'vue'
-import { Dialog, Toast } from 'vant'
+import {Dialog} from '@vant/compat'
+
 import QrcodeVue from 'qrcode.vue'
 import { downloadBase64Img } from '@/popup/utils/utils'
 import useClipboard from 'vue-clipboard3'

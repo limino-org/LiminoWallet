@@ -50,7 +50,6 @@ import {
   Tabs,
   Popup,
   Icon,
-  Dialog,
   Sticky,
   Toast,
   Loading,

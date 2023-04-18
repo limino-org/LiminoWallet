@@ -106,7 +106,8 @@
   } from "vue";
   import { useRouter, useRoute } from "vue-router";
   import { useToggleAccount } from "@/popup/components/accountModal/hooks/toggleAccount";
-  import { Icon, Dialog, Button, Loading, ActionSheet } from "vant";
+  import { Icon, Button, Loading, ActionSheet } from "vant";
+  import {Dialog} from '@vant/compat'
   import AccountIcon from "@/popup/components/accountIcon/index.vue";
   import { decimal } from "@/popup/utils/filters";
   import { useStore } from "vuex";

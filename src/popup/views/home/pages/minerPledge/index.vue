@@ -26,7 +26,7 @@
   </div>
 </template>
   <script lang="ts">
-import { Icon, Sticky, Field, Button, Toast } from 'vant'
+import { Icon, Sticky, Field, Button, showFailToast } from 'vant'
 import NavHeader from '@/popup/components/navHeader/index.vue'
 import { useRouter } from 'vue-router'
 import { ref, nextTick } from 'vue'
@@ -77,7 +77,7 @@ export default {
       //First check if the node is input
       if (!nodeValue.value) {
         //Please enter the node URL
-        Toast.fail(t('minerspledge.please'))
+        showFailToast(t('minerspledge.please'))
         return
       }
       isLoading.value = true

@@ -189,6 +189,9 @@
         <van-popover
           v-model:show="visible1"
           placement="bottom-start"
+          :close-on-click-outside="true"
+          :close-on-click-action="false"
+          :close-on-click-overlay="false"
           :class="`${isExchangeStatusStatus ? 'appendtobear' : 'appendto1'}`"
           v-if="!isExchanger_flag"
         >
@@ -221,6 +224,9 @@
         </van-popover>
         <van-popover
           v-model:show="visible2"
+          :close-on-click-outside="true"
+          :close-on-click-action="false"
+          :close-on-click-overlay="false"
           placement="bottom-end"
           :class="isExchangeStatusStatus ? 'appendtobear' : 'appendto2'"
         >
@@ -420,7 +426,6 @@ import { useExchanges } from "@/popup/hooks/useExchanges";
 import BigNumber from "bignumber.js";
 import { ExchangeStatus } from "@/popup/store/modules/account";
 import {
-  Dialog,
   Form,
   Field,
   CellGroup,
@@ -435,6 +440,7 @@ import {
   Sticky,
   Loading,
 } from "vant";
+import {Dialog} from '@vant/compat'
 import useClipboard from "vue-clipboard3";
 import { getWallet, wallet } from "@/popup/store/modules/account";
 import { useI18n } from "vue-i18n";
@@ -607,9 +613,10 @@ export default defineComponent({
     const { dispatch } = store;
     const amount = ref(700);
     const accountInfo = computed(() => store.state.account.accountInfo);
-
-    let visible1 = computed(() => serverIndex.value === 0);
-    let visible2 = computed(() => serverIndex.value === 1);
+    // servr selection
+    let serverIndex = ref(1);
+    let visible1 = ref(serverIndex.value === 0);
+    let visible2 = ref(serverIndex.value === 1);
     const toCreate = async (name: string, amount: number) => {
       const fee_rate = money.value;
       try {
@@ -647,9 +654,9 @@ export default defineComponent({
     const customClick = () => {
       showAcount.value = true;
     };
-    // servr selection
-    let serverIndex = ref(1);
+
     const changeServerIndex = (value: number) => {
+      serverIndex.value = value
       if(value && insufficientMoney.value) {
         return
       }
@@ -782,7 +789,8 @@ export default defineComponent({
         // open()
       } catch (error) {
         isError.value = true;
-        console.log(error);
+        $toast.warn(error[0].message.toString());
+        console.error(error);
       }
     };
     const routerTo = () => {
@@ -853,6 +861,8 @@ export default defineComponent({
 
     watch(() => serverIndex.value, n => {
       console.log('serverIndex:', n)
+      console.log('isExchangeStatusStatus', isExchangeStatusStatus.value, visible2.value)
+      console.log('isExchanger_flag', isExchanger_flag.value, visible1.value)
     },{
       deep: true,
       immediate: true

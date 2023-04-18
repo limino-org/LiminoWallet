@@ -94,9 +94,7 @@ import {
   Tabs,
   Popup,
   Icon,
-  Dialog,
   Sticky,
-  Toast,
   Loading,
   Empty,
   Form,
@@ -104,6 +102,7 @@ import {
   Cell,
   Button,
   CellGroup,
+  showToast
 } from "vant";
 import { utils } from "ethers";
 import { toHex } from "@/popup/utils/utils";
@@ -194,10 +193,10 @@ export default {
         wallet.provider.waitForTransaction(hash).then((res: any) => {
           receipt.value = res;
           loading.value = false;
-          Toast(t('transaction.returnsuccess'));
+          showToast(t('transaction.returnsuccess'));
         });
       }).catch((err:any) => {
-        Toast(err.reason)
+        showToast(err.reason)
         loading.value = false
       })
     };

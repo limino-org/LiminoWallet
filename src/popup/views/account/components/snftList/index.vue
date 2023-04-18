@@ -133,7 +133,7 @@ import TransferNFT from "@/popup/views/home/components/transferNft.vue";
 import TransferNFTModal from "@/popup/views/home/components/transferNFTModal.vue";
 
 import { useStore } from "vuex";
-import { List, Toast, Button, Sticky, PullRefresh, Switch } from "vant";
+import { List, Toast, Button, Sticky, PullRefresh, Switch, showToast } from "vant";
 import { useI18n } from "vue-i18n";
 import { emit } from "process";
 import { getWallet } from "@/popup/store/modules/account";
@@ -413,14 +413,14 @@ export default defineComponent({
         params.currentPage = params.currentPage + 1;
       } catch (err) {
         nftErr.value = true;
-        Toast(JSON.stringify(err));
+        showToast(JSON.stringify(err));
       } finally {
         loadNft.value = false;
       }
     };
     let isChangeAccount = false;
     // The list load event updates the current Snft list each time the account is switched
-    eventBus.on("changeAccount", (address) => {
+    eventBus.on("changeAccount", ({address}) => {
       loadNft.value = true;
       showConvert.value = false;
       checkObjs.data = {};
@@ -626,7 +626,7 @@ export default defineComponent({
     const showNFTModal = ref(false);
     const handleConfirmNFT = () => {
       if (!selectLength.value) {
-        Toast(t("sendSNFT.pleasechoose"));
+        showToast(t("sendSNFT.pleasechoose"));
         return;
       }
       showNFTModal.value = true;
@@ -652,7 +652,7 @@ export default defineComponent({
     const showModal = ref(false);
     const handleShowModal = () => {
       if (loadNft.value) {
-        Toast(t("common.loadingText"));
+        showToast(t("common.loadingText"));
         return;
       }
       showModal.value = !showModal.value;

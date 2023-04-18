@@ -56,7 +56,7 @@
 </template>
 
 <script lang="ts">
-import { Button, Overlay, Field, Slider, Toast, Checkbox, Icon } from 'vant'
+import { Button, Overlay, Field, Slider, Toast, Checkbox, Icon, showToast } from 'vant'
 import { ref, SetupContext, computed, watch, onBeforeMount, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useExchanges } from '@/popup/hooks/useExchanges'
@@ -131,7 +131,7 @@ export default {
     }
     const minersConfirm = async () => {
       if (!checked.value) {
-        Toast(t('common.agreementfirst'))
+        showToast(t('common.agreementfirst'))
         return
       }
 
@@ -141,7 +141,7 @@ export default {
         await toCreate(props.nodeValue, money.value, false)
         emit('minersConfirm')
       } catch (err) {
-        Toast(JSON.stringify(err))
+        showToast(JSON.stringify(err))
       }
       // emit('minersConfirm')
     }

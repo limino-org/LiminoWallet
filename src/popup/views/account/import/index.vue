@@ -45,9 +45,9 @@ import {
   Field,
   CellGroup,
   Button,
-  Dialog,
   Toast,
 } from "vant";
+import {Dialog} from '@vant/compat'
 import { ethers } from "ethers";
 import { hexValue } from "@ethersproject/bytes";
 import { useStore } from "vuex";

@@ -83,11 +83,12 @@ import {
   Field,
   CellGroup,
   Button,
-  Dialog,
+  showToast,
   Toast,
   Tab,
   Tabs,
 } from "vant";
+import {Dialog} from '@vant/compat';
 import { useI18n } from "vue-i18n";
 import { useStore } from "vuex";
 import { useBroadCast } from "@/popup/utils/broadCost";
@@ -188,7 +189,7 @@ export default {
     // Selected tab
     const tabVal = computed(() => btnList.value.find((item) => item.select));
     const handleClick = (item: any) => {
-      Toast(t("importerror.inputofprivatekey"));
+      showToast(t("importerror.inputofprivatekey"));
     };
 
         // Copy user address

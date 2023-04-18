@@ -135,8 +135,9 @@
 </template>
 
 <script lang="ts">
-import { Button, Overlay, Field, Toast, Icon,Dialog } from "vant";
+import { Button, Overlay, Field, Toast, Icon } from "vant";
 import { ref, SetupContext, computed, nextTick, watch } from "vue";
+import {Dialog} from '@vant/compat'
 import { ethers, utils } from "ethers";
 import { formatEther, toUsd } from "@/popup/utils/filters";
 import { useI18n } from "vue-i18n";

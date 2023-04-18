@@ -1,6 +1,6 @@
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex';
-import { Toast } from 'vant';
+import { showToast } from 'vant';
 import { onMounted, ref, Ref } from 'vue';
 import { ethers } from 'ethers';
 import { ConnectWalletByPwdAddress } from '@/popup/store/modules/account'
@@ -34,11 +34,11 @@ export const useSign = () => {
             isAdmin = typeof opt.isAdmin == 'boolean' ? opt.isAdmin : true
         }
         if(!sig){
-            Toast(i18n.global.t('sign.signature'))
+            showToast(i18n.global.t('sign.signature'))
             return
         }
         if(!password){
-            Toast(i18n.global.t('sign.password'))
+            showToast(i18n.global.t('sign.password'))
             router.replace({ name: "withpassword" });
             return 
         }
@@ -63,9 +63,9 @@ export const useSign = () => {
                 return Promise.resolve(sign.value)
             } catch(err: any){
                 console.error(err || t('sign.unknownmistake'))
-                Toast(err || t('sign.unknownmistake'))
+                showToast(err || t('sign.unknownmistake'))
             }
-        }).catch(err => Toast(err)).finally(() => loading.value = false)
+        }).catch(err => showToast(err)).finally(() => loading.value = false)
         
     }
     return {

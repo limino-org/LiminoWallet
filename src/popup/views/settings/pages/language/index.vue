@@ -18,7 +18,9 @@
 </template>
 <script lang="ts">
 import Vue, { computed, reactive } from 'vue'
-import { Icon, Toast, Button, Sticky, Field, Dialog } from 'vant'
+import { Icon, Toast, Button, Sticky, Field } from 'vant'
+import {Dialog} from '@vant/compat';
+
 import { useRoute, useRouter } from 'vue-router'
 import { Language, languages } from '@/popup/enum/language'
 import { defineComponent, Ref, ref, watch, SetupContext } from 'vue'

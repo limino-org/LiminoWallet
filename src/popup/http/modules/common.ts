@@ -49,11 +49,14 @@ export const checkAuth = (address: string) => {
 
 // Get the smart contract address
 export const getContractAddress = () => {
-    return httpGet(`https://www.wormholes.com/upload/ERBPay.json?${new Date().getTime()}`)
+    return httpGet(`https://www.limino.com/upload/ERBPay.json?${new Date().getTime()}`)
 }
+
 export const getConfiguration = () => {
-    return httpGet(`https://www.wormholes.com/upload/configuration.json?${new Date().getTime()}`)
+    return httpGet(`https://www.limino.com/upload/configuration.json?${new Date().getTime()}`)
 }
+
+
 export const getRedemption = () => {
     return httpGet(`https://www.limino.com/wallet_conf/wallet.json?${new Date().getTime()}`)
 }
@@ -78,6 +81,7 @@ export interface CreatorData {
 }
 // specifies the address to query the creator
 export const getCreator = (address: string): Promise<CreatorData> => {
+    console.warn('address---', address)
     return httpGet(`${scanApi}/creator/${address}`, {})
 }
 

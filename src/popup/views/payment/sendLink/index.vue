@@ -35,7 +35,9 @@
 </template>
 <script lang="ts">
 import { ref, Ref } from 'vue'
-import { Button, Icon, Toast, Dialog } from 'vant'
+import { Button, Icon, Toast } from 'vant'
+import {Dialog} from '@vant/compat';
+
 import useClipboard from 'vue-clipboard3'
 import { useI18n } from 'vue-i18n'
 export default {

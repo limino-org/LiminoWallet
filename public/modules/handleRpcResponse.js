@@ -33,13 +33,16 @@ export const handleRpcResponse = {
     [handleType.waitTxQueueResponse]: {
         sendResponse: async (data, sendResponse, sender) => {
             const method = handleType.waitTxQueueResponse
+            console.log('method', method)
             try {
-                await waitTxQueueResponse()
-                const bgMsg = { ...errorCode['200'], data: null }
+                const res = await waitTxQueueResponse()
+                console.warn('wait....', res)
+                const bgMsg = { ...errorCode['200'], data: res }
                 const sendBgMsg = createBgMsg(bgMsg, method)
                 chrome.runtime.sendMessage(sender.id, sendBgMsg);
 
             } catch (err) {
+                console.error('err wait', err)
                 const bgMsg = { ...errorCode['-32003'], data: null }
                 const sendBgMsg = createBgMsg(bgMsg, method)
                 chrome.runtime.sendMessage(sender.id, sendBgMsg);

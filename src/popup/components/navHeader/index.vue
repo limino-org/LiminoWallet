@@ -62,7 +62,8 @@
 
 <script lang="ts">
 import { SetupContext, Ref, ref, reactive, defineComponent, computed, nextTick, registerRuntimeCompiler } from 'vue'
-import { Popup, Icon, ActionSheet, Dialog, Button, Loading, Circle, Toast } from 'vant'
+import { Popup, Icon, ActionSheet,Button, Loading, Circle, Toast } from 'vant'
+import {Dialog} from '@vant/compat'
 import NetWorkCard from '../netWorkCard/index.vue'
 import { showSlider, show } from '@/popup/components/navHeader/hooks/slider'
 import { useToggleAccount } from '@/popup/components/accountModal/hooks/toggleAccount'
@@ -162,6 +163,7 @@ export default defineComponent({
     const clickLeft = () => {
       // If backUrl exists and the current route name is not the name of the cancelled route
       const { backUrl, cancelRouteName, backReplaceName } = props
+      console.warn('backUrl',backUrl, 'cancelRouteName',cancelRouteName, 'backReplaceName',backReplaceName)
       emit('clickLeft')
       // If the current page confirms the password directly back
       if (route.name == 'resetPwd-step1') {
@@ -176,7 +178,7 @@ export default defineComponent({
         router.replace({ name: backUrl })
         return
       }
-      if (!backUrl) {
+      if (!backUrl && history.length > 1) {
         router.back()
         return
       }

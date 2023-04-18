@@ -133,7 +133,9 @@
 import { defineComponent, Ref, ref, watch, SetupContext, computed, reactive, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useToggleAccount } from '@/popup/components/accountModal/hooks/toggleAccount'
-import { Icon, Dialog, Button, Loading, Toast, Sticky } from 'vant'
+import { Icon, Button, Loading, Toast, Sticky, showLoadingToast,closeToast, showToast } from 'vant'
+import {Dialog} from '@vant/compat';
+
 import AccountIcon from '@/popup/components/accountIcon/index.vue'
 import { decimal } from '@/popup/utils/filters'
 import { useStore } from 'vuex'
@@ -226,7 +228,7 @@ export default {
     }
 
     const handleCreateAccount = async () => {
-      Toast.loading({
+      showLoadingToast({
         message: i18n.t('userexchange.loading'),
         forbidClick: true,
         loadingType: 'spinner'
@@ -238,10 +240,10 @@ export default {
         await createAccount()
         await dispatch('common/scrollBottom', { id: 'account-list' })
       } catch(err){
-        Toast(err.toString())
+        showToast(err.toString())
       }
         let time2 = setTimeout(() => {
-          Toast.clear()
+          closeToast()
           clearTimeout(time2)
         }, 300)
         clearTimeout(time)

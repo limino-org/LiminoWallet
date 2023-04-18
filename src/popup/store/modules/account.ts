@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { Toast, Notify, GridItem } from "vant";
+import { Toast, GridItem, showLoadingToast, showNotify, showToast } from "vant";
 import { ethers, utils } from "ethers";
 import storeObj from '@/popup/store/index'
 import { useBroadCast } from '@/popup/utils/broadCost'
@@ -481,7 +481,7 @@ export default {
         }
       })
       if (flag) {
-        Toast.loading({
+        showLoadingToast({
           message: i18n.global.t('common.asyncData'),
           duration: 0
         })
@@ -839,7 +839,7 @@ export default {
         }
         return Promise.resolve(wallet);
       } catch ({ reason }) {
-        Toast(i18n.global.t("common.failedtoload"));
+        showToast(i18n.global.t("common.failedtoload"));
         return Promise.reject();
       }
     },
@@ -1116,7 +1116,7 @@ export default {
         return newWallet
       } catch (err: any) {
         console.warn('err---', err)
-        Notify({ type: 'danger', message: i18n.global.t('error.netErr'),duration: 5000, position: 'bottom' })
+        showNotify({ type: 'danger', message: i18n.global.t('error.netErr'),duration: 5000, position: 'bottom' })
         commit('UPDATE_NETSTATUS', NetStatus.fail)
         return Promise.reject(err);
       }
@@ -1132,6 +1132,7 @@ export default {
     ) {
       const { to, value, gasPrice, gasLimit, data, transitionType, nft_address, checkTxQueue, nonce: sendNonce, type: newType, maxPriorityFeePerGas, maxFeePerGas } = { checkTxQueue: true, ...params };
       // Determine whether there are transactions in the current trading pool that have not returned transaction receipts, and if so, do not allow them to be sent
+      console.warn('send...', params)
       if (checkTxQueue && await dispatch('hasPendingTransactions')) {
         return Promise.reject({ reason: i18n.global.t('common.sendTipPendding'), code: 500 })
       }
@@ -1209,6 +1210,7 @@ export default {
           await PUSH_BTCTXQUEUE(sendData)
  
         }
+        // dispatch('waitTxQueueResponse')
         if(sendData) {
           sendData.wallet = newwallet
           return Promise.resolve(sendData)
@@ -1366,7 +1368,7 @@ export default {
             tokenContractAddress.toUpperCase()
         );
         if (newv) {
-          Toast(i18n.global.t("currencyList.addressalreadyexists"));
+          showToast(i18n.global.t("currencyList.addressalreadyexists"));
           // Already exists
           return Promise.reject(i18n.global.t("currencyList.addressalreadyexists"));
         }
@@ -1499,7 +1501,7 @@ export default {
     // Encrypt the new keystore according to all new passwords
     async updateKeyStoreByPwd({ commit, state }: any, password: string) {
       if (!password) {
-        Toast(i18n.global.t('createAccountpage.pwdRequired'));
+        showToast(i18n.global.t('createAccountpage.pwdRequired'));
         return Promise.reject();
       }
       const pwd = await getCookies("password");
@@ -1577,126 +1579,139 @@ export default {
         callback: (e: any) => { },
         ...opt
       }
-      const { id } = state.currentNetwork
-      const from = state.accountInfo.address
-      let data1 = null
       return new Promise((resolve, reject) => {
-        waitTime = setTimeout(async () => {
+        sendBackground({method: 'waitTxQueueResponse', response:{code:'200',data: {}}}).then(res => {
+          console.warn('waitTxQueueResponse', res)
+          resolve(res)
+        }).catch(err => {
+          reject(err)
+        })
 
-          const receiptList = []
-          //  const newWallet = await getWallet()
-          try {
-            if(state.coinType.value == 0) {
-              const list: any = await getPenddingList(from) || []
-              console.warn('list--', list)
-              const txQueue = list && list.length ? list : []
-              if (!txQueue.length) {
-                resolve(true)
-              }
-            for await (const iterator of txQueue) {
-              let { hash, transitionType, nft_address, blockNumber, network, txType, txId, amount, isCancel, sendData, date, value, nonce } = iterator
-              const txList: any = await getTxList(from)
-              let hashArr = []
-                const sameNonceTx = txList.find((item: any) => item.nonce === nonce)
-                hashArr = !sameNonceTx ? [hash] : [hash, sameNonceTx.hash]
-   
-              console.warn('222', hashArr)
-              if (_opt.time != null) {
-                data1 = await waitForTransactions(hashArr, _opt.time)
-                // data1 = await wallet.provider.waitForTransaction(hash, null, _opt.time);
-              } else {
-                data1 = await waitForTransactions(hashArr)
-                // data1 = await wallet.provider.waitForTransaction(hash);
-
-              }
-              receiptList.push(data1)
-              let convertAmount: any = ''
-              if (transitionType && transitionType == '6') {
-                const len = nft_address.length
-                switch (len) {
-                  case 42:
-                    break;
-                  case 41:
-                    nft_address += '0'
-                    break;
-                  case 40:
-                    nft_address += '00'
-                    break;
-                  case 39:
-                    nft_address += '000'
-                    break;
-                }
-                const nftAccountInfo = await wallet.provider.send(
-                  "eth_getAccountInfo",
-                  [nft_address, web3.utils.toHex((data1.blockNumber - 1).toString())]
-                );
-                const { MergeLevel, MergeNumber } = nftAccountInfo
-                //  @ts-ignore
-                const { t0, t1, t2, t3 } = store.state.configuration.setting.conversion
-
-                if (MergeLevel === 0) {
-                  convertAmount = new BigNumber(MergeNumber).multipliedBy(t0).toNumber()
-                } else if (MergeLevel === 1) {
-                  convertAmount = new BigNumber(MergeNumber).multipliedBy(t1).toNumber()
-                } else if (MergeLevel === 2) {
-                  convertAmount = new BigNumber(MergeNumber).multipliedBy(t2).toNumber()
-                } else if (MergeLevel === 3) {
-                  convertAmount = new BigNumber(MergeNumber).multipliedBy(t3).toNumber()
-                }
-              }
-
-              await DEL_TXQUEUE({ ...iterator, txId, txType })
-              const newtx = {
-                receipt: data1,
-                network,
-                sendData,
-                txId,
-                date,
-                cointype: state.coinType,
-                value
-              }
-              await PUSH_TRANSACTION({...newtx, txId: guid()})
-            }
-            }
-            if(state.coinType.value == 1) {
-            
-              const keys = await getDB(state.accountInfo.address).penddingTable.keys() || []
-              
-              for await (const iterator of keys) {
-                const txId = iterator
-                const txInfo = await getDB(state.accountInfo.address).penddingTable.getItem(txId)
-                // @ts-ignore
-                const {value} = txInfo
-                // const sameIdTx = txList.find((item: any) => item.txId.toUpperCase() === txId.toUpperCase())
-                   // @ts-ignore
-                const hashArr = [txInfo.hash]
-
-                console.warn('wait btc', iterator)
-   
-                if (_opt.time != null) {
-                  data1 = await waitForTransactions(hashArr, _opt.time)
-                  // data1 = await wallet.provider.waitForTransaction(hash, null, _opt.time);
-                } else {
-                  data1 = await waitForTransactions(hashArr)
-                  // data1 = await wallet.provider.waitForTransaction(hash);
-                }
-                await DELBTC_TXQUEUE({ ...txInfo, cointype: state.coinType})
-                await PUSHBTC_TRANSACTION({...txInfo,...data1,value, sendStatus: 'success',cointype: state.coinType})
-                receiptList.push(data1)
-              }
-            }
-            dispatch('updateBalance')
-            eventBus.emit('waitTxEnd')
-            resolve(receiptList)
-          } catch (err) {
-            reject(err)
-          } finally {
-            clearTimeout(waitTime)
-          }
-        }, 1000)
-
-        _opt.callback(waitTime)
       })
+
+      // const { id } = state.currentNetwork
+      // const from = state.accountInfo.address
+      // let data1 = null
+      // return new Promise((resolve, reject) => {
+      //   waitTime = setTimeout(async () => {
+      //     sendBackground({method: 'waitTxQueueResponse', response:{code:'200',data: {}}})
+
+      //     const receiptList = []
+      //     //  const newWallet = await getWallet()
+      //     try {
+      //       if(state.coinType.value == 0) {
+      //         const list: any = await getPenddingList(from) || []
+      //         console.warn('list--', list)
+      //         const txQueue = list && list.length ? list : []
+      //         if (!txQueue.length) {
+      //           resolve(true)
+      //         }
+      //       for await (const iterator of txQueue) {
+      //         let { hash, transitionType, nft_address, blockNumber, network, txType, txId, amount, isCancel, sendData, date, value, nonce } = iterator
+      //         const txList: any = await getTxList(from)
+      //         let hashArr = []
+      //           const sameNonceTx = txList.find((item: any) => item.nonce === nonce)
+      //           hashArr = !sameNonceTx ? [hash] : [hash, sameNonceTx.hash]
+   
+      //         console.warn('222', hashArr)
+      //         if (_opt.time != null) {
+      //           data1 = await waitForTransactions(hashArr, _opt.time)
+      //           // data1 = await wallet.provider.waitForTransaction(hash, null, _opt.time);
+      //         } else {
+      //           data1 = await waitForTransactions(hashArr)
+      //           // data1 = await wallet.provider.waitForTransaction(hash);
+
+      //         }
+      //         receiptList.push(data1)
+      //         let convertAmount: any = ''
+      //         if (transitionType && transitionType == '6') {
+      //           const len = nft_address.length
+      //           switch (len) {
+      //             case 42:
+      //               break;
+      //             case 41:
+      //               nft_address += '0'
+      //               break;
+      //             case 40:
+      //               nft_address += '00'
+      //               break;
+      //             case 39:
+      //               nft_address += '000'
+      //               break;
+      //           }
+      //           const nftAccountInfo = await wallet.provider.send(
+      //             "eth_getAccountInfo",
+      //             [nft_address, web3.utils.toHex((data1.blockNumber - 1).toString())]
+      //           );
+      //           const { MergeLevel, MergeNumber } = nftAccountInfo
+      //           //  @ts-ignore
+      //           const { t0, t1, t2, t3 } = store.state.configuration.setting.conversion
+
+      //           if (MergeLevel === 0) {
+      //             convertAmount = new BigNumber(MergeNumber).multipliedBy(t0).toNumber()
+      //           } else if (MergeLevel === 1) {
+      //             convertAmount = new BigNumber(MergeNumber).multipliedBy(t1).toNumber()
+      //           } else if (MergeLevel === 2) {
+      //             convertAmount = new BigNumber(MergeNumber).multipliedBy(t2).toNumber()
+      //           } else if (MergeLevel === 3) {
+      //             convertAmount = new BigNumber(MergeNumber).multipliedBy(t3).toNumber()
+      //           }
+      //         }
+
+      //         await DEL_TXQUEUE({ ...iterator, txId, txType })
+      //         const newtx = {
+      //           receipt: data1,
+      //           network,
+      //           sendData,
+      //           txId,
+      //           date,
+      //           cointype: state.coinType,
+      //           value
+      //         }
+      //         await PUSH_TRANSACTION({...newtx, txId: guid()})
+      //       }
+      //       }
+      //       if(state.coinType.value == 1) {
+            
+      //         const keys = await getDB(state.accountInfo.address).penddingTable.keys() || []
+              
+      //         for await (const iterator of keys) {
+      //           const txId = iterator
+      //           const txInfo = await getDB(state.accountInfo.address).penddingTable.getItem(txId)
+      //           // @ts-ignore
+      //           const {value} = txInfo
+      //           // const sameIdTx = txList.find((item: any) => item.txId.toUpperCase() === txId.toUpperCase())
+      //              // @ts-ignore
+      //           const hashArr = [txInfo.hash]
+
+      //           console.warn('wait btc', iterator)
+   
+      //           if (_opt.time != null) {
+      //             data1 = await waitForTransactions(hashArr, _opt.time)
+      //             // data1 = await wallet.provider.waitForTransaction(hash, null, _opt.time);
+      //           } else {
+      //             data1 = await waitForTransactions(hashArr)
+      //             // data1 = await wallet.provider.waitForTransaction(hash);
+      //           }
+      //           await DELBTC_TXQUEUE({ ...txInfo, cointype: state.coinType})
+      //           await PUSHBTC_TRANSACTION({...txInfo,...data1,value, sendStatus: 'success',cointype: state.coinType})
+      //           receiptList.push(data1)
+      //         }
+      //       }
+      //       sendBackground({method: 'waitTxQueueResponse', response:{code:'200',data: {}}})
+
+      //       dispatch('updateBalance')
+      //       eventBus.emit('waitTxEnd')
+      //       resolve(receiptList)
+      //     } catch (err) {
+      //       reject(err)
+      //     } finally {
+      //       clearTimeout(waitTime)
+      //     }
+      //   }, 1000)
+
+      //   _opt.callback(waitTime)
+      // })
     },
     // Indicates that the current transaction exists in the transaction queue
     async checkIsTxHash({commit, state}: any, hash: string) {

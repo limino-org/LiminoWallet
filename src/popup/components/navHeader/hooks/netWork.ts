@@ -2,7 +2,7 @@ import { SetupContext, Ref, ref, reactive, defineComponent, toRaw } from "vue";
 import { useStore } from "vuex";
 import { computed, onMounted } from "vue";
 import { NetWorkData } from '@/popup/enum/network'
-import { Toast } from "vant";
+import { showToast } from "vant";
 import { useI18n } from 'vue-i18n'
 import i18n from '@/popup/language/index'
 import eventBus from '@/popup/utils/bus'
@@ -65,10 +65,10 @@ export const useNetWork = () => {
                 showModalNetwork.value = false
                 eventBus.emit(eventHandler.changeNetwork,{network: clone(chooseN), oldNetwork })
             } catch (err) {
-                Toast(JSON.stringify(err))
+                showToast(JSON.stringify(err))
             } finally { () => networkLoading.value = false }
         } else {
-            Toast(i18n.global.t('internet.checknetwork'))
+            showToast(i18n.global.t('internet.checknetwork'))
         }
     }
 

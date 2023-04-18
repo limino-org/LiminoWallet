@@ -26,7 +26,8 @@
   </div>
 </template>
   <script lang="ts">
-import { Icon, Toast, Button, Sticky, Field, Dialog, Form, Empty } from "vant";
+import { Icon, Toast, Button, Sticky, Field, Form, Empty } from "vant";
+import { Dialog } from '@vant/compat'
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useRouter } from "vue-router";
 import { computed,Ref,ref,reactive } from "vue";

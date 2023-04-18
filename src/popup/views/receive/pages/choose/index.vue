@@ -50,11 +50,12 @@ import {
   Button,
   Sticky,
   Field,
-  Dialog,
   IndexBar,
   IndexAnchor,
   Cell,
 } from "vant";
+import {Dialog} from '@vant/compat';
+
 import { useRoute, useRouter } from "vue-router";
 import { defineComponent, Ref, toRaw, ref, watch, SetupContext,inject } from "vue";
 import { useStore } from "vuex";

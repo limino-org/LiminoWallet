@@ -66,7 +66,9 @@
 </template>
 <script lang="ts">
 import Vue, { computed, toRaw } from "vue";
-import { Icon, Toast, Button, Sticky, Field, Dialog, Form } from "vant";
+import { Icon, Button, Sticky, Field, Form, showConfirmDialog, showToast } from "vant";
+import {Dialog} from '@vant/compat';
+
 import { useRoute, useRouter } from "vue-router";
 import NetWorkCard from "@/popup/components/netWorkCard/index.vue";
 import { defineComponent, Ref, ref, watch, SetupContext } from "vue";
@@ -147,7 +149,7 @@ export default {
       return true
     }
     const handleDelete = () => {
-      Dialog.confirm({
+      showConfirmDialog({
         title: t("contacts.hint"),
         message: t("contacts.sureyouwanttodelete", { name: query.name }),
       }).then(async () => {
@@ -160,7 +162,7 @@ export default {
           $toast.success(t("contacts.contactdeletedsuccessfully"));
           router.back();
         } catch (err) {
-          Toast(err);
+          showToast(err);
         }
       });
     };
@@ -189,7 +191,7 @@ export default {
         );
         router.back();
       } catch (err: any) {
-        Toast(err);
+        showToast(err);
       }
     };
     return {

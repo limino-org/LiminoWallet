@@ -238,7 +238,8 @@ import {
 } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToggleAccount } from "@/popup/components/accountModal/hooks/toggleAccount";
-import { Icon, Dialog, Button, Loading, Toast } from "vant";
+import { Icon, Button, Loading, Toast, showLoadingToast, closeToast } from "vant";
+import {Dialog} from '@vant/compat'
 import AccountIcon from "@/popup/components/accountIcon/index.vue";
 import { decimal } from "@/popup/utils/filters";
 import { useStore } from "vuex";
@@ -366,7 +367,7 @@ export default defineComponent({
     };
 
     const handleCreateAccount = async () => {
-      Toast.loading({
+      showLoadingToast({
         message: i18n.t("userexchange.loading"),
         forbidClick: true,
         loadingType: "spinner",
@@ -376,7 +377,7 @@ export default defineComponent({
         await createAccount();
         await dispatch("common/scrollBottom", { id: "account-list" });
         let time2 = setTimeout(() => {
-          Toast.clear();
+          closeToast();
           clearTimeout(time2);
           handleScroll();
         }, 300);

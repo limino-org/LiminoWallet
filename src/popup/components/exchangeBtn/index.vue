@@ -81,7 +81,7 @@ import {
   onMounted,
   onActivated,
 } from "vue";
-import { Button, Sticky, Toast } from "vant";
+import { Button, Sticky, Toast, showLoadingToast, closeToast } from "vant";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -140,12 +140,12 @@ export default defineComponent({
       window.open("https://www.wormholes.com/docs/wallet/");
     };
     const getStatus = async () => {
-      Toast.loading({
+      showLoadingToast({
         message: t("userexchange.loading"),
         forbidClick: true,
         loadingType: "spinner",
       });
-      return dispatch("account/getExchangeStatus").finally(() => Toast.clear())
+      return dispatch("account/getExchangeStatus").finally(() => closeToast())
     };
     const toAutoExchange = async() => {
       const {exchanger_flag,status} = await getStatus();

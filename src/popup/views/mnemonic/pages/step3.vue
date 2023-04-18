@@ -58,7 +58,7 @@
 </template>
 <script lang="ts">
 import Vue, { computed, onMounted, reactive } from "vue";
-import { Icon, Toast, Button, Sticky, Field } from "vant";
+import { Icon, Toast, Button, Sticky, Field, showToast } from "vant";
 import { getCookies } from "@/popup/utils/jsCookie";
 import { parseMnemonic } from "@/popup/utils/web3";
 import { randArr } from "@/popup/utils/utils";
@@ -113,7 +113,7 @@ export default {
           }
         });
       } else {
-        Toast(t("mnemonic.tryagain"));
+        showToast(t("mnemonic.tryagain"));
       }
     };
 
@@ -154,7 +154,7 @@ export default {
     const next = () => {
       const flag = chooseList.data.find((item: any) => !item.name);
       if (flag) {
-        Toast(t("mnemonic.checkthemnemonic"));
+        showToast(t("mnemonic.checkthemnemonic"));
         return;
       }
       router.push({ name: "mnemonic-backupSuccessful" });

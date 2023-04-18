@@ -116,7 +116,6 @@ import {
   Button,
   Tab,
   Tabs,
-  Toast,
 } from "vant";
 import { useRouter, useRoute } from "vue-router";
 import useClipboard from "vue-clipboard3";

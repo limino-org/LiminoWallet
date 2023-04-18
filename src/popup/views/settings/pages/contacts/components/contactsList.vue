@@ -24,7 +24,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Icon, Toast, Button, Sticky, Field, Dialog, IndexBar, IndexAnchor, Cell } from 'vant'
+import { Icon, Toast, Button, Sticky, Field, IndexBar, IndexAnchor, Cell } from 'vant'
 import { useRoute, useRouter } from 'vue-router'
 import { Language, languages } from '@/popup/enum/language'
 import { defineComponent, Ref, ref, watch, SetupContext, computed } from 'vue'

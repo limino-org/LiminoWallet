@@ -82,7 +82,7 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, getCurrentInstance, onActivated, onMounted, ref } from 'vue'
-import { Tabs, Tab, Image, Sticky, Toast, Empty, Icon, List } from 'vant'
+import { Tabs, Tab, Image, Sticky, Toast, Empty, Icon, List, showLoadingToast,closeToast, showToast } from 'vant'
 import NavHeader from '@/popup/components/navHeader/index.vue'
 import { queryOwnerSnftCollections, querySnftByCollection, queryOwnerSnftChipAmount } from '@/popup/http/modules/nft'
 import NftsModal from '@/popup/views/home/components/nftsModal.vue'
@@ -212,7 +212,7 @@ export default {
     // According to the classification and search set
     const getCollList = async (params: any) => {
       if (active2.value < 10) {
-        Toast.loading({
+        showLoadingToast({
           message: 'loading...'
         })
       }
@@ -240,14 +240,14 @@ export default {
         console.error(err)
       } finally {
         if (active2.value < 10) {
-          Toast.clear()
+          closeToast()
         }
       }
     }
 
     // Snft based on name lookup set
     const getSnfts = async (params: any) => {
-      Toast.loading({
+      showLoadingToast({
         message: 'loading...'
       })
       try {
@@ -266,7 +266,7 @@ export default {
       } catch (err) {
         console.error(err)
       } finally {
-        Toast.clear()
+        closeToast()
       }
     }
     onMounted(async () => {
@@ -301,7 +301,7 @@ export default {
           }
           await getCollList(newOpt)
         } catch (err) {
-          Toast(JSON.stringify(err))
+          showToast(JSON.stringify(err))
         }
       }
 
@@ -352,7 +352,7 @@ export default {
           count: '16'
         }
         try {
-          Toast.loading({ message: 'loading...' })
+          showLoadingToast({ message: 'loading...' })
           const { data: newData }: any = await querySnftByCollection(params)
           console.warn('get adata.', data)
           newData.forEach((item: any) => {
@@ -365,7 +365,7 @@ export default {
         } catch (err) {
           console.error(err)
         } finally {
-          Toast.clear()
+          closeToast()
         }
       }
       collModalData.value = data
@@ -408,7 +408,7 @@ export default {
         }
         categoryList.value[active.value].start_index = currentPage
       } catch (err) {
-        Toast(JSON.stringify(err))
+        showToast(JSON.stringify(err))
       } finally {
         loading.value = false
       }

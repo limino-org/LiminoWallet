@@ -53,7 +53,9 @@ import {
   reactive,
   computed,
 } from "vue";
-import { Dialog, Field, Form, Button, Toast } from "vant";
+import { Field, Form, Button, showToast } from "vant";
+import {Dialog} from '@vant/compat';
+
 import { useI18n } from "vue-i18n";
 import { useStore } from "vuex";
 import { Language, languages } from "@/popup/enum/language";
@@ -127,7 +129,7 @@ export default defineComponent({
       }
     );
     const onSubmit = () => {
-      Toast(t("account.successful"));
+      showToast(t("account.successful"));
       cancel();
     };
 
