@@ -305,7 +305,7 @@ import {
   TransactionSendStatus,
   TransactionTypes,
 } from "@/popup/store/modules/account";
-import localforage from "localforage";
+import localforage, { clear } from "localforage";
 import { Column } from "element-plus/lib/components";
 import { ethers } from "ethers";
 import BigNumber from "bignumber.js";
@@ -388,25 +388,18 @@ export default {
       router.go(-1);
     };
 
-    const handleAsyncTxList = () => {
-      return store.dispatch(
-        "txList/loopAsyncTxList",
-        accountInfo.value.address
-      );
-    };
+
     const coinType = computed(() => store.state.account.coinType);
 
-    eventBus.on("waitTxEnd", async () => {
-      if (
-        coinType.value.value == 0 &&
-        currentNetwork.value.id == "wormholes-network-1"
-      ) {
-        store.dispatch("txList/asyncUpdateList", { total: 0 });
-      }
+    eventBus.on("waitTxEnd", async (list) => {
+      console.warn('waitTxEnd', list)
+      if(list && list.length) {
+          handleRefresh()
+        }
     });
-    eventBus.on("loopTxListUpdata", () => {
-      handleRefresh();
-    });
+    // eventBus.on("loopTxListUpdata", () => {
+    //   handleRefresh();
+    // });
     eventBus.on("txPush", (data: any) => {
       handleRefresh();
       console.warn("txPush", data);
@@ -441,12 +434,10 @@ export default {
     let tlist: any = ref([]);
     const waitTime: any = ref(null);
     onMounted(async () => {
-      store.dispatch("account/clearWaitTime");
       window.addEventListener("scroll", deFun);
-      handleRefresh();
-      store.dispatch("account/waitTxQueueResponse", {
-        time: null,
-      });
+      if(currentNetwork.value.id != 'wormholes-network-1') {
+        handleRefresh();
+      }
     });
     const params = {
       addr: accountInfo.value.address,
@@ -458,6 +449,7 @@ export default {
     );
     const loadErr = ref(false);
     const getMainNetList = async () => {
+      console.warn('params', params)
       const { total, transactions } = await getTransitionsPage(params);
       const wallet = await getWallet();
       if (transactions && transactions.length) {
@@ -490,16 +482,18 @@ export default {
         : getTxList;
     const loadList = ref(false);
     const getPageList = async () => {
+      console.warn('getPageList')
       loadList.value = true;
       try {
         const list = [
           ...((await getPenddingList()) || []),
           ...((await getRecordList()) || []),
         ];
-        if (list && list.length && list.length >= 20) {
-          tlist.value.push(list);
-        } else {
-          tlist.value = list
+        console.warn('get list', list)
+        if (list && list.length > 0) {
+          tlist.value.push(...list);
+        }
+        if(list && list.length < 20){
           finished.value = true;
         }
       } catch (err) {
@@ -520,10 +514,17 @@ export default {
       }
     };
     const handleRefresh = () => {
-      tlist.value = [];
+      return new Promise((resolve, reject) => {
+        let time = setTimeout(() => {
+        tlist.value = [];
       finished.value = false;
       params.page = "1";
-      return getPageList();
+      getPageList().then((res) => resolve(res)).finally(() => {
+        store.dispatch("account/waitTxQueueResponse")
+      })
+      clearTimeout(time)
+      },500)
+      })
     };
 
     // All transactions
@@ -603,13 +604,12 @@ export default {
       stopLoop();
       eventBus.off("txPush");
       eventBus.off("txUpdate");
-      eventBus.off("loopTxListUpdata");
+      // eventBus.off("loopTxListUpdata");
       eventBus.off("txQueuePush");
       eventBus.off("delTxQueue");
       eventBus.off("waitTxEnd");
       eventBus.off("sameNonce");
       window.removeEventListener("scroll", deFun);
-      store.dispatch("account/clearWaitTime");
       eventBus.off("changeNetwork");
     });
     const cancelSend = async () => {
@@ -703,9 +703,7 @@ export default {
           null,
           60000
         );
-        store.dispatch("account/clearWaitTime");
         await store.dispatch("account/waitTxQueueResponse");
-        handleAsyncTxList();
       } catch (err) {
         console.error(err);
         showToast(err.reason);
@@ -812,9 +810,7 @@ export default {
         const receipt = await data.wallet.provider.waitForTransaction(
           data.hash
         );
-        store.dispatch("account/clearWaitTime");
         await store.dispatch("account/waitTxQueueResponse");
-        handleAsyncTxList();
       } catch (err) {
         console.error(err);
         showToast(err.reason);

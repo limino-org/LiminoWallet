@@ -13,7 +13,6 @@ export const  toTradeHistory = async (txid) => {
 
 export const useGetTxReceipt = (time = 300000) => {
   async function waitTxQueueResponse() {
-    console.log('waitTxQueueResponse...')
     const store = await getStore()
     const from = store.account.accountInfo.address
     const currentNetwork = store.account.currentNetwork
@@ -26,7 +25,7 @@ export const useGetTxReceipt = (time = 300000) => {
           console.warn('list--', list)
           const txQueue = list && list.length ? list : []
           if (!txQueue.length) {
-            resolve(true)
+            resolve([])
           }
           for await (const iterator of txQueue) {
             let { hash, transitionType, nft_address, blockNumber, network, txType, txId, amount, isCancel, sendData, date, value, nonce } = iterator
@@ -41,39 +40,39 @@ export const useGetTxReceipt = (time = 300000) => {
               console.log('wait..', receiptList)
               receiptList.push(data1)
               let convertAmount = ''
-              if (transitionType && transitionType == '6') {
-                const len = nft_address.length
-                switch (len) {
-                  case 42:
-                    break;
-                  case 41:
-                    nft_address += '0'
-                    break;
-                  case 40:
-                    nft_address += '00'
-                    break;
-                  case 39:
-                    nft_address += '000'
-                    break;
-                }
-                const nftAccountInfo = await wallet.provider.send(
-                  "eth_getAccountInfo",
-                  [nft_address, ethers.utils.hexValue((data1.blockNumber - 1))]
-                );
-                const { MergeLevel, MergeNumber } = nftAccountInfo
-                //  @ts-ignore
-                const { t0, t1, t2, t3 } = store.configuration.setting.conversion
+              // if (transitionType && transitionType == '6') {
+              //   const len = nft_address.length
+              //   switch (len) {
+              //     case 42:
+              //       break;
+              //     case 41:
+              //       nft_address += '0'
+              //       break;
+              //     case 40:
+              //       nft_address += '00'
+              //       break;
+              //     case 39:
+              //       nft_address += '000'
+              //       break;
+              //   }
+              //   const nftAccountInfo = await wallet.provider.send(
+              //     "eth_getAccountInfo",
+              //     [nft_address, ethers.utils.hexValue((data1.blockNumber - 1))]
+              //   );
+              //   const { MergeLevel, MergeNumber } = nftAccountInfo
+              //   //  @ts-ignore
+              //   const { t0, t1, t2, t3 } = store.configuration.setting.conversion
 
-                if (MergeLevel === 0) {
-                  convertAmount = new BigNumber(MergeNumber).multipliedBy(t0).toNumber()
-                } else if (MergeLevel === 1) {
-                  convertAmount = new BigNumber(MergeNumber).multipliedBy(t1).toNumber()
-                } else if (MergeLevel === 2) {
-                  convertAmount = new BigNumber(MergeNumber).multipliedBy(t2).toNumber()
-                } else if (MergeLevel === 3) {
-                  convertAmount = new BigNumber(MergeNumber).multipliedBy(t3).toNumber()
-                }
-              }
+              //   if (MergeLevel === 0) {
+              //     convertAmount = new BigNumber(MergeNumber).multipliedBy(t0).toNumber()
+              //   } else if (MergeLevel === 1) {
+              //     convertAmount = new BigNumber(MergeNumber).multipliedBy(t1).toNumber()
+              //   } else if (MergeLevel === 2) {
+              //     convertAmount = new BigNumber(MergeNumber).multipliedBy(t2).toNumber()
+              //   } else if (MergeLevel === 3) {
+              //     convertAmount = new BigNumber(MergeNumber).multipliedBy(t3).toNumber()
+              //   }
+              // }
               await DEL_TXQUEUE({ ...iterator, txId, txType })
               console.warn('network', network)
               const newtx = {

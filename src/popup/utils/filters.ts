@@ -44,7 +44,7 @@ export const transactionTarget = (accountInfo: AccountInfo, item: any) => {
     }
     try {
         const { to, from } = item
-        if (address.toUpperCase() == from.toUpperCase()) {
+        if (address.toUpperCase() == from ? from.toUpperCase() : '') {
             return (t('wallet.send'))
         }
         if (address.toUpperCase() == to ? to.toUpperCase() : '') {
@@ -236,7 +236,7 @@ export function transactionStatus(txData: any){
    }
     if(txType == 'contract') return 'icon-caozuo-xunhuan1'
     const bigTo = to ? to.toUpperCase() : ''
-    const bigFrom = from.toUpperCase()
+    const bigFrom = from ? from.toUpperCase() : ''
     if((myAddr === bigTo && bigFrom !== myAddr)) return 'icon-bottom'
     if(bigTo !== bigFrom || bigTo === bigFrom) return 'icon-arrowTop'
   }
@@ -277,7 +277,7 @@ export function transactionStatus(txData: any){
   
     if(txType === 'contract') return i18n.global.t('transationHistory.contract')
     const bigTo = to ? to.toUpperCase() : ''
-    const bigFrom = from.toUpperCase()
+    const bigFrom = from ? from.toUpperCase() : ''
     if(bigTo === bigFrom)return i18n.global.t('transationHistory.send')
     if(bigTo === bigFrom || myAddr === bigTo) return i18n.global.t('transactiondetails.recive')
     if(bigTo !== bigFrom) return i18n.global.t('transationHistory.send')
@@ -362,7 +362,7 @@ export function transactionStatus(txData: any){
 
   if(txType === 'contract') return 'Contract'
   const bigTo = to ?to.toUpperCase() :''
-  const bigFrom = from.toUpperCase()
+  const bigFrom = from ? from.toUpperCase() :''
   if(bigTo === bigFrom)return 'Send'
   if(bigTo === bigFrom || myAddr === bigTo) return 'Receive'
   if(bigTo !== bigFrom) return 'Send'
@@ -425,7 +425,7 @@ export const transferBTCAmountText = (data: any) => {
     if(!status)return val
     if(contractAddress) return val
     const bigTo = to ?to.toUpperCase() :''
-    const bigFrom = from.toUpperCase()
+    const bigFrom = from ? from.toUpperCase() : ''
     if(bigTo === bigFrom) return '-' + val
     if((myAddr == bigTo && myAddr !== bigFrom)) return '+' + val
     if(bigTo !== bigFrom) return '-' + val

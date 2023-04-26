@@ -363,6 +363,8 @@ export default {
         : getTxList;
     const loadList = ref(false);
     const getPageList = async () => {
+      console.warn('getPageList')
+
       loadList.value = true;
       try {
         const list = [
@@ -370,10 +372,10 @@ export default {
           ...((await getRecordList()) || []),
         ];
         console.log("get list, ", list);
-        if (list && list.length && list.length >= 20) {
+        if (list && list.length && list.length > 0) {
           txList.value.push(...list);
-        } else {
-          txList.value = list;
+        }
+        if(list && list.length < 20) {
           finished.value = true;
         }
       } catch (err) {
@@ -391,9 +393,9 @@ export default {
         coinType.value.value,
         currentNetwork.value.id
       );
-      store.dispatch("account/clearWaitTime");
-      store.dispatch("account/waitTxQueueResponse");
-      handleRefresh();
+      if(currentNetwork.value.id != 'wormholes-network-1') {
+        handleRefresh();
+      }
 
       window.addEventListener("scroll", deFun);
     });
@@ -452,10 +454,17 @@ export default {
       }
     };
     const handleRefresh = () => {
-      txList.value = [];
-      params.page = "1";
+      return new Promise((resolve, reject) => {
+        let time = setTimeout(() => {
+        txList.value = [];
       finished.value = false;
-      return getPageList();
+      params.page = "1";
+      getPageList().then((res) => resolve(res)).finally(() => {
+        store.dispatch("account/waitTxQueueResponse")
+      })
+      clearTimeout(time)
+      },500)
+      })
     };
     eventBus.on("changeNetwork", async (address) => {
       loadList.value = true;
@@ -474,9 +483,9 @@ export default {
         time: null,
       });
     });
-    eventBus.on("loopTxListUpdata", () => {
-      handleRefresh();
-    });
+    // eventBus.on("loopTxListUpdata", () => {
+    //   handleRefresh();
+    // });
     eventBus.on("sameNonce", () => {
       showSpeedModal.value = false;
       handleRefresh();
@@ -485,15 +494,11 @@ export default {
     eventBus.on("txQueuePush", (data: any) => {
       handleRefresh();
     });
-    eventBus.on("waitTxEnd", async () => {
-      handleRefresh();
-      // if (coinType.value.value == 0 && currentNetwork.value.id == "wormholes-network-1") {
-      //   store.dispatch("txList/asyncUpdateList", { total: 0 });
-      // }
-    });
-    eventBus.on("txUpdate", (data: any) => {
-      console.warn("txUpdate----", data);
-      handleRefresh();
+    eventBus.on("waitTxEnd", async (list) => {
+      console.warn('waitTxEnd', list)
+      if(list && list.length) {
+          handleRefresh()
+        }
     });
     eventBus.on("txUpdate", (data: any) => {
       console.warn("txUpdate----", data);
@@ -513,13 +518,12 @@ export default {
       stopLoop();
       eventBus.off("txPush");
       eventBus.off("txUpdate");
-      eventBus.off("loopTxListUpdata");
+      // eventBus.off("loopTxListUpdata");
       eventBus.off("txQueuePush");
       eventBus.off("delTxQueue");
       eventBus.off("waitTxEnd");
       eventBus.off("sameNonce");
       window.removeEventListener("scroll", deFun);
-      store.dispatch("account/clearWaitTime");
       eventBus.off("changeNetwork");
     });
     const symbol = computed(() => {
@@ -622,7 +626,6 @@ export default {
           null,
           60000
         );
-        store.dispatch("account/clearWaitTime");
         await store.dispatch("account/waitTxQueueResponse");
         // handleAsyncTxList();
       } catch (err) {
@@ -731,12 +734,10 @@ export default {
         const receipt = await data.wallet.provider.waitForTransaction(
           data.hash
         );
-        store.dispatch("account/clearWaitTime");
         await store.dispatch("account/waitTxQueueResponse");
         // handleAsyncTxList();
       } catch (err) {
         console.error(err);
-        // store.dispatch('account/clearWaitTime')
         showToast(err.reason);
       } finally {
         showSpeedModal.value = false;

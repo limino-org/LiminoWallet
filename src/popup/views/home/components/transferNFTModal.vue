@@ -568,24 +568,24 @@ export default defineComponent({
             }
             $tradeConfirm.update({ status: "approve" });
             const receiptList = await dispatch("account/waitTxQueueResponse");
-            console.warn('111', receiptList)
+            console.warn('111', receiptList, list.length)
             const successList = receiptList.map((item: any) => item.status);
-            if (successList.length == count) {
+            if (successList.length == list.length) {
               $tradeConfirm.update({
                 status: "success",
                 successMessage: t("wallet.conver_success", {
-                  count: `<span style='color:#037CD6;'>${count}</span>`,
+                  count: `<span style='color:#037CD6;'>${list.length}</span>`,
                   amount: `<span style='color:#037CD6;'>${amount.toNumber()}</span>`,
                 }),
                 successMessageType: "html",
                 historyCallBack,
               });
             } else {
-              console.error('conver fail 1', successList, receiptList, count)
+              console.error('conver fail 1', successList, receiptList, list.length)
               $tradeConfirm.update({
                 status: "fail",
                 failMessage: t("wallet.conver_wrong", {
-                  count: count - successList.length,
+                  count: list.length - successList.length,
                 }),
                 successMessageType: "html",
               });
