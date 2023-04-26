@@ -1,11 +1,9 @@
 <template>
     <NavHeader :title="name" :hasRight="route.name =='transactionDetails-step1' ? false : true" backUrl="wallet">
     </NavHeader>
-  <router-view v-slot="{ Component }">
-    <keep-alive>
+    <router-view v-slot="{ Component }">
       <component :is="Component" />
-    </keep-alive>
-  </router-view>
+    </router-view>
 </template>
 <script lang="ts">
 import { Icon, Button, Sticky, Field } from "vant";

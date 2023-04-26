@@ -38,7 +38,7 @@ export const setBadge = async ({
 export const removeBadge = async (sender, method) => {
     const queue = await getBadgeList()
     if(!queue.length) {
-        resetBadge()
+        clearBadge()
     }
     const idx = await hasMethodQueue(sender, method)
     if(idx > -1){
@@ -52,17 +52,17 @@ export const removeBadge = async (sender, method) => {
             })
             chrome.storage.local.set({[queueKey]: queue})
         } else {
-            resetBadge()
+            clearBadge()
         }
 
     }
 }
 
 const homeUrl = `chrome-extension://${chrome.runtime.id}/popup.html#/home/wallet`
-export const resetBadge = () => {
+export const clearBadge = () => {
     chrome.storage.local.set({[queueKey]: []})
     chrome.action.setBadgeText({ text: "" });
-    chrome.action.setBadgeBackgroundColor({ color: 'transparent' });
+    // chrome.action.setBadgeBackgroundColor({ color: 'transparent' });
     chrome.action.setPopup({
         popup: homeUrl
     })

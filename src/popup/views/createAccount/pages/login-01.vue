@@ -172,7 +172,6 @@ export default {
         console.log('4444')
         const { query } = route;
         const { backUrl }: any = query;
-        sendBackground({method: eventsEmitter.login, response:{code:'200',data: true}})
         handleUpdate()
         if (backUrl && backUrl != "/loginAccount/step1" && backUrl != "/") {
           console.log('5555',backUrl)

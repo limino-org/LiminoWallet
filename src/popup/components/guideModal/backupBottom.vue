@@ -7,7 +7,7 @@
       <div class="tip f-12 lh-16 text-center pl-24 pr-24 mt-12 mb-12">
      {{t('backup.warn1')}}
       </div>
-      <div class="flex between btn-box mt-20 pl-8 pr-8">
+      <div class="flex between btn-b-box mt-20 pl-8 pr-8">
         <van-button @click="remindLater">{{t('backup.remindMeLater')}}</van-button>
         <van-button type="primary" @click="backUp">{{t('backup.backup')}}</van-button>
       </div>
@@ -102,7 +102,7 @@ export default defineComponent({
 .tip {
   color: #848484;
 }
-.btn-box {
+.btn-b-box {
   button {
     width: 160px;
   }

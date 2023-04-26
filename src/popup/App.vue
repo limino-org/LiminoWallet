@@ -61,10 +61,8 @@ export default {
     // @ts-ignore
     const pageType = ref(window?.pageType)
     provide("appProvide", appProvide());
-    onBeforeMount(() => {
-
-    })
     onMounted(async () => {
+      useEvent();
       console.log("this", this);
       // update browser session window id
       dispatch("system/setConversationid", guid());
@@ -97,7 +95,7 @@ export default {
       dispatch("account/getContractAddress");
       dispatch("configuration/getConfiguration");
 
-      useEvent();
+
     });
 
     eventBus.on("walletReady", (newwallet) => {

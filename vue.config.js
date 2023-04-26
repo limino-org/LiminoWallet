@@ -17,11 +17,6 @@ module.exports = {
       entry: './src/popup/home.ts',
       title: 'LiminoWallet'
     },
-    background: {
-      template: 'public/background.html',
-      entry: './src/background/main.ts',
-      title: 'Background',
-    }
   },
   pluginOptions: {
     i18n: {
@@ -41,7 +36,8 @@ module.exports = {
       },
       componentOptions: {
         // background: {
-        //   entry: 'src/scripts/background.ts',
+        //   entry: 'src/scripts/background.js',
+        //   output: 'dist/background.js'
         // },
         contentScripts: {
           entries: {
@@ -55,7 +51,9 @@ module.exports = {
   },
 
   configureWebpack: config => {
-
+    // config.externals = {
+    //   'bitcore-lib':"bitcore-lib"
+    // }
     config.devtool = isProduct ? 'nosources-source-map' : 'source-map'
     config.node = {
       global: false
@@ -68,8 +66,16 @@ module.exports = {
         from: path.resolve(__dirname, 'src/scripts/inject-script.js'),
         to: path.resolve(__dirname, 'dist/js/inject-script.js'),
         toType: "file",
-      }
-
+      },
+      // {
+      //   from: path.resolve(__dirname, 'src/scripts/background.js'),
+      //   to: path.resolve(__dirname, 'dist/background.js'),
+      //   toType: "file",
+      // },
+      // {
+      //   from: path.resolve(__dirname, 'src/scripts/modules'),
+      //   to: path.resolve(__dirname, 'dist/modules'),
+      // },
     ]))
     if (isProduct) {
       config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true

@@ -234,15 +234,18 @@ export default defineComponent({
         );
         $tradeConfirm.update({ status: "approve" });
         eventBus.emit('sendComfirm')
-        store.dispatch('account/waitTxQueueResponse')
-        if(coinType.value.value == 0) {
-          const receipt = await txData.wallet.provider.waitForTransaction(txData.hash, null, 60000)
-          $tradeConfirm.update({ status:receipt.status?"success": "fail", hash:txData.hash });
-        } 
-        if(coinType.value.value == 1) {
-          const receipt = await txData.wallet.provider.waitForTransaction(txData.hash, null, 60000)
-          $tradeConfirm.update({ status: "success", hash:txData.hash });
-        }
+        store.dispatch('account/waitTxQueueResponse').then(list => {
+          if(list.length){
+            const [tx] = list
+            const {txid,transactionHash,status} = tx
+            if(coinType.value.value == 0) {
+              $tradeConfirm.update({ status:status?"success": "fail", hash:transactionHash });
+            }
+            if(coinType.value.value == 1) {
+              $tradeConfirm.update({ status: "success", hash: txid });
+            }
+          }
+        })
       } catch (err: any) {
         console.warn('idx', err.toString().indexOf("timeout"))
         console.log('err:===', err)

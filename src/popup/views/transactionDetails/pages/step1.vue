@@ -2,9 +2,7 @@
   <div class="currency">
     <div class="currency-bd">
       <div class="flex center">
-        <div
-          class="flex center currency-icon"
-        >
+        <div class="flex center currency-icon">
           <img
             class="currency-symbol"
             v-if="coinType.value == 0"
@@ -60,16 +58,38 @@
     </div>
     <div class="tx-tit lh-30 pl-14 pr-14">{{ t("common.hsitory") }}</div>
 
-    <div class="swap-list" v-show="!loading">
+    <div class="swap-list">
       <div v-if="coinType.value == 0">
-        <CollectionCard
-          @handleClick="handleView(item)"
-          @handleSend="handleSend"
-          @handleCancel="handleCancel"
-          v-for="item in txList"
-          :key="item.address"
-          :data="item"
+        <van-list
+          v-model:loading="loadList"
+          :finished="finished"
+          @load="getPageList"
+          v-model:error="loadErr"
+        >
+          <!-- <el-table-v2 :data="txList" :columns="columns"    
+        :width="1000"
+        :height="1000"
+        :row-height="80"
+        >
+          <template #cell="{rowData}">
+            <CollectionCard
+              @handleClick="handleView(rowData)"
+              @handleSend="handleSend"
+              @handleCancel="handleCancel"
+              :key="rowData.address"
+              :data="rowData"
         />
+          </template>
+        </el-table-v2> -->
+          <CollectionCard
+            @handleClick="handleView(rowData)"
+            @handleSend="handleSend"
+            @handleCancel="handleCancel"
+            :key="rowData.address"
+            :data="rowData"
+            v-for="rowData in txList"
+          />
+        </van-list>
       </div>
       <div v-if="coinType.value == 1">
         <BTCCollectionCard
@@ -80,7 +100,7 @@
         />
       </div>
 
-      <NoData v-if="!txList.length" :message="t('wallet.no')" />
+      <NoData v-if="!txList.length && finished" :message="t('wallet.no')" />
 
       <van-dialog
         v-model:show="showTransactionModal"
@@ -104,11 +124,6 @@
           v-if="coinType.value == 1"
         />
       </van-dialog>
-    </div>
-    <div class="loading-list-con" v-show="loading">
-      <div class="loading-list-card" v-for="item in 10" :key="item">
-        <van-skeleton avatar :row="2" />
-      </div>
     </div>
   </div>
   <CommonModal
@@ -222,9 +237,10 @@ import {
   Skeleton,
   List,
   showToast,
-  BackTop
+  BackTop,
+  PullRefresh,
 } from "vant";
-import {Dialog} from '@vant/compat';
+import { Dialog } from "@vant/compat";
 
 import CollectionCard from "@/popup/views/account/components/collectionCard/index.vue";
 import BTCCollectionCard from "@/popup/views/account/components/collectionCard/BTC.vue";
@@ -237,7 +253,7 @@ import { useStore } from "vuex";
 import { hexValue } from "@ethersproject/bytes";
 import { useI18n } from "vue-i18n";
 import { guid, viewAccountByAddress, debounce } from "@/popup/utils/utils";
-import {
+import account, {
   clone,
   getWallet,
   DEL_TXQUEUE,
@@ -248,16 +264,21 @@ import { utils } from "ethers";
 import { web3 } from "@/popup/utils/web3";
 import { useDialog } from "@/popup/plugins/dialog";
 import eventBus from "@/popup/utils/bus";
-import { stopLoop } from "@/popup/store/modules/txList";
+import {
+  getConverAmount,
+  getInput,
+  stopLoop,
+} from "@/popup/store/modules/txList";
 import localforage from "localforage";
 import storeDBIns, {
   getPenddingList,
   getTxList,
   getDB,
 } from "@/popup/store/db";
-
+import { ElTableV2 } from "element-plus";
 import CommonModal from "@/popup/components/commonModal/index.vue";
-
+import { getTransitionsPage } from "@/popup/http/modules/account";
+console.warn("ElTableV2", ElTableV2);
 export default {
   components: {
     [Icon.name]: Icon,
@@ -267,6 +288,7 @@ export default {
     [Button.name]: Button,
     [Skeleton.name]: Skeleton,
     [List.name]: List,
+    ElTableV2,
     [Dialog.Component.name]: Dialog.Component,
     [Dialog.Component.name]: Dialog.Component,
     CollectionCard,
@@ -298,56 +320,81 @@ export default {
         query: { backUrl: "receive-choose-code" },
       });
     };
-    const loading = ref(true);
     txList.value = [];
+    const params = {
+      addr: accountInfo.value.address,
+      page_size: "20",
+      page: "1",
+    };
+    const finished = ref(false);
+    const loadErr = ref(false);
+    const getMainNetList = async () => {
+      const { total, transactions } = await getTransitionsPage(params);
+      const wallet = await getWallet();
+
+      if (transactions && transactions.length) {
+        const txQueue =
+          (await getPenddingList(accountInfo.value.address)) || [];
+        params.page = Number(params.page) + 1 + "";
+        console.log("txQueue", txQueue);
+        for await (const item of transactions) {
+          item.txId = guid();
+          if (item.input == "0x") {
+            item.txType = "normal";
+          } else {
+            const json = getInput(item.input);
+            if (json) {
+              item.txType = "wormholes";
+              item.jsonData = json;
+            } else {
+              item.txType = "contract";
+            }
+          }
+
+          const convertAmount = await getConverAmount(wallet, item);
+          item["convertAmount"] = convertAmount;
+        }
+      }
+      return transactions;
+    };
+    const getRecordList =
+      currentNetwork.value.id == "wormholes-network-1"
+        ? getMainNetList
+        : getTxList;
+    const loadList = ref(false);
     const getPageList = async () => {
+      loadList.value = true;
       try {
-        txList.value = [
+        const list = [
           ...((await getPenddingList()) || []),
-          ...((await getTxList()) || []),
+          ...((await getRecordList()) || []),
         ];
+        console.log("get list, ", list);
+        if (list && list.length && list.length >= 20) {
+          txList.value.push(...list);
+        } else {
+          txList.value = list;
+          finished.value = true;
+        }
       } catch (err) {
+        loadErr.value = true;
       } finally {
-        loading.value = false;
+        console.warn("finally", loadList.value);
+        loadList.value = false;
       }
     };
 
-    const handleAsyncTxList = () => {
-      return store.dispatch(
-        "txList/loopAsyncTxList",
-        accountInfo.value.address
-      );
-    };
     let waitTime: any = ref(null);
     onMounted(async () => {
-      console.log("coinType.value.value", coinType.value.value, currentNetwork.value.id);
+      console.log(
+        "coinType.value.value",
+        coinType.value.value,
+        currentNetwork.value.id
+      );
       store.dispatch("account/clearWaitTime");
-      if (
-        coinType.value.value == 0 &&
-        currentNetwork.value.id == "wormholes-network-1"
-      ) {
-        console.warn('loading page list...')
-        try {
-          const { total } = await handleAsyncTxList();
-          console.warn("onMounted 1", total);
-          await store.dispatch("txList/asyncUpdateList", { total });
-        } catch (err: any) {
-          console.error(err);
-        } finally {
-          getPageList();
-          loading.value = false;
-        }
-      } else {
-        getPageList();
-        loading.value = false;
-      }
-      if (coinType.value.value == 1) {
-        getPageList();
-        loading.value = false;
-      }
-      store.dispatch("account/waitTxQueueResponse", {
-        time: null,
-      });
+      store.dispatch("account/waitTxQueueResponse");
+      handleRefresh();
+
       window.addEventListener("scroll", deFun);
     });
     const toSend = () => {
@@ -404,16 +451,23 @@ export default {
         cancelSend();
       }
     };
-    eventBus.on("changeNetwork", async (address) => {
-      loading.value = true;
+    const handleRefresh = () => {
       txList.value = [];
-      if (coinType.value.value == 0 && currentNetwork.value.id == "wormholes-network-1") {
+      params.page = "1";
+      finished.value = false;
+      return getPageList();
+    };
+    eventBus.on("changeNetwork", async (address) => {
+      loadList.value = true;
+      txList.value = [];
+      if (
+        coinType.value.value == 0 &&
+        currentNetwork.value.id == "wormholes-network-1"
+      ) {
         try {
-          const { total, asyncRecordKey } = await handleAsyncTxList();
-          await store.dispatch("txList/asyncUpdateList", { total });
-          await getPageList();
+          await handleRefresh();
         } finally {
-          loading.value = false;
+          loadList.value = false;
         }
       }
       store.dispatch("account/waitTxQueueResponse", {
@@ -421,34 +475,35 @@ export default {
       });
     });
     eventBus.on("loopTxListUpdata", () => {
-      getPageList();
+      handleRefresh();
     });
     eventBus.on("sameNonce", () => {
       showSpeedModal.value = false;
-      getPageList();
+      handleRefresh();
     });
 
     eventBus.on("txQueuePush", (data: any) => {
-      getPageList();
+      handleRefresh();
     });
     eventBus.on("waitTxEnd", async () => {
-      if (coinType.value.value == 0 && currentNetwork.value.id == "wormholes-network-1") {
-        store.dispatch("txList/asyncUpdateList", { total: 0 });
-      }
+      handleRefresh();
+      // if (coinType.value.value == 0 && currentNetwork.value.id == "wormholes-network-1") {
+      //   store.dispatch("txList/asyncUpdateList", { total: 0 });
+      // }
     });
     eventBus.on("txUpdate", (data: any) => {
       console.warn("txUpdate----", data);
-      getPageList();
+      handleRefresh();
     });
     eventBus.on("txUpdate", (data: any) => {
       console.warn("txUpdate----", data);
-      getPageList();
+      handleRefresh();
     });
     eventBus.on("txPush", (data: any) => {
-      getPageList();
+      handleRefresh();
     });
     eventBus.on("delTxQueue", (data: any) => {
-      getPageList();
+      handleRefresh();
     });
     onUnmounted(() => {
       // console.warn('waitTime.value', waitTime.value)
@@ -569,7 +624,7 @@ export default {
         );
         store.dispatch("account/clearWaitTime");
         await store.dispatch("account/waitTxQueueResponse");
-        handleAsyncTxList();
+        // handleAsyncTxList();
       } catch (err) {
         console.error(err);
         showToast(err.reason);
@@ -678,7 +733,7 @@ export default {
         );
         store.dispatch("account/clearWaitTime");
         await store.dispatch("account/waitTxQueueResponse");
-        handleAsyncTxList();
+        // handleAsyncTxList();
       } catch (err) {
         console.error(err);
         // store.dispatch('account/clearWaitTime')
@@ -723,9 +778,17 @@ export default {
       }
     };
     const deFun = debounce(scrolling, 300);
-
+    const columns = ref([
+      {
+        key: `1`,
+        dataKey: ``,
+        title: ``,
+        width: "100vw",
+      },
+    ]);
     return {
       showBuyTip,
+      columns,
       bugTipClass,
       showSpeedModal,
       sendTxType,
@@ -750,12 +813,15 @@ export default {
       currentNetwork,
       transactionList,
       symbol,
-      loading,
       pageData,
       toUsd,
       VUE_APP_SCAN_URL,
       viewAccountByAddress,
       txList,
+      finished,
+      loadErr,
+      getPageList,
+      loadList,
     };
   },
 };
@@ -763,7 +829,7 @@ export default {
 <style lang="scss" scoped>
 .swap-list {
   // height: calc(100vh - 48PX - 245px - 50PX);
-  overflow-y: scroll;
+  // overflow-y: scroll;
 }
 .fixed-bottom {
   height: 20px;

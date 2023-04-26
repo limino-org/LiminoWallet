@@ -1,7 +1,7 @@
 import { ethers } from './ethers.js';
 import { localforage } from './localforage.js'
 import { encrypt, decrypt } from './cryptojs.js'
-import { resetBadge, setBadge } from './actions.js';
+import { clearBadge, setBadge } from './actions.js';
 import { removeAllListeners } from './useGetTxReceipt.js';
 
 
@@ -325,34 +325,40 @@ export async function initWallet() {
   const keys = await networksTable.keys()
   const nets = await Promise.all(keys.map(id => networksTable.getItem(id)))
     let newUrl = coinType.value != 0 ? nets.find(item => item.id == 	"wormholes-network-1").URL : URL
+
     const params = { json: keyStore, password: pwdVal };
-    if (!newwallet) {
-      const wallet = await createWalletByJson(params);
-      provider = ethers.getDefaultProvider(newUrl);
-      newwallet = wallet.connect(provider);
-      return newwallet
+    if(coinType.value == 0) {
+      if (!newwallet) {
+        const wallet = await createWalletByJson(params);
+        provider = ethers.getDefaultProvider(newUrl);
+        newwallet = wallet.connect(provider);
+        return newwallet
+      }
+      if (!newwallet.provider) {
+        provider = ethers.getDefaultProvider(newUrl);
+        newwallet = wallet.connect(provider);
+        return newwallet
+      }
+      if (newwallet.provider && (newwallet.provider.connection.url != newUrl)) {
+        newwallet.provider.removeAllListeners()
+        provider = ethers.getDefaultProvider(newUrl);
+        newwallet.connect(provider);
+        return newwallet
+      }
+      if (accountInfo.address.toUpperCase() != newwallet.address.toUpperCase()) {
+        newwallet.provider.removeAllListeners()
+        const newLocal = await localforage.getItem("vuex") || null
+        const { accountInfo: newAccountInfo, currentNetwork: newCurrentNetwork } = newLocal.account;
+        const { keyStore } = newAccountInfo;
+        const { URL } = newCurrentNetwork
+        const params = { json: keyStore, password: pwdVal };
+        const wallet = await createWalletByJson(params);
+        provider = ethers.getDefaultProvider(URL);
+        newwallet = wallet.connect(provider);
+      }
     }
-    if (!newwallet.provider) {
-      provider = ethers.getDefaultProvider(newUrl);
-      newwallet = wallet.connect(provider);
-      return newwallet
-    }
-    if (newwallet.provider && (newwallet.provider.connection.url != newUrl)) {
-      await removeAllListeners()
-      provider = ethers.getDefaultProvider(newUrl);
-      newwallet.connect(provider);
-      return newwallet
-    }
-    if (accountInfo.address.toUpperCase() != newwallet.address.toUpperCase()) {
-      await removeAllListeners()
-      const newLocal = await localforage.getItem("vuex") || null
-      const { accountInfo: newAccountInfo, currentNetwork: newCurrentNetwork } = newLocal.account;
-      const { keyStore } = newAccountInfo;
-      const { URL } = newCurrentNetwork
-      const params = { json: keyStore, password: pwdVal };
-      const wallet = await createWalletByJson(params);
-      provider = ethers.getDefaultProvider(URL);
-      newwallet = wallet.connect(provider);
+    if(coinType.value == 1) {
+      
     }
     return newwallet
   } catch (err) {
@@ -565,7 +571,6 @@ export function closeTabs() {
       }, async (tabs) => {
         for await (const win of tabs) {
           if (win.url && (win.url.includes(globalPath) || win.url.includes(globalHomePath))) {
-            // resetBadge()
             await chrome.tabs.remove(win.id)
           }
         }
@@ -754,4 +759,17 @@ export const getLang =  async () => {
 
 export const langMsg = () => {
   
+}
+
+
+export function debounce(fn, wait = 500) {
+  let timeout = null;
+  return function() {
+    let _this = this
+    let args = arguments;
+      if(timeout !== null) clearTimeout(timeout);
+      timeout = setTimeout(function(){
+        fn.apply(_this, args)
+      }, wait);
+  }
 }

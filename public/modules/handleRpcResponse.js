@@ -2,7 +2,7 @@
 const clone = (data) => {
     return JSON.parse(JSON.stringify(data))
 }
-import { removeBadge } from './actions.js'
+import { clearBadge, removeBadge } from './actions.js'
 import {
     getLocalParams,
     closeTabs,
@@ -73,12 +73,13 @@ export const handleRpcResponse = {
         sendResponse: async (data, sendResponse, sender) => {
             await clearPwd()
             await clearConnectList()
+            clearBadge()
             const method = handleType.logout
-   
-            const bgMsg = { ...errorCode['200'], data: null }
-            const sendBgMsg = createBgMsg(bgMsg, method)
-            await chrome.runtime.sendMessage(sender.id, sendBgMsg);
-
+            if(sender && sender.id) {
+                const bgMsg = { ...errorCode['200'], data: null }
+                const sendBgMsg = createBgMsg(bgMsg, method)
+                await chrome.runtime.sendMessage(sender.id, sendBgMsg);
+            }
             const errMsg = { ...errorCode['200'], data: false}
             const sendLogoutMsg =  createMsg(errMsg, method)
             sendMessage(sendLogoutMsg, {}, null)
@@ -91,8 +92,9 @@ export const handleRpcResponse = {
             console.warn('login', password)
             if (password) {
                 await chrome.storage.local.set({ password })
-                chrome.alarms.create(eventTypes.pwdExpired, { delayInMinutes: 720 });
-                chrome.alarms.onAlarm.addListener(async (e) => {
+                chrome.alarms.create(eventTypes.pwdExpired, { delayInMinutes: 30 });
+                chrome.alarms.onAlarm.addListener((e) => {
+                    console.warn('pwd ...', e, eventTypes.pwdExpired)
                     const { name } = e
                     console.warn('pwd pwdExpired', e, eventTypes.pwdExpired)
                     if (name == eventTypes.pwdExpired) {
@@ -103,11 +105,11 @@ export const handleRpcResponse = {
                     }
                 })
                 const method = handleType.login
-  
-                const bgMsg = { ...errorCode['200'], data: null }
-                const sendBgMsg = createBgMsg(bgMsg, method)
-                await chrome.runtime.sendMessage(sender.id, sendBgMsg);
-                
+                if(sender && sender.id) {
+                    const bgMsg = { ...errorCode['200'], data: null }
+                    const sendBgMsg = createBgMsg(bgMsg, method)
+                    await chrome.runtime.sendMessage(sender.id, sendBgMsg);
+                }
                 const errMsg = { ...errorCode['200'], data: true}
                 const sendLoginMsg =  createMsg(errMsg, method)
                 sendMessage(sendLoginMsg, {}, null)

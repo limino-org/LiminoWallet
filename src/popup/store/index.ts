@@ -1,4 +1,3 @@
-// @ts-nocheck
 import localforage from 'localforage';
 window.localforage = localforage
 console.warn('localforage', localforage)

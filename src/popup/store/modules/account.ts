@@ -22,7 +22,6 @@ import {
   ImportPrivateKey,
   CreateWalletByMnemonicParams,
   createRandomWallet,
-  parsekeystore,
 } from "@/popup/utils/ether";
 import { IconData, getRandomIcon } from "@/popup/utils/index";
 import { toRaw } from "vue";
@@ -51,7 +50,6 @@ import { eventHandler } from "@/popup/hooks/useEvent";
 import BigNumber from "bignumber.js";
 import store from "@/popup/store";
 import { getContractAddress } from "@/popup/http/modules/common";
-import Bignumber from 'bignumber.js'
 import { sendBackground } from "@/popup/utils/sendBackground";
 import localforage from "localforage";
 import { Wallet, BaseProvider } from "ethers";
@@ -449,10 +447,11 @@ export default {
     },
     // Update Wallet
     UPDATE_WALLET(state: State, value: any) {
+      console.warn('wallet', value)
       wallet = value;
-      if (wallet.provider) {
-        sendBackground({ method: 'update-wallet' })
-      }
+      // if (wallet.provider) {
+      //   sendBackground({ method: 'update-wallet' })
+      // }
     },
     // New account
     ADD_ACCOUNT(state: State, value: Array<Object>) {
@@ -659,48 +658,6 @@ export default {
     CLOSE_TRANACTIONMODAL(state: State) {
       state.tranactionModel = false;
     },
-    // // Update the most recent contacts, with a maximum of 10 reserved
-    // PUSH_RECENTLIST(state: State, address: string) {
-    //   if (!address) {
-    //     return;
-    //   }
-    //   // Find your own accounts and contacts
-    //   const myAccount = state.accountList.find(
-    //     (item) => item.address.toUpperCase() == address.toUpperCase()
-    //   );
-    //   const myContact = state.contacts.find(
-    //     (item) => item.address.toUpperCase() == address.toUpperCase()
-    //   );
-      
-    //   const coinName = state.coinType.name
-    //   if (myAccount || myContact) {
-    //     const theAccount = myAccount || myContact
-    //     const idx = state.recentlistCoinType[coinName].findIndex(
-    //       (item) => item.address.toUpperCase() == address.toUpperCase()
-    //     );
-    //     if (idx > -1) {
-    //       state.recentlistCoinType[coinName].splice(idx, 1);
-    //     }
-    //     state.recentlistCoinType[coinName].unshift(theAccount);
-    //   } else {
-    //     const idx =  state.recentlistCoinType[coinName].findIndex(
-    //       (item) => item.address.toUpperCase() == address.toUpperCase()
-    //     );
-    //     if (idx > -1) {
-    //       state.recentlistCoinType[coinName].splice(idx, 1);
-    //     }
-    //     state.recentlistCoinType[coinName].unshift({
-    //       icon: getRandomIcon(),
-    //       name: '-',
-    //       address,
-    //     });
-    //   }
-    //   const len =  state.recentlistCoinType[coinName].length;
-    //   if (len > 10) {
-    //     state.recentlistCoinType[coinName].splice(len - 1, 1);
-    //   }
-    //   handleUpdate()
-    // },
     // Update contractAddress
     UPDATE_CONTRACTADDRESS(state: State, ERBPay: string) {
       state.contractAddress = ERBPay
@@ -1312,7 +1269,7 @@ export default {
 
     
           const receipt = await wallet.provider.waitForTransaction(data.hash)
-          await dispatch('waitTxQueueResponse')
+          dispatch('waitTxQueueResponse')
           // Update transaction queue
           
           resolve(receipt)
@@ -1582,6 +1539,7 @@ export default {
       return new Promise((resolve, reject) => {
         sendBackground({method: 'waitTxQueueResponse', response:{code:'200',data: {}}}).then(res => {
           console.warn('waitTxQueueResponse', res)
+          eventBus.emit('waitTxEnd', res)
           resolve(res)
         }).catch(err => {
           reject(err)

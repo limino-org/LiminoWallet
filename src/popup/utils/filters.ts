@@ -276,7 +276,6 @@ export function transactionStatus(txData: any){
     }
   
     if(txType === 'contract') return i18n.global.t('transationHistory.contract')
-    console.warn('item', item)
     const bigTo = to ? to.toUpperCase() : ''
     const bigFrom = from.toUpperCase()
     if(bigTo === bigFrom)return i18n.global.t('transationHistory.send')

@@ -1300,7 +1300,9 @@
 		extend:"Expand view",
 		switchCoins:"Switching currencies",
 		walletType:"Identity wallet",
-		expandView:"Expand view"
+		expandView:"Expand view",
+		noMore:"No more."
+
 
 
 

@@ -1300,7 +1300,8 @@
 		extend:"展开视图",
 		switchCoins:"切换币种",
 		walletType:"身份钱包",
-		expandView:"展开视图"
+		expandView:"展开视图",
+		noMore:"没有更多了!"
 
 	},
 	categoryform: {

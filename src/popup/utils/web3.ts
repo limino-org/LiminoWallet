@@ -2,10 +2,12 @@ import { showToast } from "vant";
 import Web3 from "web3";
 export const web3 = new Web3(Web3.givenProvider);
 console.log('web3', web3)
-import { BlockHeader, Block } from "web3-eth"; // ex. package types
 import i18n from "@/popup/language/index";
 import localforage from 'localforage';
 import store from "../store";
+import { ethers } from "ethers";
+
+console.warn('ethers', ethers)
 
 
 export const connectWeb3Wallet = (privateKey: string) => {};
@@ -54,19 +56,6 @@ export const encryptMnemonic = (params: EncryptMnemonicParams) => {
   }
 };
 
-// Unlock the mnemonic and return
-// export const parseMnemonic = async (password: string): Promise<string> => {
-//   try {
-//     const json: any =await localforage.getItem("mnemonic") || "";
-//     const s: any = web3.eth.accounts.decrypt(json, password);
-//     const str = web3.utils.toUtf8(s.privateKey);
-//     return Promise.resolve(str);
-//   } catch (err) {
-//     console.error(err);
-//     Toast(i18n.global.t("wallet.wrongpassword"));
-//     return Promise.reject(err);
-//   }
-// };
 export const parseMnemonic = async (password: string, json: any): Promise<string> => {
   let cloneJson = JSON.parse(JSON.stringify(json), json)
   try {

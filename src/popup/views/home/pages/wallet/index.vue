@@ -294,7 +294,7 @@
                 <span class="f-12 text-bold label">{{
                   t("wallet.importToken")
                 }}</span>
-                <span class="add flex center" v-if="coinType.value == 0" @click="toCreate"
+                <span class="add flex center" @click="toCreate"
                   ><van-icon name="plus"
                 /></span>
               </div>
@@ -571,15 +571,16 @@ export default {
 
     let time: any = null;
     const handleLoopBalance = () => {
-      if(!time) {
+        clearInterval(time)
         time = setInterval(() => {
         dispatch("account/updateBalance");
         dispatch("account/updateTokensBalances");
-      }, 8000);
-      }
+       }, 8000);
+ 
     };
 
     onMounted(async() => {
+      console.log('onMounted')
       eventBus.on(eventHandler.changeAccount,debounce(({address, oldAddress}) => {
         if(address == oldAddress) {
           return
@@ -587,6 +588,8 @@ export default {
         showModal.value = false
         dispatch("account/updateBalance");
         dispatch('account/waitTxQueueResponse')
+        dispatch("system/getEthAccountInfo");
+        dispatch('account/getCreatorStatus', address)
       }))
       eventBus.on(eventHandler.changeNetwork, debounce(async({network, oldNetwork}) =>{
         if(network.id == oldNetwork.id){
@@ -657,7 +660,6 @@ export default {
       eventBus.off(eventHandler.changeNetwork)
       clearInterval(time);
       time = null
-      handleLoopBalance()
     });
     onDeactivated(() => {
       clearInterval(time);

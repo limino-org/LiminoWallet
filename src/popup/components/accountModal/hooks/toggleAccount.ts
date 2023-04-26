@@ -60,7 +60,6 @@ export const useToggleAccount = () => {
     oldWallet.provider.removeAllListeners()
     accountLoading.value = true;
     clickAccountIdx.value = idx;
-    const { currentNetwork } = store.state.account;
     const password: string = await getCookies("password") || "";
     const keyStore = toRaw(account.keyStore);
     const data: CreateWalletByJsonParams = {

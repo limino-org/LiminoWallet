@@ -180,6 +180,7 @@ export default {
           checkTxQueue: false,
         });
         console.warn("receipt", receipt);
+        dispatch('account/waitTxQueueResponse')
         sendBackground({
           method: handleType.eth_sendTransaction,
           response: { code: "200", data: receipt, sendId },

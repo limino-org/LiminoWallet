@@ -12,7 +12,7 @@
             <van-icon name="cross" class="hover" @click="showSlider = false" />
           </div>
 
-          <div :class="`user-img  ${pageType == 'Tab' ? '' : 'mt-20'}`">
+          <div :class="`user-img  mt-20`">
             <div class="user-img-circle flex center-v hover">
               <AccountIcon
                 :data="accountInfo.icon"

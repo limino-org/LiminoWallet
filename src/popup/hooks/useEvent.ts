@@ -59,8 +59,6 @@ export const useEvent = () => {
         console.warn('account change', store.state.account.coinType.value)
         switch (store.state.account.coinType.value) {
             case 0:
-                dispatch("system/getEthAccountInfo");
-                dispatch('account/getCreatorStatus', address)
                 break;
             case 1:
                 break;

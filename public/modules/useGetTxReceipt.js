@@ -1,13 +1,13 @@
 import { ethers } from './ethers.js'
-import { getStore, getWallet, guid, openTabPopup, toHex } from './common.js'
+import { getProvider, getStore, getWallet, guid, openTabPopup, toHex } from './common.js'
 
 import BigNumber from './bignumber.js'
 import { getDB, getContactsList, getPenddingList, setMainTx, getMainTx, getTxList, saveTxList } from './db.js'
 import { notices } from './notices.js'
 
 
-export const toTradeHistory = (hash) => {
-  const url = `chrome-extension://${chrome.runtime.id}/home.html#/settings/transaction-history?hash=${hash}&backUrl=home`
+export const  toTradeHistory = async (txid) => {
+  const url = `chrome-extension://${chrome.runtime.id}/home.html#/settings/transaction-history?hash=${txid}&backUrl=home`
   chrome.tabs.create({ url: url })
 }
 
@@ -16,6 +16,7 @@ export const useGetTxReceipt = (time = 300000) => {
     console.log('waitTxQueueResponse...')
     const store = await getStore()
     const from = store.account.accountInfo.address
+    const currentNetwork = store.account.currentNetwork
     return new Promise(async (resolve, reject) => {
       const receiptList = []
       //  const newWallet = await getWallet()
@@ -74,6 +75,7 @@ export const useGetTxReceipt = (time = 300000) => {
                 }
               }
               await DEL_TXQUEUE({ ...iterator, txId, txType })
+              console.warn('network', network)
               const newtx = {
                 receipt: data1,
                 network,
@@ -100,7 +102,7 @@ export const useGetTxReceipt = (time = 300000) => {
             const { value } = txInfo
             const hashArr = [txInfo.hash]
             console.warn('wait btc', iterator)
-            const {list, wallet} = await waitForTransactions(hashArr, time)
+            const {list} = await waitForTransactions(hashArr, time)
             for await (const data1 of list) {
               await DELBTC_TXQUEUE({ ...txInfo, cointype: store.account.coinType })
               await PUSHBTC_TRANSACTION({ ...txInfo, ...data1, value, sendStatus: 'success', cointype: store.account.coinType })
@@ -290,42 +292,77 @@ export const useGetTxReceipt = (time = 300000) => {
 
 
 export async function waitForTransactions(hashs, time = null) {
-  const wallet = await getWallet()
-  wallet.provider.removeAllListeners()
+  const store = await getStore()
+  const currentNetwork = store.account.currentNetwork
+  const coinType = store.account.coinType
+  const { URL } = currentNetwork
+
   let data = null
   const list = []
-  if (hashs.length && wallet.provider) {
-    try {
-      for await (const hash of hashs) {
-        if (time != null) {
-          data = await wallet.provider.waitForTransaction(hash, null, time)
-          list.push(data)
-        } else {
-          data = await wallet.provider.waitForTransaction(hash)
-          list.push(data)
+  if(hashs.length) {
+    if(coinType.value == 0) {
+      const wallet = await getWallet()
+      const provider = await getProvider()
+      removeAllListeners(wallet, hashs, time)
+      if (hashs.length && provider) {
+        try {
+          for await (const hash of hashs) {
+            if (time != null) {
+              data = await provider.waitForTransaction(hash, null, time)
+              list.push(data)
+            } else {
+              data = await provider.waitForTransaction(hash)
+              list.push(data)
+            }
+            const { status, transactionHash } = data
+            const title = status ? chrome.i18n.getMessage('sendSuccessed') :chrome.i18n.getMessage('sendFailed')
+            notices({ title, message: transactionHash, data: data || {}, clickCallback: () => toTradeHistory(transactionHash) })
+          }
+        }catch(err){
+    
+        } finally {
+          if(wallet) {
+            removeAllListeners(wallet, hashs, time)
+          }
         }
-        const { transactionHash, status } = data
-        const title = status ? chrome.i18n.getMessage('sendSuccessed') :chrome.i18n.getMessage('sendFailed')
-        notices({ title, message: transactionHash, data: data || {}, clickCallback: () => toTradeHistory(transactionHash) })
+    
       }
-    }catch(err){
+      return Promise.resolve({list, wallet})
 
     }
-    removeAllListeners(wallet)
+    if(coinType.value == 1) {
+      console.warn('cointype', coinType)
+      console.log('hashs', hashs, time)
+      if (hashs.length) {
+        try {
+          for await (const hash of hashs) {
+            if (time != null) {
+              data = await waitBTCTx(hash, time)
+              list.push(data)
+            } else {
+              data = await waitBTCTx(hash)
+              list.push(data)
+            }
+            console.log('tx data', data)
+            const { txid } = data
+            const title = chrome.i18n.getMessage('sendSuccessed')
+            notices({ title, message: txid, data: data || {}, clickCallback: () => toTradeHistory(txid) })
+          }
+        }catch(err){
+          console.error(err)
+        }
+      }
+      return Promise.resolve({ list })
+    }
   }
-  return Promise.resolve({list, wallet})
+ 
 }
 
 
-export async function removeAllListeners(wallet) {
-  console.warn('remove', wallet)
-  if(wallet && wallet.provider) {
-    wallet?.provider?.removeAllListeners()
-  } else {
-    const oldWallet = await getWallet()
-    oldWallet?.oldWallet?.removeAllListeners()
+export async function removeAllListeners(newwallet) {
+  if(newwallet && newwallet.provider) {
+    newwallet.provider.removeAllListeners()
   }
-
 }
 
 function clone(obj) {
@@ -333,4 +370,62 @@ function clone(obj) {
     return JSON.parse(JSON.stringify(obj));
   }
   return {}
+}
+
+let waitIns = null
+let waitIns2 = null
+const delay = 5000
+async function waitBTCTx(txId, time = null){
+  const store = await getStore()
+  const {URL} = store.account.currentNetwork
+  const getUrl = `${URL}/tx/${txId}`
+  if(waitIns){
+    clearInterval(waitIns)
+  }
+  if(waitIns2){
+    clearTimeout(waitIns2)
+  }
+  return new Promise((resolve, reject) => {
+    if(!time) {
+      waitIns = setInterval(() => {
+        getFetch(getUrl).then(res => {
+          console.warn('get btc tx', res)
+          resolve(res)
+          clearInterval(waitIns)
+        })
+      }, delay)
+    } else {
+        waitIns = setInterval(() => {
+          getFetch(getUrl).then(res => {
+            resolve(res)
+            clearInterval(waitIns)
+            clearTimeout(waitIns2)
+          })
+        }, delay)
+        waitIns2 = setTimeout(() => {
+          clearInterval(waitIns)
+          clearTimeout(waitIns2)
+          reject('wait tx err:timeout')
+        },time)
+    }
+
+  })
+}
+
+
+function getFetch(url, params = {}){
+  return new Promise((resolve, reject) => {
+    fetch(url, {
+      method: 'get',
+      headers: {
+        'Content-type': 'application/json'
+      },
+    })
+      .then(response => {
+        console.warn('fetch', response)
+        return response.json()
+      })
+      .then(data => resolve(data))
+      .catch(err => reject(err))
+  })
 }

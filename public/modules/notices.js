@@ -1,27 +1,29 @@
-import { clone, guid } from "./common.js";
+import { clone, debounce, guid } from "./common.js";
+import { getPenddingList } from "./db.js";
 
 const callbacks = {
 
 }
-export const noticeList = []
+
+
 export function notices(opt = {}) {
-    chrome.notifications.getPermissionLevel(function (level) {
-        console.log('0', level)
+    chrome.notifications.getPermissionLevel(async function (level) {
         if (level == 'granted') {
             const { title, message, type, data, clickCallback } = { ...{ title: 'Title', message: 'Message...', type: "basic", data: null, clickCallback:()=>{} }, ...opt }
             console.warn('notice', type, title, message, data)
-            const noticeId = guid()
-            const key = `notice-send-${noticeId}`
+            const key = `notice-send-${message}`
             chrome.storage.local.set({ [key]: clone(data) })
+            if(callbacks[key]){
+                return
+            }
             try {
-                chrome.notifications.create(
-                    noticeId, // notifyId
+                debounce(chrome.notifications.create(
+                    message, // notifyId
                     { type, iconUrl: "icons/logo-48.png", title, message },
                     function (notifyId) {
                         callbacks[key] = clickCallback
-                        noticeList.push(noticeId)
                     }
-                );
+                ), 2000);
             } catch (err) {
                 console.warn('err', err)
             }
@@ -37,7 +39,6 @@ chrome.notifications.onClicked.addListener(async (noticeId) => {
     const data = await chrome.storage.local.get([key])
     callbacks[key]()
     delete callbacks[key]
-    console.log('点击通知。。。', data);
     //   chrome.storage.local.remove([key])
 
 });

@@ -5,7 +5,6 @@ import { httpGet } from '../request'
 interface GetTransitionsParams {
     page: string
     page_size: string
-    number: string
     addr: string
 }
 /**

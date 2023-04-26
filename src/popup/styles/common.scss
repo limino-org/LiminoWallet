@@ -337,7 +337,9 @@ img {
 .closeGuideModal {
   background: rgba($color: #000, $alpha: 0.8);
   color: #fff;
-
+  .unboot {
+    color: #fff;
+  }
   .van-dialog__content {}
 
   .van-dialog__footer {
@@ -766,15 +768,15 @@ img {
   }
 
   .custom-setAmount-modal {
-    // height: 236PX;
+    height: 236PX;
   }
 
   .guideModalGetStart {
-    // height: 326PX;
+    height: 326PX;
   }
 
   .guideBackupModal {
-    // height: 422PX;
+    height: 422PX;
   }
 
   .modifNameModal {

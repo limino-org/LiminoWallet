@@ -1,6 +1,4 @@
 
-
-
 import { handleRequest } from './modules/handleRequest.js'
 import { handleRpcResponse } from './modules/handleRpcResponse.js'
 

@@ -11,22 +11,19 @@ console.warn('web3', web3)
 import BigNumber from 'bignumber.js'
 import { guid } from '@/popup/utils'
 import { getDB, getMainTx, getPenddingList, setMainTx } from '../db'
-
-const page_size = '30'
+const page_size = '100'
 const page_size_int = Number(page_size)
-let timeOut = 6000
+let timeOut = 8000
 let timeOut2 = 2000
-
+interface State {
+    time: any
+}
 let time = null
 let time2 = null
-
-
-
 export default {
     actions: {
-        async updateRecordPage({ commit, state }: any, { transactions: list, total, chainId, hasRecord }) {
+        async updateRecordPage({ commit, state }: any, { transactions: list, total, hasRecord }) {
             const typerec = typeof hasRecord
-            console.warn('typeof hasRecord', typeof hasRecord, typeof typerec)
             const wallet = await getWallet()
             const addr = store.state.account.accountInfo.address.toUpperCase()
             let txInfo = await getMainTx(addr)
@@ -43,43 +40,34 @@ export default {
                     }
                 }
             }
-            console.log('txInfo', txInfo)
-            if (txInfo) {
-                const realList = txInfo && txInfo.list.length ?  txInfo.list.filter(item => !item.sendType) : []
-                if (total <= realList.length) {
-                    if (time && typeof hasRecord == 'undefined') {
-                        clearInterval(time)
-                    }
-                    return
-                }
-                if (list && list.length >= page_size_int) {
-                    txInfo.page = Number(txInfo.page) + 1 + ''
-                }
-                const newList = unRepet(txInfo.list, list).sort((a, b) => b.blockNumber - a.blockNumber)
-                console.log('newList', newList)
-                txInfo.list = txInfo.list && txInfo.list.length ? newList : [...list].sort((a, b) => b.blockNumber - a.blockNumber)
-                txInfo.total = total
-            } else {
-                txInfo = {
-                    page: '1',
-                    list: list || [],
-                    total
-                }
+            const realList = txInfo && txInfo.list.length ?  txInfo.list.filter(item => !item.sendType) : []
+
+            if (list && list.length >= 1) {
+                txInfo.page = Number(txInfo.page) + 1 + ''
             }
+            const newList = unRepet(txInfo.list, list).sort((a, b) => b.blockNumber - a.blockNumber)
+            txInfo.list = txInfo.list && txInfo.list.length ? newList : [...list].sort((a, b) => b.blockNumber - a.blockNumber)
+            txInfo.total = total
+            console.warn('set 0', txInfo)
             await setMainTx(addr, txInfo)
             eventBus.emit('loopTxListUpdata', txInfo.list)
             const realList = txInfo && txInfo.list.length ?  txInfo.list.filter(item => !item.sendType) : []
-            if (!list || realList.length < page_size_int && typeof hasRecord == 'undefined') {
+            if (!list || realList.length >= total && typeof hasRecord == 'undefined') {
                 if (time) {
                     clearInterval(time)
                 }
+            }
+            if (total <= realList.length) {
+                if (time && typeof hasRecord == 'undefined') {
+                    clearInterval(time)
+                }
+                return
             }
 
 
         },
         async asyncAddrRecord({ commit, state, dispatch }: any) {
             const addr = store.state.account.accountInfo.address.toUpperCase()
-            const { id, chainId } = store.state.account.currentNetwork
             /**
              * Check whether synchronization is complete based on total and the current page number
              * Synchronize block browser transaction records
@@ -97,12 +85,11 @@ export default {
                 } catch (err) {
 
                 }
-                if (txInfo && txInfo.page) {
-                    txInfo.page = txInfo.page
-                } else {
+                if (!txInfo) {
                     txInfo = {
                         page: '1',
-                        list: []
+                        list: [],
+                        total: 0
                     }
                 }
                 /**
@@ -137,30 +124,20 @@ export default {
                         }
                     }
                 }
-                    
-                if (transactions && transactions.length > page_size_int) {
-                    txInfo.page = page_size_int + 1 + '                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          '
-                }
-                await setMainTx(addr, txInfo)
-                await dispatch('updateRecordPage', { transactions, total, chainId })
-                return { total, chainId, transactions,...params,txInfo,addr }
+                await dispatch('updateRecordPage', { transactions, total })
+                return { total, transactions,...params,txInfo }
             }
             return null
         },
         // Synchronize the latest transaction records
         async asyncUpdateList({ commit, stte, dispatch }: any, { total }) {
             const addr = store.state.account.accountInfo.address.toUpperCase()
-            const coinType = store.state.account.coinType
-            if(coinType.value != 0){
-                return Promise.reject('please switch network')
-            }
             let page = '1'
             const txInfo = await getMainTx(addr)
             const realList = txInfo && txInfo.list.length ?  txInfo.list.filter(item => !item.sendType) : []
             return new Promise(async(resolve) => {
-                if (total !== realList.length) {
+                if (total > realList.length) {
                     const hasRecord1 = await handleUpdateList()
-                    console.warn('hasRecord1', hasRecord1)
                     if (!hasRecord1) {
                         resolve()
                         clearInterval(time2)
@@ -168,7 +145,6 @@ export default {
                     }
                     time2 = setInterval(async () => {
                         const hasRecord = await handleUpdateList()
-                        console.warn('hasRecord', hasRecord)
                         if (!hasRecord) {
                             resolve()
                             clearInterval(time2)
@@ -205,16 +181,19 @@ export default {
                         }
                         let diffList = txInfo.list && txInfo.list.length ? txInfo.list.slice(0, 10) : txInfo.list
                         const txQueue = await getPenddingList(addr) || []
+                        
                         for await (let [sameIdx,child] of diffList.entries()) {
-                            console.log('sameIdx', sameIdx, child)
                             if(child.hash.toUpperCase() == item.hash.toUpperCase() && item.status != child.status){
                                 if(sameIdx > -1) {
-                                    await getDB(addr).listTable.setItem(child.txId, child)
+                                    txInfo.list[sameIdx] = item
+                                    await setMainTx(addr, txInfo)
                                     eventBus.emit('sameNonce', child.hash)
                                     for await (const [idx,iterator] of txQueue.entries()) {
                                         if(iterator.nonce === diffList[sameIdx].nonce) {
                                             txQueue.splice(idx,1)
-                                            getDB(addr).pendding.removeItem(iterator.txId)
+                                            // await getDB(addr).then(async(penddingTable) => {
+                                            //    await penddingTable.remove(iterator.txId)
+                                            // })
                                         }
                                     }
                                 }
@@ -247,52 +226,48 @@ export default {
         },
         async loopAsyncTxList({ commit, state, dispatch }: any) {
             const network = store.state.account.currentNetwork
-            const coinType = store.state.account.coinType
-            const addr = store.state.account.accountInfo.address.toUpperCase()
-            console.log('coinType', coinType)
-            if(coinType.value != 0 || network.id != "wormholes-network-1"){
-                return Promise.reject('please switch network')
-            }
+            const addr = store.state.account.accountInfo.address
             const wallet = await getWallet()
             // When you are currently on a wormholes network, synchronize transaction records from the block browser
             return new Promise(async(resolve) => {
                 if (network.id === 'wormholes-network-1') {
                     try {
                         const res = await dispatch('asyncAddrRecord')
-                        console.warn('res', res)
-                        const txInfo = await getMainTx(addr)
-                        const realList = txInfo && txInfo.list.length ?  txInfo.list.filter(item => !item.sendType) : []
+                    const txInfo = await getMainTx(addr)
+                    const realList = txInfo && txInfo.list.length ?  txInfo.list.filter(item => !item.sendType) : []
+                    // 记录的length不等于total的时候
                     if(realList.length === res.total) {
-                        resolve({total:res.total, addr})
+                        return resolve({total:res.total})
                     }
                     if(res){
                         const { total } = res
                             time = setInterval(async () => {
-                                const txInfo = await getMainTx(addr)
+                                const txInfo = await await getMainTx(addr)
                                 const realList = txInfo && txInfo.list.length ?  txInfo.list.filter(item => !item.sendType) : []
-                                if (res && realList.length < total) {
+                                if (realList.length < total) {
                                     const info = await dispatch('asyncAddrRecord')
-                                    if(info.total === info.txInfo.list.length) {
-                                        resolve({ total: info.total, addr })
+                                    if(info.total === txInfo.list.length) {
+                                        resolve({ total })
                                         clearInterval(time)
                                     }
                                 } else {
-                                    resolve({ total, addr })
+                                    resolve({ total })
                                     clearInterval(time)
                                 }
                                
                             }, timeOut)
                             
                     } else {
-                        resolve({ total: 0, addr })
+                        resolve({ total: res.total})
                         clearInterval(time)
                     }
+                    resolve({total: res.total})
                     } catch(err){
                         console.error(err)
-                        resolve({ total: 0, addr })
                     }
+                    return Promise.resolve({total: realList.length})
                 }
-                resolve({total:0, addr}) 
+                resolve({total:realList.length}) 
             })
 
         },
@@ -321,24 +296,21 @@ export function getInput(input) {
 
 
 function unRepet(list, list2) {
-    if (list && list.length) {
-        if (list2 && list2.length) {
-            const newList = [...list]
-            const hashList = list.map(item => item.hash.toUpperCase())
-            list2.forEach(item => {
-                if (!hashList.includes(item.hash.toUpperCase())) {
-                    newList.unshift(item)
-                }
-            })
-            return newList
-        } else {
-            return list
-        }
+    const obj = {}
+    console.warn('list 1', list, list2)
+    if(list && list.length){
+        list.forEach(item => {obj[item.hash.toUpperCase()] = item})
     }
-    if (list2 && list2.length) {
-        return list2
+    if(list2 && list2.length) {
+        list2.forEach(item => {obj[item.hash.toUpperCase()] = item})
     }
-
+    const newList = []
+    console.warn('obj', obj)
+    Object.keys(obj).forEach(key => {
+        newList.unshift(obj[key])
+    })
+    console.warn('newList', newList)
+    return newList
 }
 
 export async function getConverAmount(wallet, data) {
@@ -347,7 +319,6 @@ export async function getConverAmount(wallet, data) {
         let jsonData = getInput(input)
         if(jsonData) {
             const { type, nft_address } = jsonData
-            console.log('input data---', jsonData)
             if (type && type == 6 && nft_address) {
                 const len = nft_address.length
                 switch (len) {
