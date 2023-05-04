@@ -63,6 +63,7 @@
         <van-list
           v-model:loading="loadList"
           :finished="finished"
+          :immediate-check="false"
           @load="getPageList"
           v-model:error="loadErr"
         >
@@ -365,6 +366,7 @@ export default {
     const getPageList = async () => {
       console.warn('getPageList')
 
+      
       loadList.value = true;
       try {
         const list = [
@@ -393,9 +395,7 @@ export default {
         coinType.value.value,
         currentNetwork.value.id
       );
-      if(currentNetwork.value.id != 'wormholes-network-1') {
-        handleRefresh();
-      }
+      handleRefresh();
 
       window.addEventListener("scroll", deFun);
     });
@@ -454,16 +454,12 @@ export default {
       }
     };
     const handleRefresh = () => {
-      return new Promise((resolve, reject) => {
-        let time = setTimeout(() => {
-        txList.value = [];
+      loadList.value = true
+      txList.value = [];
       finished.value = false;
       params.page = "1";
-      getPageList().then((res) => resolve(res)).finally(() => {
+      return getPageList().finally(() => {
         store.dispatch("account/waitTxQueueResponse")
-      })
-      clearTimeout(time)
-      },500)
       })
     };
     eventBus.on("changeNetwork", async (address) => {

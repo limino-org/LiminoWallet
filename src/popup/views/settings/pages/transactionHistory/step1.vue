@@ -514,16 +514,12 @@ export default {
       }
     };
     const handleRefresh = () => {
-      return new Promise((resolve, reject) => {
-        let time = setTimeout(() => {
-        tlist.value = [];
+      loadList.value = true
+      tlist.value = [];
       finished.value = false;
       params.page = "1";
-      getPageList().then((res) => resolve(res)).finally(() => {
+      return getPageList().finally(() => {
         store.dispatch("account/waitTxQueueResponse")
-      })
-      clearTimeout(time)
-      },500)
       })
     };
 

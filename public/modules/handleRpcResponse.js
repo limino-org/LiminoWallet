@@ -92,18 +92,8 @@ export const handleRpcResponse = {
             console.warn('login', password)
             if (password) {
                 await chrome.storage.local.set({ password })
-                chrome.alarms.create(eventTypes.pwdExpired, { delayInMinutes: 30 });
-                chrome.alarms.onAlarm.addListener((e) => {
-                    console.warn('pwd ...', e, eventTypes.pwdExpired)
-                    const { name } = e
-                    console.warn('pwd pwdExpired', e, eventTypes.pwdExpired)
-                    if (name == eventTypes.pwdExpired) {
-                        console.warn('pwd pwdExpired', e)
-                        // 12 h password expired clear data
-                        handleRpcResponse[handleType.logout].sendResponse(null, sendResponse, null)
-                        chrome.alarms.clear(eventTypes.pwdExpired)
-                    }
-                })
+                chrome.alarms.clear(eventTypes.pwdExpired)
+                chrome.alarms.create(eventTypes.pwdExpired, { delayInMinutes: 480 });
                 const method = handleType.login
                 if(sender && sender.id) {
                     const bgMsg = { ...errorCode['200'], data: null }

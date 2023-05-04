@@ -14,7 +14,8 @@ import {
   isConnected,
   getSenderAccounts,
   handleType,
-  wallet_methods
+  wallet_methods,
+  eventTypes
 } from './modules/common.js'
 import { handleRpc } from './modules/handleRequest.js';
 // Listening for Browser events
@@ -124,3 +125,16 @@ export const getQuery = (url) => {
   return obj
 }
 
+
+// TODO 
+chrome.alarms.onAlarm.addListener((e) => {
+  console.warn('pwd ...', e, eventTypes.pwdExpired)
+  const { name } = e
+  console.warn('pwd pwdExpired', e, eventTypes.pwdExpired)
+  if (name == eventTypes.pwdExpired) {
+      console.warn('pwd pwdExpired', e)
+      // 12 h password expired clear data
+      handleRpcResponse[handleType.logout].sendResponse(null, null, null)
+      chrome.alarms.clear(eventTypes.pwdExpired)
+  }
+})
