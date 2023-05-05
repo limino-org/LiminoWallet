@@ -598,7 +598,7 @@ export async function openPopup(
           type: 'popup',
           left: e.width - 355,
           top: -10,
-          width: 390,
+          width: 428,
           height: 700,
         }, async (e) => {
           console.log('open', e)

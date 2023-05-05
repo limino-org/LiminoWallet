@@ -16,7 +16,8 @@ import {
   isConnected,
   getSenderAccounts,
   handleType,
-  wallet_methods
+  wallet_methods,
+  eventTypes
 } from './modules/common.js'
 import { handleRpc } from './modules/handleRequest.js';
 // Listening for Browser events
@@ -30,11 +31,10 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
   if (!target) {
     return false
   }
-  console.log('event---000', data)
   const { method, params: newParams, sendId } = data
   if (target != 'wormholes-inpage' && target != 'wormholes-popup' && (!data || !data.method)) {
     const errMsg = errorCode['4100']
-    sendMessage({...createMsg(errMsg, data.method || 'unknow'), sendId}, {}, sender)
+    sendMessage({ ...createMsg(errMsg, data.method || 'unknow'), sendId }, {}, sender)
     return false
   }
 
@@ -45,7 +45,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
   if ((target == 'wormholes-inpage' && !isConnect) && (method != handleType.wallet_requestPermissions && method != handleType.eth_requestAccounts && method !== 'message')) {
     console.log('event---', data)
     const errMsg = errorCode['4100']
-    sendMessage({...createMsg(errMsg, method || 'unknow'), sendId}, {}, sender)
+    sendMessage({ ...createMsg(errMsg, method || 'unknow'), sendId }, {}, sender)
     return false
   }
   // If no, return the account address if yes
@@ -53,7 +53,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     const response = await getSenderAccounts(sender)
     const errMsg = { ...errorCode['200'], data: response }
     const sendMsg = createMsg(errMsg, method)
-    sendMessage({...sendMsg, sendId}, {}, sender)
+    sendMessage({ ...sendMsg, sendId }, {}, sender)
     return false
   }
 
@@ -65,16 +65,16 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     // Check whether the RPC Method is supported
     if (wallet_methods.includes(method)) {
       // Return error messages are not supported
-      if(handleRequest[method]) {
+      if (handleRequest[method]) {
         handleRequest[method]({ newParams, sendId }, sendResponse, sender)
       } else {
         const errMsg = errorCode['4200']
-        sendMessage({...createMsg(errMsg, method || 'unknow'), sendId}, {}, sender)
+        sendMessage({ ...createMsg(errMsg, method || 'unknow'), sendId }, {}, sender)
         return false
       }
     } else {
       // RPC calls
-      handleRpc(method, { newParams, sendId}, sendResponse, sender)
+      handleRpc(method, { newParams, sendId }, sendResponse, sender)
     }
     return true;
   }
@@ -99,10 +99,17 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
 
 
 
-chrome.runtime.onInstalled.addListener(async () => {
-  await clearConnectList()
-  await clearPwd()
-  console.log('Background.js onInstalled.')
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason == "install") {
+    console.log('Background.js onInstalled.')
+    //call a function to handle a first install
+  } else if (details.reason == "update") {
+    console.log('Background.js onUpdate.')
+    //call a function to handle an update
+  }
+  clearConnectList()
+  clearPwd()
+
 })
 
 //  Listen window closed
@@ -142,3 +149,17 @@ export const getQuery = (url) => {
   }
   return obj
 }
+
+
+chrome.alarms.onAlarm.addListener((e) => {
+  console.warn('pwd ...', e, eventTypes.pwdExpired)
+  const pwdExpiredKey = eventTypes.pwdExpired
+  const { name } = e
+  console.warn('pwd pwdExpired', e, pwdExpiredKey)
+  if (name == pwdExpiredKey) {
+    console.warn('pwd pwdExpired', e)
+    // 12 h password expired clear data
+    handleRpcResponse[handleType.logout].sendResponse({}, null, null)
+
+  }
+})

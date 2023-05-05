@@ -235,7 +235,7 @@ export default {
 .json-box {
   max-height: 270px;
   overflow-y: scroll;
-  margin:0 20px 20px;
+  margin:0 20px 0;
 }
 .balance {
   background: #f3f4f5;

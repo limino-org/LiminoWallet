@@ -1331,7 +1331,9 @@ export default {
         const logoUrl = "eth.jpg";
         let balance = "0";
         try {
-          balance = utils.formatEther(await contractWithSigner.balanceOf(wallet.address));
+          const ban = await contractWithSigner.balanceOf(wallet.address)
+          console.warn('获取合约资产', ban.toString())
+          balance = ban.toString();
         } catch (err: any) {
           // Toast(i18n.global.t("currencyList.importerror"));
           return Promise.reject(i18n.global.t("currencyList.importerror"))
@@ -1436,7 +1438,8 @@ export default {
         const contractWithSigner = contract.connect(wallet);
         console.warn("contractWithSigner--------------", contractWithSigner);
         const amount = await contractWithSigner.balanceOf(wallet.address)
-        return Promise.resolve(utils.formatEther(amount));
+        console.log('amount 合约', amount.toString())
+        return Promise.resolve(amount.toString());
       } catch (err) {
         return Promise.reject(err);
       }

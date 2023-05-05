@@ -67,11 +67,17 @@ export const handleRpcResponse = {
             await chrome.storage.local.set({ password: "" })
             await clearConnectList()
             const method = handleType.logout
-            const bgMsg = { ...errorCode['200'], data: null }
-            const sendBgMsg = createBgMsg(bgMsg, method)
-            await chrome.runtime.sendMessage(sender.id, sendBgMsg);
-            handleRpcResponse[eventTypes.pwdExpired].sendResponse()
 
+            const errMsg = { ...errorCode['200'], data: true}
+            const sendLogoutMsg =  createMsg(errMsg, 'logout')
+            sendMessage(sendLogoutMsg, {}, null)
+            if(sender && sender.id) {
+                const bgMsg = { ...errorCode['200'], data: null }
+                const sendBgMsg = createBgMsg(bgMsg, method)
+                await chrome.runtime.sendMessage(sender.id, sendBgMsg);
+                handleRpcResponse[eventTypes.pwdExpired].sendResponse()
+            }
+            chrome.alarms.clear(eventTypes.pwdExpired)
         }
     },
     [handleType.login]: {
@@ -79,16 +85,7 @@ export const handleRpcResponse = {
             const { password, tab } = data
             if (password) {
                 await chrome.storage.local.set({ password })
-                chrome.alarms.create(eventTypes.pwdExpired, { delayInMinutes: 720 });
-                chrome.alarms.onAlarm.addListener(async (e) => {
-                    const { name } = e
-                    if (name == eventTypes.pwdExpired) {
-                        // 12 h password expired clear data
-                        await clearConnectList()
-                        await clearPwd()
-                        handleRpcResponse[eventTypes.pwdExpired].sendResponse()
-                    }
-                })
+                chrome.alarms.create(eventTypes.pwdExpired, { delayInMinutes: 480 });
                 const method = handleType.login
                 const errMsg = { ...errorCode['200'], data: true}
                 const sendLoginMsg =  createMsg(errMsg, 'loginIn')
