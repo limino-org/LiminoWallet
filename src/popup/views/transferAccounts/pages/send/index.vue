@@ -591,10 +591,11 @@ export default {
 
     // Set gaslimit dynamically
     const calcGasLimit = async () => {
+      console.log(' chooseToken.value',  chooseToken.value)
     const { tokenContractAddress } = chooseToken.value;
     // Token transfer dynamic estimation gaslimit
     if (tokenContractAddress) {
-      const amountWei = web3.utils.toWei(amount.value ? amount.value.toString() : '1','ether')
+      const amountWei = amount.value ? amount.value.toString() : '1'
       // Get contract token instance object
       const { contractWithSigner, contract } = await dispatch(
         "account/connectConstract",

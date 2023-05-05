@@ -1180,7 +1180,7 @@ export default {
         return Promise.reject({ reason: i18n.global.t('common.sendTipPendding'), code: 500 })
       }
       try {
-        const { currentNetwork } = state
+        const { currentNetwork, accountInfo } = state
         // Update recent contacts
         commit("PUSH_RECENTLIST", to);
         debugger
@@ -1189,7 +1189,9 @@ export default {
           "connectConstract",
           tokenAddress
         );
-        const amountWei = web3.utils.toWei((amount || 0) + '', 'ether')
+        const { precision } = state.currentNetwork.tokens[accountInfo.address.toUpperCase()].find(item => item.tokenContractAddress.toUpperCase() == tokenAddress.toUpperCase())
+        const amountWei = utils.parseUnits(amount.toString(), precision).toString()
+        console.warn('amountWei', amountWei)
         console.log(" contract.estimate", contract, contractWithSigner);
         const gasp = Number(gasPrice) ? new BigNumber(gasPrice).dividedBy(1000000000).toFixed(12) : '0.0000000012';
         const transferParams: any = {
@@ -1332,8 +1334,8 @@ export default {
         let balance = "0";
         try {
           const ban = await contractWithSigner.balanceOf(wallet.address)
-          console.warn('获取合约资产', ban.toString())
-          balance = ban.toString();
+          console.warn('获取合约资产', utils.formatUnits(ban.toString(), decimal))
+          balance = utils.formatUnits(ban.toString(), decimal);
         } catch (err: any) {
           // Toast(i18n.global.t("currencyList.importerror"));
           return Promise.reject(i18n.global.t("currencyList.importerror"))
@@ -1429,6 +1431,8 @@ export default {
         return Promise.reject("Address cannot be empty!");
       }
       try {
+        const addr = state.accountInfo.address.toUpperCase()
+        const { precision } = state.currentNetwork.tokens[addr].find(item => item.tokenContractAddress.toUpperCase() == tokenAddress.toUpperCase())
         const wallet = await getWallet();
         const contract = new ethers.Contract(
           tokenAddress,
@@ -1438,8 +1442,9 @@ export default {
         const contractWithSigner = contract.connect(wallet);
         console.warn("contractWithSigner--------------", contractWithSigner);
         const amount = await contractWithSigner.balanceOf(wallet.address)
-        console.log('amount 合约', amount.toString())
-        return Promise.resolve(amount.toString());
+        const newban = utils.formatUnits(amount.toString(), precision)
+        console.log('amount 合约', utils.formatUnits(amount.toString(), precision))
+        return Promise.resolve(newban);
       } catch (err) {
         return Promise.reject(err);
       }
