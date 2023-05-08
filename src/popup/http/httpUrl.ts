@@ -1,7 +1,6 @@
 
 const isProduct = process.env.VUE_APP_NODE_ENV == 'production'
-// Cloud services
-export const wormholesApi = 'https://www.wormholestest.com'
+
 // Block browser  
 export const wormholesscanApi = 'https://www.wormholesscan.com'
 const exchantest = 'c0x5051580802283c7b053d234d124b199045ead750'

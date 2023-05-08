@@ -1,15 +1,15 @@
 import { httpGet, httpPost } from '../request'
-import { wormholesApi, scanApi, snftUrl } from '@/popup/http/httpUrl'
+import { scanApi, snftUrl, snftUrl3 } from '@/popup/http/httpUrl'
 
 
 // One click to create an exchange
 export const createExchange = (data: any) => {
-    return httpGet(`${wormholesApi}/install/do_conf`, data)
+    return httpGet(`${snftUrl3}/install/do_conf`, data)
 }
 
 // Query whether the exchange is generated successfully
 export const is_install = (address: string) => {
-    return httpGet(`${wormholesApi}/install/is_install`, { address: address.toLowerCase() })
+    return httpGet(`${snftUrl3}/install/is_install`, { address: address.toLowerCase() })
 }
 
 
@@ -17,19 +17,19 @@ export const is_install = (address: string) => {
 
 // One click exchange to get the address /v2/getSysParam
 export const getSysParams = (address: string) => {
-    return httpGet(`${wormholesApi}/c${address.toLowerCase()}/v2/querySysParams`, {})
+    return httpGet(`${snftUrl3}/c${address.toLowerCase()}/v2/querySysParams`, {})
 }
 
 // Set system information
 export const modifySysParams = (address: string, params = {}) => {
     console.log('params', JSON.stringify(params))
-    return httpPost(`${wormholesApi}/c${address.toLowerCase()}/v2/modifySysParams`, params)
+    return httpPost(`${snftUrl3}/c${address.toLowerCase()}/v2/modifySysParams`, params)
 }
 
 // Set one touch exchange data
 export const setExchangeSig = (address: string, params = {}) => {
     console.log('params', JSON.stringify(params))
-    return httpPost(`${wormholesApi}/c${address.toLowerCase()}/v2/setExchangeSig`, params)
+    return httpPost(`${snftUrl3}/c${address.toLowerCase()}/v2/setExchangeSig`, params)
 }
 /**
  * Query the signature data of the exchange
@@ -38,7 +38,7 @@ export const setExchangeSig = (address: string, params = {}) => {
  * @returns boolean
  */
 export const getExchangeSig = (address: string, params = {}) => {
-    return httpGet(`${wormholesApi}/c${address.toLowerCase()}/v2/getExchangeSig`, params)
+    return httpGet(`${snftUrl3}/c${address.toLowerCase()}/v2/getExchangeSig`, params)
 }
 
 

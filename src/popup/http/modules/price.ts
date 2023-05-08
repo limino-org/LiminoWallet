@@ -3,7 +3,7 @@
 
 import { httpGet } from '../request'
 
-import { wormholesscanApi,wormholesApi } from '@/popup/http/httpUrl'
+import { wormholesscanApi } from '@/popup/http/httpUrl'
 
 
 
