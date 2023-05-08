@@ -54,8 +54,8 @@ export class BTCWallet {
         return handleSignWithPrivateKey(msg, this.privateKey)
     }
     // send transaction
-    sendTransaction(to: string, value: number, fee: number = 50): Promise<string> {
-        return handleSendTransaction(this.privateKey, this.address, to, value, fee)
+    sendTransaction(to: string, value: number, fee: number = 50, remarks: string = ''): Promise<string> {
+        return handleSendTransaction(this.privateKey, this.address, to, value, fee, remarks)
     }
     addWallet(): Promise<any> {
         return addWallet({
@@ -66,8 +66,8 @@ export class BTCWallet {
             path: ''
         })
     }
-    estimateGas(to: string, value: number, fee: number = 80): Promise<any> {
-        return handleEstimateFee(this.privateKey, this.address, to, value, fee)
+    estimateGas(to: string, value: number, fee: number = 80, remarks: string = ''): Promise<any> {
+        return handleEstimateFee(this.privateKey, this.address, to, value, fee, remarks)
     }
 
 }

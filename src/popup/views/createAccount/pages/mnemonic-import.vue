@@ -162,7 +162,7 @@ setup() {
         loading.value = true
         if (password.value == password2.value) {
           // Store password
-          setCookies('password', password2.value, passwordExpires)
+          await setCookies('password', password2.value, passwordExpires)
           const pathIndex = '0'
           const mnemonicParams: any = {
             pathIndex,
@@ -180,18 +180,10 @@ setup() {
               // Storage password Generates a keystore file based on the password private key
               const keyStore = encryptPrivateKey(params)
               // Encrypt mnemonic storage according to password
-              console.log('web3---------', web3)
-              // const mnemonicData = encryptPrivateKey({
-              //   privateKey: web3.utils.toHex(mnemonic.toString()),
-              //   password: password.value
-              // })
-              // commit('mnemonic/UPDATE_MNEMONIC', mnemonicData)
-
-                console.warn('mnemonic.toString()',mnemonic, mnemonic.value)
               const mnemonicData = encryptPrivateKey({
-          privateKey: web3.utils.toHex(mnemonic.value.toString()),
-          password: password.value,
-        });
+               privateKey: web3.utils.toHex(mnemonic.value.toString()),
+               password: password.value,
+              });
         // await localforage.setItem("mnemonic", mnemonicData);
         commit('mnemonic/UPDATE_MNEMONIC', mnemonicData)
 
@@ -206,24 +198,26 @@ setup() {
               commit('account/UPDATE_MNEMONIC', mnemonicParams)
               commit('account/UPDATE_WALLET', wallet)
               commit('account/UPDATE_KEYSTORE', keyStore)
-              router.replace({
+                router.replace({
                 name: 'loginAccount-createing'
               })
             })
             .finally(() => (loading.value = false))
           handleUpdate()
         } else {
+          console.log('err2')
           // The entered passwords are inconsistent
           showToast(t('importByMnemonic.notmatch'))
           loading.value = false
         }
 
       } catch (err) {
-        console.error(err)
+        console.log('err1',err)
         loading.value = false
         showToast(t('createwallet.failed'))
       }
     } else {
+      console.log('err3')
       // The entered passwords are inconsistent
       showToast(t('createwallet.notmatch'))
     }

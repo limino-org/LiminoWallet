@@ -233,6 +233,8 @@ export const clearCache = async () => {
                 const name = `TX-${type}-${id.toUpperCase()}`
                 await localforage.dropInstance({
                     name,
+                }).then(() => {
+                    console.warn('Dropped otherStore', name)
                 })
             }
         }

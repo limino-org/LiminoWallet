@@ -1301,7 +1301,8 @@
 		switchCoins:"切换币种",
 		walletType:"身份钱包",
 		expandView:"展开视图",
-		noMore:"没有更多了!"
+		noMore:"没有更多了!",
+		addRemark:"添加交易备注"
 
 	},
 	categoryform: {

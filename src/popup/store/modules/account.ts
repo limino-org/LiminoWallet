@@ -678,6 +678,10 @@ export default {
       return provider || {}
     },
     async getCreatorStatus({commit, state}, address: string) {
+      if(state.coinType.value != 0){
+        commit('UPDATE_CREATORSTATUS', null)
+        return
+      }
       try {
        const data = await getCreator(address)
        const res = await getAccountAddr(address)
@@ -776,7 +780,7 @@ export default {
         // account.select = true
         list = [account];
       }
-      dispatch("getProviderWallet");
+      dispatch("getProviderWallet", keyStore);
       commit("UPDATE_ACCOUNTINFO", account);
       commit("ADD_ACCOUNT", list);
       dispatch("updateAccount");
@@ -873,7 +877,9 @@ export default {
     ) {
       try {
         let newwllet= null;
+        console.warn('before init', params)
         newwllet = await createWalletByJson(params)
+        console.warn('init ---', newwllet)
         const privateKey = newwllet.privateKey
         switch(state.coinType.value) {
           case 0:
@@ -881,14 +887,17 @@ export default {
             if(currentNetwork.type == 'ETH') {
               dispatch("setNetWork", currentNetwork);
             }
+            console.warn('init ---0')
 
             break;
           case 1:
             newwllet = new BTCWallet(privateKey, await getBTCNetwork())
           break;
         }
-        return Promise.resolve(newwllet);
+        console.warn('init ---1', newwllet)
+        return newwllet;
       } catch (err) {
+        console.error('creat err', err)
         return Promise.reject(err);
       }
     },
@@ -1036,27 +1045,39 @@ export default {
 
     },
     // Link current network provider wallet instance
-    async getProviderWallet({ commit, state, dispatch }: any) {
+    async getProviderWallet({ commit, state, dispatch }: any, newJson: any) {
       const { URL } = state.currentNetwork;
- 
+      console.warn('----')
+
       if(state.coinType.value == 0 && wallet && wallet.provider && wallet.provider.connection && (wallet.provider.connection.url == URL) && wallet.address.toUpperCase() == state.accountInfo.address.toUpperCase()){
         return wallet
       }
+      console.warn('----0')
+
       if(state.coinType.value == 1 && wallet && wallet.provider && wallet.address.toUpperCase() == state.accountInfo.address.toUpperCase() && state.currentNetwork.value == wallet.provider.network.name){
         return wallet
       }
+      console.warn('----1')
       let newWallet = null
       const { accountInfo } = state;
       const { keyStore } = accountInfo;
-      const json = toRaw(keyStore)
+      const json = newJson || toRaw(keyStore)
       const password: string = await getCookies("password") || "";
       try {
         switch(state.coinType.value){
           case 0:
+            console.warn('----3')
+
             const provider = await getProvider()
+            console.warn('----4')
+
             newWallet = await dispatch("createWalletByJson", { password, json });
+            console.warn('----5', newWallet)
+
             newWallet = newWallet.connect(provider)
             const res = await newWallet.provider.getNetwork()
+            console.warn('----6')
+
             commit('UPDATE_NETSTATUS', NetStatus.success)
             commit("UPDATE_WALLET", newWallet);
             break;
@@ -1070,9 +1091,10 @@ export default {
             commit('UPDATE_NETSTATUS', NetStatus.success)
             break;
         }
+        console.warn('newWallet ---', newWallet)
         return newWallet
       } catch (err: any) {
-        console.warn('err---', err)
+        console.error('init wallet err', err)
         showNotify({ type: 'danger', message: i18n.global.t('error.netErr'),duration: 5000, position: 'bottom' })
         commit('UPDATE_NETSTATUS', NetStatus.fail)
         return Promise.reject(err);
@@ -1087,7 +1109,7 @@ export default {
       { state, commit, dispatch }: any,
       params: SendTransactionParams
     ) {
-      const { to, value, gasPrice, gasLimit, data, transitionType, nft_address, checkTxQueue, nonce: sendNonce, type: newType, maxPriorityFeePerGas, maxFeePerGas } = { checkTxQueue: true, ...params };
+      const { to, value, gasPrice, gasLimit, data, transitionType, nft_address, checkTxQueue, nonce: sendNonce, type: newType, maxPriorityFeePerGas, maxFeePerGas, remarks } = { checkTxQueue: true, ...params };
       // Determine whether there are transactions in the current trading pool that have not returned transaction receipts, and if so, do not allow them to be sent
       console.warn('send...', params)
       if (checkTxQueue && await dispatch('hasPendingTransactions')) {
@@ -1154,7 +1176,7 @@ export default {
         if(state.coinType.value == 1){
           const sendVal = new BigNumber(value).multipliedBy(100000000).toNumber()
           const fee = Number(gasPrice)
-          btcTXHash = await newwallet.sendTransaction(to, sendVal, fee);
+          btcTXHash = await newwallet.sendTransaction(to, sendVal, fee, remarks);
           sendData = {
             hash: btcTXHash,
             to,

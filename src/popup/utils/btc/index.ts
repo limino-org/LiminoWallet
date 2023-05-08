@@ -78,7 +78,7 @@ export default () => {
 
     // Generate random 
     // const 
-    const handleEstimateFee = async(privateKeyStr: string, from: string, to: string, sendVal: number, fee: number): Promise<number> => {
+    const handleEstimateFee = async(privateKeyStr: string, from: string, to: string, sendVal: number, fee: number, remarks: string = ''): Promise<number> => {
         console.log(privateKeyStr, from, to)
         const privateKey = new PrivateKey(privateKeyStr);
         return new Promise(async (resolve, reject) => {
@@ -97,6 +97,7 @@ export default () => {
                     }))
                     const tx = new Transaction()
                         .from(list)
+                        .addData(remarks)
                         .to(to, sendVal)
                         .change(from)
                         .sign(privateKey)
@@ -114,7 +115,7 @@ export default () => {
         })
     }
 
-    const handleSendTransaction = async (privateKeyStr: string, from: string, to: string, sendVal: number, fee: number): Promise<string> => {
+    const handleSendTransaction = async (privateKeyStr: string, from: string, to: string, sendVal: number, fee: number, addData: string = ''): Promise<string> => {
         // Transaction.UnspentOutput(from)
         console.log(privateKeyStr, from, to)
         const privateKey = new PrivateKey(privateKeyStr);
@@ -132,8 +133,10 @@ export default () => {
                         script,
                         satoshis: value
                     }))
+                    console.log('addData', addData)
                     const tx = new Transaction()
                         .from(list)
+                        .addData(addData)
                         .to(to, sendVal)
                         .change(from)
                         .sign(privateKey)

@@ -51,6 +51,7 @@ import { toUsd } from '@/popup/utils/filters'
 import localforage from "localforage";
 import { useCountDown } from '@vant/use';
 import { useBroadCast } from '@/popup/utils/broadCost'
+import { clearCache } from '@/popup/store/db'
 
 export default defineComponent({
   name: 'resetpopup',
@@ -121,6 +122,7 @@ export default defineComponent({
     const handleComfirm = async () => {
       try {
         await localforage.clear()
+        await clearCache()
         handleUpdate()
         // setCookies('password','')
         location.reload()

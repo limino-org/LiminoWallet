@@ -1301,10 +1301,8 @@
 		switchCoins:"Switching currencies",
 		walletType:"Identity wallet",
 		expandView:"Expand view",
-		noMore:"No more."
-
-
-
+		noMore:"No more.",
+		addRemark:"add a remark."
 
 	},
 	categoryform: {

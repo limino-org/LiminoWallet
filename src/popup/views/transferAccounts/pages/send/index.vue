@@ -148,6 +148,11 @@
             </div>
           </div>
         </div>
+
+        <!-- BTC reMarks -->
+        <div class="btc-remarks">
+          <van-field :placeholder="t('common.addRemark')" length="30" v-model="remarks" />
+        </div>
       </div>
     </div>
     <div v-show="amountErr" class="color-error f-12 ml-14 mr-14 mb-14 mt-8">
@@ -394,6 +399,7 @@ export default {
           token: chooseToken.value,
           gasPrice,
           gasLimit: gasLimit.value,
+          remarks: remarks.value
         };
       } else {
         return {
@@ -402,10 +408,12 @@ export default {
           token: chooseToken.value,
           gasPrice,
           gasLimit: gasLimit.value,
+          remarks: remarks.value
+
         };
       }
     };
-
+    const remarks = ref("")
     // Data transmitted to the sending pop-up window
     const sendTx = ref({});
     const gonext = async () => {
@@ -855,12 +863,16 @@ export default {
       checkAddressError,
       toSetGas,
       amountErr,
+      remarks,
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.btc-remarks {
+  margin: 0 14px 10px;
+}
 .back {
   color: #037cd6;
   font-size: 12px;
