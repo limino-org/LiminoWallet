@@ -73,14 +73,14 @@
           <div class="line-circle"></div>
         </div>
         <!-- <div class="guide-con-1 mask" v-if></div> -->
-        <div class="guide-con-2" v-if="showGuide">
+        <!-- <div class="guide-con-2" v-if="showGuide">
           <div class="guide-text">
             {{ t("guidePopup.createExchangGuideTip2") }}
           </div>
           <div class="line-box"></div>
           <div class="line-box"></div>
           <div class="line-circle"></div>
-        </div>
+        </div> -->
       </div>
       <div class="guide-footer"></div>
       <div class="guide-card" v-if="(showGuide && !showServer)  || (showServer && !showGuide)"></div>
@@ -280,7 +280,7 @@ export default {
     background: rgba(0, 0, 0, 0.7);
   }
   .guide-footer {
-    height: calc(100vh - 180px - 316px);
+    height: calc(100vh  - 260px);
     background: rgba(0, 0, 0, 0.7);
   }
   .guide-con-1 {
@@ -343,7 +343,7 @@ export default {
   }
   .guide-con-1,
   .guide-con-2 {
-    height: 158px;
+    height: 80px;
     position: relative;
     &.mask {
       background: rgba(0, 0, 0, 0.7);

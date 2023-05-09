@@ -671,7 +671,7 @@ function getHostName(url = "") {
   font-weight: bold;
 }
 .account-list {
-  max-height: 400px;
+  max-height: 300px;
   overflow-y: scroll;
 }
 .icon-weibiaoti-1_xinzengzhanghu {

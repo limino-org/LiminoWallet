@@ -30,7 +30,7 @@ body {
 }
 
 .container {
-  max-width: 820px;
+  max-width: 900px;
   margin: 0 auto;
   position: relative;
 }
@@ -427,7 +427,7 @@ img {
 }
 
 .minus-pledge-dialog {
-  max-height: 452PX;
+  max-height: 522PX;
   overflow: initial;
 
   .van-dialog__content {
@@ -452,7 +452,7 @@ img {
 }
 
 .minerAdditionalModal {
-  height: 758PX;
+  height: 888PX;
 }
 
 .toggleSnftListModal {
@@ -464,15 +464,18 @@ img {
 }
 
 .guideModalGetStart {
-  height: 392PX;
+  height: 440PX;
 }
 
 .guideBackupModal {
-  height: 422PX;
+  height: 492PX;
 }
 
 .modifNameModal {
-  min-height: 298PX;
+  max-height: 346PX;
+}
+.transfer-detail-modal {
+  max-height: 602PX;
 }
 
 .van-popover.account-pop {
@@ -714,32 +717,38 @@ img {
     height: auto;
   }
   .minus-pledge-dialog {
-    max-height: 382px;
+    max-height: 396PX;
   }
   .toggleSnftListModal {
     height: 350PX;
   }
-
+  .transfer-detail-modal {
+    max-height: 452PX;
+  }
+  
   .custom-setAmount-modal {
     height: 236PX;
   }
 
   .guideModalGetStart {
-    height: 326PX;
+    height: 310PX;
   }
 
   .guideBackupModal {
-    height: 422PX;
+    height: 370PX;
   }
 
   .modifNameModal {
-    min-height: 248PX;
+    max-height: 258PX;
   }
+}
+.serial-number {
+  font-size: 14px;
 }
 
 @media screen and (min-width: 750px) {
   html {
-    font-size: 45PX !important; // ignored
+    font-size: 52PX !important; // ignored
   }
 
   .popover-btn-tip,
@@ -842,7 +851,7 @@ img {
     }
 
     &.step10 {
-
+      left: inherit !important;
       right: 20px !important;
       left: inherit;
     }

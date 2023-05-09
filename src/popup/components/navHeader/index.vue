@@ -1,7 +1,7 @@
 <template>
   <div class="nav-header-container">
     <div :class="`nav-header ${hasExchange ? 'hasExchange' : ''}`">
-      <div class="position relative nav-center van-hairline--bottom">
+      <div class="position relative nav-center container van-hairline--bottom">
         <div :class="`nav-content ${hasExchange ? 'hasExchange' : ''}  ${
             paddingTop ? 'paddingTop' : ''
           }`">
