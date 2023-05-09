@@ -16,7 +16,7 @@
     </div>
     <!-- <Tip v-else :message="t('createExchange.pageTip')" /> -->
     <div class="list">
-      <div class="card flex between" v-if="hasExchange" @click="toConsole">
+      <!-- <div class="card flex between" v-if="hasExchange" @click="toConsole">
         <div class="info">
           <div class="label">{{ t("createExchange.exchange") }}</div>
           <div class="desc">{{ t("createExchange.exchangeDesc") }}</div>
@@ -24,9 +24,9 @@
         <div class="flex center">
           <van-icon name="arrow" />
         </div>
-      </div>
+      </div> -->
 
-      <div class="card flex between" v-if="hasExchange" @click="toAdmin">
+      <!-- <div class="card flex between" v-if="hasExchange" @click="toAdmin">
         <div class="info">
           <div class="label">{{ t("createExchange.console") }}</div>
           <div class="desc">{{ t("createExchange.consoleDesc") }}</div>
@@ -34,7 +34,7 @@
         <div class="flex center">
           <van-icon name="arrow" />
         </div>
-      </div>
+      </div> -->
 
       <div class="card flex between" @click="openExchange">
         <div class="info">
@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <div class="card flex between" @click="handleAddModel">
+      <!-- <div class="card flex between" @click="handleAddModel">
         <div class="info">
           <div class="label">{{ t("createExchange.server") }}</div>
           <div class="desc">{{ t("createExchange.serverDesc",{days,hours}) }}</div>
@@ -54,7 +54,7 @@
         <div class="flex center">
           <van-icon name="arrow" />
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
   <div class="flex center loading-page" v-else>
