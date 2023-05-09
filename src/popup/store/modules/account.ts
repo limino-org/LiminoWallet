@@ -786,6 +786,7 @@ export default {
         const { accountInfo } = state;
         const { keyStore } = accountInfo;
         const password: string = await getCookies("password") || "";
+        console.warn('password', password)
         if (!password) {
           const query = getQuery();
           // @ts-ignore

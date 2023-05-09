@@ -82,7 +82,7 @@ export const handleRpcResponse = {
     },
     [handleType.login]: {
         sendResponse: async (data, sendResponse, sender) => {
-            const { password, tab } = data
+            const { password } = data
             if (password) {
                 await chrome.storage.local.set({ password })
                 chrome.alarms.create(eventTypes.pwdExpired, { delayInMinutes: 480 });
