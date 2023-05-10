@@ -15,7 +15,7 @@
           popper-class="tooltip4"
           class="box-item"
           effect="dark"
-          :content="t('bourse.tip5')"
+          :content="t('bourse.tip20')"
           placement="right"
           trigger="hover"
         >
@@ -101,7 +101,7 @@
           <span>（{{ t("bourse.tip12") }}）</span>
         </div>
       </div>
-      <div class="bourse-container-slider" v-if="!isExchanger_flag">
+      <div class="bourse-container-slider" v-if="false">
         <el-slider
           v-model="money"
           :disabled="true"

@@ -755,7 +755,10 @@
     }
 
     .bourse-container-btns {
-        // margin-top: 120px;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 30px;
         margin-top: 50px;
         .b1 {
             width: 100%;
