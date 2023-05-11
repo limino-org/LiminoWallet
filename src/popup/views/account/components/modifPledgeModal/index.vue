@@ -319,9 +319,9 @@ export default defineComponent({
   }
   .el-slider__marks-text {
     z-index: 9999;
-    margin-top: -40px;
-    line-height: 25px;
-    border-radius: 5px;
+    margin-top: -26px;
+    line-height: 18px;
+    border-radius: 4px;
     background: #85e19b;
     color: #fff;
     padding: 0 5px;
@@ -338,12 +338,10 @@ export default defineComponent({
       display: block;
       content: "";
       width: 0;
-      margin: 0 auto -11px;
+      margin: 0 auto -9px;
       height: 0;
-
-      border: 8px solid transparent;
-
-      border-top: 8px solid #85e19b;
+      border: 6px solid transparent;
+      border-top: 6px solid #85e19b;
     }
   }
 }
