@@ -19,6 +19,7 @@
   </van-sticky>
   <div class="transaction-history">
     <div class="all" v-show="chooseTabdata.value == 1">
+      
       <!-- Transactions -->
         <div v-show="coinType.value == 0">
           <van-list
@@ -433,11 +434,13 @@ export default {
     // Current account transaction list
     let tlist: any = ref([]);
     const waitTime: any = ref(null);
-    onMounted(async () => {
+    onMounted(() => {
+      console.warn('coinType', coinType.value, currentNetwork.value)
       window.addEventListener("scroll", deFun);
-      if(currentNetwork.value.id != 'wormholes-network-1') {
-        handleRefresh();
-      }
+      handleRefresh();
+      // if(currentNetwork.value.id != 'wormholes-network-1') {
+      //   handleRefresh();
+      // }
     });
     const params = {
       addr: accountInfo.value.address,

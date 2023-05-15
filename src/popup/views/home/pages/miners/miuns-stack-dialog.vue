@@ -309,7 +309,6 @@ export default {
   display: flex;
 
   .miners {
-    width: 341px;
     min-height: 560px;
     padding-bottom: 30px;
     background: #fff;

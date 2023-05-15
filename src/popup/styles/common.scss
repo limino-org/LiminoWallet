@@ -154,15 +154,20 @@ img {
 
 
 .van-dialog {
-  overflow: scroll;
-  top: 50%;
-  border-radius: 10px;
+  overflow-y: scroll;
+  -webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+width: 420px;
   .van-dialog__content {
     border-radius: 10px;
     // overflow-x: hidden;
   }
 
   &.van-popup--center {
+    transform: none;
+    top: 100px;
+    margin-left: -210px;
+    left: 50%;
     // position: absolute;
     // top: 50%;
     // right: 0;
@@ -455,6 +460,7 @@ img {
 
 .minus-miner-stack-dialog {
   // max-height: 758PX;
+  top: 0 !important;
 }
 
 .transfer-NFT-modal {
@@ -601,12 +607,12 @@ img {
     //   height: 566PX;
     // }
   }
-  .minerAdditionalModal {
-    height: 758PX;
-  }
-  .toggleSnftListModal {
-    height: 420PX;
-  }
+  // .minerAdditionalModal {
+  //   height: 758PX;
+  // }
+  // .toggleSnftListModal {
+  //   height: 420PX;
+  // }
   .custom-setAmount-modal {
     // height: 290PX;
   }
@@ -635,7 +641,15 @@ img {
 
 // When the width is less than 750, control the pop-up window width to guide the user to operate
 @media screen and (max-width: 750px) {
-
+  .van-dialog {
+    width: 90vw;
+    &.van-popup--center{
+      margin-left: -45vw;
+    }
+    & .van-dialog__content {
+      // max-width: 90%;
+    }
+  }
   .popover-btn-tip,
   .el-popper {
     max-width: 160px;
@@ -763,25 +777,25 @@ img {
     height: auto;
   }
 
-  .toggleSnftListModal {
-    height: 350PX;
-  }
+  // .toggleSnftListModal {
+  //   height: 350PX;
+  // }
 
-  .custom-setAmount-modal {
-    height: 236PX;
-  }
+  // .custom-setAmount-modal {
+  //   height: 236PX;
+  // }
 
-  .guideModalGetStart {
-    height: 326PX;
-  }
+  // .guideModalGetStart {
+  //   height: 326PX;
+  // }
 
-  .guideBackupModal {
-    height: 422PX;
-  }
+  // .guideBackupModal {
+  //   height: 422PX;
+  // }
 
-  .modifNameModal {
-    min-height: 248PX;
-  }
+  // .modifNameModal {
+  //   min-height: 248PX;
+  // }
 }
 
 @media screen and (min-width: 750px) {

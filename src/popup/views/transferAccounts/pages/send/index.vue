@@ -150,7 +150,7 @@
         </div>
 
         <!-- BTC reMarks -->
-        <div class="btc-remarks">
+        <div class="btc-remarks" v-if="coinType.value == 1">
           <van-field :placeholder="t('common.addRemark')" length="30" v-model="remarks" />
         </div>
       </div>
