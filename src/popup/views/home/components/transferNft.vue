@@ -35,7 +35,7 @@
                 <!-- <span class="sel">{{selectNumber}} 
                   {{ t("transferNft.select") }}
                 </span> -->
-                <div class="sel2 text-bold">{{selectTotal}} ERB (≈${{toUsd(selectTotal,2)}})</div>
+                <div class="sel2 text-bold">{{selectTotal}} ERB</div>
               </div>
             </div>
             <!-- The convert button -->
@@ -60,7 +60,6 @@ import { regNum2 } from "@/popup/enum/regexp";
 import BigNumber from "bignumber.js";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
-import { toUsd } from "@/popup/utils/filters";
 export default defineComponent({
   name: "transfer-NFT",
   components: {
@@ -150,7 +149,6 @@ export default defineComponent({
       handleConfirm,
       handleAll,
       submitText,
-      toUsd
     };
   },
 });

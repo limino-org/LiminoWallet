@@ -17,9 +17,7 @@
       <div class="amount text-center text-bold pl-14 pr-14">
         {{ decimal(pageData.data.balance) }} {{ pageData.data.name }}
       </div>
-      <div class="f-12 text-center lh-16 mt-6 balance">
-        {{ toUsd(pageData.data.balance) }}
-      </div>
+
       <div class="flex center">
         <div class="actions-list flex between">
           <div class="actions-list-card">
@@ -191,7 +189,7 @@ import NoData from "@/popup/components/noData/index.vue";
 
 import { Icon, Popup, Empty, Dialog, Button, Skeleton, List, Toast } from "vant";
 import CollectionCard from "@/popup/views/account/components/collectionCard/index.vue";
-import { addressMask, decimal, toUsd } from "@/popup/utils/filters";
+import { decimal } from "@/popup/utils/filters";
 import AcceptCode from "@/popup/views/account/components/acceptCode/index.vue";
 import TransactionDetail from "@/popup/views/account/components/transactionDetail/index.vue";
 import { useRoute, useRouter } from "vue-router";
@@ -743,7 +741,6 @@ export default {
       transactionList,
       loading,
       pageData,
-      toUsd,
       VUE_APP_SCAN_URL,
       viewAccountByAddress,
       txList,

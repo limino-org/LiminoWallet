@@ -31,7 +31,6 @@
               <div class="m-label">{{ t("transferNft.amount") }}</div>
               <div class="m-value">
                 {{ selectTotal }} ERB
-                <span class="usd">≈ $ {{ toUsd(selectTotal, 2) }}</span>
               </div>
             </div>
             <div class="border-bottom"></div>
@@ -61,13 +60,12 @@
               <div class="m-label">{{ t("transferNft.amount") }}</div>
               <div class="m-value">
                 {{ selectTotal }} ERB
-                <span class="usd">≈ $ {{ toUsd(selectTotal, 2) }}</span>
               </div>
             </div>
             <div class="border-bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.income") }}</div>
-              <div class="m-value">≈ {{myprofit}} ERB(≈ ${{toUsd(myprofit,5)}})</div>
+              <div class="m-value">≈ {{myprofit}} ERB</div>
             </div>
             <div class="border-bottom"></div>
             <div class="m-card">
@@ -95,21 +93,15 @@
               <div class="m-label">{{ t("transferNft.amount") }}</div>
               <div class="m-value">
                 {{ selectTotal }} ERB
-                <span class="usd">≈$ {{ toUsd(selectTotal, 2) }}</span>
               </div>
             </div>
             <div class="border-bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.hsitoryReturn") }}</div>
               <div class="m-value">
-                {{ historyProfit }}ERB(≈ ${{ toUsd(historyProfit, 6) }})
+                {{ historyProfit }}ERB
               </div>
             </div>
-            <!-- <div class="van-hairline--bottom"></div>
-            <div class="m-card">
-              <div class="m-label">{{ t("bourse.income") }}</div>
-              <div class="m-value">≈ 0.000000001 ERB(≈ $ 1)</div>
-            </div> -->
             <div class="border-bottom"></div>
             <div class="m-card">
               <div class="m-label">{{ t("bourse.gasFee") }}</div>
@@ -160,7 +152,7 @@ import { regNum2 } from "@/popup/enum/regexp";
 import BigNumber from "bignumber.js";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
-import { addressMask, snftToErb, toUsd } from "@/popup/utils/filters";
+import { addressMask } from "@/popup/utils/filters";
 import {
   getGasFee,
   getWallet,
@@ -555,7 +547,6 @@ export default defineComponent({
       time,
       myprofit,
       addressMask,
-      toUsd,
     };
   },
 });

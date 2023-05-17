@@ -40,7 +40,7 @@
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
             <div class="exchange">
-              {{ amount }} ERB(≈${{ toUsd(amount, 2) }})
+              {{ amount }} ERB
             </div>
           </div>
           <div class="bourse-container-meaning bt">
@@ -56,7 +56,7 @@
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
             <div class="exchange">
-              {{ addNumber }} ERB(≈${{ toUsd(addNumber, 2) }})
+              {{ addNumber }} ERB
             </div>
           </div>
           <div class="bourse-container-meaning bt">
@@ -71,7 +71,7 @@
             >
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
-            <div class="exchange">≈{{ historyProfit }} ERB(≈ ${{toUsd(historyProfit,6)}})</div>
+            <div class="exchange">≈{{ historyProfit }} ERB</div>
           </div>
           <div class="bourse-container-meaning bt">
             <span class="c1">{{ t("minerspledge.stackingIncome") }} </span>
@@ -138,7 +138,6 @@
 import { Button, Overlay, Field, Toast, Icon,Dialog } from "vant";
 import { ref, SetupContext, computed, nextTick, watch } from "vue";
 import { ethers, utils } from "ethers";
-import { formatEther, toUsd } from "@/popup/utils/filters";
 import { useI18n } from "vue-i18n";
 import { ElTooltip } from "element-plus";
 import store from "@/popup/store";
@@ -244,7 +243,6 @@ export default {
       dislogShow,
       submit,
       currentNetwork,
-      toUsd,
       gasFee,
       myprofit,
       historyProfit,
@@ -266,7 +264,6 @@ export default {
   display: flex;
 
   .miners {
-    width: 341px;
     min-height: 560px;
     padding-bottom: 30px;
     background: #fff;

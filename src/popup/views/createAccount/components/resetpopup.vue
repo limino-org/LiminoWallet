@@ -45,8 +45,6 @@
 <script lang="ts">
 import { defineComponent, ref, Ref, watch, SetupContext, reactive, computed, nextTick } from 'vue'
 import { Dialog, Button, Field, NumberKeyboard, Toast, Icon } from 'vant'
-import { regNum2 } from '@/popup/enum/regexp'
-import { toUsd } from '@/popup/utils/filters'
 import localforage from "localforage";
 import { useCountDown } from '@vant/use';
 import { useBroadCast } from '@/popup/utils/broadCost'
@@ -132,7 +130,6 @@ export default defineComponent({
       showModal,
       amount,
       ipt,
-      toUsd,
       cancel,
       handleComfirm,
       countDownEnd,

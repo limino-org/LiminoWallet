@@ -71,7 +71,6 @@
       <div class="select-box lh-14 mr-4">{{ checkLen }}/{{ getNumber }},</div>
       <div class="am-box">
         {{ totalAmount }}ERB
-        <span>(≈ ${{ toUsd(totalAmount, 2) }})</span>
       </div>
     </div>
     </div>
@@ -85,8 +84,6 @@ import {
   addressMask,
   decimal,
   weiToNumber,
-  toUsd,
-  toUsdSymbol,
   snftToErb,
 } from "@/popup/utils/filters";
 import { useStore } from "vuex";
@@ -575,9 +572,7 @@ export default defineComponent({
       getDisabled,
       layoutType,
       toDetail,
-      toUsd,
       weiToNumber,
-      toUsdSymbol,
       amountType,
       checkAll,
       checkLen,

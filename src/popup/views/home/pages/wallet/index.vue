@@ -416,7 +416,7 @@ import AcceptCode from "@/popup/views/account/components/acceptCode/index.vue";
 import AccountModal from "@/popup/components/accountModal/index.vue";
 import { mapState, useStore } from "vuex";
 import { useRouter, useRoute } from "vue-router";
-import { addressMask, decimal, toUsd } from "@/popup/utils/filters";
+import { addressMask, decimal } from "@/popup/utils/filters";
 import { useToggleAccount } from "@/popup/components/accountModal/hooks/toggleAccount";
 import useClipboard from "vue-clipboard3";
 import { useI18n } from "vue-i18n";
@@ -862,7 +862,6 @@ export default {
       handleToBuy,
       showGuideModal,
       ethAccountInfo,
-      toUsd,
       creatorStatus
     };
   },

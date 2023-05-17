@@ -76,7 +76,6 @@
         <div class="name">{{ t("sendSNFT.amount") }}</div>
         <div class="value">
           <span>{{ totalAmount }} ERB</span>
-          <span class="usd">≈$ {{ toUsd(totalAmount, 2) }}</span>
         </div>
       </div>
       <div class="card mt-8 card-last">
@@ -171,7 +170,7 @@ import TransferNFTModal from "@/popup/views/home/components/transferNFTModal.vue
 import { snftGroup, QuerySnftChip } from "@/popup/http/modules/nft";
 import { getWallet } from "@/popup/store/modules/account";
 import { useStore } from "vuex";
-import { addressMask, snftToErb, toUsd } from "@/popup/utils/filters";
+import { addressMask } from "@/popup/utils/filters";
 import BigNumber from "bignumber.js";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useI18n } from "vue-i18n";
@@ -1033,7 +1032,6 @@ export default {
       metaDomain,
       swiperIdx,
       mySnfts,
-      toUsd,
       hasChooseNum,
       chooseSnftData,
       selectText,

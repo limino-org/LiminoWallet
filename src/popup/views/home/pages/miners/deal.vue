@@ -33,7 +33,7 @@
          </el-tooltip>
        </div>
        <div class="t3">
-         {{ PledgedBalance }}ERB <span>(≈{{ toUsd(PledgedBalance, 2) }})</span>
+         {{ PledgedBalance }}ERB
        </div>
  
        <div v-if="isModif">
@@ -523,9 +523,6 @@ import AmountView from "@/popup/views/account/exchange/amount.vue";
 import AgreementView from "@/popup/views/account/exchange/agreement.vue";
 import success from "@/popup/views/account/exchange/success.vue";
 import {
-  formatEther,
-  toUsd,
-  scientificToNumber,
   decimal,
 } from "@/popup/utils/filters";
 import { web3 } from "@/popup/utils/web3";
@@ -1328,7 +1325,6 @@ export default defineComponent({
       visible2,
       onSubmit,
       t,
-      toUsd,
       value,
       showCreateExchange,
       showExchange,

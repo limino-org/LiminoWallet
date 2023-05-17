@@ -58,7 +58,7 @@
               </template>
             </van-popover>
           </div>
-          <div class="value">{{ amount }} ERB(≈${{ toUsd(amount, 2) }})</div>
+          <div class="value">{{ amount }} ERB</div>
         </div>
         <div class="card flex column between">
           <div class="name">
@@ -74,7 +74,7 @@
               </template>
             </van-popover>
           </div>
-          <div class="value">{{ amount2 }} ERB(≈${{ toUsd(amount2, 2) }})</div>
+          <div class="value">{{ amount2 }} ERB</div>
         </div>
         <div class="card flex column between">
           <div class="name">
@@ -91,7 +91,7 @@
             </van-popover>
           </div>
           <div class="value">
-            {{ amount + amount2 }} ERB(≈${{ toUsd(amount + amount2, 2) }})
+            {{ amount + amount2 }} ERB
           </div>
         </div>
         <div class="card flex column between">
@@ -110,7 +110,7 @@
           </div>
           <van-skeleton :row="1" :loading="loadingGas" row-width="100%">
             <div class="value">
-              ≈<span>{{ gasFee }} ERB(≈${{toUsd(gasFee,8)}})</span>
+              ≈<span>{{ gasFee }} ERB</span>
             </div>
           </van-skeleton>
         </div>
@@ -151,7 +151,6 @@ import {
   Popover,
 } from "vant";
 import { regNum2 } from "@/popup/enum/regexp";
-import { toUsd } from "@/popup/utils/filters";
 import { useI18n } from "vue-i18n";
 import BigNumber from "bignumber.js";
 import { useRoute, useRouter } from "vue-router";
@@ -311,7 +310,6 @@ export default defineComponent({
       t,
       cancel,
       handleComfirm,
-      toUsd,
       showModal,
       showpop1,
       showpop2,

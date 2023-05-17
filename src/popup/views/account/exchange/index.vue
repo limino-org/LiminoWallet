@@ -23,7 +23,7 @@
               <span>({{$t('createExchange.yield')}})</span>
             </div>
             <div class="money flex between center-v">
-              <span>{{money}}ERB ${{toUsd(money)}}</span>
+              <span>{{money}}ERB </span>
               <span @click="customClick">{{$t('createExchange.custom')}}</span>
             </div>
             <div class="ipt-slider">
@@ -73,7 +73,7 @@ import { useI18n } from 'vue-i18n'
 import { useExchanges } from '@/popup/hooks/useExchanges'
 import { useStore } from 'vuex'
 import { getWallet } from '@/popup/store/modules/account'
-import { formatEther, parseEther, toUsd } from '@/popup/utils/filters'
+import { formatEther } from '@/popup/utils/filters'
 import { utils } from 'ethers'
 export default {
   name: 'MinersView',
@@ -212,7 +212,6 @@ export default {
       showCreateExchange,
       accountInfo,
       formatDateNumber,
-      toUsd
     }
   }
 }

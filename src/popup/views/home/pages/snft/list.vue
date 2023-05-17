@@ -64,7 +64,6 @@
                   <div class="flex right center-v">
                     <div class="coll-amount">
                       <div class="text-right num lh-16">{{ calcERBNum(abc.total_hold) }} ERB</div>
-                      <div class="text-right toUsd lh-16">$ {{ toUsd(calcERBNum(abc.total_hold), 2) }}</div>
                     </div>
                   </div>
                 </div>
@@ -88,7 +87,7 @@ import { queryOwnerSnftCollections, querySnftByCollection, queryOwnerSnftChipAmo
 import NftsModal from '@/popup/views/home/components/nftsModal.vue'
 import SnftCard from '@/popup/views/account/components/snftList/snftCard.vue'
 import { useStore } from 'vuex'
-import { addressMask, toUsd } from '@/popup/utils/filters'
+import { addressMask } from '@/popup/utils/filters'
 import { useRouter } from 'vue-router'
 import BigNumber from 'bignumber.js'
 import { useI18n } from 'vue-i18n'
@@ -436,7 +435,6 @@ export default {
       handleOnLoad,
       loading,
       error,
-      toUsd,
       finished
     }
   }

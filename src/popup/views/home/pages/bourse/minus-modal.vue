@@ -56,7 +56,7 @@
             </template>
           </van-popover>
         </div>
-        <div class="value lh-16">{{ fee }} ERB({{ toUsd(fee, 2) }})</div>
+        <div class="value lh-16">{{ fee }} ERB</div>
       </div>
       <div class="card">
         <div class="label lh-16 mb-2">
@@ -176,7 +176,6 @@ import {
 import { watch } from "vue";
 import { Dialog, Icon, Button, Popover } from "vant";
 import { useI18n } from "vue-i18n";
-import { toUsd } from "@/popup/utils/filters";
 import Bignumber, { BigNumber } from "bignumber.js";
 import { toHex, useExchanges } from "@/popup/hooks/useExchanges";
 import { useStore } from "vuex";
@@ -319,7 +318,6 @@ export default defineComponent({
       show,
       accountInfo,
       t,
-      toUsd,
       submit,
       gasFee,
     };

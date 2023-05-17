@@ -84,13 +84,10 @@ module.exports = {
   },
   chainWebpack: config => {
     config.optimization.minimize(true);
-    // if(isProduct){
-    //   config.output.filename('assets/js/[name].[hash].js').chunkFilename('assets/js/[name].[hash].js').end()
-    // }
-    // config.resolve.alias.set("vue-i18n",'vue-i18n/dist/vue-i18n.runtime.esm-bundler.js')
+
     config.module
       .rule("i18n")
-      .test(/\.(json5?|ya?ml)$/)
+      .test(/\.(json?|ya?ml)$/)
       .include.add(path.resolve(__dirname, "src/popup/language"))
       .end()
       .type("javascript/auto")

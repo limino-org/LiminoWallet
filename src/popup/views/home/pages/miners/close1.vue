@@ -27,7 +27,6 @@
 import { Button, Overlay, Field, Toast, Icon } from 'vant'
 import { ref, SetupContext, computed, nextTick } from 'vue'
 import { ethers, utils } from "ethers";
-import {formatEther,toUsd} from "@/popup/utils/filters";
 import { useI18n } from 'vue-i18n'
 import { ElTooltip } from 'element-plus'
 
@@ -84,7 +83,6 @@ export default {
       dislogShow,
       submit,
       screentNumber,
-      toUsd,
       ...props
     }
   }

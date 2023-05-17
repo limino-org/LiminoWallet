@@ -32,8 +32,7 @@
       <div class="content van-hairline--bottom">
         <div class="form-titie">{{t('sendSNFT.amount')}}</div>
         <div class="form-content van-ellipsis">
-          {{ pageData.erbNumber }} {{ currentNetwork.symbol }} / $
-          {{ toUsd(pageData.erbNumber) }}
+          {{ pageData.erbNumber }} {{ currentNetwork.symbol }}
         </div>
       </div>
       <div class="content">
@@ -69,7 +68,7 @@ import { ref, Ref, reactive, onMounted, computed, toRefs, watch, onBeforeMount }
 import NavHeader from '@/popup/components/navHeader/index.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { addressMask, decimal, weiToNumber, toUsd, snftToErb } from '@/popup/utils/filters'
+import { addressMask, snftToErb } from '@/popup/utils/filters'
 import { useStore } from 'vuex'
 
 export default {
@@ -107,7 +106,6 @@ export default {
       pageData,
       toSend,
       addressMask,
-      toUsd,
       snftToErb,
       currentNetwork,
       tomore

@@ -118,7 +118,6 @@ import {
   transactionTarget,
   formatDate,
   addressMask,
-  toUsdSymbol,
   transactionStatus,
   formatEther,
   parseEther,

@@ -7,7 +7,6 @@
   <div class="text-center lh-16 f-12 tit mt-30">{{t('receive.transfer')}}</div>
   <div class="text-center lh-24 flex center" v-show="amount > 0">
     <span class="f-18">{{amount}} {{chooseToken.name}}</span>
-    <span class="f-12 meiyuan">≈ ${{toUsd(amount,2)}}</span>
   </div>
   <div class="flex center">
     <div class="code-box flex center mt-16">
@@ -51,7 +50,6 @@ import CustomExchangeModal from '@/popup/views/home/components/customExchangeMod
 // @ts-ignore
 import { encrypt, decrypt } from '@/popup/utils/cryptoJS.js'
 import { useI18n } from 'vue-i18n'
-import { toUsd } from '@/popup/utils/filters'
 import { useToast } from '@/popup/plugins/toast'
 import NavHeader from '@/popup/components/navHeader/index.vue'
 
@@ -127,7 +125,6 @@ export default {
       amount,
       handleSetAmount,
       setAmountModal,
-      toUsd,
       handleConfirm
     }
   }

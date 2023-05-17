@@ -14,7 +14,6 @@
         <div>
           <div v-show="amountType != 'mask' ">
           <div class="name text-right">{{ decimal(data.balance) }} {{ data.symbol }}</div>
-          <div class="amount text-right">{{ toUsdSymbol(data.balance) }}</div>
         </div>
         <div class="flex center-v right f12" v-show="amountType == 'mask'">******</div>
         </div>
@@ -27,7 +26,7 @@
 import { SetupContext, Ref, ref, reactive, defineComponent, computed } from 'vue'
 import { Icon, Image } from 'vant'
 import { useRouter } from 'vue-router'
-import { decimal, toUsd, toUsdSymbol } from '@/popup/utils/filters'
+import { decimal } from '@/popup/utils/filters'
 import { useStore } from 'vuex'
 export default defineComponent({
   name: 'tokenCard',
@@ -71,8 +70,6 @@ export default defineComponent({
       toTokenHome,
       decimal,
       currentNetwork,
-      toUsd,
-      toUsdSymbol,
       amountType
     }
   }

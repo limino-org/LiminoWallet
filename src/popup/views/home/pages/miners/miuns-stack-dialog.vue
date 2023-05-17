@@ -1,5 +1,5 @@
 <template>
-    <van-dialog v-model:show="dislogShow"     show-cancel-button
+    <van-dialog v-model:show="dislogShow" 
     teleport="#page-box"
     :lockScroll="false"
     class="minus-miner-stack-dialog"
@@ -40,7 +40,7 @@
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
             <div class="exchange">
-              {{ amount }} ERB(≈${{ toUsd(amount, 2) }})
+              {{ amount }} ERB
             </div>
           </div>
           <div class="bourse-container-meaning bt">
@@ -56,7 +56,7 @@
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
             <div class="exchange">
-              {{ minusNumber }} ERB(≈${{ toUsd(minusNumber, 2) }})
+              {{ minusNumber }} ERB
             </div>
           </div>
           <div class="bourse-container-meaning bt">
@@ -71,7 +71,7 @@
             >
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
-            <div class="exchange">≈{{ historyProfit }} ERB(≈ $ 500)</div>
+            <div class="exchange">≈{{ historyProfit }} ERB</div>
           </div>
           <div class="bourse-container-meaning bt">
             <span class="c1">{{ t("minerspledge.stackingIncome") }} </span>
@@ -102,7 +102,7 @@
             </el-tooltip>
             <div class="exchange exchange-z">
               <span>≈ </span>
-              <span class="c2"> {{ gasFee }} ERB(≈$1)</span>
+              <span class="c2"> {{ gasFee }} ERB</span>
             </div>
           </div>
         </div>
@@ -137,7 +137,6 @@
 import { Button, Overlay, Field, Toast, Icon,Dialog } from "vant";
 import { ref, SetupContext, computed, nextTick, watch } from "vue";
 import { ethers, utils } from "ethers";
-import { formatEther, toUsd, transactionStatus } from "@/popup/utils/filters";
 import { useI18n } from "vue-i18n";
 import { ElTooltip } from "element-plus";
 
@@ -202,7 +201,7 @@ export default {
         const tx1 = {
           from: address,
           to: address,
-          value: ethers.utils.parseEther(amount + ""),
+          value: amount + "",
           data: `0x${data}`,
         };
         const data1 = await dispatch("account/transaction", tx1)
@@ -287,7 +286,6 @@ export default {
       myprofit,
       historyProfit,
       currentNetwork,
-      toUsd,
       accountInfo,
       gasFee,
     };
@@ -308,7 +306,6 @@ export default {
   display: flex;
 
   .miners {
-    width: 341px;
     min-height: 560px;
     padding-bottom: 30px;
     background: #fff;

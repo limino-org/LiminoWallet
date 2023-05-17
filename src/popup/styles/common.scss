@@ -145,33 +145,18 @@ img {
 
 .van-dialog {
   overflow: scroll;
-  top: 50%;
-
+  -webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+width: 420px;
   .van-dialog__content {
     border-radius: 10px;
-    // overflow-x: hidden;
   }
 
   &.van-popup--center {
-    // position: absolute;
-    // top: 50%;
-    // right: 0;
-    // margin: 0 auto;
-    // left: 0;
-    // transform: translateY(0);
-    // margin-top: -25%;
-    // transform: translate(-50%, -50%);
-    // padding-bottom: 1PX;
-    // left: 50%;
-
-    // top: 50%;
-
-    // -webkit-transform: translate3d(-50%, -50%, 0);
-
-    // transform: translate3d(-50%, -50%, 0);
-    // padding: 5px;
-    // transform: none;
-    // transform-origin: center;
+    left: 50%;
+    transform: none;
+    top: 80px;
+    margin-left: -210px;
 
   }
 }
@@ -388,14 +373,7 @@ img {
 
 }
 
-// Fixed popover blur
-.server-modal {
-  max-height: 610PX;
-}
 
-.add-pledge-modal {
-  max-height: 768PX;
-}
 
 .account-list-modal1 {
   max-height: 508PX;
@@ -406,28 +384,13 @@ img {
 }
 
 .switch-network-modal {
-  min-height: 250px;
+
   z-index: 999;
 }
 
-.send-confirm-modal {
-  max-height: 492PX;
-}
 
-.transaction-modal {
-  max-height: 520PX;
-}
-
-.transactionDetailsModal {
-  max-height: 710PX;
-}
-
-.cancel-modal {
-  max-height: 256PX;
-}
 
 .minus-pledge-dialog {
-  max-height: 522PX;
   overflow: initial;
 
   .van-dialog__content {
@@ -440,46 +403,9 @@ img {
   }
 }
 
-.minus-miner-stack-dialog {
-  max-height: 758PX;
-}
-.minus-stack-dialog {
-  max-height: 774PX;
-}
 
-.transfer-NFT-modal {
-  max-height: 606PX;
-  // &.type3 {
-  //   height: 566PX;
-  // }
-}
 
-.minerAdditionalModal {
-  height: 888PX;
-}
 
-.toggleSnftListModal {
-  height: 420PX;
-}
-
-.custom-setAmount-modal {
-  height: 290PX;
-}
-
-.guideModalGetStart {
-  height: 440PX;
-}
-
-.guideBackupModal {
-  height: 492PX;
-}
-
-.modifNameModal {
-  max-height: 346PX;
-}
-.transfer-detail-modal {
-  max-height: 602PX;
-}
 
 .van-popover.account-pop {
   z-index: 1001 !important;
@@ -568,7 +494,7 @@ img {
     }
 
     &.type2 {
-
+      color: #fff;
       // orange
       .user,
       .tag-label {
@@ -592,10 +518,23 @@ img {
 
 // When the width is less than 750, control the pop-up window width to guide the user to operate
 @media screen and (max-width: 750px) {
+  .minus-miner-stack-dialog {
+    top: 0 !important;
+  }
+  .van-dialog {
+    width: 90vw;
+    &.van-popup--center{
+      margin-left: -45vw;
+      top: 40px;
+    }
+    & .van-dialog__content {
+      // max-width: 90%;
+    }
+  }
 
   .popover-btn-tip,
   .el-popper {
-    max-width: 160px;
+    max-width: 200px;
   }
 
   .popover-dialog {
@@ -711,52 +650,38 @@ img {
       }
     }
   }
-
-  .add-pledge-modal,
-  .transfer-NFT-modal,
-  .minerAdditionalModal,
-  .minus-miner-stack-dialog,
-  .transaction-modal {
-    height: auto;
-  }
-  .minus-pledge-dialog {
-    max-height: 382PX;
-  }
-  .minus-stack-dialog {
-  
-  }
-  .toggleSnftListModal {
-    height: 350PX;
-  }
-  .transfer-detail-modal {
-    max-height: 452PX;
-  }
-  
-  .custom-setAmount-modal {
-    height: 236PX;
-  }
-
-  .guideModalGetStart {
-    height: 310PX;
-  }
-
-  .guideBackupModal {
-    height: 370PX;
-  }
-
-  .modifNameModal {
-    max-height: 258PX;
-  }
 }
 .serial-number {
   font-size: 14px;
 }
 
-@media screen and (min-width: 750px) {
+
+@media  screen and (min-width: 750px) and (max-width: 1281px){
+  html {
+    font-size: 40PX !important; // ignored
+  }
+  .container {
+    max-width: 800px;
+  }
+  .van-dialog {
+    width:360px;
+    &.van-popup--center{
+      margin-left: -180px;
+      top: 60px;
+    }
+    & .van-dialog__content {
+      // max-width: 90%;
+    }
+  }
+}
+
+@media screen and (min-width: 1281px) {
   html {
     font-size: 52PX !important; // ignored
   }
-
+  .container {
+    max-width: 800px;
+  }
   .popover-btn-tip,
   .el-popper {
     max-width: 220px;
@@ -900,11 +825,15 @@ img {
   }
 
   .van-dialog {
-    &.van-popup--center {
-      // padding-bottom: 1px;
+    width:340px;
+    &.van-popup--center{
+      margin-left: -160px;
+      top: 40px;
     }
   }
-
+  .minerAdditionalModal {
+    top: 20px !important;
+  }
 }
 
 

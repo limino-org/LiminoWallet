@@ -16,7 +16,7 @@
                 />
                 <span>ERB</span>
               </div>
-              <span class="text">${{Number(toUsd(amount)).toFixed(2)}}</span>  
+  
             </div>
           </div>
           <div class="container-btn flex center column">
@@ -34,7 +34,7 @@
 import { Button, Overlay, Field, Toast } from 'vant'
 import { ref, SetupContext, computed } from 'vue'
 import { ethers, utils } from "ethers";
-import {formatEther,toUsd} from "@/popup/utils/filters";
+import {formatEther} from "@/popup/utils/filters";
 import { useI18n } from 'vue-i18n'
 export default {
   name: 'AmountView',
@@ -118,7 +118,6 @@ export default {
       dislogShow,
       submit,
       screentNumber,
-      toUsd
     }
   }
 }

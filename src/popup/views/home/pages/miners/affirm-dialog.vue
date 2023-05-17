@@ -47,7 +47,7 @@
                 <van-icon name="question" color="#9A9A9A" />
 <!--                <span slot="content" style="width: 300px;">{{t('minerspledge.stackTip')}}</span>-->
               </el-tooltip>
-              <div class="exchange">{{amount}} ERB(≈${{toUsd(amount,2)}})</div>
+              <div class="exchange">{{amount}} ERB</div>
             </div>
             <div class="">
               <span class="c1">{{t('send.gasfee')}}  </span>
@@ -64,7 +64,7 @@
               </el-tooltip>
               <div class="exchange exchange-z">
                 <span >≈ </span>
-                <span class="c2"> {{gasFee}} ERB(≈$ {{toUsd(gasFee,6)}})</span>
+                <span class="c2"> {{gasFee}} ERB</span>
               </div>
             </div>
           </div>
@@ -83,7 +83,6 @@
 import { Button, Overlay, Field, Toast, Icon } from 'vant'
 import { ref, SetupContext, computed, nextTick, watch } from 'vue'
 import { ethers, utils } from "ethers";
-import {formatEther,toUsd} from "@/popup/utils/filters";
 import { useI18n } from 'vue-i18n'
 import { ElTooltip } from 'element-plus'
 import { toHex } from '@/popup/utils/utils';
@@ -161,7 +160,6 @@ export default {
       submit,
       screentNumber,
       currentNetwork,
-      toUsd,
       ...props,
       gasFee
     }

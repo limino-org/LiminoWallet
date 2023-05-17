@@ -15,7 +15,7 @@
         </div>
         <div class="card">
           <div class="card-tit">{{t('transactionDetails.gasfee')}}</div>
-          <div class="card-val gasFee">{{data.gasFee}} ERB(≈ ${{toUsd(data.gasFee, 6)}})</div>
+          <div class="card-val gasFee">{{data.gasFee}} ERB</div>
         </div>
       </div>
       <Tip
@@ -44,7 +44,6 @@
   import { Dialog, Toast, Button } from "vant";
   import { useI18n } from "vue-i18n";
   import Tip from "@/popup/components/tip/index.vue";
-  import { toUsd } from "@/popup/utils/filters";
   export default defineComponent({
     name: "common-modal",
     emits: ["cancel", "confirm"],
@@ -71,7 +70,6 @@
         t,
         handleCancel,
         handleConfirm,
-        toUsd
       };
     },
   });
