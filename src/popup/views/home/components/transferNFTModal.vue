@@ -550,7 +550,7 @@ export default defineComponent({
                   from: address,
                   to: address,
                   data: `0x${data3}`,
-                  value: ethers.utils.parseEther("0"),
+                  value: "0",
                   checkTxQueue: false,
                 };
                 const receipt = await dispatch("account/transaction", tx1);
@@ -619,7 +619,7 @@ export default defineComponent({
                 from: address,
                 to: address,
                 data: `0x${data3}`,
-                value: ethers.utils.parseEther("0"),
+                value: "0",
                 checkTxQueue: false,
               };
               const receipt = await dispatch("account/transaction", tx1);

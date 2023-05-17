@@ -48,7 +48,7 @@ export default {
         from: address,
         to: address,
         data: `0x${data3}`,
-        value: utils.parseEther("0"),
+        value: '0',
       };
       sessionStorage.setItem('nft_address', nft_address)
       sessionStorage.setItem("blockNumber", blockNumber)
@@ -70,7 +70,7 @@ export default {
         from: address,
         to: address,
         data: `0x${data3}`,
-        value: utils.parseEther("0"),
+        value: "0",
       };
       const data = await store.dispatch('account/transaction', tx)
       const receipt = await wallet.provider.waitForTransaction(data.hash)

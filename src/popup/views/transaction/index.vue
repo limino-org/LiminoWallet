@@ -180,7 +180,7 @@ export default {
       const tx1: Tx = {
         from: from.value,
         to: to.value,
-        value: utils.parseEther(value.value),
+        value: value.value,
       };
       if (data.value) {
         const s = `${data.value}`

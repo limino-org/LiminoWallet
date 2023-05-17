@@ -505,7 +505,7 @@ export default {
           nonce,
           gasPrice: gasPrice.value || '1.2',
           gasLimit: gasLimit.value,
-          value: ethers.utils.parseEther("0"),
+          value: "0",
           data: sendData.data
         };
         let data = null;

@@ -2,7 +2,6 @@
     "i18n-ally.localesPaths": ["src/popup/language"],
     "i18n-ally.displayLanguage": "zh",
     "i18n-ally.enabledParsers": [
-        "json5",
         "json",
     ],
     "i18n-ally.enabledFrameworks": [
