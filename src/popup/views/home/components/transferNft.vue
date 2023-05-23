@@ -163,7 +163,7 @@ export default defineComponent({
   border-top: 1px solid #fff;
   &:hover {
     box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.2);
-    border-top: 1px solid #057ed6;
+    border-top: 1px solid #9F54BA;
   }
   * {
     box-sizing: border-box;
@@ -205,7 +205,7 @@ export default defineComponent({
   }
    .icon-duihao2 {
       font-size: 16px;
-      color: #037CD6;
+      color: #9F54BA;
     }
 }
 .amount {
@@ -213,7 +213,7 @@ export default defineComponent({
   .sel {
   }
   .sel2 {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 15px;
   }
 }

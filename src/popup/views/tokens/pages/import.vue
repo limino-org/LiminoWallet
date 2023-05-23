@@ -249,7 +249,7 @@ export default {
 }
 
 .wormholeslink {
-  color: #037cd6;
+  color: #9F54BA;
 }
 
 .list {
@@ -278,7 +278,7 @@ export default {
 }
 
 :deep(.van-index-bar__index--active) {
-  background: #037cd6;
+  background: #9F54BA;
   color: #fff;
   border-radius: 9px;
 }
@@ -291,9 +291,9 @@ export default {
   width: 200px;
 
   // border-radius: 20px;
-  // border: 1PX solid #037cd6;
+  // border: 1PX solid #9F54BA;
   &::after {
-    border-color: #037cd6;
+    border-color: #9F54BA;
     border-radius: 26px;
   }
 
@@ -304,8 +304,8 @@ export default {
     font-size: 12px;
 
     &.active {
-      background: #037cd6;
-      // border: 1PX solid #037cd6;
+      background: #9F54BA;
+      // border: 1PX solid #9F54BA;
       color: #fff;
     }
   }
@@ -313,7 +313,7 @@ export default {
 
 .title {
   text-align: center;
-  background: #f4faff;
+  background: #F8F3F9;
   margin-top: 25px;
 
   .left {
@@ -321,7 +321,7 @@ export default {
 
     i {
       font-size: 16px;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
 
@@ -331,7 +331,7 @@ export default {
 
     a {
       text-decoration: underline;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
 }
@@ -360,7 +360,7 @@ export default {
   width: 96%;
 
   i {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 22px;
   }
 
@@ -381,7 +381,7 @@ export default {
 
   i {
     font-size: 16px;
-    color: #037cd6;
+    color: #9F54BA;
   }
 }
 
@@ -391,7 +391,7 @@ export default {
   }
 
   .icon-add {
-    color: #037cd6;
+    color: #9F54BA;
   }
 
   .icon-minus {}
@@ -429,7 +429,7 @@ export default {
   margin-bottom: 10px;
 
   &:hover {
-    border: 1px solid #1989fa;
+    border: 1px solid #9F54BA;
   }
 }
 

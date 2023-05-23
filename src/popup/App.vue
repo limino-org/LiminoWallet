@@ -1,5 +1,5 @@
 <template>
-  <div class="page-box container" id="page-box">
+  <div :class="`page-box container ${pageType}`" id="page-box">
 
     <div class="container" id="container">
       <div v-if="route.meta.keepAlive">
@@ -57,7 +57,8 @@ export default {
     const { commit, dispatch, state, getters } = store
     const { initWallet } = useWallet();
     const currentNetwork = computed(() => state.account.currentNetwork);
-  
+    // @ts-ignore
+    const pageType = ref( window ? window.pageType : '')
     provide("appProvide", appProvide());
     onMounted(async()=>{
       console.log('this', this)
@@ -119,6 +120,7 @@ export default {
       currentNetwork,
       transactionStatus,
       animation,
+      pageType
     };
   },
 };
@@ -157,6 +159,10 @@ export default {
   & > .loading-box {
     height: 100vh;
   }
+  &.Popup {
+    width: 375PX;
+    height: 601PX;
+  }
 }
 
 //Trade popover style
@@ -167,24 +173,24 @@ export default {
       transition: ease 0.3s;
     }
     .num1 {
-      background: #037cd6;
-      border: 1PX solid #037cd6;
+      background: #9F54BA;
+      border: 1PX solid #9F54BA;
       color: #fff;
     }
     &.receive {
       .line1::after,
       .line2::after {
-        border-color: #037cd6 !important;
+        border-color: #9F54BA !important;
       }
       .num3 {
-        background: #037cd6;
-        border: 1PX solid #037cd6;
+        background: #9F54BA;
+        border: 1PX solid #9F54BA;
         color: #fff;
       }
     }
     .num2 {
-      background: #037cd6;
-      border: 1PX solid #037cd6;
+      background: #9F54BA;
+      border: 1PX solid #9F54BA;
       color: #fff;
     }
     &.pending {
@@ -207,7 +213,7 @@ export default {
     }
     &.pending {
       .send {
-        color: #037cd6;
+        color: #9F54BA;
       }
       .con {
         color: #68b1e6;
@@ -216,11 +222,11 @@ export default {
     &.receive {
       .send,
       .done {
-        color: #037cd6;
+        color: #9F54BA;
       }
     }
     .con {
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .num {

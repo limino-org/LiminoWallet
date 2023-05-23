@@ -77,7 +77,8 @@ export interface State {
   exchangeTotalProfit: number
   minerTotalProfit: number
   netStatus: NetStatus
-  creatorStatus: Object | null
+  creatorStatus: Object | null,
+    ethAccountInfo: Object,
 
 }
 export type ContactInfo = {
@@ -319,7 +320,8 @@ export default {
     minerTotalProfit: 4856544,
     // exchange total profit
     exchangeTotalProfit: 2522880,
-    creatorStatus: null
+    creatorStatus: null,
+    ethAccountInfo: {},
   },
   getters: {
     // Token of current account
@@ -346,6 +348,10 @@ export default {
     },
   },
   mutations: {
+        // Update EthAccountInfo
+        UPDATE_ETHACCOUNTINFO(state: State, info: any) {
+          state.ethAccountInfo = info
+        },
     UPDATE_CREATORSTATUS(state: State, val: any) {
       state.creatorStatus = val
     },
@@ -755,6 +761,18 @@ export default {
     },
   },
   actions: {
+        // get ethAccountInfo
+        async getEthAccountInfo({ commit, state }: any) {
+          const wall = await getWallet()
+          console.log('get ---', wall.address, state.accountInfo.address)
+          return wall.provider.send(
+            "eth_getAccountInfo",
+            [state.accountInfo.address, "latest"]
+          ).then((res: any) => {
+            commit('UPDATE_ETHACCOUNTINFO', res)
+            return res
+          });
+        },
     async getCreatorStatus({commit, state}, address: string) {
       try {
        const data = await getCreator(address)

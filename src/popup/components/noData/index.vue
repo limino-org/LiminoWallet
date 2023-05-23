@@ -30,7 +30,7 @@ export default defineComponent({
 .no-list {
   i {
     font-size: 40px;
-    color: #037CD6;
+    color: #9F54BA;
   }
 
 }

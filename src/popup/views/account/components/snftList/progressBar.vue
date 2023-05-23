@@ -150,7 +150,7 @@ export default defineComponent({
 
 .progress-bar {
   padding: 4px 10px 7px 10px;
-  background: #f8fcff;
+  background: #fff;
   color: #bbbbbb;
   border-radius: 5px;
   .ratio {

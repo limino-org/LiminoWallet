@@ -124,7 +124,7 @@ export default defineComponent({
   color: #000;
   font-size: 15px;
   line-height: 62px;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-weight: bold;
 
 }
@@ -134,7 +134,7 @@ export default defineComponent({
   top: 12px;
   font-size: 14px;
   &:hover{
-    color: #1989fa !important;
+    color: #9F54BA !important;
   }
 }
 .label {
@@ -169,7 +169,7 @@ export default defineComponent({
   border-radius: 5px;
   transition: ease 0.3s;
   &:hover {
-    border: 1PX solid #1989fa;
+    border: 1PX solid #9F54BA;
   }
 }
 </style>

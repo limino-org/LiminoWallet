@@ -823,7 +823,7 @@ export default defineComponent({
     border-radius: 5px;
    }
   a {
-    color: #037cd6;
+    color: #9F54BA;
     &:hover{
       text-decoration: underline;
     }
@@ -834,7 +834,7 @@ export default defineComponent({
     background: #b3b3b3;
   }
   .van-switch--on {
-    background: #037cd6;
+    background: #9F54BA;
   }
 }
 .nft-list {
@@ -860,9 +860,9 @@ export default defineComponent({
       font-size: 12px;
     }
     &:hover {
-      color: #037cd6;
+      color: #9F54BA;
       i {
-        color: #037cd6;
+        color: #9F54BA;
       }
     }
   }
@@ -870,16 +870,16 @@ export default defineComponent({
     width: 35px;
     height: 18px;
     line-height: 18px;
-    background: #037cd6;
+    background: #9F54BA;
     color: #fff;
     text-align: center;
     border-radius: 9px;
     &.outline {
       background: #fff;
-      border: 1px solid #037cd6;
+      border: 1px solid #9F54BA;
       padding: 0 4px;
       display: inline-block;
-      color: #037cd6;
+      color: #9F54BA;
       line-height: 16px;
       width: auto;
     }

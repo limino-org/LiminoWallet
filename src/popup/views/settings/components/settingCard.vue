@@ -43,9 +43,9 @@ export default defineComponent({
 .setting-card {
   padding: 8px 10px 8px 12px;
   &:hover {
-    color: #037cd6;
+    color: #9F54BA;
     .value,i {
-      color: #037cd6 !important;
+      color: #9F54BA !important;
     }
   }
   .label {

@@ -87,10 +87,10 @@ export default {
 </script>
 <style lang="scss" scoped>
 .title {
-  // background: #f8fcff;
+  // background: #F8F3F9;
 }
 :deep(.van-field__right-icon) {
-  color: #1989fa;
+  color: #9F54BA;
 }
 .label {
   font-size: 12px;
@@ -122,7 +122,7 @@ export default {
   border-radius: 5px;
   transition: ease 0.3s;
   &:hover {
-    border: 1PX solid #1989fa;
+    border: 1PX solid #9F54BA;
   }
 }
 </style>

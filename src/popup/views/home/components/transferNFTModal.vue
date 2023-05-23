@@ -398,8 +398,8 @@ export default defineComponent({
           console.warn("numstr", numstr);
           approveMessage = t("wallet.conver_approve");
           wattingMessage = t("wallet.conver_waiting", {
-            count: `<span style='color:#037CD6;'>${count}</span>`,
-            amount: `<span style='color:#037CD6;'>${amount.toNumber()}</span>`,
+            count: `<span style='color:#9F54BA;'>${count}</span>`,
+            amount: `<span style='color:#9F54BA;'>${amount.toNumber()}</span>`,
             countstr: numstr,
           });
           // wattingMessageType:"html",
@@ -486,8 +486,8 @@ export default defineComponent({
               $tradeConfirm.update({
                 status: "success",
                 successMessage: t("wallet.conver_success", {
-                  count: `<span style='color:#037CD6;'>${count}</span>`,
-                  amount: `<span style='color:#037CD6;'>${amount.toNumber()}</span>`,
+                  count: `<span style='color:#9F54BA;'>${count}</span>`,
+                  amount: `<span style='color:#9F54BA;'>${amount.toNumber()}</span>`,
                 }),
                 successMessageType: "html",
                 historyCallBack,
@@ -564,8 +564,8 @@ export default defineComponent({
               $tradeConfirm.update({
                 status: "success",
                 successMessage: t("wallet.conver_success", {
-                  count: `<span style='color:#037CD6;'>${count}</span>`,
-                  amount: `<span style='color:#037CD6;'>${amount.toNumber()}</span>`,
+                  count: `<span style='color:#9F54BA;'>${count}</span>`,
+                  amount: `<span style='color:#9F54BA;'>${amount.toNumber()}</span>`,
                 }),
                 successMessageType: "html",
                 historyCallBack,
@@ -633,8 +633,8 @@ export default defineComponent({
             $tradeConfirm.update({
               status: "success",
               successMessage: t("wallet.conver_success", {
-                count: `<span style='color:#037CD6;'>${count}</span>`,
-                amount: `<span style='color:#037CD6;'>${amount.toNumber()}</span>`,
+                count: `<span style='color:#9F54BA;'>${count}</span>`,
+                amount: `<span style='color:#9F54BA;'>${amount.toNumber()}</span>`,
               }),
               successMessageType: "html",
             });
@@ -1001,7 +1001,7 @@ function toHex(str: string) {
   color: #000;
   font-size: 15px;
   line-height: 62px;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-weight: bold;
 }
 
@@ -1010,14 +1010,14 @@ function toHex(str: string) {
 }
 .pintu {
   i {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 38px;
   }
 }
 .protocol {
   color: #b3b3b3;
   span {
-    color: #037cd6;
+    color: #9F54BA;
     text-decoration: underline;
   }
 }

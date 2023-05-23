@@ -1150,11 +1150,11 @@ export default {
       }
 
       &.active {
-        border: 1px solid #037cd6;
+        border: 1px solid #9F54BA;
         border-radius: 6px;
 
         &::after {
-          border-color: #037cd6;
+          border-color: #9F54BA;
         }
       }
 
@@ -1191,7 +1191,7 @@ export default {
     position: relative;
 
     i {
-      color: #037cd6;
+      color: #9F54BA;
       font-size: 18px;
       position: absolute;
       top: 120px;
@@ -1234,7 +1234,7 @@ export default {
       }
     }
     img:hover {
-      border: 1PX solid #037cd6;
+      border: 1PX solid #9F54BA;
     }
   }
 
@@ -1246,7 +1246,7 @@ export default {
     width: 255px;
     height: 25px;
     margin: 25px auto 0;
-    background: #e9f5fe;
+    background: #F8F3F9;
     font-size: 12px;
     text-align: center;
     line-height: 25px;
@@ -1314,7 +1314,7 @@ export default {
       }
 
       .icon-in {
-        background: #037cd6;
+        background: #9F54BA;
         width: 35px;
         border-radius: 50%;
         height: 35px;
@@ -1338,7 +1338,7 @@ export default {
         font-size: 12px;
         line-height: 16px;
         font-weight: bold;
-        color: #037cd6;
+        color: #9F54BA;
         margin-top: 2px;
       }
     }
@@ -1363,7 +1363,7 @@ export default {
         border-color: #fff;
       }
       &:hover {
-        border: 1PX solid #037cd6;
+        border: 1PX solid #9F54BA;
       }
       &.disabled {
         backdrop-filter: saturate(80%) blur(0px);
@@ -1386,7 +1386,7 @@ export default {
       }
 
       &.select {
-        background: rgba($color: #037cd6, $alpha: 0.6);
+        background: rgba($color: #9F54BA, $alpha: 0.6);
 
         &::after {
           border-bottom-width: 0;
@@ -1404,10 +1404,10 @@ export default {
     bottom: 0;
     border-radius: 8px;
     &:hover {
-      border: 1PX solid #037cd6;
+      border: 1PX solid #9F54BA;
     }
     &.selected {
-      background: rgba($color: #037cd6, $alpha: 0.6);
+      background: rgba($color: #9F54BA, $alpha: 0.6);
     }
 
   }

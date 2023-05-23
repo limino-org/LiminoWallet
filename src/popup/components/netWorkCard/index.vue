@@ -107,20 +107,20 @@ export default defineComponent({
       width: 4px;
       height: 4px;
       border-radius: 2px;
-      background:#037CD6;
+      background:#9F54BA;
     }
   }
   .full {
     width: 100%;
   }
   &:hover {
-    background: rgb(244, 247, 250);
+    background: #F8F3F9;
   }
   .net-status {
     width: 20px;
     color: #ccc;
     i {
-      color: #057ed6;
+      color: #9F54BA;
       font-size: 16px;
     }
     i.icon-xuanzhong1 {

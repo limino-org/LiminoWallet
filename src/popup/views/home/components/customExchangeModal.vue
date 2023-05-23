@@ -52,7 +52,7 @@
         >
           <div class="token-info flex between center-v pl-6 pr-6">
             <div class="xuanwo flex center">
-              <img src="@/assets/icon_blue.svg" alt />
+              <img src="@/assets/logoeth.png" />
             </div>
             <div class="van-ellipsis ml-6 mr-6 token-name lh-14">
               {{ chooseToken.name }}
@@ -261,7 +261,7 @@ export default defineComponent({
   color: #000;
   font-size: 15px;
   line-height: 62px;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-weight: bold;
 
 }
@@ -337,7 +337,7 @@ export default defineComponent({
     }
   }
   i {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 15px;
   }
   .token-name {

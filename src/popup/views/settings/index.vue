@@ -64,7 +64,7 @@ export default {
 .settings {
   .cancel {
     font-size: 12px;
-    color: #1989fa;
+    color: #9F54BA;
     i {
       font-size: 20px;
     }

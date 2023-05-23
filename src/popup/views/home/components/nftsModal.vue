@@ -112,7 +112,7 @@ export default defineComponent({
   color: #000;
   font-size: 15px;
   line-height: 62px;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-weight: bold;
 
 }
@@ -126,7 +126,7 @@ export default defineComponent({
     font-size: 12px;
   }
   &:hover {
-    background: #deebf6;
+    background: #F8F3F9;
     color: #666;
   }
 }
@@ -146,7 +146,7 @@ export default defineComponent({
   line-height: 18px;
   margin: 20px 0;
   span {
-    color: #037cd6;
+    color: #9F54BA;
   }
 }
 .btn-groups {

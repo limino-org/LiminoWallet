@@ -142,7 +142,7 @@ export default {
 .introduce {
   width: 100%;
   height: 319px;
-  background-color: #e9f5fe;
+  background-color: #9F54BA;
   .close-icon {
     display: inline-block;
     position: absolute;
@@ -209,7 +209,7 @@ export default {
     margin: 20px 25px;
     width: 325px;
     height: 45px;
-    background: #037cd6;
+    background: #9F54BA;
     border-radius: 24px;
   }
 }

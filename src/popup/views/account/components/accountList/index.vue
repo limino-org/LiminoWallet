@@ -90,7 +90,7 @@ export default defineComponent({
       padding: 0;
     }
   :deep(.van-index-bar__index--active){
-    background: #037CD6;
+    background: #9F54BA;
     color: #fff;
     border-radius: 9px;
   }
@@ -101,7 +101,7 @@ export default defineComponent({
     transition: ease 0.3s;
     border-bottom: 1PX solid rgba($color: #B3B3B3, $alpha: 0.5);
     &:hover {
-      background: rgb(244, 247, 250);
+      background: #F8F3F9;
     }
     .icon {
       width: 35px;

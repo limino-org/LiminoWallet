@@ -276,7 +276,7 @@ export default defineComponent({
   font-weight: bold;
   color: #000000;
   line-height: 60px;
-  background: #f8fcff;
+  background: #F8F3F9;
 }
 .form-box {
   border-radius: 10px;
@@ -304,13 +304,13 @@ export default defineComponent({
 .tips {
   margin: 15px;
   padding: 12px 15px;
-  background: #f4faff;
+  background: #F8F3F9;
   border-radius: 5px;
   .text {
     line-height: 16px;
   }
   i {
-    color: #037dd6;
+    color: #9F54BA;
     margin-right: 9px;
   }
 }

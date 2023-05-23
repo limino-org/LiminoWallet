@@ -92,7 +92,7 @@ export default defineComponent({
       .icon {
         width: 40px;
         height: 40px;
-        background: #e9f5fe;
+        background: #9F54BA;
         border-radius: 7px;
         margin-right: 15px;
         overflow: hidden;

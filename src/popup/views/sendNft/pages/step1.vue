@@ -151,7 +151,7 @@ export default {
   padding-bottom: 50px;
   .back {
     font-size: 18px;
-    color: rgba(3, 125, 214, 1);
+    color: #9F54BA;
   }
 
   .code {
@@ -172,13 +172,13 @@ export default {
     .card {
       width: 105px;
       height: 65px;
-      background: #f4faff;
+      background: #F8F3F9;
       border-radius: 7.5px;
       text-align: center;
       padding: 4px 0;
       box-sizing: border-box;
       &.active {
-        border: 1px solid #037cd6;
+        border: 1px solid #9F54BA;
       }
       & > div {
         line-height: 20px;
@@ -226,7 +226,7 @@ export default {
       margin: 0 auto;
       width: 35px;
       height: 35px;
-      background-color: #037cd6;
+      background-color: #9F54BA;
       border-radius: 50%;
       i {
         font-size: 16px;
@@ -235,7 +235,7 @@ export default {
     }
     .send-action {
       line-height: 16px;
-      color: rgba(3, 125, 214, 1);
+      color: #9F54BA;
       font-size: 12px;
       margin-top: 7px;
     }

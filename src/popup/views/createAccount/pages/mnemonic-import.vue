@@ -307,7 +307,7 @@ setup() {
 <style lang="scss" scoped>
 .pwd-tip {
   span {
-    color: #037CD6;
+    color: #9F54BA;
   }
 }
 :deep(){
@@ -320,7 +320,7 @@ setup() {
 }
 .pwd-tip {
 a {
-  color: #037CD6;
+  color: #9F54BA;
 }
 }
 .title {
@@ -336,11 +336,11 @@ font-size: 16px;
   color: #848484;
 }
 .right {
-  color: #037cd6;
+  color: #9F54BA;
   text-decoration: underline;
 }
 .icon-yanjing1 {
-  color: #037dd6;
+  color: #9F54BA;
 }
 :deep(.van-field__label) {
   display: none;
@@ -363,11 +363,11 @@ font-size: 16px;
   transition: ease 0.3s;
   font-size: 12px;
   &:hover {
-    border: 1PX solid #1989fa;
+    border: 1PX solid #9F54BA;
   }
 }
 .tool {
-  color: #037cd6;
+  color: #9F54BA;
 }
 .pointer {
   cursor: pointer;

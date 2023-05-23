@@ -50,7 +50,7 @@
                   clickAccountIdx != null &&
                   clickAccountIdx == index
                 "
-                color="#1989fa"
+                color="#9F54BA"
               />
             </div> -->
           </div>
@@ -101,7 +101,7 @@
                   clickAccountIdx != null &&
                   clickAccountIdx == index
                 "
-                color="#1989fa"
+                color="#9F54BA"
               />
             </div> -->
           </div>
@@ -299,21 +299,21 @@ export default {
     height: 34px;
     box-sizing: border-box;
     border-radius: 17px;
-    border: 1PX solid #037cd6;
+    border: 1PX solid #9F54BA;
     cursor: pointer;
     &:hover {
-      background: #037cd6;
+      background: #9F54BA;
       i {
         color: #fff;
       }
     }
     i {
       font-size: 16px;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .text {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 12px;
   }
 }
@@ -325,11 +325,11 @@ export default {
     margin-right: 12px;
     i {
       font-size: 18px;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   &:hover {
-    background: rgb(244, 247, 250);
+    background: #F8F3F9;
   }
   .account-icon {
     padding: 0 6px 0 0;
@@ -364,7 +364,7 @@ export default {
 // .title {
 //   color: #b3b3b3;
 //   line-height: 62px;
-//   background: #f8fcff;
+//   background: #F8F3F9;
 // }
 .account-list {
   // max-height: 400px;

@@ -167,7 +167,7 @@ export default {
     padding: 13px 12px 16px 14px;
     transition: ease 0.3s;
     &:hover {
-      background: rgb(244, 247, 250);
+      background: #F8F3F9;
     }
     .title {
       .label {

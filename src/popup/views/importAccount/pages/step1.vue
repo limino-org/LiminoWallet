@@ -223,12 +223,10 @@ export default {
     font-size: 42px;
   }
   .flex-1.active {
-    color: #037cd6;
+    color: #9F54BA;
   }
 }
-.importAccount-page {
-  width: 100%;
-}
+
 .btn-group {
   position: fixed;
   left: 0;
@@ -240,12 +238,12 @@ export default {
   width: 20px;
   i {
     font-size: 16px;
-    color: #037cd6;
+    color: #9F54BA;
   }
 }
 a {
   text-decoration: underline;
-  color: #037cd6;
+  color: #9F54BA;
 }
 .operate {
   padding: 0 20px;

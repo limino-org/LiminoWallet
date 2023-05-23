@@ -117,7 +117,7 @@ export default defineComponent({
   color: #000;
   font-size: 15px;
   line-height: 62px;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-weight: bold;
 
 }

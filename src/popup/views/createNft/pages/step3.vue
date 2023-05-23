@@ -106,7 +106,7 @@ export default {
   font-size: 50px;
 }
 .loading-bg {
-  background: rgba(244, 250, 255, 1);
+  background: #F8F3F9;
   height: 135px;
   .tit-big {
     line-height: 21px;
@@ -114,7 +114,7 @@ export default {
   .step {
     width: 17px;
     height: 17px;
-    background-color: #037cd6;
+    background-color: #9F54BA;
     color: #fff;
     text-align: center;
     border-radius: 50%;
@@ -122,7 +122,7 @@ export default {
   .step2 {
     width: 17px;
     height: 17px;
-    background-color: #037cd6;
+    background-color: #9F54BA;
     color: #fff;
     text-align: center;
     border-radius: 50%;
@@ -131,7 +131,7 @@ export default {
     width: 16px;
     height: 16px;
     background-color: #fff;
-    border: 1PX solid #037cd6;
+    border: 1PX solid #9F54BA;
     color: #b3b3b3;
     text-align: center;
     border-radius: 50%;
@@ -140,11 +140,11 @@ export default {
     text-align: center;
     width: 88%;
     height: 0px;
-    border-bottom: 1px dashed #037cd6;
+    border-bottom: 1px dashed #9F54BA;
   }
 
   .tit-small {
-    color: #037cd6;
+    color: #9F54BA;
   }
 }
 .dotted-box {

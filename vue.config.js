@@ -84,18 +84,6 @@ module.exports = {
   },
   chainWebpack: config => {
     config.optimization.minimize(true);
-
-    // config.module
-    //   .rule("i18n")
-    //   .test(/\.(json?|ya?ml)$/)
-    //   .include.add(path.resolve(__dirname, "src/popup/language"))
-    //   .end()
-    //   .type("javascript/auto")
-    //   .use("i18n")
-    //   .loader("@intlify/vue-i18n-loader")
-    //   .end();
-
-
   }
 
 }

@@ -2,7 +2,7 @@
     <NavHeader :title="t('setting.resetPwd')" :hasRight="true"></NavHeader>
   <WormTransition size="small">
     <template v-slot:icon>
-      <img class="iconele flex center" src="@/assets/icon_blue.svg" alt />
+      <img class="iconele flex center" src="@/assets/logoeth.png" />
     </template>
   </WormTransition>
   <div class="f-24 text-center text-bold mt-10">{{t('resetPwd.resetpasswords')}}</div>
@@ -225,7 +225,7 @@ export default {
   margin-bottom: 40px;
 }
 .icon-yanjing1 {
-  color: #037dd6;
+  color: #9F54BA;
 }
 .btn-groups {
   margin-top: 30px;
@@ -252,7 +252,7 @@ export default {
   transition: ease 0.3s;
   font-size: 12px;
   &:hover {
-    border: 1PX solid #1989fa;
+    border: 1PX solid #9F54BA;
   }
 }
 </style>

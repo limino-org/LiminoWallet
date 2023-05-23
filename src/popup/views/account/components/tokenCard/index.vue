@@ -86,7 +86,7 @@ export default defineComponent({
   &:hover {
     transition: ease 0.3s;
     cursor: pointer;
-    background: rgb(244, 247, 250);
+    background: #F8F3F9;
   }
   &-left {
     .token-icon {

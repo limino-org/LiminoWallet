@@ -840,7 +840,7 @@ export default {
   }
 }
 .view-history {
-  color: #037cd6;
+  color: #9F54BA;
   &:hover {
     text-decoration: underline;
   }
@@ -855,7 +855,7 @@ export default {
 .tabs {
   width: 260px;
   &::after {
-    border-color: #037cd6;
+    border-color: #9F54BA;
     border-radius: 26px;
   }
   .tab {
@@ -864,8 +864,8 @@ export default {
     border-radius: 12px;
     font-size: 12px;
     &.active {
-      background: #037cd6;
-      // border: 1PX solid #037cd6;
+      background: #9F54BA;
+      // border: 1PX solid #9F54BA;
       color: #fff;
     }
   }

@@ -298,12 +298,12 @@ export default {
     color: #B3B3B3;
   }
   .right {
-    color: #037cd6;
+    color: #9F54BA;
     text-decoration: underline;
   }
 
   .icon-yanjing1 {
-    color: #037dd6;
+    color: #9F54BA;
   }
   :deep(.van-field__label) {
     display: none;
@@ -328,7 +328,7 @@ export default {
   }
 }
 .tool {
-  color: #037cd6;
+  color: #9F54BA;
 }
 .underline {
   text-decoration: underline;

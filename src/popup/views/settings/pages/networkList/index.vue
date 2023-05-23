@@ -21,13 +21,13 @@
     <div class="other-list mt-22">
       <div class="other-list-tit flex between center-v">
         <span class="f-12">{{ t("internet.othertitle") }}</span>
-        <!-- <van-icon
+        <van-icon
           name="add"
           class="hover"
           @click="toAdd"
-          color="#037CD6"
+          color="#9F54BA"
           size="20"
-        /> -->
+        />
       </div>
 
       <div class="other-list-box" v-if="netWorkList.length">
@@ -187,9 +187,9 @@ export default {
 }
 :deep(.netword-card.selected) {
   .net-name {
-    color: #037cd6;
+    color: #9F54BA;
     svg {
-      fill: #037cd6;
+      fill: #9F54BA;
       margin-top: -2px;
     }
   }

@@ -209,7 +209,7 @@ const pageType = window.pageType;
 .creatorTip {
   color: #b3b3b3;
   .link {
-    color: #037cd6;
+    color: #9F54BA;
     text-decoration: underline;
     display: inline-block;
   }

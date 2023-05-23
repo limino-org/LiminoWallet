@@ -95,7 +95,7 @@ export default defineComponent({
     padding-right: 14px;
     font-size: 12px;
     .left {
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .tip2 {

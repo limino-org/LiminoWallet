@@ -11,7 +11,7 @@
   white-space: nowrap;
   cursor: pointer;
   font-size: 12px;
-  color: #037CD6;
+  color: #9F54BA;
 }
 .create-box {
   background: #f1f3f4;
@@ -23,7 +23,7 @@
   .add {
     width: 36px;
 height: 18px;
-background: #037CD6;
+background: #9F54BA;
 border-radius: 9px;
 cursor: pointer;
 i {
@@ -58,7 +58,7 @@ i {
   min-height: 200px;
   color: #fff !important;
   &.hasExchange {
-    background: #057ed6;
+    background: #9F54BA;
     .account-card {
       .card {
         background: rgba($color: #fff, $alpha: 0.1);
@@ -70,7 +70,7 @@ i {
       .action-icon {
         background: #fff;
         i {
-          color: #037cd6;
+          color: #9F54BA;
         }
       }
       .action-name {
@@ -82,7 +82,7 @@ i {
     .card {
       height: 120px;
       border-radius: 7.5px;
-      background: #037cd6;
+      background: #9F54BA;
       width: 100%;
       .icon-circle {
         width: 36px;
@@ -169,7 +169,7 @@ i {
     width: 20px;
     height: 20px;
     i {
-      color: rgba(3, 125, 214, 1);
+      color: #9F54BA;
       font-size: 22px;
     }
   }
@@ -189,7 +189,7 @@ i {
     top: 4px;
     padding: 10px;
     &:hover i {
-      color: rgba(3, 125, 214, 1);
+      color: #9F54BA;
     }
     i {
       color: #9a9a9a;
@@ -199,7 +199,7 @@ i {
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    border: 1PX solid rgba(3, 125, 214, 1);
+    border: 1PX solid #9F54BA;
     background: rgba(234, 234, 234, 1);
     overflow: hidden;
     display: flex;
@@ -243,7 +243,7 @@ i {
     margin-top: 17px;
     &-btn:hover {
       .action-icon {
-        background: #057ed6;
+        background: #9F54BA;
         i {
           color: #fff;
         }
@@ -257,7 +257,7 @@ i {
         width: 35px;
         height: 35px;
         border-radius: 50%;
-        background: #037cd6;
+        background: #9F54BA;
         i {
           font-size: 18px;
           color: #fff;
@@ -266,7 +266,7 @@ i {
 
       .action-name {
         line-height: 16px;
-        color: #037cd6;
+        color: #9F54BA;
         font-size: 12px;
         margin-top: 7px;
       }
@@ -283,7 +283,7 @@ i {
     }
 
     .tip2 {
-      color: rgba(3, 125, 214, 1);
+      color: #9F54BA;
       font-size: 12px;
       line-height: 15px;
     }
@@ -291,7 +291,7 @@ i {
   .no-list {
     i {
       font-size: 40px;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .van-tab {
@@ -304,13 +304,13 @@ i {
   }
   .van-tabs__line {
     height: 0.5px;
-    background: rgba(3, 125, 214, 1);
+    background: #9F54BA;
     display: none;
   }
  
 
   .van-tab--active {
-    color: rgba(3, 125, 214, 1) !important;
+    color:#9F54BA  !important;
     .van-tab__text {
       text-decoration: underline;
     }

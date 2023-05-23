@@ -190,7 +190,7 @@ export default defineComponent({
   .add {
     width: 36px;
 height: 18px;
-background: #037CD6;
+background: #9F54BA;
 border-radius: 9px;
 cursor: pointer;
 i {
@@ -213,7 +213,7 @@ i {
 }
 .tip1 {
   .toCreate {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 12px;
     &:hover {
       text-decoration: underline;

@@ -10,7 +10,7 @@
             <div class="icon">
               <div class="flex">
                 <Loading
-                  color="#1989fa"
+                  color="#9F54BA"
                   v-show="defaultData.status == 'pendding'"
                 />
                 <i
@@ -31,7 +31,7 @@
               <div class="flex">
                 <div class="flex center">
                   <Loading
-                    color="#1989fa"
+                    color="#9F54BA"
                     v-show="defaultData.status == 'approve'"
                   />
                   <i
@@ -258,7 +258,7 @@ defineExpose({
     overflow: hidden;
     .tit {
       line-height: 62px;
-      background: #f8fcff;
+      background: #F8F3F9;
       font-size: 15px;
       font-weight: 600;
     }

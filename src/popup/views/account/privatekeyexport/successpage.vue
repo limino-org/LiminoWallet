@@ -11,7 +11,7 @@
 
       </div>
     </div>
-    <van-tabs title-active-color="#037dd6" title-inactive-color v-model:active="activeName">
+    <van-tabs title-active-color="#9F54BA" title-inactive-color v-model:active="activeName">
       <van-tab :title="$t('exportprivatekey.text')" name="a">
         <div class="privatekey-content">
           <div class="title">{{t('exportprivatekey.privatekey')}}</div>
@@ -147,7 +147,7 @@ export default {
       border-top: 1px solid rgba(104, 113, 123, 1);
       text-align: center;
       font-size: 12px;
-      color: #037cd6;
+      color: #9F54BA;
       line-height: 28px;
     }
   }
@@ -155,7 +155,7 @@ export default {
   ::v-deep .van-tabs__line {
     width: 50%;
     height: 0.05333rem;
-    background: #037dd6;
+    background: #9F54BA;
   }
   ::v-deep .van-tab {
     position: inherit;

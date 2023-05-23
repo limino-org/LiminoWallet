@@ -774,18 +774,18 @@ export default {
   background: #F1F3F4;
 }
 .view-history {
-  color: #037cd6;
+  color: #9F54BA;
   &:hover {
     text-decoration: underline;
   }
 }
 .currency {
   .currency-bd {
-    background: rgba(244, 250, 255, 1);
+    background: #F8F3F9;
     height: 235px;
   }
   .currency-icon {
-    // background: rgba(3, 125, 214, 1);
+    // background: #9F54BA;
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -813,17 +813,17 @@ export default {
 
       &-icon {
         height: 32px;
-        background: rgba(3, 125, 214, 1);
+        background: #9F54BA;
         border-radius: 32px;
         transition: ease 0.3s;
         &:hover {
-          background: rgb(4, 110, 190);
-          box-shadow: 0 3px 4px rgb(166, 213, 248);
+          background: #9F54BA;
+          box-shadow: 0 3px 4px #F8F3F9;
         }
       }
       &-label {
         line-height: 16px;
-        color: rgba(3, 125, 214, 1);
+        color: #9F54BA;
         font-size: 12px;
         margin-top: 7px;
       }

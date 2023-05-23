@@ -572,7 +572,7 @@ function toHex(str: string) {
   color: #000;
   font-size: 15px;
   line-height: 62px;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-weight: bold;
 }
 
@@ -581,14 +581,14 @@ function toHex(str: string) {
 }
 .pintu {
   i {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 38px;
   }
 }
 .protocol {
   color: #b3b3b3;
   span {
-    color: #037cd6;
+    color: #9F54BA;
     text-decoration: underline;
   }
 }

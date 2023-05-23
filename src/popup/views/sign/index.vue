@@ -180,11 +180,11 @@ export default {
     }
   }
   .sign-bg {
-    background: #f4faff;
+    background: #F8F3F9;
     height: 130px;
     &-icon {
       font-size: 40px;
-      color: #037cd6;
+      color: #9F54BA;
     }
     &-tit {
       line-height: 20px;
@@ -216,7 +216,7 @@ export default {
     .value {
       line-height: 14px;
       // &.select {
-      //   background: #1989fa;
+      //   background: #9F54BA;
       //   color:#fff;
       // }
       &:nth-of-type(1) {

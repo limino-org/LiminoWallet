@@ -393,7 +393,7 @@ export default {
   font-size: 14px;
 }
 .highSpan {
-  color: #037cd6;
+  color: #9F54BA;
   line-height: 14px;
 }
 
@@ -409,7 +409,7 @@ export default {
       min-height: auto;
     }
     .van-field__right-icon {
-      color: #037cd6;
+      color: #9F54BA;
     }
 
     .van-cell {
@@ -435,14 +435,14 @@ export default {
     margin: 0 auto;
   }
   .loading-bg {
-    background: rgba(244, 250, 255, 1);
+    background: #F8F3F9;
     .tit-big {
       line-height: 21px;
     }
     .step {
       width: 17px;
       height: 17px;
-      background-color: #037cd6;
+      background-color: #9F54BA;
       color: #fff;
       text-align: center;
       border-radius: 50%;
@@ -468,7 +468,7 @@ export default {
       text-align: center;
       width: 88%;
       height: 0px;
-      border-bottom: 1px dashed #037cd6;
+      border-bottom: 1px dashed #9F54BA;
     }
     .dotted-line2 {
       margin-top: 2px;
@@ -479,7 +479,7 @@ export default {
       transform: scale(0.8);
     }
     .tit-small {
-      color: #037cd6;
+      color: #9F54BA;
     }
     .now {
       color: #68b1e6;

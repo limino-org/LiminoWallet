@@ -106,7 +106,7 @@ img {
 
 // Click status
 .clickActive:active {
-  background: rgba($color: #cccccc, $alpha: 0.2);
+  background: #F8F3F9;
 }
 
 .van-toast__text {
@@ -138,8 +138,9 @@ img {
 
 .van-button--plain:hover,
 .van-button--default:hover {
-  border: 1px solid #037CD6;
-  color: #037CD6;
+  border: 1px solid #9F54BA;
+  color: #9F54BA;
+  background: #F8F3F9;
 }
 
 
@@ -162,16 +163,10 @@ width: 420px;
 }
 
 .van-button--primary:hover {
-  background: #1198ec;
+  background: #9643b4;
 }
 
-.van-button--plain:hover {
-  background: #e9f5fe;
-}
 
-.van-button--primary:hover {
-  background: #1198ec;
-}
 
 .van-button--plain.van-button--primary:hover {
   color: #ffff;
@@ -234,7 +229,7 @@ width: 420px;
   font-size: 12px;
 
   &:hover {
-    border-color: #037CD6;
+    border-color: #9F54BA;
   }
 }
 
@@ -254,11 +249,11 @@ width: 420px;
   border-radius: 4px;
 
   .van-popover__arrow {
-    color: #037CD6;
+    color: #9F54BA;
   }
 
   .van-popover__content {
-    background: #037CD6;
+    background: #9F54BA;
     color: #fff;
     padding: 10px;
     line-height: 16px;
@@ -324,7 +319,7 @@ width: 420px;
   }
 
   .van-dialog__confirm {
-    background: #037cd6;
+    background: #9F54BA;
     color: #fff;
     margin: 25px;
 
@@ -364,11 +359,11 @@ width: 420px;
   max-width: 267px;
 
   .van-popover__content {
-    background: #037cd6;
+    background: #9F54BA;
   }
 
   .van-popover__arrow {
-    color: #037cd6;
+    color: #9F54BA;
   }
 
 }
@@ -507,7 +502,7 @@ width: 420px;
       // exchange
       .user,
       .tag-label {
-        background: linear-gradient(270deg, #21245F 0%, #1E275A 100%);
+        background: linear-gradient(270deg, #BB68D9 0%, #b139dd 100%);
       }
     }
 

@@ -36,24 +36,24 @@
         transition: ease 0.3s;
       }
       .num1 {
-        background: #037cd6;
-        border: 1PX solid #037cd6;
+        background: #9F54BA;
+        border: 1PX solid #9F54BA;
         color: #fff;
       }
       &.receive {
         .line1::after,
         .line2::after {
-          border-color: #037cd6 !important;
+          border-color: #9F54BA !important;
         }
         .num3 {
-          background: #037cd6;
-          border: 1PX solid #037cd6;
+          background: #9F54BA;
+          border: 1PX solid #9F54BA;
           color: #fff;
         }
       }
       .num2 {
-        background: #037cd6;
-        border: 1PX solid #037cd6;
+        background: #9F54BA;
+        border: 1PX solid #9F54BA;
         color: #fff;
       }
       &.pending {
@@ -76,7 +76,7 @@
       }
       &.pending {
         .send {
-          color: #037cd6;
+          color: #9F54BA;
         }
         .con {
           color: #68b1e6;
@@ -85,11 +85,11 @@
       &.receive {
         .send,
         .done {
-          color: #037cd6;
+          color: #9F54BA;
         }
       }
       .con {
-        color: #037cd6;
+        color: #9F54BA;
       }
     }
     .num {

@@ -210,7 +210,7 @@ export default {
     padding: 0;
   }
   :deep(.van-index-bar__index--active) {
-    background: #037cd6;
+    background: #9F54BA;
     color: #fff;
     border-radius: 9px;
   }
@@ -225,14 +225,14 @@ export default {
     border: 1px solid #B3B3B3;
     border-radius: 5px;
     &:hover {
-      border-color: #037cd6;
+      border-color: #9F54BA;
     }
   }
 
   .ipt-box {
     width: 96%;
     i {
-      color: #037cd6;
+      color: #9F54BA;
       font-size: 22px;
     }
   }
@@ -240,7 +240,7 @@ export default {
     width: 30px;
     i {
       font-size: 18px;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
 }

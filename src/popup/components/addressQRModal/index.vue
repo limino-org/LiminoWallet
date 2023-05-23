@@ -136,7 +136,7 @@ export default defineComponent({
   color: #000;
   font-size: 15px;
   line-height: 62px;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-weight: bold;
 
 }
@@ -150,7 +150,7 @@ export default defineComponent({
     font-size: 12px;
   }
   &:hover {
-    background: #deebf6;
+    background: #F8F3F9;
     color: #666;
   }
 }
@@ -174,21 +174,21 @@ export default defineComponent({
     height: 34px;
     box-sizing: border-box;
     border-radius: 17px;
-    border: 1PX solid #037cd6;
+    border: 1PX solid #9F54BA;
     cursor: pointer;
     &:hover {
-      background: #037cd6;
+      background: #9F54BA;
       i {
         color: #fff;
       }
     }
     i {
       font-size: 18px;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .text {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 12px;
   }
 }

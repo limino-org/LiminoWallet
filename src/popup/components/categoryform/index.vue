@@ -204,7 +204,7 @@ export default defineComponent({
   line-height: 62px;
   font-weight: bold;
 
-  background: #f8fcff;
+  background: #F8F3F9;
 }
 .category-list {
   max-height: 350px;

@@ -226,7 +226,7 @@ export default {
     transition: ease 0.3s;
     font-size: 12px;
     &:hover {
-      border: 1px solid #1989fa;
+      border: 1px solid #9F54BA;
     }
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="transaction-detail">
-    <div class="title f-16 text-center">
+    <div class="title f-16 text-center van-hairline--bottom">
       {{ title }}
     </div>
     <div class="tran-form mt-20">

@@ -330,7 +330,7 @@ export default defineComponent({
   font-weight: bold;
   color: #000000;
   line-height: 60px;
-  background: #f8fcff;
+  background: #F8F3F9;
 }
 .form-box {
   border-radius: 10px;

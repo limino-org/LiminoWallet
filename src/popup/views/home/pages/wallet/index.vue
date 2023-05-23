@@ -16,7 +16,7 @@
           class="iconfont icon-zhankai"
           :title="t('common.expandView')"
           @click="extendView"
-          :style="{ color: hasExchange ? '#fff' : '#037cd6' }"
+          :style="{ color: hasExchange ? '#fff' : '#9F54BA' }"
         ></i>
       </div>
     </template>
@@ -614,7 +614,15 @@ export default {
     };
 
     onMounted(() => {
+      console.warn('onMounted')
       eventBus.on("changeAccount", () => {
+        console.warn('changeAccount....')
+        dispatch('account/getEthAccountInfo').then(() => {
+          setTimeout(() => {
+            console.warn('ethAccountInfo', ethAccountInfo.value)
+          },3000)
+        })
+        dispatch("account/updateBalance");
         showModal.value = false;
       });
       dispatch('account/getCreatorStatus', accountInfo.value.address)
@@ -632,11 +640,7 @@ export default {
       dispatch("account/waitTxQueueResponse");
     });
 
-    onActivated(() => {
-      showPopover.value = false;
-      showPopover2.value = false;
-      handleLoopBalance();
-    });
+
 
     onUnmounted(() => {
       eventBus.off("changeAccount");

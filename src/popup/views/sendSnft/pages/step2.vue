@@ -542,7 +542,7 @@ export default {
 }
 .clearAddress {
   font-size: 16px;
-  color: #037cd6;
+  color: #9F54BA;
 }
 .slider-box.amount-info {
   width: 100% !important;
@@ -553,19 +553,19 @@ export default {
 }
 .cancel {
   font-size: 11px;
-  color: #037cd6;
+  color: #9F54BA;
 }
 .up-down-box {
   i {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 16px;
   }
   span {
-    color: #037cd6;
+    color: #9F54BA;
     word-break: keep-all;
   }
   font-size: 12px;
-  color: #037cd6;
+  color: #9F54BA;
 }
 :deep(input) {
   font-size: 12px;
@@ -592,7 +592,7 @@ export default {
 .to-btns {
   width: 20px;
   i {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 20px;
   }
 }
@@ -634,7 +634,7 @@ export default {
     }
     &:hover {
       transition: ease 0.3s;
-      background-color: rgba(3, 125, 214, 0.1);
+      background: #F8F3F9;
     }
     .closeIcon {
       position: absolute;
@@ -730,7 +730,7 @@ export default {
   }
 }
 :deep(.van-tab--active) {
-  color: rgba(3, 125, 214, 1);
+  color: #9F54BA;
 }
 :deep(.van-tabs__line) {
   display: none;

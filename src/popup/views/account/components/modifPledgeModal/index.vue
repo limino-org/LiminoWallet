@@ -2,14 +2,13 @@
 <template>
   <van-dialog
     v-model:show="show"
-    show-cancel-button
     class="minus-pledge-dialog"
     teleport="#page-box"
     :showConfirmButton="false"
     :showCancelButton="false"
     closeOnClickOverlay
   >
-    <div class="sheet-header">
+    <div class="sheet-header van-hairline--bottom">
       {{ t("createExchange.pledgeRed") }}
     </div>
     <div class="account-container">
@@ -261,7 +260,7 @@ export default defineComponent({
 .tips-icon {
   i {
     font-size: 18px;
-    color: #037dd6;
+    color: #9F54BA;
     margin-right: 9px;
   }
 }
@@ -279,7 +278,7 @@ export default defineComponent({
 }
 .tips {
   padding: 11px 15px;
-  background: #f4faff;
+  background: #F8F3F9;
   border-radius: 7px;
   margin: 15px 0;
 }
@@ -352,7 +351,7 @@ export default defineComponent({
   text-align: center;
   align-items: center;
   justify-content: center;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-size: 15px;
   font-weight: bold;
 }

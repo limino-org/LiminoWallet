@@ -241,20 +241,20 @@ export default {
 .tab-box {
   .flex-1.active {
     i {
-      color: #037cd6;
+      color: #9F54BA;
     }
-    color: #037cd6;
+    color: #9F54BA;
   }
   i {
     font-size: 32px;
   }
 }
 .bg-box {
-  background: #f4faff;
+  background: #F8F3F9;
   margin: 15px 15px 25px;
   border-radius: 7.5px;
   .icon-box {
-    color: #037cd6;
+    color: #9F54BA;
     i {
       font-size: 16px;
     }
@@ -270,7 +270,7 @@ export default {
       font-size: 42px;
     }
     .flex-1.active {
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
 }
@@ -279,7 +279,7 @@ export default {
   padding: 15px;
   box-sizing: border-box;
   word-break: break-all;
-  background: #f4faff;
+  background: #F8F3F9;
   position: relative;
   border-radius: 5px;
   border: 1px solid #B3B3B3;
@@ -287,7 +287,7 @@ export default {
   i {
     position: absolute;
     right: 10px;
-    color: #037cd6;
+    color: #9F54BA;
     bottom: 10px;
   }
 }
@@ -303,15 +303,15 @@ export default {
 }
 .load-btn {
   width: 250px;
-  background: #f4faff;
+  background: #F8F3F9;
   border-radius: 30px;
   margin: 15px auto 0;
-  color: #037cd6;
+  color: #9F54BA;
   i {
     font-size: 12px;
   }
   &:hover {
-    background: #dcecf9;
+    background: #F8F3F9;
   }
 }
 </style>

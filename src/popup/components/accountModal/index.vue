@@ -367,7 +367,7 @@ export default defineComponent({
           Toast.clear();
           clearTimeout(time2);
           handleScroll();
-        }, 300);
+        }, 1000);
         clearTimeout(time);
       });
     };
@@ -558,7 +558,7 @@ function getHostName(url = "") {
   font-weight: bold;
 }
 .connectTo {
-  color: #037cd6;
+  color: #9F54BA;
   margin-left: 5px;
 }
 .connectStatus {
@@ -583,7 +583,7 @@ function getHostName(url = "") {
   margin-right: 12px;
   i {
     font-size: 18px;
-    color: #037cd6;
+    color: #9F54BA;
   }
 }
 .btn-group {
@@ -608,21 +608,21 @@ function getHostName(url = "") {
     height: 34px;
     box-sizing: border-box;
     border-radius: 17px;
-    border: 1px solid #037cd6;
+    border: 1px solid #9F54BA;
     cursor: pointer;
     &:hover {
-      background: #037cd6;
+      background: #9F54BA;
       i {
         color: #fff;
       }
     }
     i {
       font-size: 16px;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .text {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 12px;
   }
 }
@@ -631,7 +631,7 @@ function getHostName(url = "") {
   padding: 0 15px;
   transition: ease 0.3s;
   &:hover {
-    background: rgb(244, 247, 250);
+    background: #F8F3F9;
   }
   .account-icon {
     padding: 0 6px 0 0;
@@ -667,7 +667,7 @@ function getHostName(url = "") {
   color: #000;
   font-size: 15px;
   line-height: 62px;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-weight: bold;
 }
 .account-list {

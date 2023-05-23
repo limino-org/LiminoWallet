@@ -101,7 +101,7 @@ export default defineComponent({
     font-size: 12px;
     font-size: 12px;
     .left {
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .title {

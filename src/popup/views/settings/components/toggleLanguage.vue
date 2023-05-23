@@ -154,7 +154,7 @@ export default defineComponent({
   color: #000;
   font-size: 15px;
   line-height: 62px;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-weight: bold;
 
 }
@@ -188,7 +188,7 @@ export default defineComponent({
   border-radius: 5px;
   transition: ease 0.3s;
   &:hover {
-    border: 1PX solid #1989fa;
+    border: 1PX solid #9F54BA;
   }
 }
 .language-card {
@@ -196,13 +196,13 @@ export default defineComponent({
   height: 52px;
   transition: ease 0.3s;
   &:hover {
-    background: rgb(244, 247, 250);
+    background: #F8F3F9;
   }
   .net-status {
     width: 20px;
     color: #ccc;
     i {
-      color: #057ed6;
+      color: #9F54BA;
       font-size: 16px;
     }
     i.icon-xuanzhong1 {

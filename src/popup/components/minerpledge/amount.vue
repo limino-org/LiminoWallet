@@ -136,7 +136,7 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #f8fcff;
+      background: #F8F3F9;
       font-size: 14px;
       color: #0f0f0f;
     }
@@ -216,7 +216,7 @@ export default {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f4faff;
+            background: #F8F3F9;
             border-radius: 7px 7px 7px 7px;
             &:first-child {
               padding: 0 18px;
@@ -224,8 +224,8 @@ export default {
           }
           .ipt-server-i-active {
             color: #0287db;
-            background: #f4faff;
-            border: 1PX solid #037cd6;
+            background: #F8F3F9;
+            border: 1PX solid #9F54BA;
             span {
               color: #0287db;
             }

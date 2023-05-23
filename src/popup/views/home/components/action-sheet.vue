@@ -2,7 +2,6 @@
 <template>
     <van-dialog
       v-model:show="show"
-      show-cancel-button
       teleport="#page-box"
       class="account-list-modal1"
       :showConfirmButton="false"
@@ -10,7 +9,7 @@
       closeOnClickOverlay
     >
       <!-- <van-action-sheet v-model:show="show" class="account-action-sheet" teleport="#page-box"> -->
-      <div class="sheet-header">
+      <div class="sheet-header van-hairline--bottom">
         {{ t("wallet.account") }}
       </div>
       <div class="account-container">
@@ -66,7 +65,7 @@
                     clickAccountIdx != null &&
                     clickAccountIdx == index
                   "
-                  color="#1989fa"
+                  color="#9F54BA"
                 /> -->
               </div>
             </div>
@@ -256,7 +255,7 @@
       font-size: 20px;
     }
     i.icon-xuanzhong1 {
-      color: #037dd6;
+      color: #9F54BA;
     }
   }
   .imported {
@@ -268,7 +267,7 @@
   }
   .account-groups {
     .createBtn {
-      color: rgba(3, 125, 214, 1);
+      color: #9F54BA;
       font-size: 12px;
       line-height: 50px;
       border: none !important;
@@ -276,7 +275,7 @@
     }
   
     .acc-btn {
-      color: rgba(3, 125, 214, 1);
+      color: #9F54BA;
       font-size: 12px;
       line-height: 50px;
     }
@@ -287,7 +286,7 @@
     transition: ease 0.3s;
     &:hover {
       .account-value,.account-name {
-        color: #037dd6;
+        color: #9F54BA;
       }
     }
     .account-icon-s {
@@ -342,21 +341,21 @@
   }
   .account-list {
     .bt.select {
-      color: #037dd6;
+      color: #9F54BA;
       .account-value {
-        color: #037dd6;
+        color: #9F54BA;
       }
     }
   }
   .create {
     text-align: center;
     font-size: 12px;
-    color: #037dd6;
+    color: #9F54BA;
   }
   .import {
     text-align: center;
     font-size: 12px;
-    color: #037dd6;
+    color: #9F54BA;
   }
   .bt {
     border-bottom: 1px solid #ecedef;
@@ -367,7 +366,7 @@
     text-align: center;
     align-items: center;
     justify-content: center;
-    background: #f8fcff;
+    background: #F8F3F9;
     font-size: 15px;
     font-weight: bold;
     // border-radius: 20px 20px 0px 0px;

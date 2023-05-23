@@ -240,7 +240,7 @@ export default defineComponent({
   top: 10px;
   height: 30px;
   border-radius: 5px;
-  background: #037dd6;
+  background: #9F54BA;
   box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.1);
   span {
     font-size: 12px;
@@ -252,7 +252,7 @@ export default defineComponent({
     position: absolute;
     bottom: 9px;
     right: -12px;
-    border-left: 8px solid #037dd6;
+    border-left: 8px solid #9F54BA;
     border-right: 8px solid transparent;
     border-top: 8px solid transparent;
     border-bottom: 8px solid transparent;
@@ -276,7 +276,7 @@ export default defineComponent({
     position: relative;
     i {
       font-size: 22px;
-      color: #037dd6;
+      color: #9F54BA;
     }
   }
   .hint {
@@ -291,7 +291,7 @@ export default defineComponent({
     right: 83px;
     top: 10px;
     text-align: center;
-    color: #037dd6;
+    color: #9F54BA;
     &:after {
       content: " ";
       position: absolute;
@@ -314,7 +314,7 @@ export default defineComponent({
   align-items: center;
   position: relative;
   border-radius: 50%;
-  background: #037dd6;
+  background: #9F54BA;
   box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.1),
     0px 0px 10px 0px rgba(0, 0, 0, 0.1);
 
