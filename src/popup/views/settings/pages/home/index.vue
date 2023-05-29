@@ -70,6 +70,7 @@ import ToggleLanguageModal from '@/popup/views/settings/components/toggleLanguag
 import ToggleCurrencyModal from '@/popup/views/settings/components/toggleCurrency.vue'
 import { useToast } from '@/popup/plugins/toast'
 import localforage from "localforage";
+import { decode } from 'js-base64'
 export default {
   name: 'settings',
   components: {
@@ -115,7 +116,7 @@ export default {
     const {$toast} = useToast()
 
     const towebsite = () => {
-      window.open('https://www.wormholes.com/')
+      window.open(decode('aHR0cHM6Ly93d3cud29ybWhvbGVzLmNvbS8='))
     }
     const loading = ref(false)
     const handleClearCanche = async () => {

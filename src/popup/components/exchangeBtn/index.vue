@@ -85,6 +85,7 @@ import { Button, Sticky, Toast } from "vant";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import { decode } from "js-base64";
 
 export default defineComponent({
   name: "exchange-btn",
@@ -137,7 +138,7 @@ export default defineComponent({
       hideFlag.value = true;
     };
     const toHelp = () => {
-      window.open("https://www.wormholes.com/docs/wallet/");
+      window.open(decode('aHR0cHM6Ly93d3cud29ybWhvbGVzLmNvbS8=') + "docs/wallet/");
     };
     const getStatus = async () => {
       Toast.loading({

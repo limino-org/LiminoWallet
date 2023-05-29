@@ -353,6 +353,7 @@ import { useToast } from "@/popup/plugins/toast";
 import { useDialog } from "@/popup/plugins/dialog";
 import BigNumber from "bignumber.js";
 import { getWallet } from "@/popup/store/modules/account";
+import { decode } from "js-base64";
 
 export default defineComponent({
   name: "slider-menu",
@@ -554,7 +555,7 @@ export default defineComponent({
 
     const toHelp = () => {
       // $toast.warn(t('common.commingsoon'))
-      window.open("https://www.wormholes.com/docs/wallet/");
+      window.open(decode('aHR0cHM6Ly93d3cud29ybWhvbGVzLmNvbS8=') + "docs/wallet/");
     };
     // The account label pops up
     const showPopover = ref(false);

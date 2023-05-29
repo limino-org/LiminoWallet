@@ -1,8 +1,5 @@
 // @ts-nocheck
 
-console.log("%cHello from the Limino Wallet",'color: red');
-console.log('%cFor more information, please visit our website %chttps://www.wormholes.com/', 'color: #9F54BA','color: #ccc')
-
 
 function injectScript(file) {
   try {
