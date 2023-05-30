@@ -161,7 +161,7 @@ export default {
   }
   &.Popup {
     width: 375PX;
-    height: 601PX;
+    min-height: 601PX;
   }
 }
 

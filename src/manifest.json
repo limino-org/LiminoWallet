@@ -2,7 +2,7 @@
   "name": "LiminoWallet",
   "description": "It is used for digital signature and digital asset management, and for storing and trading crypto assets",
   "default_locale": "en",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "manifest_version": 3,
   "permissions": [
     "activeTab",
