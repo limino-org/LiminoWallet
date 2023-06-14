@@ -7,13 +7,13 @@
           item.select ? 'active' : ''
         }`" :title="getTipText(item)" v-for="(item, idx) in pageData.children" :key="item.address" @click="hancleClick(item, idx)">
         <img :src="`${metaDomain}${item.source_url}`" :class="`flex center snft-img  ${item.select ? 'active' : ''} ${imgGarySmall(item)}`" fit="cover" />
-        <div class="lock-img-box" v-if="handlecanRedeem(item) === false">
+        <!-- <div class="lock-img-box" v-if="handlecanRedeem(item) === false">
           <div class="flex center">
             <svg t="1666159609780" class="lock-img-small" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3307" width="200" height="200">
               <path d="M785.07008 409.6H716.8V273.07008C716.8 178.80064 640.39936 102.4 546.12992 102.4h-68.25984C383.60064 102.4 307.2 178.80064 307.2 273.07008V409.6h-68.27008c-37.5296 0-68.25984 30.74048-68.25984 68.27008v375.47008c0 37.5296 30.73024 68.25984 68.25984 68.25984h546.14016c37.5296 0 68.25984-30.73024 68.25984-68.25984V477.87008c0-37.5296-30.73024-68.27008-68.25984-68.27008zM546.12992 673.19808v111.872h-68.25984V673.19808c-20.33664-11.79648-34.14016-33.59744-34.14016-58.79808 0-37.66272 30.5664-68.25984 68.27008-68.25984s68.27008 30.59712 68.27008 68.25984c0 25.20064-13.80352 47.0016-34.14016 58.79808z m102.4-263.59808H375.47008V273.07008c0-56.53504 45.86496-102.4 102.4-102.4h68.25984c56.53504 0 102.4 45.86496 102.4 102.4V409.6z" p-id="3308" fill="rgba(255,255,255,.7)"></path>
             </svg>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="swipe-box">
@@ -21,31 +21,16 @@
       <van-icon name="arrow-left hover" @click="to('prev')" />
       <van-swipe @change="onChange" ref="swipe" lazy-render :initial-swipe="swiperIdx">
         <van-swipe-item class="flex center position relative swipe-slider" v-for="item in pageData.children" :key="item">
-          <div class="swipe-img mt-10 position relative">
+          <div :class="`swipe-img mt-10 position relative ${item.selectFlag ? 'select':''}`" @click="handleSelectSingleSnft(item)">
             <img :class="imgGary(item)" :src="`${metaDomain}${item.source_url}`" />
             <!-- Transfer -->
             <div class="check-list flex" v-show="
-                chooseSnftData.Chipcount &&
-                actionType == '2' &&
+                chooseSnftData.snfts.length &&
                 item.MergeLevel === 0
               ">
               <div :class="`fg van-hairline--right van-hairline--bottom ${disabled(
                   item
                 )} ${item.select ? 'select' : ''}`" v-for="(item, idx) in mySnfts" :key="item" @click.stop="selectSnft(item, idx)"></div>
-            </div>
-            <!-- Staking -->
-            <div :class="`staking-mask ${
-                chooseSnftData.selectFlag ? 'selected' : ''
-              }`" @click.stop="selectSingleSnft" v-show="
-                actionType == '1' || actionType == '3' || item.MergeLevel > 0
-              "></div>
-            <!-- lock -->
-            <div class="lock-img-box" v-if="handlecanRedeem(item) === false">
-              <div class="flex center">
-                <svg t="1666159609780" class="lock-img" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3307" width="200" height="200">
-                  <path d="M785.07008 409.6H716.8V273.07008C716.8 178.80064 640.39936 102.4 546.12992 102.4h-68.25984C383.60064 102.4 307.2 178.80064 307.2 273.07008V409.6h-68.27008c-37.5296 0-68.25984 30.74048-68.25984 68.27008v375.47008c0 37.5296 30.73024 68.25984 68.25984 68.25984h546.14016c37.5296 0 68.25984-30.73024 68.25984-68.25984V477.87008c0-37.5296-30.73024-68.27008-68.25984-68.27008zM546.12992 673.19808v111.872h-68.25984V673.19808c-20.33664-11.79648-34.14016-33.59744-34.14016-58.79808 0-37.66272 30.5664-68.25984 68.27008-68.25984s68.27008 30.59712 68.27008 68.25984c0 25.20064-13.80352 47.0016-34.14016 58.79808z m102.4-263.59808H375.47008V273.07008c0-56.53504 45.86496-102.4 102.4-102.4h68.25984c56.53504 0 102.4 45.86496 102.4 102.4V409.6z" p-id="3308" fill="rgba(255,255,255,.7)"></path>
-                </svg>
-              </div>
             </div>
           </div>
         </van-swipe-item>
@@ -53,14 +38,8 @@
       <van-icon name="arrow hover" @click="to('next')" />
     </div>
     <!-- Selected -->
-    <div class="select-box" v-if="actionType == '2'">
+    <div class="select-box">
       {{ t("sendSNFT.selected") }} {{ chooseNum }}/{{ hasChooseNum }}
-    </div>
-    <div class="select-box" v-if="actionType == '1' && disabled(chooseData) == ''">
-      {{ !canRedeem ? t("common.stakingLess") : t("common.stakingThanYear") }}
-    </div>
-    <div class="select-box" v-if="actionType == '3'">
-      {{ t("common.withoutStaking") }}
     </div>
     <!-- 3.speed of progress -->
     <div class="progress-box pl-10 pr-10 mt-10">
@@ -86,7 +65,7 @@
     <!-- Button group -->
     <div class="flex center">
       <div class="btn-box flex evenly">
-        <div :class="`btn ${!canRedeem && actionType == '1' ? 'disabled' : ''}`" @click="toSend" v-if="showSendBtn">
+        <div class="btn" @click="toSend" v-if="showSendBtn">
           <div class="flex center">
             <div class="icon-in flex center">
               <i class="iconfont icon-teshujiantouzuoxiantiao-copy"></i>
@@ -102,15 +81,15 @@
           </div>
           <div class="btn-txt text-center">{{ t("sendSNFT.convert") }}</div>
         </div>
-        <div class="btn" @click="handleStaking" v-if="showStakingBtn">
+        <!-- <div class="btn" @click="handleStaking" v-if="showStakingBtn">
           <div class="flex center">
             <div class="icon-in flex center">
               <i class="iconfont icon-044chuizi"></i>
             </div>
           </div>
           <div class="btn-txt text-center">{{ t("createExchange.stake") }}</div>
-        </div>
-        <div :class="`btn ${!canRedeem ? 'disabled' : ''}`" @click="handleReStaking" v-if="showReStakingBtn">
+        </div> -->
+        <!-- <div :class="`btn ${!canRedeem ? 'disabled' : ''}`" @click="handleReStaking" v-if="showReStakingBtn">
           <div class="flex center">
             <div class="icon-in flex center">
               <i class="iconfont icon-key"></i>
@@ -119,9 +98,9 @@
           <div class="btn-txt text-center">
             {{ t("createExchange.redemption") }}
           </div>
-        </div>
+        </div> -->
 
-        <div class="btn" v-if="!chooseData.Exchange" @click="handletoExchange">
+        <div class="btn" v-if="!chooseData.exchange" @click="handletoExchange">
           <div class="flex center">
             <div class="icon-in flex center">
               <i class="iconfont icon-fangwujianzhuwugoujianbeifen"></i>
@@ -130,7 +109,7 @@
           <div class="btn-txt text-center">{{ t("common.viewInExchange") }}</div>
         </div>
 
-        <div class="btn" v-if="!chooseData.Exchange" @click="handletoBrowser">
+        <div class="btn" v-if="!chooseData.exchange" @click="handletoBrowser">
           <div class="flex center">
             <div class="icon-in flex center">
               <i class="iconfont icon-network"></i>
@@ -143,7 +122,7 @@
   </div>
   <!-- Transfer Erb -->
   <TransferNFTModal :selectNumber="selectText" :selectName="chooseName" :selectAddress="chooseAddress" :selectTotal="totalAmount" :selectList="selectList" txtype="2" type="1" :ratio="ratio" v-model="showModal" @success="reLoading" @fail="reLoading" />
-  <TransferSingleSNFTModal :txtype="actionType" :selectNumber="selectText" :ratio="ratio" :selectTotal="stakingTotalAmount" :selectList="selectStakingList" v-model="showStakingModal" @success="handleSuccess"  @fail="reLoading" />
+  <TransferSingleSNFTModal txtype="2" :selectNumber="selectText" :ratio="ratio" :selectTotal="stakingTotalAmount" :selectList="selectStakingList" v-model="showStakingModal" @success="handleSuccess"  @fail="reLoading" />
 </template>
 <script lang="ts">
 import {
@@ -163,6 +142,7 @@ import {
   onMounted,
   Ref,
   ref,
+  watch
 } from "vue";
 import ProgressBar from "@/popup/views/account/components/snftList/progressBar.vue";
 import { useRouter, useRoute } from "vue-router";
@@ -223,9 +203,7 @@ export default {
     const chooseData = computed(() => {
       return pageData.value.children[swiperIdx.value];
     });
-    const actionType = computed(
-      () => pageData.value.children[0].actionType || "1"
-    );
+
     const updateNetwork = async () => {
       if (!network.value) {
         const wallet = await getWallet();
@@ -244,8 +222,8 @@ export default {
       if (pageData.value.MergeLevel === 2 && pageData.value.Chipcount) {
         return [{ ...pageData.value }];
       }
-      const { selectFlag, MergeLevel, snfts,Chipcount } = chooseData.value;
-      if (selectFlag && MergeLevel === 1 && Chipcount) {
+      const { selectFlag, MergeLevel, snfts, disabled } = chooseData.value;
+      if (selectFlag && MergeLevel === 1 && !disabled) {
         return [{ ...chooseData.value }];
       }
       if (!selectFlag && MergeLevel === 1 && snfts.length) {
@@ -264,7 +242,8 @@ export default {
           const address = accountInfo.value.address;
           const currentData = pageData.value.children[swiperIdx.value];
           data.forEach((item: any) => {
-            const { nft_address } = item;
+            let { nft_address } = item;
+            nft_address = nft_address.replaceAll('m','0')
             item.select = false;
             item.address = nft_address;
             item.index = parseInt(
@@ -272,18 +251,14 @@ export default {
               16
             );
             if (
-              getDisabled(currentData) == "" &&
-              item.ownaddr.toUpperCase() == address.toUpperCase()
+              getDisabled(currentData) ||
+              (item.MergeLevel == 0 && item.ownaddr.toUpperCase() != address.toUpperCase()) ||
+              item.exchange
             ) {
-              item.disabled = false;
-            } else {
               item.disabled = true;
+            } else {
+              item.disabled = false;
             }
-            // if (item.ownaddr.toUpperCase() == address.toUpperCase()) {
-            //   item.disabled = false
-            // } else {
-            //   item.disabled = true
-            // }
           });
           let data3 = [];
           if (!data.length) {
@@ -313,6 +288,7 @@ export default {
     };
     const canRedeem = ref(false);
     const getAddressInfo = async (address) => {
+      console.warn('getAddressInfo', address)
       await updateNetwork();
       console.log("getAddressInfo--", address);
       canRedeem.value = false;
@@ -348,7 +324,7 @@ export default {
     };
     getNft256(params);
     const { MergeLevel, nft_address: nft_addr, children } = pageData.value;
-    const nftAddr = MergeLevel === 2 ? nft_addr + '00' : children[0].nft_address
+    const nftAddr = MergeLevel === 2 ? nft_addr.replaceAll('m','0') : children[0].nft_address.replaceAll('m','0')
     getAddressInfo(nftAddr);
     const hancleClick = (e, i) => {
       console.log(e, i);
@@ -370,8 +346,7 @@ export default {
         count: "16",
       };
       getNft256(params);
-      if (actionType.value == "1") {
-        const { MergeLevel, nft_address, children } = pageData.value;
+      const { MergeLevel, nft_address, children } = pageData.value;
         let snftAddress = children[e].nft_address;
         // if(MergeLevel === 2) {
         //   snftAddress = nft_address
@@ -379,11 +354,8 @@ export default {
         //   snftAddress = children[e].nft_address;
         // }
 
-    const nftAddr = MergeLevel === 2 ? nft_address + '00' : snftAddress
+    const nftAddr = MergeLevel === 2 ? nft_address.replaceAll('m','0') : snftAddress.replaceAll('m','0')
         getAddressInfo(nftAddr);
-
-        
-      }
     };
 
     const showImg = () => {
@@ -404,159 +376,67 @@ export default {
 
     const showConvertBtn = computed(() => {
       let flag = false;
-      switch (actionType.value) {
-        case "1":
-          flag = false;
-          break;
-        case "2":
-        const { disabled} = chooseSnftData.value
+      const { disabled} = chooseSnftData.value
           if(!disabled) {
             flag = true
           } else {
             flag = chooseSnftData.value.snfts.length ? true : false;
           }
-          break;
-        case "3":
-          flag = false;
-          break;
-      }
-
-      console.warn('showConvertBtn', flag)
       return flag;
     });
     const showSendBtn = computed(() => {
       let flag = false;
-      switch (actionType.value) {
-        case "1":
-          flag = false;
-          break;
-        case "2":
-        const { disabled} = chooseSnftData.value
+      const { disabled} = chooseSnftData.value
         if(!disabled) {
             flag = true
           } else {
             flag = chooseSnftData.value.snfts.length ? true : false;
           }
-          break;
-        case "3":
-          flag = !hasDisabled.value;
-          break;
-      }
       return flag;
     });
-    const showStakingBtn = computed(() => {
-      let flag = false;
-      switch (actionType.value) {
-        case "1":
-          flag = false;
-          break;
-        case "2":
-          flag = false;
-          break;
-        case "3":
-          flag = !hasDisabled.value;
-          break;
-      }
-      return flag;
-    });
-    const showReStakingBtn = computed(() => {
-      let flag = false;
-      switch (actionType.value) {
-        case "1":
-          flag = !hasDisabled.value;
-          break;
-        case "2":
-          flag = false;
-          break;
-        case "3":
-          flag = false;
-          break;
-      }
-      return flag;
-    });
+    
     const imgGarySmall = (data: any) => {
       let flag = "";
-      console.warn('actionType.value', actionType.value, typeof actionType.value)
-      const { MergeLevel, pledgestate, snfts, total_hold, disabled, Exchange, Chipcount } =
+      const {  disabled } =
         data;
-      switch (actionType.value) {
-        case "1":
-        case "3":
-          disabled ? (flag = "gary") : "";
-          break;
-        case "2":
-          if (
-            !snfts.length ||
-            pledgestate === "Pledge" ||
-            Exchange === 1
-          ) {
-            flag = "gary";
-          }
-          break;
-      }
+        disabled ? (flag = "gary") : "";
       return flag;
     }
     const imgGary = (data: any) => {
       let flag = "";
-      console.warn('actionType.value', actionType.value)
-      const { MergeLevel, pledgestate, snfts, total_hold, disabled, Exchange, Chipcount } =
+      const {disabled } =
         data;
-      switch (actionType.value) {
-        case "1":
-        if(MergeLevel === 1 ){
-          if((pledgestate === 'Pledge' && Chipcount)) {
-            return
-          }
-        }
           disabled ? (flag = "gary") : "";
-          break;
-        case "2":
-        if((MergeLevel === 0 && snfts.length &&  pledgestate === "NoPledge" && Exchange !== 1) || MergeLevel > 1 ) {
-            return
-          }
-          if (
-            MergeLevel === 0 ||
-            !snfts.length ||
-            pledgestate === "Pledge" ||
-            Exchange === 1
-          ) {
-            flag = "gary";
-          }
-          break;
-        case "3":
-          disabled ? (flag = "gary") : "";
-          break;
-      }
       return flag;
     };
+    const handleSelectSingleSnft = (item) => {
+      console.log('handleSelectSingleSnft', item)
+      if(item.disabled) {
+        return
+      } else {
+        item.selectFlag = !item.selectFlag
+      }
+    }
     const getDisabled = (item: any) => {
       const {
         pledgestate,
-        Chipcount,
+        snfts,
         disabled,
         isUnfreeze,
         DeletedAt,
-        Exchange,
+        exchange,
         MergeLevel,
+        ownaddr
       } = item;
-      const { status } = actionType.value;
-      if (status == "3") {
-        return disabled ? "disabled" : "";
-      }
-      if (status == "2") {
-        if (pledgestate == "Pledge" || !Chipcount || Exchange === 1) {
+      if (!snfts.length && MergeLevel === 0) {
           return "disabled";
         }
-      }
-      if (status == "1") {
-        if (
-          pledgestate == "NoPledge" ||
-          (typeof isUnfreeze != "undefined" && isUnfreeze === false) ||
-          DeletedAt
-        ) {
+        if (ownaddr.toUpperCase() != accountInfo.value.address.toUpperCase() && MergeLevel === 1) {
           return "disabled";
         }
-      }
+        if (exchange) {
+          return "disabled";
+        }
       return "";
     };
     const disabled = (v) => {
@@ -574,9 +454,8 @@ export default {
         return;
       }
       console.log("selectList.value", pageData.value);
-      if (actionType.value == "1" && !canRedeem.value) return;
-      if (actionType.value == "2") {
-        if (!chooseNum.value) {
+      // if (!canRedeem.value) return;
+      if (!chooseNum.value) {
           Toast(t("sendSNFT.pleaseselect"));
           return;
         }
@@ -595,25 +474,6 @@ export default {
         });
         sessionStorage.setItem("sendSnftList", JSON.stringify(newSelectList));
         router.push({ name: "sendSnft-step2" });
-      } else {
-        const data = chooseSnftData.value;
-        console.log("data-----------------", data);
-        const { MergeLevel, snfts, pledgestate, nft_address, selectFlag } =
-          data;
-        if (selectFlag) {
-          sessionStorage.setItem(
-            "sendSnftList",
-            JSON.stringify([
-              { nft_address: nft_address.substr(0, 41), MergeLevel },
-            ])
-          );
-          // Determine whether there are selected snft fragments
-          router.push({ name: "sendSnft-step2" });
-        } else {
-          Toast(t("sendSNFT.notselected"));
-          return;
-        }
-      }
     };
 
     // Select snft event
@@ -639,69 +499,27 @@ export default {
 
     // Event of successful redemption
     const reLoading = () => {
-      // if (pageData.value.MergeLevel === 2) {
-      //   router.replace({name:"wallet"})
-      //   return
-      // }
       router.replace({name:"wallet"})
-      // Modify cache data and re-initialize page data
-      // const comData = sessionStorage.getItem('compData') ? JSON.parse(sessionStorage.getItem('compData')) : null
-      // if(comData) {
-      //   const idx = swiperIdx.value
-      //   const newData = comData.children[idx]
-      //   for(let i = 0;i< newData.children.length;i++){
-      //     for(let idx =0;idx < newData.children[i].snfts.lengtg;idx++){
-
-      //     }
-      //   }
-
-      // }
       onChange(swiperIdx.value);
     };
     // Optional quantity
     const hasChooseNum = computed(() => {
       let total = 0;
-      const { MergeLevel, disabled, Exchange, Chipcount, snfts, pledgestate } =
+      const { MergeLevel, disabled, exchange, Chipcount, snfts, pledgestate, MergeNumber } =
         pageData.value.children[swiperIdx.value];
-      switch (actionType.value) {
-        case "1":
-        case "3":
-          if (pageData.value.MergeLevel === 2) {
-            total = pageData.value.chipcount;
+        if (pageData.value.MergeLevel === 2) {
+            total = pageData.value.snfts.length;
           }
-          if (Exchange === 1) {
+          if (exchange === 1) {
             total = 0;
-            break;
+   
           }
           if (MergeLevel === 1 && !disabled) {
-            if (pledgestate === "Pledge") {
-              total = 0;
-            } else {
-              total = Chipcount;
-            }
-          }
-          break;
-        case "2":
-          // 兑换'
-          if (pageData.value.MergeLevel === 2) {
-            total = pageData.value.chipcount;
-          }
-          if (Exchange === 1) {
-            total = 0;
-            break;
-          }
-          if (MergeLevel === 1 && !disabled) {
-            if (pledgestate === "Pledge") {
-              total = 0;
-            } else {
-              total = Chipcount;
-            }
+            total = 1;
           }
           if (MergeLevel === 0) {
             total = snfts.length;
           }
-          break;
-      }
 
       return total;
     });
@@ -709,22 +527,21 @@ export default {
     // Amount of data currently selected
     const chooseNum = computed(() => {
       if (pageData.value.MergeLevel === 2) {
-        return pageData.value.Chipcount;
+        return pageData.value.snfts.length;
       }
       const {
         MergeLevel,
-        pledgestate,
         snfts,
-        Chipcount,
         selectFlag,
         disabled,
-        Exchange,
+        MergeNumber,
+        exchange,
       } = pageData.value.children[swiperIdx.value];
-      if (MergeLevel === 1 && Chipcount && selectFlag && !disabled) {
-        return Chipcount;
+      if (MergeLevel === 1 && selectFlag && !disabled) {
+        return 1;
       }
-      if (MergeLevel === 1 && Chipcount && !selectFlag && !disabled) {
-        return 0;
+      if (MergeLevel === 0 && snfts.length && !selectFlag && !disabled) {
+        return selectList.value.length;
       }
       return mySnfts.value.filter((item) => item.select).length;
     });
@@ -739,7 +556,7 @@ export default {
     // Currently selected snft
     const chooseSnftData = computed(
       () => {
-        console.log('pageData.value.children[swiperIdx.value]', pageData.value.children[swiperIdx.value])
+        console.log('chooseSnftData', pageData.value.children[swiperIdx.value])
         return pageData.value.children[swiperIdx.value]
       }
     );
@@ -751,7 +568,7 @@ export default {
 
       if (
         pageData.value.MergeLevel === 2 &&
-        pageData.value.Chipcount
+        pageData.value.snfts.length
       ) {
         return new BigNumber(pageData.value.MergeNumber || 1)
           .multipliedBy(t2)
@@ -759,10 +576,10 @@ export default {
       }
       console.log('---000')
       const data = chooseSnftData.value;
-        const { MergeLevel, snfts, pledgestate, Chipcount, selectFlag } = data;
-        if (MergeLevel === 1 && Chipcount && selectFlag) {
+        const { MergeLevel, snfts, pledgestate, Chipcount, selectFlag, disabled, MergeNumber } = data;
+        if (MergeLevel === 1 &&  !disabled && selectFlag) {
           return parseFloat(
-            new BigNumber(Chipcount).multipliedBy(t1).toFixed(6)
+            new BigNumber(MergeNumber).multipliedBy(t1).toFixed(6)
           );
         }
   
@@ -782,13 +599,13 @@ export default {
     const selectText = computed(() => {
       if (
         pageData.value.MergeLevel === 2 &&
-        pageData.value.Chipcount
+        pageData.value.snfts.length
       ) {
         return `1(C)/0(N)/0(F)`
       }
       const data = chooseSnftData.value;
-        const { MergeLevel, snfts, pledgestate, Chipcount, selectFlag } = data;
-        if (MergeLevel === 1 && Chipcount && selectFlag) {
+        const { MergeLevel, disabled, pledgestate, Chipcount, selectFlag } = data;
+        if (MergeLevel === 1 && !disabled && selectFlag) {
           return `0(C)/1(N)/0(F)`
         }
 
@@ -815,104 +632,29 @@ export default {
       const {
         MergeLevel,
         disabled,
-        Exchange,
+        exchange,
         Chipcount,
         snfts,
         pledgestate,
         selectFlag,
       } = pageData.value.children[swiperIdx.value];
-      switch (actionType.value) {
-        case "1":
-        case "3":
-          if (pageData.value.MergeLevel === 2 && pageData.value.Chipcount) {
+      if (pageData.value.MergeLevel === 2 && pageData.value.snfts.length) {
             total = t2;
-            break;
           }
           if (MergeLevel === 1) {
             total = t1;
-            break;
-          }
-          total = t0;
-          break;
-        case "2":
-          if (pageData.value.MergeLevel === 2 && pageData.value.Chipcount) {
-            total = t2;
-            break;
-          }
-          if (MergeLevel === 1) {
-            total = t1;
-            break;
           }
           if (MergeLevel === 0) {
             total = t0;
-            break;
           }
           total = t0;
-          break;
-      }
       return total;
     });
 
     const selectStakingList = ref([]);
     const showStakingModal = ref(false);
     const stakingTotalAmount = ref(0);
-    const handleStaking = () => {
-      if (pageData.value.MergeLevel === 2 && pageData.value.Chipcount) {
-        selectStakingList.value.push(pageData.value);
-        stakingTotalAmount.value = new BigNumber(
-          pageData.value.MergeNumber || 256
-        )
-          .multipliedBy(0.271)
-          .toNumber();
-        showStakingModal.value = true;
-        return;
-      }
-      // Check whether the SNFT is in the pledgeable state
-      const data = chooseSnftData.value;
-      console.log("data-----------------", data);
-      const { MergeLevel, snfts, pledgestate, selectFlag, MergeNumber } = data;
-      if (selectFlag) {
-        selectStakingList.value.push(data);
-        stakingTotalAmount.value = parseFloat(
-          new BigNumber(snfts.length).multipliedBy(0.143).toFixed(6)
-        );
-        showStakingModal.value = true;
-      } else {
-        Toast(t("sendSNFT.notselected"));
-        return;
-      }
-    };
-
-    const handleReStaking = () => {
-      if (
-        pageData.value.MergeLevel === 2 &&
-        pageData.value.Chipcount &&
-        handlecanRedeem(pageData.value) === true
-      ) {
-        selectStakingList.value.push(pageData.value);
-        stakingTotalAmount.value = new BigNumber(
-          pageData.value.MergeNumber || 256
-        )
-          .multipliedBy(0.271)
-          .toNumber();
-        showStakingModal.value = true;
-        return;
-      }
-      if (!canRedeem.value) return;
-      // Check whether the current SNFT is callable
-      const { MergeLevel, snfts, pledgestate, selectFlag } =
-        chooseSnftData.value;
-      if (selectFlag) {
-        selectStakingList.value.push(chooseSnftData.value);
-        stakingTotalAmount.value = parseFloat(
-          new BigNumber(snfts.length).multipliedBy(0.143).toFixed(6)
-        );
-        // stakingTotalAmount.value = new BigNumber(snfts.length).multipliedBy(0.143).toFixed(6)
-        showStakingModal.value = true;
-      } else {
-        Toast(t("sendSNFT.notselected"));
-      }
-    };
+    
 
     const handleSuccess = () => {
       router.replace({ name: "wallet" });
@@ -924,19 +666,19 @@ export default {
         chooseSnftData.value.selectFlag = !chooseSnftData.value.selectFlag;
       }
     };
-    const handlecanRedeem = (data: any) => {
-      if (typeof data.isUnfreeze === "undefined" || actionType.value !== "1")
-        return "";
-      if (
-        pageData.value.MergeLevel === 2 &&
-        pageData.value.pledgestate === "Pledge"
-      ) {
-        return pageData.value.isUnfreeze === true ? true : false;
-      }
-      return data.isUnfreeze === true && data.pledgestate === "Pledge"
-        ? true
-        : false;
-    };
+    // const handlecanRedeem = (data: any) => {
+    //   if (typeof data.isUnfreeze === "undefined")
+    //     return "";
+    //   if (
+    //     pageData.value.MergeLevel === 2 &&
+    //     pageData.value.pledgestate === "Pledge"
+    //   ) {
+    //     return pageData.value.isUnfreeze === true ? true : false;
+    //   }
+    //   return data.isUnfreeze === true && data.pledgestate === "Pledge"
+    //     ? true
+    //     : false;
+    // };
 
     const totalChip = computed(() => {
       if(pageData.value.MergeLevel === 2) return pageData.value.totalcount
@@ -955,9 +697,9 @@ export default {
 
     }
     const getTipText = (item: any) => {
-      const { disabled, MergeLevel, Exchange } = item
-      console.warn('getTipText', item, pageData.value.MergeLevel)
-      if(Exchange) {
+      const { disabled, MergeLevel, exchange } = item
+      // console.warn('getTipText', item, pageData.value.MergeLevel)
+      if(exchange) {
         return t('converSnft.converted')
       }
       if(disabled) {
@@ -994,17 +736,18 @@ export default {
       getTipText,
       getClass,
       totalChip,
-      handleReStaking,
+      handleSelectSingleSnft,
+      // handleReStaking,
       selectSingleSnft,
       imgGary,
       imgGarySmall,
       canRedeem,
       showConvertBtn,
-      showStakingBtn,
-      showReStakingBtn,
+      // showStakingBtn,
+      // showReStakingBtn,
       showSendBtn,
       hasDisabled,
-      handleStaking,
+      // handleStaking,
       handleSuccess,
       showStakingModal,
       selectStakingList,
@@ -1013,13 +756,12 @@ export default {
       to,
       hancleClick,
       selectSnft,
-      actionType,
       chooseData,
       totalAmount,
       reLoading,
       onChange,
       addressMask,
-      handlecanRedeem,
+      // handlecanRedeem,
       swipe,
       chooseNum,
       chooseName,
@@ -1097,7 +839,7 @@ export default {
     background: rgba($color: #000, $alpha: .5);
     // left: 2px;
     // top: 2px;
-    z-index: 1000;
+    z-index: 888;
 }
       }
       &.shining{
@@ -1235,6 +977,18 @@ export default {
     }
     img:hover {
       border: 1PX solid #9F54BA;
+    }
+    &.select::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba($color: #9F54BA, $alpha: .4);
+      display: block;
+      border-radius:7px;
+      border: 1px solid #9F54BA;
     }
   }
 

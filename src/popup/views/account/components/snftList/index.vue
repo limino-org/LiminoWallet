@@ -37,7 +37,6 @@
           :key="idx"
           :data="item"
           :index="idx"
-          :status="chooseType.value"
           @changeSelect="changeSelect"
           :showIcon="showConvert"
           :selectAll="selectAll"
@@ -64,14 +63,19 @@
       </div>
     </div>
   </van-list>
-  <!-- </van-pull-refresh> -->
+
   <Transition name="slider">
-    <div :class="`flex center buySnft pb-30 pt-30 ${bugTipClass}`" v-if="showBuyTip">
-      <i18n-t keypath="wallet.buySnft" tag="div" class="text-center f-12">
+      <div class="load-tip flex center" v-if="showConvert && loadNft">
+        <div class="load-tip-con flex-1 flex center"><van-loading color="#9F54BA"  size="13"/> <span class="ml-4">{{ t('common.loading') }}</span></div>
+      </div>
+  </Transition>
+
+  <!-- </van-pull-refresh> -->
+  <SliderBottom>
+    <i18n-t keypath="wallet.buySnft" tag="div" class="text-center f-12">
         <template v-slot:link><a :href="VUE_APP_OFFICIAL_EXCHANGE" target="__blank">{{ t('wallet.findMore') }}</a></template>
       </i18n-t>
-    </div>
-  </Transition>
+  </SliderBottom>
   <!-- nft snft -->
   <TransferNFT
     v-model="showConvert"
@@ -102,12 +106,8 @@
 import SNftCard from "./snftCard.vue";
 import {
   queryOwnerSnftCollections,
-  querySnftByCollection,
-  collectionListPage,
   QuerySnftChip,
-  snft_com_page,
-  queryArraySnft,
-  queryCollectionAllSnft,
+  queryAllSnftByCollection
 } from "@/popup/http/modules/nft";
 
 import eventBus from "@/popup/utils/bus";
@@ -133,13 +133,10 @@ import TransferNFT from "@/popup/views/home/components/transferNft.vue";
 import TransferNFTModal from "@/popup/views/home/components/transferNFTModal.vue";
 
 import { useStore } from "vuex";
-import { List, Toast, Button, Sticky, PullRefresh, Switch } from "vant";
+import { List, Toast, Button, Sticky, PullRefresh, Switch, Loading } from "vant";
 import { useI18n } from "vue-i18n";
-import { emit } from "process";
-import { getWallet } from "@/popup/store/modules/account";
-import axios from "axios";
-import { guid } from "@/popup/utils";
 import { VUE_APP_OFFICIAL_EXCHANGE } from "@/popup/enum/env";
+import SliderBottom from "@/popup/components/sliderBottom/index.vue";
 import { debounce } from "@/popup/utils/utils";
 export default defineComponent({
   name: "snft-list",
@@ -148,11 +145,13 @@ export default defineComponent({
     [List.name]: List,
     [Sticky.name]: Sticky,
     [Switch.name]: Switch,
+    [Loading.name]: Loading,
     TransferNFT,
     TransferNFTModal,
     [Button.name]: Button,
     [PullRefresh.name]: PullRefresh,
     SnftModal,
+    SliderBottom
   },
   emits: ["onLoad", "changeSwitch"],
   setup(props: any, context: SetupContext) {
@@ -160,8 +159,7 @@ export default defineComponent({
     const { t } = useI18n();
     const layoutType = computed(() => store.state.system.layoutType);
     const accountInfo = computed(() => store.state.account.accountInfo);
-    const network = ref(null);
-    const blockNumber = ref(null);
+
     const pageData = reactive({ nftList: [] });
     // nft load
     const loadNft: Ref<boolean> = ref(false);
@@ -181,23 +179,7 @@ export default defineComponent({
       reLoading();
     });
 
-    const updateNetwork = async () => {
-      if (!network.value) {
-        const wallet = await getWallet();
-        network.value = await wallet.provider.getNetwork();
-        console.log("network.value", network.value);
-        return network.value;
-      }
-      return network.value;
-    };
-    const updateBlockNumber = async () => {
-      const wallet = await getWallet();
-      blockNumber.value = await wallet.provider.getBlockNumber();
-      console.log("blockNumber.value", blockNumber.value);
-      return blockNumber.value;
-    };
 
-    const cancelList = [];
     // Classified data
     const categoryList = ref(new Map());
     // Gets a collection of specified accounts
@@ -205,16 +187,7 @@ export default defineComponent({
       if (isChangeAccount) {
         return {};
       }
-      await updateNetwork();
-      if (isChangeAccount) {
-        return {};
-      }
-      await updateBlockNumber();
-      if (isChangeAccount) {
-        return {};
-      }
-      showConvert.value = false;
-      context.emit("changeSwitch", false);
+      // context.emit("changeSwitch", false);
       try {
         const { data, total_count } = await queryOwnerSnftCollections(
           sendParams
@@ -245,47 +218,15 @@ export default defineComponent({
           const snftList = await Promise.all(proList);
           console.warn("snftList", snftList);
           data.forEach((child: any, idx: number) => {
-            const snfts = snftList[idx];
-            snfts.forEach((item: any, index: number) => {
-              const { nft_contract_addr, nft_token_id, Exchange, MergeLevel } =
-                item;
-              item.loaded = false;
-              console.warn("MergeLevel", MergeLevel);
-              switch (MergeLevel) {
-                case 1:
-                  break;
-                case 0:
-                  break;
-              }
-              snftchipList.push({
-                nft_contract_addr,
-                nft_token_id,
-                index,
-                idx,
-                Exchange: Exchange || null,
-              });
-            });
-            child.children = toRaw(snfts);
-            child.FullNFTs = toRaw(snfts);
+            const snftsData = snftList[idx];
+            const {snfts, snftChips} = snftsData
             child.img_url = child.img;
-            child.total_hold = child.chipcount;
-            child.Chipcount = child.chipcount;
             child.address = snfts[0].nft_address.substr(0, 40);
             child.nft_address = child.address;
-            child.pledgestate =
-              chooseType.value.value === "1" ? "Pledge" : "NoPledge";
-            if (child.pledgestate === "Pledge") {
-              if (network.value.chainId === 51888) {
-                child.isUnfreeze =
-                  blockNumber.value - child.BlockNumber > 72 ? true : false;
-              } else {
-                child.isUnfreeze =
-                  blockNumber.value - child.BlockNumber > 6307200
-                    ? true
-                    : false;
-              }
-              child.disabled = child.isUnfreeze ? false : true;
-            }
+            
+            
+            data[idx]['FullNFTs'] = snfts
+            data[idx]['children'] = snfts
           });
           if (isChangeAccount) {
             return {};
@@ -331,54 +272,28 @@ export default defineComponent({
     };
     // Check SNFT of collection according to name
     const getSnfts = async (params: any) => {
-      const { createaddr, name, owner_addr } = params;
-      let delList = [];
+      const { owner_addr } = params;
       try {
-        const { data }: any = await querySnftByCollection(params);
-        console.log("snfts data", data);
-        if (data.length < 16) {
-          const { data: data2 } = await queryCollectionAllSnft({
-            createaddr,
-            name,
-          });
-          const nftAddrList = data.map((item: any) =>
-            item.nft_address.toUpperCase()
-          );
-          console.log("nftAddrList", nftAddrList);
-          delList = data2
-            .filter((item) => {
-              if (!nftAddrList.includes(item.nft_address.toUpperCase())) {
-                return item;
-              }
-            })
-            .filter((item: any, index: number) => {
-              item.Chipcount = 0;
-              item.snfts = [];
-              item.index = data.length + index;
-              item.loaded = true;
-              item.actionType = chooseType.value.value;
-              return item;
-            });
-        }
-        console.warn("delList", delList);
-        data.push(...delList);
-        data.forEach((item: any) => {
-          const { BlockNumber, nft_address, Chipcount } = item;
-          // console.warn('nowBlockNumber', nowBlockNumber)
-          // console.warn('BlockNumber', BlockNumber, network.value.chainId )
-          if (BlockNumber) {
-            item.isUnfreeze =
-              blockNumber.value - BlockNumber >
-              (network.value.chainId === 51888 ? 72 : 6307200)
-                ? true
-                : false;
-          }
-          item.address = nft_address.substr(0, 40);
-          item.actionType = chooseType.value.value;
-          item.select = false;
-          item.id = nft_address.substr(39);
-          item.total_hold = Chipcount;
-        });
+        const {data}: any = await queryAllSnftByCollection(params);
+        console.log('res', data)
+        const { snftChips, snfts } = data
+        console.log("snfts snftChips", snftChips);
+        console.log("snfts", snfts);
+        snfts.forEach((item: any) => {
+          item['MergeLevel'] = item.mergelevel
+          item['MergeNumber'] = item.mergenumber
+          item.id = item.nft_address.substr(39).replaceAll('m','');
+          const mySnfts = snftChips.map(child => {
+            if(child.ownaddr.toUpperCase() == owner_addr.toUpperCase()){
+              const childAddr = child.nft_address.substr(0, child.nft_address.length - 1)
+              const fatherAddr = item.nft_address.substr(0, item.nft_address.length - 1)
+            if(childAddr.toUpperCase() == fatherAddr.toUpperCase()){
+              return child.nft_address
+            }
+            }
+          }).filter(s => s)
+          item['snfts'] = mySnfts
+        })
         return data;
       } catch (err) {
         console.error(err);
@@ -406,7 +321,7 @@ export default defineComponent({
           owner_addr,
           status: p[status],
         });
-        handleAll(false);
+        // handleAll(false);
         if (!list || !list.length) {
           finished.value = true;
         }
@@ -541,52 +456,22 @@ export default defineComponent({
         pledgestate,
         Chipcount,
         disabled,
+        snfts,
         isUnfreeze,
         DeletedAt,
         MergeLevel,
+        ownaddr
       } = item;
-      const { status } = props;
-      if (status == "3") {
-        return disabled ? "disabled" : "";
-      }
-      if (status == "2") {
-        if (pledgestate == "Pledge" || !Chipcount) {
+
+      if (MergeLevel == 0 && !snfts.length) {
           return "disabled";
-        }
       }
-      if (status == "1") {
-        if (
-          pledgestate == "NoPledge" ||
-          (typeof isUnfreeze != "undefined" && isUnfreeze === false) ||
-          DeletedAt ||
-          MergeLevel !== 1
-        ) {
+      if (MergeLevel > 0 && ownaddr.toUpperCase() != accountInfo.value.address.toUpperCase()) {
           return "disabled";
-        }
       }
       return "";
     };
     const selectedText = computed(() => {
-      const { value } = chooseType.value;
-      let totalSnft = 0;
-      let totalColl = 0;
-      if (value == "1" || value == "3") {
-        Object.keys(checkObjs.data).forEach((key) => {
-          if (key && key != "undefined") {
-            checkObjs.data[key].forEach((child) => {
-              const { MergeLevel } = child;
-              if (MergeLevel === 2) {
-                totalColl += 1;
-              }
-              if (MergeLevel === 1) {
-                totalSnft += 1;
-              }
-            });
-          }
-        });
-        return `${totalColl}(C)/${totalSnft}(N)/0(F)`;
-      }
-      if (value == "2") {
         let totalChip = 0;
         let totalSnft = 0;
         let totalColl = 0;
@@ -609,7 +494,7 @@ export default defineComponent({
           }
         });
         return `${totalColl}(L2)/${totalSnft}(L1)/${totalChip}(L0)`;
-      }
+ 
     });
     // List of selections
     const selectList = computed(() => {
@@ -637,6 +522,11 @@ export default defineComponent({
       console.warn("select-----------------", select);
       selectAll.value = select;
     };
+
+    // const showSlider = ref(false)
+    // watch(() => [showConvert.value,loadNft.value], (n) => {
+    //   console.warn('watch slider', n)
+    // })
 
     watch(
       () => selectAll.value,
@@ -723,51 +613,8 @@ export default defineComponent({
       return parseFloat(new BigNumber(am).div(total).toFixed(5));
     });
 
-    const showBuyTip = ref(true)
-    let oldScrollTop = 0
-    const scrolling = () => {
-      if(pageData.nftList.length < 3) {
-        return
-      }
-        let scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
-      let scrollStep = scrollTop - oldScrollTop;
-      oldScrollTop = scrollTop;
-      if (scrollStep < 0) {
-        console.log("scroll up.")
-        if(!showBuyTip.value)showBuyTip.value = true
-      } else {
-        if(showBuyTip.value)showBuyTip.value = false
-        console.log("scroll down.")
-      }
-    }
-    
-    const deFun = debounce(scrolling, 300)
-    const bugTipClass = ref('')
-    const watchList = (val: any) => {
-      if(val && val.length > 2) {
-        !bugTipClass.value ? bugTipClass.value = 'fixed' : ''
-        // if(showBuyTip.value)showBuyTip.value = false 
-      } else {
-        bugTipClass.value ? bugTipClass.value = '' :''
-        // if(!showBuyTip.value)showBuyTip.value = true 
-      }
-    }
-    
-    watch(()=> pageData.nftList, watchList , {
-      deep: true,
-      immediate: true
-    })
-    onMounted(() => {
-      window.addEventListener('scroll', deFun)
-    })
-
-    onUnmounted(() => {
-      window.removeEventListener('scroll', deFun)
-    })
     return {
       ratio,
-      showBuyTip,
-      bugTipClass,
       handleChoose,
       chooseType,
       selectedText,
@@ -776,7 +623,6 @@ export default defineComponent({
       onRefresh,
       layoutType,
       handleOnLoad,
-
       pageData,
       changeSelect,
       showConvert,
@@ -802,6 +648,22 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
+
+.load-tip {
+  position: fixed;
+  bottom: 100px;
+  width: 100px;
+  left: 50%;
+  margin-left: -50px;
+  padding: 3px 5px;
+  box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  background: #fff;
+  color: #9F54BA;
+  &-con {
+   
+  }
+}
 .nft-list-box {
   &.mb-90 {
     margin-bottom: 70px;

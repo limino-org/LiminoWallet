@@ -3,7 +3,7 @@
     <div class="token-card-left flex between">
       <div class="token-icon flex center">
         <div class="icon-box flex center">
-          <img src="@/assets/icon_black.svg" alt />
+          <img src="@/assets/icon_black.svg" />
         </div>
       </div>
       <div class="token-info flex center f-12">{{ data.name }}</div>
@@ -87,6 +87,7 @@ export default defineComponent({
     transition: ease 0.3s;
     cursor: pointer;
     background: #F8F3F9;
+    color:#9F54BA;
   }
   &-left {
     .token-icon {

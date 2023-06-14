@@ -2,7 +2,7 @@ function generateRandom() {
   return Math.random().toString(16).slice(2);
 }
 
-const events = [
+var events = [
   'connect',
   // 'disconnect',
   'chainChanged',

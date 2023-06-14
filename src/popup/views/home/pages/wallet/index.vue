@@ -186,11 +186,7 @@
                           @mouseover="showPopover2 = true"
                           @mouseleave="handleMouseLeave2"
                           @click="toExchange"
-                          v-show="
-                            ethAccountInfo
-                              ? ethAccountInfo.ExchangerFlag
-                              : false
-                          "
+                          v-show="hasExchange"
                         >
                           <span class="user flex center">
                             <i
@@ -348,6 +344,12 @@
               :data="item"
               toName="transactionDetails-step1"
             />
+          </template>
+        </van-tab>
+        <van-tab name="b">
+          <template #title>{{ $t("wallet.NFTs") }}</template>
+          <template #default>
+            <NftList />
           </template>
         </van-tab>
         <!-- snft list -->
@@ -705,6 +707,7 @@ export default {
       router.push({ name: "tokens-import" });
     };
     const handleChangeIsselect = (v: boolean) => {
+      console.warn('handleChangeIsselect',v)
       isSelect.value = v;
     };
 

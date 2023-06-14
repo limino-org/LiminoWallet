@@ -233,9 +233,6 @@ export default defineComponent({
           $tradeConfirm.update({ status: "fail", hash:txData.hash });
         }
       } catch (err: any) {
-        console.warn('idx', err.toString().indexOf("timeout"))
-        console.log('err:===', err)
-        console.log('t("error.timeout")', t("error.timeout"))
         if (err.toString().indexOf("timeout") > -1) {
           if(await store.dispatch('account/checkIsTxHash', txData.hash)) {
             $tradeConfirm.update({

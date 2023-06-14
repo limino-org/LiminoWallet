@@ -171,7 +171,9 @@
 		"cancel": "Cancel",
 		"to": "To",
 		"send": "Send",
-		"title": "Please check whether the receiving address is correct and retype it."
+		"title": "Please check whether the receiving address is correct and retype it.",
+		"nftAddr":"Nft Address"
+
 	},
 	"introductorypage": {
 		"bootstrap1": "Welcome to Wormholes",
@@ -364,9 +366,9 @@
 		"imageTips": "Click upper area to upload Recommended size: 500px * 500px Supported format: PNG, size: within 1m",
 		"next": "Next",
 		"collectibleName": "Collectible Name",
-		"collectibleNamePlaceholder": "4-60 characters, Chinese. English. Numbers. Underscore",
+		"collectibleNamePlaceholder": "4-60 characters, Chinese. English. Numbers.",
 		"collectionIntroduction": "Collection Introduction",
-		"collectionIntroductionPlaceholder": "4-60 characters, Chinese. English. Numbers. Underscore",
+		"collectionIntroductionPlaceholder": "4-60 characters, Chinese. English. Numbers.",
 		"royalty": "Royalty",
 		"royaltyPlaceholder": "Enter Royalties",
 		"category": "Category",
@@ -382,7 +384,7 @@
 		"errorEntered": "Entered is not in the correct format",
 		"numbersof": "Numbers of 0-10",
 		"selectaCollectionCategory": "Select a Collection Category",
-		"urlpopover": "Please Enter the nftMeta.SourceUrl",
+		"urlpopover": "Please enter the NFT source file URL.",
 		"urlpopover2": "nftMeta.SourceUrl = 'ipfs' + SourceUrl",
 		"namepopover": "can trigger key associations and enrich the audience experience~",
 		"namepopover2": "A good name ",
@@ -1160,6 +1162,8 @@
 		"network": "Network"
 	},
 	"common": {
+		"checkText":"Checking, please wait...",
+		"urlErr":"Invalid link",
 		"clearCancheSuccess": "Cache cleared successfully",
 		"clearCanche": "Clear Cache",
 		"commingsoon": "Coming Soon!",

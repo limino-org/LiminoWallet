@@ -27,13 +27,13 @@
           {{ addressMask(pageData.data.address) }}
         </div>
       </div>
-      <div class="content">
+      <!-- <div class="content">
         <div class="form-titie">{{ t("sendNFT.amount") }}</div>
         <div class="form-content">
-          <!-- 0 ERB / $ 0 -->
+
           {{ pageData.data.royalty_ratio }}ERB
         </div>
-      </div>
+      </div> -->
     </div>
     <!-- function -->
     <div class="flex evenly">
@@ -199,7 +199,7 @@ export default {
   }
   .form {
     margin: 20px;
-    height: 205px;
+    /* height: 205px; */
     &:after {
       border-radius: 5px;
     }

@@ -193,7 +193,7 @@ setup() {
         });
         // await localforage.setItem("mnemonic", mnemonicData);
         commit('mnemonic/UPDATE_MNEMONIC', mnemonicData)
-
+            
               await dispatch('account/addAccount', {
                 keyStore,
                 mnemonic: mnemonicParams,

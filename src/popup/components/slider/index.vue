@@ -139,8 +139,7 @@
                       @mouseover="showPopover2 = true"
                       @mouseleave="handleMouseLeave2"
                       @click="oneClick"
-                      v-show="
-                        ethAccountInfo ? ethAccountInfo.ExchangerFlag : false
+                      v-show="hasExchange
                       "
                     >
                       <span class="user flex center">

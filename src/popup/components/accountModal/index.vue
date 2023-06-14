@@ -632,6 +632,12 @@ function getHostName(url = "") {
   transition: ease 0.3s;
   &:hover {
     background: #F8F3F9;
+    color:#9F54BA;
+    
+    .account-value,.account-name i {
+      color:#9F54BA;
+
+    }
   }
   .account-icon {
     padding: 0 6px 0 0;

@@ -231,7 +231,6 @@ export default defineComponent({
     const { $tradeConfirm } = useTradeConfirm();
     const showModal: Ref<boolean> = ref(false);
     const { dispatch, commit, state } = useStore();
-    const { currentNetwork } = state.account;
     watch(
       () => props.modelValue,
       (n) => {
@@ -293,22 +292,8 @@ export default defineComponent({
       let fstr = 0;
       let numstr = "";
       let count = 0;
-      console.warn("props.txtype", props.txtype);
-      switch (props.txtype) {
-        case "1":
-          approveMessage = t("minerspledge.close_approve");
-          wattingMessage = t("minerspledge.close_waiting");
-          successMessage = t("minerspledge.close_success");
-          failMessage = t("minerspledge.close_wrong");
-          break;
-        case "3":
-          approveMessage = t("minerspledge.create_approve");
-          wattingMessage = t("minerspledge.create_waiting");
-          successMessage = t("minerspledge.create_success");
-          failMessage = t("minerspledge.create_wrong");
-          break;
-        case "2":
-          const { t0, t1, t2, t3 } = state.configuration.setting.conversion;
+      console.warn("props.txtype", props.txtype, props.type);
+      const { t0, t1, t2, t3 } = state.configuration.setting.conversion;
 
           // coll conver
           if (props.type == "2") {
@@ -322,11 +307,11 @@ export default defineComponent({
               ) {
                 props.selectList[key].forEach((item) => {
                   
-                  const { MergeLevel, MergeNumber } = item;
+                  const { MergeLevel, MergeNumber, snfts } = item;
                   if (MergeLevel == 0) {
                     amount = amount.plus(t0);
-                    fstr++;
-                    newCount = newCount + 1;
+                    fstr+=snfts.length;
+                    newCount = newCount + snfts.length;
                   }
                   if (MergeLevel == 1) {
                     amount = amount.plus(
@@ -353,6 +338,11 @@ export default defineComponent({
               }
             });
             count = newCount;
+
+            console.warn('props.txtype newCount',newCount)
+            console.warn('props.txtype amount',amount)
+            console.warn('props.txtype cstr',cstr)
+            console.warn('props.txtype selectList',props.selectList)
           }
           // chip conver
           if (props.type == "1") {
@@ -396,18 +386,14 @@ export default defineComponent({
           console.warn("numstr fstr", fstr);
 
           console.warn("numstr", numstr);
+
           approveMessage = t("wallet.conver_approve");
           wattingMessage = t("wallet.conver_waiting", {
             count: `<span style='color:#9F54BA;'>${count}</span>`,
             amount: `<span style='color:#9F54BA;'>${amount.toNumber()}</span>`,
             countstr: numstr,
           });
-          // wattingMessageType:"html",
-          // successMessage = t("minerspledge.transfer_success");
-          // failMessage = t("minerspledge.transfer_wrong");
 
-          break;
-      }
       $tradeConfirm.open({
         approveMessage,
         successMessage,
@@ -486,7 +472,7 @@ export default defineComponent({
               $tradeConfirm.update({
                 status: "success",
                 successMessage: t("wallet.conver_success", {
-                  count: `<span style='color:#9F54BA;'>${count}</span>`,
+                  count: `<span style='color:#9F54BA;'>${list.length}</span>`,
                   amount: `<span style='color:#9F54BA;'>${amount.toNumber()}</span>`,
                 }),
                 successMessageType: "html",
@@ -560,11 +546,13 @@ export default defineComponent({
             $tradeConfirm.update({ status: "approve" });
             const receiptList = await dispatch("account/waitTxQueueResponse");
             const successList = receiptList.map((item: any) => item.status);
-            if (successList.length == count) {
+            console.warn('successList', successList.length)
+            console.warn('receiptList', receiptList.length)
+            if (successList.length == list.length) {
               $tradeConfirm.update({
                 status: "success",
                 successMessage: t("wallet.conver_success", {
-                  count: `<span style='color:#9F54BA;'>${count}</span>`,
+                  count: `<span style='color:#9F54BA;'>${list.length}</span>`,
                   amount: `<span style='color:#9F54BA;'>${amount.toNumber()}</span>`,
                 }),
                 successMessageType: "html",
@@ -575,7 +563,7 @@ export default defineComponent({
               $tradeConfirm.update({
                 status: "fail",
                 failMessage: t("wallet.conver_wrong", {
-                  count: count - successList.length,
+                  count: list.length - successList.length,
                 }),
                 successMessageType: "html",
               });
@@ -633,7 +621,7 @@ export default defineComponent({
             $tradeConfirm.update({
               status: "success",
               successMessage: t("wallet.conver_success", {
-                count: `<span style='color:#9F54BA;'>${count}</span>`,
+                count: `<span style='color:#9F54BA;'>${list.length}</span>`,
                 amount: `<span style='color:#9F54BA;'>${amount.toNumber()}</span>`,
               }),
               successMessageType: "html",
@@ -656,62 +644,21 @@ export default defineComponent({
       }
     };
 
-    // High and low yield copy
-    const incomeText = computed(() => {
-      if (props.type == "2") {
-        const arr = [];
-        // Calculate conversion ratio
-        const keys = Object.keys(props.selectList).filter(
-          (item) => item != "undefined"
-        );
-        keys.forEach((key: string) => {
-          const list = props.selectList[key];
-          if (list.length) {
-            const totalChip = list.reduce(
-              (total, item) => total + item.Chipcount
-            );
-            if (totalChip == 256) {
-              if (!arr.includes("0.225")) {
-                arr.push("0.225");
-              }
-            } else {
-              list.forEach((item: any) => {
-                if (item.Chipcount == 256) {
-                  if (!arr.includes("0.15")) {
-                    arr.push("0.15");
-                  }
-                } else {
-                  if (!arr.includes("0.1")) {
-                    arr.push("0.1");
-                  }
-                }
-              });
-            }
-          }
-        });
-        if (arr.length) {
-          return new BigNumber(arr.reduce((total, num) => total + Number(num)))
-            .div(arr.length)
-            .toNumber();
-        }
-      }
-      return "1:0.1";
-    });
 
     const submitText = computed(() => {
-      let str = "";
-      switch (props.txtype) {
-        case "2":
-          str = t("converSnft.converTit");
-          break;
-        case "3":
-          str = t("createminerspledge.stake");
-          break;
-        case "1":
-          str = t("createExchange.redemption");
-          break;
-      }
-      return str;
+      // let str = "";
+      // switch (props.txtype) {
+      //   case "2":
+      //     str = t("converSnft.converTit");
+      //     break;
+      //   case "3":
+      //     str = t("createminerspledge.stake");
+      //     break;
+      //   case "1":
+      //     str = t("createExchange.redemption");
+      //     break;
+      // }
+      return t("converSnft.converTit");
     });
 
     const myprofit = ref("");
@@ -796,20 +743,7 @@ export default defineComponent({
       let list = [];
       let allsnftList = [];
       if (props.type == "2") {
-        if (props.txtype == "1" || props.txtype == "3") {
-          const keys = Object.keys(props.selectList).filter(
-            (item) => item != "undefined"
-          );
-          for (let key of keys) {
-            props.selectList[key].forEach((child: any) => {
-              const { nft_address, snfts } = child;
-              list.push(nft_address);
-              allsnftList.push(child.nft_address);
-            });
-          }
-        }
 
-        if (props.txtype == "2") {
           const keys = Object.keys(props.selectList).filter(
             (item) => item != "undefined"
           );
@@ -829,15 +763,13 @@ export default defineComponent({
                 console.warn("chip", child);
                 if (
                   MergeLevel == 0 &&
-                  Chipcount > 0 &&
+                  snfts.length > 0 &&
                   pledgestate == "NoPledge"
                 ) {
-                  console.warn("未质押", nft_address, snfts);
                   list.push(...snfts);
                   allsnftList.push(...snfts);
                 }
                 if (MergeLevel > 0 && Chipcount && pledgestate == "NoPledge") {
-                  console.warn("未质押", nft_address, snfts);
                   let newNftAddr = nft_address;
                   switch (MergeLevel) {
                     case 2:
@@ -855,7 +787,7 @@ export default defineComponent({
               });
             }
           }
-        }
+   
       }
       // chip transfer
       if (props.type == "1") {
@@ -918,31 +850,14 @@ export default defineComponent({
       let nftAddr = nft_address;
       // const addlen = nft_address.length
       // if(addlen < 42) {
-      //   const diff = 42 - addlen
-      //   diff == 1 ? nftAddr + '0' : ''
-      //   diff == 2 ? nftAddr + '00' : ''
-      //   diff == 3 ? nftAddr + '000' : ''
+      //   // const diff = 42 - addlen
+      //   // diff == 1 ? nftAddr += '0' : ''
+      //   // diff == 2 ? nftAddr += '00' : ''
+      //   // diff == 3 ? nftAddr += '000' : ''
       // }
-      switch (props.txtype) {
-        // conversion
-        case "2":
-          str = `wormholes:{"type":6,"nft_address":"${nftAddr}","version":"v0.0.1"}`;
-          break;
-        // To pledge
-        case "3":
-          str = `wormholes:{"type":7,"nft_address":"${nftAddr.substr(
-            0,
-            41
-          )}","version":"0.0.1"}`;
-          break;
-        // redeemable
-        case "1":
-          str = `wormholes:{"type":8,"nft_address":"${nftAddr.substr(
-            0,
-            41
-          )}","version":"0.0.1"}`;
-          break;
-      }
+      console.warn('nftAddr', nftAddr)
+
+      str = `wormholes:{"type":6,"nft_address":"${nftAddr}","version":"v0.0.1"}`
       console.log("str-------------------", str);
       const data3 = toHex(str);
       const tx1 = {
@@ -968,7 +883,6 @@ export default defineComponent({
       handleComfirm,
       loading,
       time,
-      incomeText,
       addressMask,
     };
   },

@@ -102,6 +102,10 @@ export default defineComponent({
     border-bottom: 1PX solid rgba($color: #B3B3B3, $alpha: 0.5);
     &:hover {
       background: #F8F3F9;
+      color:#9F54BA;
+      .info .address {
+        color:#9F54BA;
+      }
     }
     .icon {
       width: 35px;

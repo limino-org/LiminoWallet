@@ -29,12 +29,16 @@
               @click="showPopover = false"
             >
               <span class="lh-14">{{ $t("castingnft.urlpopover") }}</span>
-              <span class="highSpan block">
+              <!-- <span class="highSpan block">
                 {{ $t("castingnft.urlpopover2") }}
-              </span>
+              </span> -->
             </div>
             <template #reference>
-              <van-icon name="question hover" @mouseover="showPopover = true" @mouseout="showPopover = false" />
+              <van-icon
+                name="question hover"
+                @mouseover="showPopover = true"
+                @mouseout="showPopover = false"
+              />
             </template>
           </van-popover>
         </div>
@@ -42,7 +46,10 @@
           v-model="meta_url"
           name="meta_url"
           :placeholder="$t('castingnft.metaUrlPlaceholder')"
-          :rules="[{ required: true, message: t('castingnft.errorEntered') }]"
+          :rules="[
+            { required: true, message: t('castingnft.errorEntered') },
+            { validator: validMetaUrl,trigger:'onSubmit' },
+          ]"
         />
         <div class="text-bold f-12 mt-10 mb-6 lh-16 form-tit">
           <span class="warning">*</span>
@@ -63,7 +70,11 @@
               <span class="lh-14">{{ $t("castingnft.namepopover") }}</span>
             </div>
             <template #reference>
-              <van-icon name="question hover" @mouseover="showPopover1 = true" @mouseout="showPopover1 = false" />
+              <van-icon
+                name="question hover"
+                @mouseover="showPopover1 = true"
+                @mouseout="showPopover1 = false"
+              />
             </template>
           </van-popover>
         </div>
@@ -99,7 +110,11 @@
               {{ $t("castingnft.descpopover") }}
             </div>
             <template #reference>
-              <van-icon name="question hover" @mouseover="showPopover2 = true" @mouseout="showPopover2 = false" />
+              <van-icon
+                name="question hover"
+                @mouseover="showPopover2 = true"
+                @mouseout="showPopover2 = false"
+              />
             </template>
           </van-popover>
         </div>
@@ -137,7 +152,11 @@
               {{ $t("castingnft.royaltypopover") }}
             </div>
             <template #reference>
-              <van-icon name="question hover" @mouseover="showPopover3 = true" @mouseout="showPopover3 = false" />
+              <van-icon
+                name="question hover"
+                @mouseover="showPopover3 = true"
+                @mouseout="showPopover3 = false"
+              />
             </template>
           </van-popover>
         </div>
@@ -147,13 +166,7 @@
           type="digit"
           @blur="blurRoyalty"
           :placeholder="$t('castingnft.royaltyPlaceholder')"
-          :rules="[
-            { required: true, message: t('castingnft.numbersof') },
-            {
-              validator: asyncRoyalty,
-              message: t('createAccountpage.inconsistentPwd'),
-            },
-          ]"
+          :rules="[{ required: true, message: t('castingnft.numbersof') }]"
         />
         <div class="text-bold f-12 mt-10 mb-6 form-tit lh-16">
           <span class="warning">*</span>
@@ -170,10 +183,14 @@
               class="f-12 pl-10 pr-10 pt-10 pb-10"
               @click="showPopover4 = false"
             >
-              {{ $t("castingnft.royaltypopover") }}
+              {{ $t("castingnft.categorypopover") }}
             </div>
             <template #reference>
-              <van-icon name="question hover" @mouseover="showPopover4 = true" @mouseout="showPopover4 = false" />
+              <van-icon
+                name="question hover"
+                @mouseover="showPopover4 = true"
+                @mouseout="showPopover4 = false"
+              />
             </template>
           </van-popover>
         </div>
@@ -209,7 +226,16 @@
     </van-form>
   </div>
   <!-- Classification of pop-ups -->
-  <Categoryform v-model="setAmountModal" @handleComfirm="handleComfirm" :selectId="category.value" />
+  <Categoryform
+    v-model="setAmountModal"
+    @handleComfirm="handleComfirm"
+    :selectId="category.value"
+  />
+  <CreateNftModal
+    v-model="showNftModal"
+    :tx="txPorp"
+    @handleComfirm="handleCreate"
+  />
 </template>
 <script lang="ts">
 import Vue from "vue";
@@ -237,9 +263,13 @@ import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
 import Categoryform from "@/popup/components/categoryform/index.vue";
 import BigNumber from "bignumber.js";
-import { web3 } from "@/popup/utils/web3";
-import { collectibleRules,regExchangeName } from "@/popup/enum/regexp";
-import { encode, decode } from 'js-base64';
+import { collectibleRules, regExchangeName } from "@/popup/enum/regexp";
+import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
+import { TradeStatus } from "@/popup/plugins/tradeConfirmationsModal/tradeConfirm";
+import { getWallet, wallet } from "@/popup/store/modules/account";
+import axios from "axios";
+import CreateNftModal from "./../components/createNftModal.vue";
+import { useToast } from "@/popup/plugins/toast";
 export default {
   name: "createNft-step2",
   components: {
@@ -258,11 +288,14 @@ export default {
     [Picker.name]: Picker,
     [Popup.name]: Popup,
     Categoryform,
+    CreateNftModal,
   },
   setup() {
     const { t } = useI18n();
     const router = useRouter();
     const { state, dispatch } = useStore();
+    const { $toast } = useToast();
+
     const active = ref(1);
     const meta_url = ref("");
     const name: Ref<string> = ref("");
@@ -275,39 +308,109 @@ export default {
     };
 
     const loading = ref(false);
+    const txPorp = ref({});
+    const validMetaUrl = async (v) => {
+      Toast.loading({
+        duration: 0,
+        message: t("common.checkText"),
+        forbidClick: true,
+      });
+      console.log(v);
+      try {
+        const data = await axios.get(meta_url.value);
+        console.warn("get data", data);
+        if (data.data) {
+          return true;
+        } else {
+          return t("common.urlErr");
+        }
+      } catch (err) {
+        return t("common.urlErr");
+      }finally{
+        Toast.clear();
+      }
+    };
     const onSubmit = async (values: any) => {
-      const name1 = name.value.toString()
-      const desc1 = desc.value.toString()
+      const name1 = name.value.toString();
+      const desc1 = desc.value.toString();
       console.log("111", name1);
       if (new BigNumber(royalty.value).lte(0)) {
         Toast(t("castingnft.royaltyTip"));
         return;
       }
-      loading.value = true;
+
       console.log("submit", values);
       try {
-        const receipt = await dispatch("nft/nftCreate", {
+        txPorp.value = {
+          meta_url: meta_url.value,
+          name: name1,
+          desc: desc1,
+          royalty: Number(royalty.value),
+          category: toRaw(category.value),
+        };
+        showNftModal.value = true;
+      } catch (err) {
+        Toast(err.error.message);
+      } finally {
+      
+      }
+    };
+    const { $tradeConfirm } = useTradeConfirm();
+
+    const handleCreate = async () => {
+      showNftModal.value = false;
+      $tradeConfirm.open({
+        disabled: [TradeStatus.pendding],
+      });
+      const name1 = name.value.toString();
+      const desc1 = desc.value.toString();
+      try {
+        // const wallet = await getWallet()
+        const data = await dispatch("nft/nftCreate", {
           meta_url: meta_url.value,
           name: name1,
           desc: desc1,
           royalty: Number(royalty.value),
           // @ts-ignore
-          category: category.value.value
+          category: category.value.value,
         });
-        if(receipt.status == 1) {
-          Toast(t("castingnft.success"));
-        router.replace({ name: "createNft-step3" });
+        $tradeConfirm.update({ status: "approve" });
+        const receipt = await data.wait();
+        if (receipt.status == 1) {
+          $tradeConfirm.update({
+            status: "success",
+            hash: data.hash,
+            callBack() {
+              router.replace({ name: "createNft-step3" });
+            },
+          });
+        } else {
+          $tradeConfirm.update({
+            status: "fail",
+            hash: data.hash,
+            callBack() {
+              router.replace({ name: "home" });
+            },
+          });
         }
-
       } catch (err) {
-        Toast(err.error.message);
+        if (err.toString().indexOf("timeout") > -1) {
+          $tradeConfirm.update({
+            status: "warn",
+            failMessage: t("error.timeout"),
+          });
+        } else {
+          $tradeConfirm.update({
+            status: "fail",
+            failMessage: err.reason,
+          });
+        }
       } finally {
-        loading.value = false;
       }
     };
     const toreturn = () => {
       Dialog.confirm({
-        message: "Are you sure to cancel ?",
+        message: t("common.suretocancel"),
       }).then(() => {
         router.back();
       });
@@ -329,11 +432,7 @@ export default {
     const handleComfirm = (data: any) => {
       category.value = data;
     };
-    // Calibration optimization
-    const asyncRoyalty = (v) => {
-      if (new BigNumber(royalty.value)) {
-      }
-    };
+
     // Collection name
     const collcetionname = (val: string) => {
       if (regExchangeName.test(name.value)) {
@@ -352,12 +451,16 @@ export default {
     const showPopover2 = ref(false);
     const showPopover3 = ref(false);
     const showPopover4 = ref(false);
+
+    const showNftModal: Ref<boolean> = ref(false);
+
     return {
-      asyncRoyalty,
+      showNftModal,
       t,
       active,
       onSubmit,
       blurRoyalty,
+      validMetaUrl,
       name,
       desc,
       royalty,
@@ -368,6 +471,7 @@ export default {
       handleCategory,
       setAmountModal,
       handleComfirm,
+      handleCreate,
       collcetionname,
       collcetiondesc,
       showPopover,
@@ -375,6 +479,7 @@ export default {
       showPopover2,
       showPopover3,
       showPopover4,
+      txPorp,
     };
   },
 };
@@ -383,7 +488,13 @@ export default {
 .block {
   display: block;
 }
-:deep(){
+
+:deep() {
+
+  .textarea .van-field__body{
+  height: auto;
+  padding: 10px;
+}
   .van-field__error-message {
     margin-top: 4px;
   }
@@ -393,23 +504,22 @@ export default {
   font-size: 14px;
 }
 .highSpan {
-  color: #9F54BA;
+  color: #9f54ba;
   line-height: 14px;
 }
 
 .page-container {
   padding-bottom: 100px;
 
-
   :deep() {
     .van-cell-group--inset {
-      overflow: scroll;
+      overflow: inherit;
     }
     .van-field__control--min-height {
       min-height: auto;
     }
     .van-field__right-icon {
-      color: #9F54BA;
+      color: #9f54ba;
     }
 
     .van-cell {
@@ -435,14 +545,14 @@ export default {
     margin: 0 auto;
   }
   .loading-bg {
-    background: #F8F3F9;
+    background: #f8f3f9;
     .tit-big {
       line-height: 21px;
     }
     .step {
       width: 17px;
       height: 17px;
-      background-color: #9F54BA;
+      background-color: #9f54ba;
       color: #fff;
       text-align: center;
       border-radius: 50%;
@@ -450,7 +560,7 @@ export default {
     .step2 {
       width: 17px;
       height: 17px;
-      background-color: #68b1e6;
+      background-color: #9f54ba;
       color: #fff;
       text-align: center;
       border-radius: 50%;
@@ -459,7 +569,7 @@ export default {
       width: 16px;
       height: 16px;
       background-color: #fff;
-      border: 1PX solid #b3b3b3;
+      border: 1px solid #b3b3b3;
       color: #b3b3b3;
       text-align: center;
       border-radius: 50%;
@@ -468,21 +578,21 @@ export default {
       text-align: center;
       width: 88%;
       height: 0px;
-      border-bottom: 1px dashed #9F54BA;
+      border-bottom: 1px dashed #9f54ba;
     }
     .dotted-line2 {
       margin-top: 2px;
       text-align: center;
       width: 80px;
       height: 0px;
-      border: 1PX dashed #979797;
+      border: 1px dashed #979797;
       transform: scale(0.8);
     }
     .tit-small {
-      color: #9F54BA;
+      color: #9f54ba;
     }
     .now {
-      color: #68b1e6;
+      color: #9f54ba;
     }
     .no {
       color: #b3b3b3;

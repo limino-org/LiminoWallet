@@ -120,7 +120,7 @@
     </van-tabs>
     <van-sticky position="bottom" offset-bottom="30px">
       <div class="flex center btn-group">
-        <van-button type="primary" :loading="loading" @click="gonext" block>{{
+        <van-button type="primary" :loading="loading" @click="handleShowSendConfirm" block>{{
           t("sendNFT.send")
         }}</van-button>
       </div>
@@ -128,7 +128,9 @@
     <!-- Account switching -->
     <AccountModal v-model="showModal" />
     <!-- Confirm sending Popup -->
-    <SendConfirm v-model="showSendConfirm" :data="sendTx" />
+    <!-- <SendConfirm v-model="showSendConfirm" :data="sendTx" /> -->
+    <!-- Confirm sending Popup -->
+    <SendNftModal v-model="showSendConfirm" :tx="sendTx" @handleComfirm="gonext" />
     <!-- Send successful pop-up -->
     <SendSuccessModal v-model="showSendSuccessModal" />
   </div>
@@ -160,6 +162,10 @@ import { useI18n } from "vue-i18n";
 import SendConfirm from "@/popup/views/transferAccounts/components/sendComfirm.vue";
 import ContactsList from "@/popup/views/settings/pages/contacts/components/contactsList.vue";
 import SendSuccessModal from "@/popup/components/sendSuccessModal/index.vue";
+import SendNftModal from "./../components/sendNftModal.vue";
+import { TradeStatus } from "@/popup/plugins/tradeConfirmationsModal/tradeConfirm";
+import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
+
 import { web3 } from "@/popup/utils/web3";
 export default {
   name: "sendNft-step2",
@@ -179,6 +185,7 @@ export default {
     SendConfirm,
     ContactsList,
     SendSuccessModal,
+    SendNftModal
   },
   setup(props: any, context: SetupContext) {
     const router = useRouter();
@@ -358,26 +365,60 @@ export default {
     const sendTx = ref({});
     // Go to the next page
     const loading = ref(false);
+    const {$tradeConfirm} = useTradeConfirm()
+    function callBack(){
+            router.replace({ name: "wallet" });
+    }
     const gonext = async () => {
-      const nftInfo = JSON.parse(sessionStorage.getItem('nftInfo'))
+          // @ts-ignore
       try {
         await checkAddress();
-        console.warn(accountInfo.value)
+        showSendConfirm.value = true
+
+       
+      } catch (err) {}
+    };
+
+
+    const handleSend = async() => {
+      $tradeConfirm.open({
+        disabled: [TradeStatus.pendding],
+      })
+      const nftInfo = JSON.parse(sessionStorage.getItem('nftInfo'))
+
+      console.warn(accountInfo.value)
         try {
           loading.value = true;
           const tx = {
             to: toAddress.value,
             nft_address: nftInfo.address,
           };
-          await dispatch("nft/send", tx);
-          showSendSuccessModal.value = true;
+          const data = await dispatch("nft/send", tx);
+          $tradeConfirm.update({ status: "approve" });
+          const receipt = await data.wait()
+          if(receipt.status == 1) {
+          $tradeConfirm.update({ status: "success", hash:data.hash,callBack});
+          
+        } else {
+          $tradeConfirm.update({ status: "fail", hash:data.hash,callBack });
+        }
+          // showSendSuccessModal.value = true;
         } catch (err: any) {
-          Toast(err?.reason);
+          if (err.toString().indexOf("timeout") > -1) {
+          $tradeConfirm.update({
+              status: "warn",
+              failMessage: t("error.timeout"),
+            });
+        } else {
+          $tradeConfirm.update({
+            status: "fail",
+            failMessage: err.reason,
+          });
+        }
         } finally {
           loading.value = false;
         }
-      } catch (err) {}
-    };
+    }
 
     // Generate cache based on input address
     function createCache() {
@@ -474,11 +515,6 @@ export default {
       return toAddress.value ? false : true;
     });
 
-    // Send confirmation pop-up
-    const showSendConfirm = ref(false);
-    const handleShowSendConfirm = () => {
-      showSendConfirm.value = true;
-    };
 
     // Successfully sent modal
     const showSendSuccessModal = ref(false);
@@ -487,6 +523,22 @@ export default {
     const clearAdd = () => {
       toAddress.value = "";
       addressErr.value = false;
+    };
+
+
+    
+    // Send confirmation pop-up
+    const showSendConfirm = ref(false);
+    const handleShowSendConfirm = async() => {
+      await checkAddress();
+      // @ts-ignoreignore
+      const nftInfo = JSON.parse(sessionStorage.getItem('nftInfo'))
+      sendTx.value = {
+        to: toAddress.value,
+        nft_address: nftInfo.address,
+        from: accountInfo.value.address
+      }
+      showSendConfirm.value = true;
     };
     return {
       showSendSuccessModal,
@@ -543,8 +595,13 @@ export default {
   font-size: 16px;
   color: #d73a49;
 }
-.page-inner-box {
-  // margin-bottom: 70px;
+:deep(){
+  .van-field__body {
+    border-color: transparent;
+    &:hover {
+      border-color: transparent;
+    }
+  }
 }
 :deep(.van-sticky--fixed) {
   line-height: 46px !important;
@@ -653,7 +710,7 @@ export default {
     }
     &:hover {
       transition: ease 0.3s;
-      background-color: rgba(3, 125, 214, 0.1);
+      background-color: #F8F3F9;
     }
     .closeIcon {
       position: absolute;

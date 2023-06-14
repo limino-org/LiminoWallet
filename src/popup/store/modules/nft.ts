@@ -64,18 +64,18 @@ export default {
       const { royalty, meta_url, name, desc, category } = nft_data;
 
       const str = `wormholes:{"version": "0.0.1","type":0,"royalty":${royalty},"exchanger":"","meta_url":"${encode(JSON.stringify(nft_data))}"}`;
-      console.warn('str----', str)
-      const data3 = toHex(str);
+      console.warn('str----', str,nft_data)
+      const data3 = web3.utils.fromUtf8(str);
       const tx = {
         from: address,
         to: address,
-        data: `0x${data3}`,
+        data: data3,
         value: "0",
       };
       const data = await store.dispatch('account/transaction', tx)
-      const receipt = await wallet.provider.waitForTransaction(data.hash)
+      // const receipt = await wallet.provider.waitForTransaction(data.hash)
       store.dispatch('account/waitTxQueueResponse')
-      return receipt
+      return data
     },
     // Transfer NFT
     async send({ commit, state }: any, params: TransferData) {

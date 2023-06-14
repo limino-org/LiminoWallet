@@ -1,4 +1,5 @@
 // @ts-nocheck
+var filterEvent = ['accountsChanged', 'chainChanged']
 
 
 function injectScript(file) {
@@ -27,7 +28,6 @@ window.addEventListener("message", function (ev) {
   }
 });
 
-const filterEvent = ['accountsChanged', 'chainChanged']
 // Receive messages Sent to the background Receive messages from the background
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (sender.id == chrome.runtime.id) {
@@ -39,7 +39,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (origin != location.origin) {
         return
       }
-      const { method } = data
+      var { method } = data
       // if (filterEvent.includes(method)) {
       //   const { connectList, address } = data
       //   const authAccount = connectList.find(item => item.origin == window.origin)
@@ -55,7 +55,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       //   }
       // }
       // Custom events
-      const cEvt = new CustomEvent("wormHoles-callback-event", {
+      var cEvt = new CustomEvent("wormHoles-callback-event", {
         detail: request,
       });
       // Sends events to the page

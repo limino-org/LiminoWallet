@@ -1,5 +1,5 @@
 <template>
-    <NavHeader :title="$t('castingnft.createNFT')" :hasRight="true"></NavHeader>
+    <NavHeader :title="$t('castingnft.createNFT')" :hasRight="false"></NavHeader>
   <router-view v-slot="{ Component }">
     <keep-alive>
       <component :is="Component" />

@@ -137,6 +137,7 @@
     </van-sticky>
     <AccountModal v-model="showModal" />
     <SendSuccessModal v-model="showSendSuccessModal" />
+    <SendNftModal v-model="showSendModal" :tx="tx" @handleComfirm="handleComfirm" />
   </div>
 </template>
 
@@ -177,6 +178,9 @@ import { useI18n } from "vue-i18n";
 import SendConfirm from "@/popup/views/transferAccounts/components/sendComfirm.vue";
 import ContactsList from "@/popup/views/settings/pages/contacts/components/contactsList.vue";
 import SendSuccessModal from "@/popup/components/sendSuccessModal/index.vue";
+import SendNftModal from '@/popup/views/sendSnft/components/sendSnftModal.vue'
+import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
+import { TradeStatus } from '@/popup/plugins/tradeConfirmationsModal/tradeConfirm';
 
 export default {
   name: "sendSnft-step2",
@@ -197,6 +201,7 @@ export default {
     SendConfirm,
     ContactsList,
     SendSuccessModal,
+    SendNftModal,
   },
   setup(props: any, context: SetupContext) {
     const router = useRouter();
@@ -211,6 +216,7 @@ export default {
     const currentNetwork = computed(() => store.state.account.currentNetwork);
     const nextLoading = ref(false);
     const addressErr = ref(false);
+    const {$tradeConfirm} = useTradeConfirm()
     const chooseToken = computed(() => {
       const symbol = currentNetwork.value.currencySymbol;
       const balance = accountInfo.value.amount;
@@ -238,23 +244,15 @@ export default {
       account.data = {};
     };
     const toAddress: Ref<string> = ref("");
-
+    const tx = ref({})
     // Submit send snft
     const loading = ref(false);
     const gonext = async () => {
       try {
         await checkAddress();
-        loading.value = true;
-        try {
-          // Snft data to be sent
-          let sendList = [];
-          try {
-            sendList = JSON.parse(sessionStorage.getItem("sendSnftList"));
-          } catch (err) {
-            console.error(err);
-          }
-          try {
-            for await (let item of sendList) {
+        const sendList = JSON.parse(sessionStorage.getItem("sendSnftList"));
+        const list = []
+        for  (let item of sendList) {
               let { MergeLevel, nft_address } = item
               switch(MergeLevel){
                 case 0:
@@ -266,27 +264,15 @@ export default {
                 nft_address = nft_address.substr(0,40)
                   break;
               }
-              const tx = {
-                to: toAddress.value,
-                nft_address,
-              };
-              await dispatch("nft/send", tx);
+              list.push(nft_address)
             }
-            dispatch('account/waitTxQueueResponse')
-            showSendSuccessModal.value = true;
-          } catch (err) {
-            Toast(err.reason);
-          } finally {
-            loading.value = false;
-          }
+        tx.value = {
+          from: accountInfo.value.address,
+          to:toAddress.value,
+          nft_address: list,
 
-          // await dispatch("nft/send", tx);
-        } catch (err: any) {
-          console.error(err);
-          Toast(err?.reason);
-        } finally {
-          loading.value = false;
         }
+        showSendModal.value = true
       } catch (err) {
         console.error(err.toString());
       }
@@ -468,11 +454,68 @@ export default {
       toAddress.value = "";
       addressErr.value = false;
     };
+
+
+    const handleComfirm = async() => {
+      loading.value = true;
+        try {
+          // Snft data to be sent
+          let sendList = [];
+          try {
+            sendList = JSON.parse(sessionStorage.getItem("sendSnftList"));
+          } catch (err) {
+            console.error(err);
+          }
+          
+          $tradeConfirm.open({
+            disabled: [TradeStatus.pendding],
+            approveMessage: t('sendSNFT.approveMessage')
+     
+          })
+          try {
+            for await (let item of sendList) {
+              let { MergeLevel, nft_address } = item
+              switch(MergeLevel){
+                case 0:
+                  break;
+                case 1:
+                nft_address = nft_address.substr(0,41)
+                  break;
+                case 2:
+                nft_address = nft_address.substr(0,40)
+                  break;
+              }
+              const tx = {
+                to: toAddress.value,
+                nft_address,
+              };
+              await dispatch("nft/send", tx);
+            }
+            await dispatch('account/waitTxQueueResponse')
+            // showSendSuccessModal.value = true;
+          } catch (err) {
+            Toast(err.reason);
+          } finally {
+            loading.value = false;
+          }
+
+          // await dispatch("nft/send", tx);
+        } catch (err: any) {
+          console.error(err);
+          Toast(err?.reason);
+        } finally {
+          loading.value = false;
+        }
+    }
+    const showSendModal = ref(false)
     return {
+      showSendModal,
+      handleComfirm,
       showSendSuccessModal,
       gasFee,
       onChange,
       t,
+      tx,
       gonext,
       handleTokenModal,
       accountInfo,

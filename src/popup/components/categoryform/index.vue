@@ -69,7 +69,7 @@ export default defineComponent({
     [Radio.name]: Radio,
     SelectCard,
   },
-  emits: ["handleComfirm"],
+  emits: ["handleComfirm","update:modelValue"],
   props: {
     // Popup window title
     title: {
@@ -200,10 +200,9 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .title {
-  color: #b3b3b3;
   line-height: 62px;
   font-weight: bold;
-
+  font-size: 14px;
   background: #F8F3F9;
 }
 .category-list {

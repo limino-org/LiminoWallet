@@ -18,6 +18,8 @@ export function getSnftOwner(params = {}){
 
 
 
+
+
 // Query collection
 export function collectionList(params = {}) {
     return httpGet(`${scanApi}/collect/page`, params)
@@ -68,14 +70,18 @@ export function queryOwnerSnftCollections(params ={}){
     return httpPost(`${snftUrl4}/v2/queryOwnerSnftCollections`, params)
 }
 
-// /**
-//  * Search snft according to the collection
-//  * @param params createaddr
-//  * @param params name 
-//  * @param params start_index
-//  * @param params count
-//  * @returns 
-//  */
+export function queryAllSnftByCollection(params= {}) {
+    return httpPost(`${snftUrl4}/v2/queryAllSnftByCollection`, params)
+}
+
+/**
+ * Search snft according to the collection
+ * @param params createaddr
+ * @param params name 
+ * @param params start_index
+ * @param params count
+ * @returns 
+ */
 export function queryCollectionAllSnft(params ={}){
     return httpPost(`${snftUrl4}/v2/queryCollectionAllSnft`, params)
 }

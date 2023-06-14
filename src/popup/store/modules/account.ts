@@ -848,6 +848,14 @@ export default {
       { commit, state, dispatch }: any,
       { keyStore, mnemonic, address, imported }: AddAccountParams
     ) {
+      // check repeat address
+      const vuex = await localforage.getItem('vuex')
+      // @ts-ignore
+      const localAccountList = vuex.account.accountList
+      if(localAccountList.find(item => address.toUpperCase() ==item.address.toUpperCase())){
+        return Promise.reject('The address is exist!')
+      }
+
       let list = state.accountList;
       const len = list.length;
       const icon = getRandomIcon();

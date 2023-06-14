@@ -162,11 +162,9 @@ export default defineComponent({
   transition: ease .3s;
   &.active {
     background: #F8F3F9;
-    padding-left: 20px;
   }
   &:hover {
     background: #F8F3F9;
-    padding-left: 20px;
   }
   &-left {
     .token-icon {

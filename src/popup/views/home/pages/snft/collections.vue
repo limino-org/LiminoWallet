@@ -19,7 +19,7 @@
     </div>
     <div>
       <div class="album-icon flex center">
-        <img :src="`${metaDomain}${compData.img_url}`" alt="" />
+        <img :src="`${metaDomain}${compData.img}`" alt="" />
       </div>
       <div class="albu-name f-10">{{compData.name}}</div>
       <div class="albu-title">
