@@ -1148,6 +1148,18 @@ export default {
         }
       }
     }
+    .fg:nth-of-type(1){
+      border-top-left-radius: 6px;
+    }
+    .fg:nth-of-type(4){
+      border-top-right-radius: 6px;
+    }
+    .fg:nth-of-type(13){
+      border-bottom-left-radius: 6px;
+    }
+    .fg:nth-of-type(16){
+      border-bottom-right-radius: 6px;
+    }
   }
 
   .staking-mask {

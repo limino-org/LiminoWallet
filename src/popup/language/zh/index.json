@@ -457,7 +457,8 @@
         "approveMessage":"{total}个SNFT正在通过发送交易请求，您也可以通过交易历史查看请求的详情",
         "successMessage":"{total}个交易已经成功发送，详细信息请在交易历史页面中查看",
         "wattingMessage":"正在为您转移SNFT，此过程将可能花费十几秒",
-        "failMessage":"{total}个SNFT转移失败，您可以去交易历史里查看交易的具体信息"
+        "failMessage":"{total}个SNFT转移失败，您可以去交易历史里查看交易的具体信息",
+        "failMessage2":"SNFT转移失败，您可以去交易历史里查看交易的具体信息"
     },
     "importToken": {
         "search": "搜索",
