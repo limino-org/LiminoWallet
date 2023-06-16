@@ -1,7 +1,7 @@
 <template>
   <div class="nav-header-container">
     <div :class="`nav-header ${hasExchange ? 'hasExchange' : ''}`">
-      <div class="position relative nav-center van-hairline--bottom">
+      <div class="position relative nav-center container van-hairline--bottom">
         <div :class="`nav-content ${hasExchange ? 'hasExchange' : ''}  ${
             paddingTop ? 'paddingTop' : ''
           }`">
@@ -16,9 +16,9 @@
             </div>
             <div class="title-slot">
               <slot name="title">
-                <div class="title" v-if="hasTitle" @click="chooseNetWork">
-                  <div class="title-big text-center f-16">{{ title }}</div>
-                  <div class="title-small text-center flex center lh-14">
+                <div class="title" v-if="hasTitle" @click="handleNet">
+                  <div :class="`title-big text-center f-16 text-bold ${!hasNet ? 'lh-24' : 'lh-12'}`">{{ title }}</div>
+                  <div class="title-small text-center flex center lh-14" v-if="hasNet">
                     <span class="active" :style="{ background: currentNetwork.color }"></span>
                     {{ currentNetwork.label }}
                     <GuideModal12 />
@@ -46,7 +46,7 @@
     <SwitchNetwork v-model="showModalNetwork" />
   </div>
   <!-- Close the tip -->
-  <van-dialog v-model:show="closeModal" :show-cancel-button="false" :show-confirm-button="false">
+  <van-dialog v-model:show="closeModal" class="cancel-modal" teleport="#page-box" :show-cancel-button="false" :show-confirm-button="false">
     <div>
       <div class="flex center close-icon-tip">
         <van-icon name="warning" />
@@ -109,9 +109,13 @@ export default defineComponent({
       type: Boolean,
       default: true
     },
+    hasNet: {
+      type: Boolean,
+      default: false
+    },
     title: {
       type: String,
-      default: 'WormHoles'
+      default: 'Wormholes'
     },
     cancelRouteName: {
       type: String,
@@ -135,7 +139,11 @@ export default defineComponent({
     const { state } = store
     const { t } = useI18n()
     const { netWorkList, currentNetwork, showModalNetwork, chooseNetWork, handleChoose, handleChooseComfirm } = useNetWork()
-
+    const handleNet = () => {
+      if(props.hasNet) {
+        chooseNetWork()
+      }
+    }
     const accountInfo = computed(() => store.state.account.accountInfo)
     // Whether open through the exchange open exchange discoloration
     const hasExchange = computed(() => {
@@ -170,15 +178,11 @@ export default defineComponent({
       router.replace({ name: 'wallet' })
     }
     const closeModal = ref(false)
+    const filterNames = ['sendSnft-step2','send', 'createNft-step2','sendNft-step2', 'modifAutoExchange', 'createAutoExchange']
     const clickRight = () => {
       if (
-        route.name == 'send' ||
-        route.name == 'createNft-step2' ||
-        route.name == 'sendNft-step2' ||
-        route.name == 'modifAutoExchange' ||
-        route.name == 'createAutoExchange'
+        filterNames.includes(route.name.toString())
       ) {
-        console.log('打开弹窗')
         closeModal.value = true
       } else {
         router.replace({ name: props.cancelRouteName })
@@ -201,6 +205,7 @@ export default defineComponent({
       show,
       showModalNetwork,
       chooseNetWork,
+      handleNet,
       // toImport,
       network,
       netWorkList,

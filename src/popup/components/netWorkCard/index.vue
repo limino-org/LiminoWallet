@@ -1,8 +1,10 @@
 <template>
   <div
-    class="netword-card flex van-hairline--bottom clickActive"
+    class="netword-card flex clickActive"
     @click.stop="handleClick"
   >
+    <div class="dot flex center" v-if="hasDot">
+    <div class="circle"></div></div>
     <div class="net-status flex center mr-6" v-if="hasSelect">
       <i
         :class="`iconfont f-14 ${
@@ -60,6 +62,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    hasDot:{
+      type: Boolean,
+      default: false
+    }
   },
   setup(props, context: SetupContext) {
     const { t } = useI18n();
@@ -94,17 +100,27 @@ export default defineComponent({
   padding: 0 15px;
   height: 52px;
   transition: ease 0.3s;
+  border-bottom: 1px solid #E4E7E8;
+  .dot {
+    margin-right: 6px;
+    .circle {
+      width: 4px;
+      height: 4px;
+      border-radius: 2px;
+      background:#9F54BA;
+    }
+  }
   .full {
     width: 100%;
   }
   &:hover {
-    background: rgb(244, 247, 250);
+    background: #F8F3F9;
   }
   .net-status {
     width: 20px;
     color: #ccc;
     i {
-      color: #057ed6;
+      color: #9F54BA;
       font-size: 16px;
     }
     i.icon-xuanzhong1 {

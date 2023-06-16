@@ -1,11 +1,6 @@
 <template>
-  <van-sticky>
-    <NavHeader title="Close" :hasRight="route.name =='transactionDetails-step1' ? false : true" backUrl="wallet">
-      <template v-slot:title>
-        <div class="flex center title">{{route.query.name}}</div>
-      </template>
+    <NavHeader :title="route.query.name" :hasRight="route.name =='transactionDetails-step1' ? false : true" backUrl="wallet">
     </NavHeader>
-  </van-sticky>
   <router-view v-slot="{ Component }">
     <keep-alive>
       <component :is="Component" />

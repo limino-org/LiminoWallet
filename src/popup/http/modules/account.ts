@@ -1,15 +1,21 @@
 
+
+
 import { httpGet } from '../request'
-
-const service = '/accountApi'
-const apikey = 'freekey'
-
-// Get transaction list
-export function getTransitions(address: string  ){
-    return httpGet(`${service}`, {
-        address,
-        module: 'account',
-        action:'txlist',
-        apikey
-    })
+interface GetTransitionsParams {
+    page: string
+    page_size: string
+    number: string
+    addr: string
+}
+/**
+ * 
+ * @param params page
+ * @param params page_size
+ * @param params number
+ * @param params addr
+ * @returns 
+ */
+export function getTransitionsPage(params: GetTransitionsParams){
+    return httpGet(`https://api.wormholesscan.com/transaction/page`, params)
 }

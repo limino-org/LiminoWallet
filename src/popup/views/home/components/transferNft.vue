@@ -2,17 +2,27 @@
   <Transition name="slider">
     <div class="transfer-NFT" v-if="showModal">
       <div class="transfer-nft-con">
-        <div class="con">
+        <div class="container">
           <div class="notices pl-14 pr-14 pt-4 pb-4 flex center-v">
             <i class="iconfont icon-warn"></i>
             <span class="lh-14"
+            v-show="type == '2'"
               >
               {{ t("transferNft.conversionconfirmation") }}</span
+            >
+            <span class="lh-14"
+            v-show="type == '3'"
+              >
+              {{ t("transferNft.stakingconfirmation") }}</span
+            >
+            <span class="lh-14"
+            v-show="type == '1'"
+              >
+              {{ t("transferNft.reStakingconfirmation") }}</span
             >
           </div>
           <div class="flex between t-bottom pl-14 pr-14">
             <div class="flex">
-              <!-- 全选 -->
               <div class="all-in flex center hover" @click="handleAll">
                 <i :class="`iconfont ${all ? 'icon-duihao2' : 'icon-check_line'}`"></i>
                 <span class="ml-4">
@@ -20,14 +30,15 @@
                 </span>
               </div>
               <!-- amount -->
-              <div class="amount flex center ml-8">
-                <span class="sel">{{selectNumber}} 
+              <div class="amount ml-8 flex column between">
+                <div class="f-12">{{selectedText}}</div>
+                <!-- <span class="sel">{{selectNumber}} 
                   {{ t("transferNft.select") }}
-                </span>
-                <span class="sel2 text-bold ml-6 f-18">{{selectTotal}} ERB</span>
+                </span> -->
+                <div class="sel2 text-bold">{{selectTotal}} ERB</div>
               </div>
             </div>
-            <!-- convert按钮 -->
+            <!-- The convert button -->
             <div class="convert flex center">
               <van-button size="small" type="primary" @click="handleConfirm"
                 >
@@ -58,20 +69,24 @@ export default defineComponent({
   },
   emits:['handleAll','handleConfirm','update:modelValue'],
   props: {
-    // v-model 方式绑定打开关闭
     modelValue: {
       type: Boolean,
       default: false,
     },
-    // 选择的长度
+    // selected Number
     selectNumber: {
       type: Number,
       default: 0
     },
-    // 选择的总数量
+    // selected Total Amount
     selectTotal: {
       type: Number,
       default: 0
+    },
+    // selected text
+    selectedText:{
+      type: String,
+      default:'0(C)/0(N)/0(F)'
     },
     type: {
       type: String,
@@ -99,6 +114,7 @@ export default defineComponent({
       (n) => {
         if (!n) {
           emit("update:modelValue", false);
+          all.value = false
         }
       }
     );
@@ -107,7 +123,7 @@ export default defineComponent({
     }
 
     const handleAll = () => {
-      all.value = all.value ? all.value = false : all.value = true 
+      all.value = !all.value
       emit('handleAll', all.value)
     }
 
@@ -132,14 +148,14 @@ export default defineComponent({
       all,
       handleConfirm,
       handleAll,
-      submitText
+      submitText,
     };
   },
 });
 </script>
 <style lang="scss" scoped>
 .con {
-  max-width: 750px;
+  max-width: 820px;
   margin: 0 auto;
   box-sizing: border-box;
 
@@ -147,7 +163,7 @@ export default defineComponent({
   border-top: 1px solid #fff;
   &:hover {
     box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.2);
-    border-top: 1px solid #057ed6;
+    border-top: 1px solid #9F54BA;
   }
   * {
     box-sizing: border-box;
@@ -162,7 +178,7 @@ export default defineComponent({
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 10;
+  z-index: 100;
 }
 .notices {
   background: #fefcda;
@@ -189,14 +205,16 @@ export default defineComponent({
   }
    .icon-duihao2 {
       font-size: 16px;
-      color: #037CD6;
+      color: #9F54BA;
     }
 }
 .amount {
+  padding: 14px 0;
   .sel {
   }
   .sel2 {
-    color: #037cd6;
+    color: #9F54BA;
+    font-size: 15px;
   }
 }
 .convert {

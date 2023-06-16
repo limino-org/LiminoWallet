@@ -13,7 +13,7 @@
         {{t('minerspledge.select')}}
       </div>
       <van-cell-group :border="false">
-        <van-cell title="S-NFT" @click="select = 0" class="hover">
+        <van-cell title="SNFT" @click="select = 0" class="hover">
           <template #icon>
             <img
               src="@/assets/token/yuan-active.png"
@@ -88,6 +88,8 @@
 
 <script lang="ts">
 import { emit } from "process";
+import { clone } from 'pouchdb-utils';
+
 import { Icon, Checkbox, Button, Toast, CellGroup, Cell } from "vant";
 import {
   ref,
@@ -99,7 +101,7 @@ import {
   onMounted,
   watch,
 } from "vue";
-import { getWallet } from "@/popup/store/modules/account";
+import { getWallet, handleGetTranactionReceipt, TransactionTypes } from "@/popup/store/modules/account";
 import { useStore } from "vuex";
 import { useI18n } from 'vue-i18n';
 
@@ -119,6 +121,7 @@ export default {
   setup(props: any, context: SetupContext) {
     const {t} = useI18n()
     let Time = ref(3);
+    const {commit} = useStore()
     nextTick(() => {
       let setIntervalValue = setInterval(() => {
         Time.value -= 1;
@@ -168,8 +171,9 @@ export default {
         console.log(tx1);
 
         const wallet = await getWallet();
-        const receipt: any = await wallet.sendTransaction(tx1);
-        const res = await wallet.provider.waitForTransaction(receipt.hash)
+        const data = await store.dispatch('account/transaction', tx1)
+        const receipt = await wallet.provider.waitForTransaction(data.hash)
+        await store.dispatch('account/waitTxQueueResponse')
         console.log(receipt);
         console.log("receiptreceiptreceiptreceiptreceipt");
         isLoading.value = false;
@@ -191,7 +195,7 @@ export default {
         address,
         "latest",
       ]);
-      debugger
+      //debugger
       select.value = ethAccountInfo.RewardFlag;
            }finally{
             Toast.clear()
@@ -246,7 +250,7 @@ export default {
   line-height: 62px;
   text-align: center;
   font-size: 15px;
-  background: #f8fcff;
+  background: #F8F3F9;
   color: #000;
   font-weight: bold;
 }
@@ -260,7 +264,7 @@ export default {
   padding: 0 15px;
   margin-top: 30px;
   font-size: 12px;
-  color: #037cd6;
+  color: #9F54BA;
 }
 .footer-btns {
   display: flex;

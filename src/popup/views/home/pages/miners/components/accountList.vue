@@ -89,7 +89,7 @@ onMounted(async () => {
 <style lang="scss" scoped>
 .title {
   line-height: 60px;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-size: 15px;
   font-weight: bold;
   text-align: center;
@@ -97,7 +97,7 @@ onMounted(async () => {
 .account-list {
   max-height: 40vh;
   overflow-y: scroll;
-  padding: 20px 0 48px 0;
+  padding: 20px 0 0 0;
   .card {
     padding: 16px 15px;
     border-bottom: 1px solid #ecedef;
@@ -106,7 +106,7 @@ onMounted(async () => {
       .acc-info {
         .name,
         .address {
-          color: #037dd6;
+          color: #9F54BA;
         }
       }
     }
@@ -114,7 +114,7 @@ onMounted(async () => {
       .acc-info {
         .name,
         .address {
-          color: #037dd6;
+          color: #9F54BA;
         }
       }
     }

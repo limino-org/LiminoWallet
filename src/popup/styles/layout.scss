@@ -176,8 +176,27 @@
     }
   }
 
+  // border
+  .border {
+    &-round {
+      border: 1px solid var(--van-border-color);
+    }
+    &-left{
+      border-left: 1px solid var(--van-border-color);
+    }
+    &-right{
+      border-right: 1px solid var(--van-border-color);
+    }
+    &-bottom{
+      border-bottom: 1px solid var(--van-border-color);
+    }
+    &-top{
+      border-top: 1px solid var(--van-border-color);
+    }
+  }
+
   .m-center {
-    width: 750px;
+    width: 820px;
     margin: 0 auto;
   }
   // left right top bottom

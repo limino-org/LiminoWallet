@@ -78,7 +78,7 @@ import { Mnemonic } from "@/popup/store/modules/account";
 import { utils } from 'ethers'
 import  { web3 } from '@/popup/utils/web3'
 import { passwordExpires } from '@/popup/enum/time'
-import { setCookies, getCookies } from '@/popup/utils/jsCookie'
+import { setCookies } from '@/popup/utils/jsCookie'
 import localforage from 'localforage';
 
 export default {
@@ -173,7 +173,7 @@ export default {
     font-size: 16px;
   }
   .back-icon {
-    color: rgba(3, 125, 214, 1);
+    color: #9F54BA;
     font-size: 22px;
     margin-left: -6px;
   }

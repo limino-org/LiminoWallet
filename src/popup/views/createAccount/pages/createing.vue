@@ -7,6 +7,7 @@
       <van-progress
         :percentage="percentage"
         stroke-width="5"
+        color="#9F54BA"
         :show-pivot="false"
       />
       <div class="text-center mt-16 process">{{ percentage }}%</div>
@@ -25,8 +26,8 @@
           backgroundImage: `url(${require('@/popup/views/createAccount/imgs/circle1.png')})`,
         }"
       >
-        <img v-if="percentage != 100" src="./../imgs/loading.png" alt />
-        <img src="./../imgs/success.png" alt v-else />
+        <!-- <img v-if="percentage != 100" src="./../imgs/loading.png" alt /> -->
+        <img src="./../imgs/success.png" />
       </div>
     </div>
   </div>
@@ -101,19 +102,19 @@ export default {
 </script>
 <style lang="scss" scoped>
 .loading-bg {
-  background: rgba(244, 250, 255, 1);
+  background: #F8F3F9;
   height: 135px;
   padding: 25px 0 0;
   .tit-big {
     line-height: 20px;
     font-size: 15px;
-    color: #037cd6;
+    color: #9F54BA;
   }
   .loading {
     margin: 0 62px;
   }
   .process {
-    color: #037cd6;
+    color: #9F54BA;
   }
 }
 .icon-box {

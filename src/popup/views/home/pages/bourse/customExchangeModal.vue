@@ -51,7 +51,7 @@
         >
           <div class="token-info flex between center-v pl-6 pr-6">
             <div class="xuanwo flex center">
-              <img src="@/assets/icon_blue.svg" alt />
+              <img src="@/assets/logoeth.png" />
             </div>
             <div class="van-ellipsis ml-6 mr-6 token-name lh-14">
               {{ chooseToken.name }}
@@ -90,7 +90,6 @@ import {
   Icon,
   Popover,
 } from "vant";
-import { toUsd } from "@/popup/utils/filters";
 import { useI18n } from "vue-i18n";
 import BigNumber from "bignumber.js";
 import { useRoute, useRouter } from "vue-router";
@@ -108,17 +107,16 @@ export default defineComponent({
     [Icon.name]: Icon,
   },
   props: {
-    // 弹窗标题
     title: {
       type: String,
       default: "",
     },
-    // v-model 方式绑定打开关闭
+    // v-model 
     modelValue: {
       type: Boolean,
       default: false,
     },
-    // 最大金额
+    // maxBalance
     maxBalance: {
       type: Number,
       default: 100000000000000,
@@ -127,12 +125,12 @@ export default defineComponent({
       type: Number,
       default: 0,
     },
-    // 默认金额
+    // The default value
     defaultAmount: {
       type: Number,
       default: null,
     },
-    // 是否有转换币种的按钮
+    // Whether there is a button to convert currency
     hasTransferToken: {
       type: Boolean,
       default: false,
@@ -210,7 +208,7 @@ export default defineComponent({
       emit("handleConfirm", parseFloat(amount.value));
       showModal.value = false;
     };
-    // 当前选择的token
+    // The token currently selected
     const chooseToken = computed(() => {
       const token = state.transfer.chooseToken;
       const name = state.account.currentNetwork.currencySymbol;
@@ -221,14 +219,15 @@ export default defineComponent({
           };
     });
 
-    // 聚焦的时候如果金额为0，则清空金额
+    // If the amount is 0 when focusing, the amount is cleared
     const handleFocus = () => {
       if (Number(amount.value) == 0) {
         amount.value = "";
       }
     };
     const { name }: any = route;
-    // 跳转到选币种
+    // Jump to the selected currency
+
     const handleChooseToken = () => {
       router.push({ name: "receive-choose", query: { backUrl: name } });
     };
@@ -243,7 +242,6 @@ export default defineComponent({
       handleComfirm,
       ipt,
       handleFocus,
-      toUsd,
       showpop,
     };
   },
@@ -265,7 +263,7 @@ export default defineComponent({
   color: #000;
   font-size: 15px;
   line-height: 62px;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-weight: bold;
 
 }
@@ -275,7 +273,7 @@ export default defineComponent({
 .amount-box {
   box-sizing: border-box;
   border-radius: 5px;
-  border: 1px solid #bbc0c5;
+  border: 1px solid #B3B3B3;
   padding: 0 15px;
 }
 :deep(.van-button) {
@@ -295,7 +293,6 @@ export default defineComponent({
   height: 35px;
   .van-field {
     padding: 0;
-    width: 140px;
     display: inline-block;
     :deep(input) {
       font-size: 12px;
@@ -337,7 +334,7 @@ export default defineComponent({
     }
   }
   i {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 15px;
   }
   .token-name {

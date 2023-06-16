@@ -1,15 +1,11 @@
 <template>
   <van-sticky>
-    <NavHeader title="Close" :hasRight="false">
-      <template v-slot:title>
-        <div class="flex center title">{{t('sidebar.settings')}}</div>
-      </template>
-    </NavHeader>
+    <NavHeader :title="t('sidebar.settings')" :hasNet="false" :hasRight="false"></NavHeader>
   </van-sticky>
   <div class="settings settings-index">
     <SettingClass :label="t('setting.general')">
       <template v-slot:icon>
-        <i class="iconfont icon-conditions"></i>
+        <i class="iconfont icon-filter2"></i>
       </template>
       <!-- <setting-card :label="t('setting.currencyConversion')" @handleClick="handleToggleCurrency" value="USD" /> -->
       <setting-card :label="t('setting.languageSelection')" @handleClick="handleToggleLanguage" :value="lang.label" />
@@ -35,29 +31,34 @@
 
     <SettingClass :label="t('setting.networks')">
       <template v-slot:icon>
-        <i class="iconfont icon-Earth_network"></i>
+        <i class="iconfont icon-wangluo"></i>
       </template>
       <setting-card @handleClick="routerPush({name: 'networkList'})" :label="t('setting.addNetworks')" />
     </SettingClass>
 
     <SettingClass :label="t('setting.contacts')">
       <template v-slot:icon>
-        <i class="iconfont icon-mingpian"></i>
+        <i class="iconfont icon-tongxunlu1"></i>
       </template>
       <setting-card @handleClick="routerPush({name:'contacts-list'})" :label="t('setting.addEditRemove')" />
     </SettingClass>
-
+<!-- 
     <SettingClass :label="t('setting.aboutWormHoles')" @handleClick="towebsite">
       <template v-slot:icon>
         <i class="iconfont icon-zuanshi_o"></i>
       </template>
       <setting-card :label="t('setting.wormHolesIntroduction')" />
-    </SettingClass>
+    </SettingClass> -->
+    <div class="btn-groups">
+      <div class="container flex center  pl-26 pr-26">
+        <van-button type="primary" block :loading="loading" @click="handleClearCanche">{{ t('common.clearCanche') }}</van-button>
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts">
 import Vue, { computed, ref } from 'vue'
-import { Icon, Toast, Button, Sticky, Field } from 'vant'
+import { Icon, Toast, Button, Sticky, Field, } from 'vant'
 import { useRoute, useRouter } from 'vue-router'
 import SettingCard from '@/popup/views/settings/components/settingCard.vue'
 import SettingClass from '@/popup/views/settings/components/settingClass.vue'
@@ -67,12 +68,16 @@ import NavHeader from '@/popup/components/navHeader/index.vue'
 import { Language, languages } from '@/popup/enum/language'
 import ToggleLanguageModal from '@/popup/views/settings/components/toggleLanguage.vue'
 import ToggleCurrencyModal from '@/popup/views/settings/components/toggleCurrency.vue'
+import { useToast } from '@/popup/plugins/toast'
+import localforage from "localforage";
+import { decode } from 'js-base64'
 export default {
   name: 'settings',
   components: {
     NavHeader,
     [Icon.name]: Icon,
     [Sticky.name]:Sticky,
+    [Button.name]: Button,
     SettingClass,
     SettingCard,
     ToggleLanguageModal,
@@ -83,6 +88,7 @@ export default {
     const route = useRoute()
     const router = useRouter()
     const store = useStore()
+    const {state} = store
     const clickLeft = () => {}
     const lang = computed(() => {
       const language = (navigator.language ? navigator.language : navigator.language).toLowerCase() // @ts-ignore // @ts-ignore
@@ -107,14 +113,34 @@ export default {
     const handleToggleCurrency = () => {
       showCurrency.value = true
     }
-    
+    const {$toast} = useToast()
 
     const towebsite = () => {
-      window.open('https://www.wormholes.com/')
+      window.open(decode('aHR0cHM6Ly93d3cud29ybWhvbGVzLmNvbS8='))
     }
+    const loading = ref(false)
+    const handleClearCanche = async () => {
+      loading.value = true;
+      try {
+        localforage.iterate((value, key, iterationNumber) => {
+          console.log('clear cancel', key)
+          if (key !== "vuex") {
+            console.log('clear cancel', key)
+            localforage.removeItem(key);
+          } else {
+            [key, value]
+          }
+        });
+        $toast.success(t("common.clearCancheSuccess"));
+      } finally {
+        loading.value = false;
+      }
+    };
 
     return {
       t,
+      loading,
+      handleClearCanche,
       clickLeft,
       routerPush,
       languages,
@@ -130,16 +156,24 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+
+:deep(){
+  .icon-wangluo {
+    font-size: 16px !important;
+  }
+}
 .settings-index {
   .settings-card {
+
     padding: 13px 12px 16px 14px;
     transition: ease 0.3s;
     &:hover {
-      background: rgb(244, 247, 250);
+      background: #F8F3F9;
     }
     .title {
       .label {
         font-size: 18px;
+
       }
       .icon {
         font-size: 20px;

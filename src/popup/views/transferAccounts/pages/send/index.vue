@@ -1,12 +1,9 @@
 <template>
-  <NavHeader>
+  <NavHeader :title="t('wallet.send')">
     <template v-slot:left>
       <span class="back hover" @click="back">{{
         t("createAccountpage.back")
       }}</span>
-    </template>
-    <template v-slot:title>
-      <div class="flex center title">{{ t("wallet.send") }}</div>
     </template>
   </NavHeader>
   <div class="page-container">
@@ -594,35 +591,35 @@ export default {
 
     // Set gaslimit dynamically
     const calcGasLimit = async () => {
-      const { tokenContractAddress } = chooseToken.value;
-      // Token transfer dynamic estimation gaslimit
-      if (tokenContractAddress) {
-        // Get contract token instance object
-        const { contractWithSigner, contract } = await dispatch(
-          "account/connectConstract",
-          tokenContractAddress
-        );
-        contractWithSigner.estimateGas
-          .transfer(
-            toAddress.value || accountInfo.value.address,
-            (amount.value || "0") + ""
-          )
-          .then((gas: any) => {
-            console.warn(
-              "gas----------------==",
-              utils.formatUnits(gas, "wei")
-            );
-            gasLimit.value = utils.formatUnits(gas, "wei");
-          });
-      } else {
-        gasLimit.value = 21000;
-      }
-    };
+      console.log(' chooseToken.value',  chooseToken.value)
+    const { tokenContractAddress } = chooseToken.value;
+    // Token transfer dynamic estimation gaslimit
+    if (tokenContractAddress) {
+      const amountWei = amount.value ? amount.value.toString() : '1'
+      // Get contract token instance object
+      const { contractWithSigner, contract } = await dispatch(
+        "account/connectConstract",
+        tokenContractAddress
+      );
+      contractWithSigner.estimateGas
+        .transfer(
+          toAddress.value || accountInfo.value.address,
+          amountWei
+        )
+        .then((gas: any) => {
+          const limitWei = utils.formatUnits(gas, "wei")
+          gasLimit.value = parseFloat(new BigNumber(limitWei).plus(new BigNumber(limitWei).multipliedBy(0.2)).toFixed(0) ||'0');
+          console.log('gasLimit.value', gasLimit.value,limitWei)
+        });
+    } else {
+      gasLimit.value = 21000;
+    }
+  };
 
     const amountErr = ref(false);
     const handleAmountBlur = async () => {
       calcGasLimit();
-      if (isPoor.value) {
+      if (!Number(amount.value)) {
         amountErr.value = true;
       } else {
         amountErr.value = false;
@@ -686,7 +683,7 @@ export default {
             item.tokenContractAddress &&
             item.tokenContractAddress == tokenContractAddress
         );
-        debugger;
+        //debugger;
         console.warn("token-----------", token);
         if (tokenContractAddress && tokenContractAddress != "null" && !token) {
           Dialog.confirm({
@@ -712,7 +709,6 @@ export default {
             }
           });
         } else {
-          // 持有该代币，直接给选择的币种赋值
           commit("transfer/UPDATE_CHOOSETOKEN", token);
         }
         toAddress.value = address;
@@ -777,7 +773,7 @@ export default {
 
 <style lang="scss" scoped>
 .back {
-  color: #037cd6;
+  color: #9F54BA;
   font-size: 12px;
 }
 .title {
@@ -796,7 +792,7 @@ export default {
   margin-bottom: 0;
 }
 .gasfee-icon i {
-  color: #037cd6;
+  color: #9F54BA;
   font-size: 24px;
 }
 .page-container {
@@ -849,7 +845,7 @@ export default {
       width: 17.5px;
       height: 17.5px;
       border-radius: 50%;
-      border: 1px solid #037cd6;
+      border: 1px solid #9F54BA;
       cursor: pointer;
       &.disabled {
         border: 1px solid #ccc;
@@ -860,7 +856,7 @@ export default {
       }
       i {
         font-size: 12px;
-        color: #037cd6;
+        color: #9F54BA;
         font-weight: bold;
       }
     }
@@ -921,7 +917,7 @@ export default {
       background: #f1f3f4;
       z-index: 1;
       &.active {
-        background: #1989fa;
+        background: #9F54BA;
       }
     }
 
@@ -938,7 +934,6 @@ export default {
       right: 8px;
       top: -17px;
     }
-    // 速度标签
     .speed-label {
       font-size: 12px;
       color: #9a9a9a;
@@ -967,7 +962,7 @@ export default {
   }
   .clearAddress {
     font-size: 16px;
-    color: #037cd6;
+    color: #9F54BA;
   }
   .slider-box.amount-info {
     .value {
@@ -977,7 +972,7 @@ export default {
   }
   .cancel {
     font-size: 11px;
-    color: #037cd6;
+    color: #9F54BA;
   }
   .up-down-box {
     i {
@@ -986,13 +981,13 @@ export default {
     span {
       word-break: keep-all;
 
-      color: #037cd6;
+      color: #9F54BA;
     }
     .line-box::after {
       border-color: #6e7276 !important;
     }
     font-size: 12px;
-    color: #037cd6;
+    color: #9F54BA;
   }
   :deep(input) {
     font-size: 12px;
@@ -1022,7 +1017,7 @@ export default {
   .to-btns {
     // width: 66px;
     i {
-      color: #037cd6;
+      color: #9F54BA;
       font-size: 20px;
     }
   }
@@ -1030,7 +1025,7 @@ export default {
     .line {
       height: 0;
       width: 46%;
-      border-bottom: 1px solid #bbc0c5;
+      border-bottom: 1px solid #B3B3B3;
     }
   }
   .userinfo {
@@ -1038,7 +1033,7 @@ export default {
     flex-direction: column;
     justify-content: space-around;
     background: #fff;
-    border: 1px solid #bbc0c5;
+    border: 1px solid #B3B3B3;
     border-radius: 5px;
     &.error {
       border-color: #d73a49;
@@ -1049,7 +1044,7 @@ export default {
     }
     &::after {
       border-radius: 5px;
-      border-color: #bbc0c5;
+      border-color: #B3B3B3;
     }
   }
   .btn-group {
@@ -1075,7 +1070,7 @@ export default {
       }
       &:hover {
         transition: ease 0.3s;
-        background-color: rgba(3, 125, 214, 0.1);
+        background-color: #F8F3F9;
       }
       .closeIcon {
         position: absolute;
@@ -1169,7 +1164,6 @@ export default {
     height: 30px;
     background-color: green;
   }
-  // 最近交易用户
   .recent {
     .text {
       width: 100%;

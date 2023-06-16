@@ -116,7 +116,7 @@ export default defineComponent({
 .title {
   color: #b3b3b3;
   line-height: 62px;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-weight: bold;
 
 }

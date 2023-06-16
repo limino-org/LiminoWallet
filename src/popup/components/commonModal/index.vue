@@ -1,22 +1,19 @@
 <template>
   <div class="common-modal">
     <van-dialog
+      :class="className"
       v-model:show="showModal"
       :showConfirmButton="false"
       :showCancelButton="false"
       closeOnClickOverlay
       :title="''"
     >
-      <div class="title text-center text-bold van-hairline--bottom">
+      <div class="title text-center f-16 bold van-hairline--bottom">
         {{ title }}
       </div>
       <div class="text-center">
           <slot></slot>
       </div>
-      <div class="flex center pb-20 pt-20">
-          <van-button type="default" @click="cancel">{{t('bootstrapwindow.okay')}}</van-button>
-      </div>
-     
     </van-dialog>
   </div>
 </template>
@@ -31,10 +28,6 @@ import {
   computed,
 } from "vue";
 import { Dialog, Toast,Button } from "vant";
-import QrcodeVue from "qrcode.vue";
-import { downloadBase64Img } from "@/popup/utils/utils";
-import useClipboard from "vue-clipboard3";
-import { useStore } from "vuex";
 import { useI18n } from "vue-i18n";
 
 export default defineComponent({
@@ -52,6 +45,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    className:{
+      type: String,
+      default:''
+    }
     
   },
   setup(props: any, context: SetupContext) {
@@ -76,13 +73,9 @@ export default defineComponent({
         }
       }
     );
-    const cancel = () => {
-        showModal.value = false
-    }
     return {
       t,
       showModal,
-        cancel
     };
   },
 });
@@ -90,10 +83,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 .title {
   color: #000;
-  font-size: 15px;
   line-height: 62px;
+  background: #F8F3F9;
   font-weight: bold;
-
 }
 .savebtn {
   width: 220px;
@@ -105,7 +97,7 @@ export default defineComponent({
     font-size: 12px;
   }
   &:hover {
-    background: #deebf6;
+    background: #F8F3F9;
     color: #666;
   }
 }
@@ -129,21 +121,21 @@ export default defineComponent({
     height: 34px;
     box-sizing: border-box;
     border-radius: 17px;
-    border: 1PX solid #037cd6;
+    border: 1PX solid #9F54BA;
     cursor: pointer;
     &:hover {
-      background: #037cd6;
+      background: #9F54BA;
       i {
         color: #fff;
       }
     }
     i {
       font-size: 18px;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .text {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 12px;
   }
 }

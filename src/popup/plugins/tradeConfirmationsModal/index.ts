@@ -1,7 +1,4 @@
 import { getCurrentInstance, ComponentInternalInstance } from 'vue'
-import { TradeConfirmOpt } from './tradeConfirm'
-
-
 export type TradeConfirmType = {
     open: Function
     update: Function
@@ -9,6 +6,8 @@ export type TradeConfirmType = {
 }
 export const useTradeConfirm = () => {
     const { globalProperties } = (getCurrentInstance() as ComponentInternalInstance).appContext.config
+
+    // @ts-ignore
     const $tradeConfirm: TradeConfirmType = globalProperties.$tradeConfirm
     return {
         $tradeConfirm

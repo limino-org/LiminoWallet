@@ -2,14 +2,13 @@
 <template>
   <van-dialog
     v-model:show="show"
-    show-cancel-button
     class="minus-pledge-dialog"
     teleport="#page-box"
     :showConfirmButton="false"
     :showCancelButton="false"
     closeOnClickOverlay
   >
-    <div class="sheet-header">
+    <div class="sheet-header van-hairline--bottom">
       {{ t("createExchange.pledgeRed") }}
     </div>
     <div class="account-container">
@@ -63,10 +62,7 @@
           </div>
         </div>
       </div>
-      <div class="tips flex">
-        <div class="flex center tips-icon"><van-icon name="question" /></div>
-        <div class="lh-16">{{ t("minerspledge.tip7") }}</div>
-      </div>
+      <Tip :message="t('minerspledge.tip7')" />
     </div>
     <div class="flex between btn-box">
       <van-button block plain class="mr-30" @click="handleCancel">{{
@@ -105,6 +101,7 @@ import { useI18n } from "vue-i18n";
 import BigNumber from "bignumber.js";
 import MinusStackDialog from "@/popup/views/home/pages/miners/miuns-stack-dialog.vue";
 import { useToast } from "@/popup/plugins/toast";
+import Tip from '@/popup/components/tip/index.vue'
 export default defineComponent({
   name: "modifPledgeModal",
   components: {
@@ -117,6 +114,7 @@ export default defineComponent({
     ElSlider,
     ElTooltip,
     MinusStackDialog,
+    Tip
   },
   emits: ["confirm", "update:modelValue"],
   props: {
@@ -212,7 +210,8 @@ export default defineComponent({
     };
 
     const submit = async () => {
-      if (value.value <= 0) {
+      console.log('value.value', value.value, sliderValue.value)
+      if (Number(value.value) <= 0) {
         $toast.warn(t("sendto.no"));
         return;
       }
@@ -256,12 +255,12 @@ export default defineComponent({
   color: #848484;
 }
 .btn-box {
-  padding: 12px 45px 25px;
+  padding: 0 45px 25px;
 }
 .tips-icon {
   i {
     font-size: 18px;
-    color: #037dd6;
+    color: #9F54BA;
     margin-right: 9px;
   }
 }
@@ -279,7 +278,7 @@ export default defineComponent({
 }
 .tips {
   padding: 11px 15px;
-  background: #f4faff;
+  background: #F8F3F9;
   border-radius: 7px;
   margin: 15px 0;
 }
@@ -318,10 +317,10 @@ export default defineComponent({
     border-radius: 3.5px;
   }
   .el-slider__marks-text {
-    z-index: 999;
-    margin-top: -40px;
-    line-height: 25px;
-    border-radius: 5px;
+    z-index: 9999;
+    margin-top: -26px;
+    line-height: 18px;
+    border-radius: 4px;
     background: #85e19b;
     color: #fff;
     padding: 0 5px;
@@ -338,12 +337,10 @@ export default defineComponent({
       display: block;
       content: "";
       width: 0;
-      margin: 0 auto -13px;
+      margin: 0 auto -9px;
       height: 0;
-
-      border: 8px solid transparent;
-
-      border-top: 8px solid #85e19b;
+      border: 6px solid transparent;
+      border-top: 6px solid #85e19b;
     }
   }
 }
@@ -354,7 +351,7 @@ export default defineComponent({
   text-align: center;
   align-items: center;
   justify-content: center;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-size: 15px;
   font-weight: bold;
 }

@@ -13,7 +13,7 @@
               class="box-item"
               effect="dark"
               :content="t('minerspledge.proxyAddr')"
-              placement="right"
+              placement="top"
               trigger="hover"
             >
               <van-icon name="question" color="#9A9A9A" />
@@ -28,7 +28,7 @@
               class="box-item"
               effect="dark"
               :content="t('minerspledge.stackTip')"
-              placement="right"
+              placement="top"
               trigger="hover"
             >
               <van-icon name="question" color="#9A9A9A" />
@@ -42,12 +42,12 @@
               class="box-item"
               effect="dark"
               :content="t('bourse.tip6')"
-              placement="right"
+              placement="top"
               trigger="hover"
             >
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
-            <div class="exchange">100,000 ERB(≈$500.000)</div>
+            <div class="exchange">100,000 ERB</div>
           </div>
           <div class="bourse-container-meaning bt">
             <span class="c1">{{t('bourse.income')}} </span>
@@ -56,12 +56,12 @@
               class="box-item"
               effect="dark"
               :content="t('bourse.tip7')"
-              placement="right"
+              placement="top"
               trigger="hover"
             >
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
-            <div class="exchange">≈ 0.000000001 ERB(≈$1)</div>
+            <div class="exchange">≈ 0.000000001 ERB</div>
           </div>
           <div class="">
             <span class="c1">{{t('bourse.gasFee')}} </span>
@@ -70,14 +70,14 @@
               class="box-item"
               effect="dark"
               :content="t('common.gasFee')"
-              placement="right"
+              placement="top"
               trigger="hover"
             >
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
             <div class="exchange exchange-z">
               <span>≈ </span>
-              <span class="c2"> 0.000000000001 ERB(≈$1)</span>
+              <span class="c2"> 0.000000000001 ERB</span>
             </div>
           </div>
         </div>
@@ -113,13 +113,13 @@
 import { Button, Overlay, Field, Toast, Icon } from "vant";
 import { ref, SetupContext, computed, nextTick } from "vue";
 import { ethers, utils } from "ethers";
-import { formatEther, toUsd } from "@/popup/utils/filters";
 import { useI18n } from "vue-i18n";
 import { ElTooltip } from "element-plus";
 import { useStore } from "vuex";
 import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
 import { useRouter } from "vue-router";
 import { ExchangeStatus, getWallet, TransactionReceipt,handleGetTranactionReceipt,TransactionTypes } from "@/popup/store/modules/account";
+import { clone } from 'pouchdb-utils';
 
 export default {
   components: {
@@ -133,14 +133,13 @@ export default {
   setup(props: any, context: SetupContext) {
     const { t } = useI18n();
     const store = useStore();
-    console.log("我加载了11111111111");
     const { emit }: any = context;
-    // 输入框name
+    // Input box name
     let amount = ref(props.minersMoney);
-    // 金额和金额的最大值和最小值
+    // The amount and the maximum and minimum value of the amount
     let moneyMin = ref(100000);
     let moneyMax = ref(10000000);
-
+    const {commit} = useStore()
     let dislogShow = computed({
       get: () => props.show,
       set: (v) => emit("update:show", v),
@@ -178,23 +177,16 @@ export default {
  
         const tx1 = {
           to: "0x7fBC8ad616177c6519228FCa4a7D9EC7d1804900",
-          value: ethers.utils.parseEther(props.formatValueNumber + ""),
+          value: props.formatValueNumber + "",
           data: `0x${data3}`,
 
         };
         console.log(tx1);
 
         const wallet = await getWallet();
-        const receipt: any = await wallet.sendTransaction(tx1);
-        const receipt2 = await wallet.provider.waitForTransaction(receipt.hash);
-        const symbol = store.state.account.currentNetwork.currencySymbol
-        const rep: TransactionReceipt = handleGetTranactionReceipt(
-          TransactionTypes.other,
-          receipt2,
-          receipt,
-          symbol
-        );
-        store.commit("account/PUSH_TRANSACTION", rep);
+        const data = await store.dispatch('account/transaction', tx1)
+        const receipt2 = await wallet.provider.waitForTransaction(data.hash);
+        await store.dispatch('account/waitTxQueueResponse')
         const { status } = receipt2;
         if (status == 0) {
           $tradeConfirm.update({ status: "fail" });
@@ -206,8 +198,6 @@ export default {
             },
           });
         }
-        console.log(receipt);
-        console.log("receiptreceiptreceipt");
         isLoading.value = false;
         emit("update:show", false);
         emit("open");
@@ -240,7 +230,6 @@ export default {
       dislogShow,
       submit,
       screentNumber,
-      toUsd,
       ...props,
     };
   },
@@ -263,7 +252,7 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #f8fcff;
+      background: #F8F3F9;
       font-size: 14px;
       color: #0f0f0f;
     }
@@ -328,7 +317,7 @@ export default {
           font-weight: bold;
         }
         .ipt-server {
-          font-size: 10px;
+          font-size: 12px;
           color: #8f8f8f;
           font-weight: bold;
           span {
@@ -343,7 +332,7 @@ export default {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f4faff;
+            background: #F8F3F9;
             border-radius: 7px 7px 7px 7px;
             &:first-child {
               padding: 0 18px;
@@ -351,8 +340,8 @@ export default {
           }
           .ipt-server-i-active {
             color: #0287db;
-            background: #f4faff;
-            border: 1px solid #037cd6;
+            background: #F8F3F9;
+            border: 1px solid #9F54BA;
             span {
               color: #0287db;
             }
@@ -446,7 +435,7 @@ export default {
   color: #3aae55;
 }
 .tips {
-  color: #037cd6;
+  color: #9F54BA;
   font-size: 12px;
   margin: 15px 15px;
   margin-bottom: 0;

@@ -1,21 +1,25 @@
+.popover-btn-tip-right {
+
+}
 .loading-page {
     height: 80vh;
 }
-
+.insufficientMoney-tip {
+    color: #F7BF03;
+}
 .add-amount {
     color: #000;
 }
 .active-d {
     border: 1px solid #B3B3B3;
 }
-
+.pwd-tip {
+    span {
+      color: #9F54BA;
+      text-decoration: underline;
+    }
+  }
 :deep() {
-    //.el-slider {
-    //    width: 100%;
-    //    height: 0.85333rem;
-    //    //display: flex;
-    //    align-items: center
-    //}
     .slider-ipt {
         padding: 0;
         margin-top: 15px;
@@ -79,7 +83,7 @@
         height: 62px;
         font-size: 15px;
         line-height: 62px;
-        background-color: #f8fcff;
+        background-color: #F8F3F9;
     }
 
     .exchange-welcome-icon {
@@ -117,7 +121,7 @@
         text-align: center;
 
         .right {
-            color: #037cd6;
+            color: #9F54BA;
             text-decoration: underline;
         }
     }
@@ -135,7 +139,7 @@
         height: 62px;
         font-size: 15px;
         line-height: 62px;
-        background-color: #f8fcff;
+        background-color: #F8F3F9;
     }
 
     .exchange-welcome-icon {
@@ -166,7 +170,7 @@
         text-align: center;
 
         .right {
-            color: #037cd6;
+            color: #9F54BA;
             text-decoration: underline;
         }
     }
@@ -210,7 +214,7 @@
         .down {
             height: 24px;
             line-height: 24px;
-            color: #037cd6;
+            color: #9F54BA;
             text-decoration: underline;
             white-space: nowrap;
             overflow: hidden;
@@ -239,14 +243,13 @@
         line-height: 62px;
         text-align: center;
         font-weight: bold;
-        background: #f8fcff;
+        background: #F8F3F9;
         font-size: 14px;
         color: #0f0f0f;
     }
 
     .miners-container {
         ::-webkit-input-placeholder {
-            /* WebKit browsers，webkit内核浏览器 */
             color: #232323;
             font-size: 12px;
         }
@@ -329,7 +332,7 @@
             }
 
             .ipt-server {
-                font-size: 10px;
+                font-size: 12px;
                 color: #8f8f8f;
                 font-weight: bold;
 
@@ -346,7 +349,7 @@
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
-                    background: #f4faff;
+                    background: #F8F3F9;
                     border-radius: 7px 7px 7px 7px;
 
                     &:first-child {
@@ -356,8 +359,8 @@
 
                 .ipt-server-i-active {
                     color: #0287db;
-                    background: #f4faff;
-                    border: 1px solid #037cd6;
+                    background: #F8F3F9;
+                    border: 1px solid #9F54BA;
 
                     span {
                         color: #0287db;
@@ -489,7 +492,7 @@
         line-height: 62px;
         text-align: center;
         font-weight: bold;
-        background: #f8fcff;
+        background: #F8F3F9;
         font-size: 14px;
         color: #0f0f0f;
     }
@@ -684,7 +687,7 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            background: #f4faff;
+            background: #F8F3F9;
             border-radius: 7.5px;
             cursor: pointer;
             box-sizing: border-box;
@@ -692,10 +695,17 @@
         }
 
         .active {
-            border: 1px solid #037cd6;
+            border: 1px solid #9F54BA;
 
             span {
-                color: #037cd6;
+                color: #9F54BA;
+            }
+        }
+        .disabled {
+            border: 1px solid #ccc;
+
+            span {
+                color: #ccc;
             }
         }
 
@@ -717,7 +727,7 @@
                 font-weight: normal;
 
                 &.icon-duigouxiao {
-                    color: #037cd6;
+                    color: #9F54BA;
                 }
             }
         }
@@ -734,20 +744,26 @@
 
     }
     .btn-groups .container {
-        &>button{width: 49%;}
+        &>button{width: 100%;}
 
     }
     .btn-groups {
         :deep(){
             .van-popover__wrapper {
-                width: 49%;
+                width: 100%;
+                button {
+                    width: 100% !important;
+                }
             }
         }
     }
 
     .bourse-container-btns {
-        margin-top: 120px;
-
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 30px;
+        margin-top: 50px;
         .b1 {
             width: 100%;
         }
@@ -771,7 +787,7 @@
 
     .t1 {
         font-size: 14px;
-        color: #037cd6;
+        color: #9F54BA;
     }
 
     .t3 {
@@ -798,12 +814,12 @@
         }
 
         .right {
-            color: #037cd6;
+            color: #9F54BA;
             text-decoration: underline;
         }
 
         .icon-yanjing {
-            color: #037dd6;
+            color: #9F54BA;
         }
 
         :deep(.van-field__label) {
@@ -823,7 +839,6 @@
         }
 
         :deep(.van-field__body) {
-            height: 44px!important;
             border: 1px solid #adb8c5;
             margin-bottom: 10px;
             padding: 0 10px;
@@ -831,7 +846,7 @@
             transition: ease 0.3s;
             font-size: 12px;
             // &:hover {
-            //   border: 1px solid #1989fa;
+            //   border: 1px solid #9F54BA;
             // }
         }
 
@@ -843,12 +858,12 @@
 
         .success-field {
             :deep(.van-field__body) {
-                border: 1px solid #1989fa !important;
+                border: 1px solid #9F54BA !important;
             }
         }
 
         .tool {
-            color: #037cd6;
+            color: #9F54BA;
         }
 
         .pointer {
@@ -871,12 +886,12 @@
 }
 
 .appendto2>span::before {
-    background-color: #037dd6 !important;
+    background-color: #9F54BA !important;
     border: none !important;
 }
 
 .appendto1>span::before {
-    background-color: #037dd6 !important;
+    background-color: #9F54BA !important;
     border: none !important;
 }
 

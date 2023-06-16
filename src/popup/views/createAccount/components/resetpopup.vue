@@ -43,14 +43,12 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, Ref, watch, SetupContext, reactive, computed } from 'vue'
+import { defineComponent, ref, Ref, watch, SetupContext, reactive, computed, nextTick } from 'vue'
 import { Dialog, Button, Field, NumberKeyboard, Toast, Icon } from 'vant'
-import { regNum2 } from '@/popup/enum/regexp'
-import { toUsd } from '@/popup/utils/filters'
-import { setCookies, getCookies, hasLogin } from "@/popup/utils/jsCookie";
 import localforage from "localforage";
 import { useCountDown } from '@vant/use';
-import BigNumber from 'bignumber.js'
+import { useBroadCast } from '@/popup/utils/broadCost'
+
 export default defineComponent({
   name: 'resetpopup',
   emits: ['cancel'],
@@ -72,6 +70,7 @@ export default defineComponent({
     }
   },
   setup(props: any, context: SetupContext) {
+    const { handleUpdate } = useBroadCast()
     const { emit }: any = context
     const showModal: Ref<boolean> = ref(false)
     const ipt = ref(null)
@@ -117,15 +116,20 @@ export default defineComponent({
     }
     // Reset the wallet
     const handleComfirm = async () => {
-      await localforage.clear()
-      setCookies('password','')
-      location.reload()
+      try {
+        await localforage.clear()
+        handleUpdate()
+        // setCookies('password','')
+        location.reload()
+      }catch(err) {
+        console.log(err)
+      }
+
     }
     return {
       showModal,
       amount,
       ipt,
-      toUsd,
       cancel,
       handleComfirm,
       countDownEnd,
@@ -140,7 +144,7 @@ export default defineComponent({
   color: #000;
   font-size: 15px;
   line-height: 62px;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-weight: bold;
 
 }

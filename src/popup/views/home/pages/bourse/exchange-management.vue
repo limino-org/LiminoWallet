@@ -5,7 +5,7 @@
     </template>
   </NavHeader>
   <div class="exchange-manage" v-if="!loading">
-    <!-- 第一次开设成功 -->
+    <!-- The first time was successful -->
     <div class="bourse-img">
       <img
         class="exchange-welcome-icon"
@@ -16,7 +16,7 @@
     </div>
     <!-- <Tip v-else :message="t('createExchange.pageTip')" /> -->
     <div class="list">
-      <div class="card flex between" v-if="hasExchange" @click="toConsole">
+      <!-- <div class="card flex between" v-if="hasExchange" @click="toConsole">
         <div class="info">
           <div class="label">{{ t("createExchange.exchange") }}</div>
           <div class="desc">{{ t("createExchange.exchangeDesc") }}</div>
@@ -24,9 +24,9 @@
         <div class="flex center">
           <van-icon name="arrow" />
         </div>
-      </div>
+      </div> -->
 
-      <div class="card flex between" v-if="hasExchange" @click="toAdmin">
+      <!-- <div class="card flex between" v-if="hasExchange" @click="toAdmin">
         <div class="info">
           <div class="label">{{ t("createExchange.console") }}</div>
           <div class="desc">{{ t("createExchange.consoleDesc") }}</div>
@@ -34,7 +34,7 @@
         <div class="flex center">
           <van-icon name="arrow" />
         </div>
-      </div>
+      </div> -->
 
       <div class="card flex between" @click="openExchange">
         <div class="info">
@@ -46,21 +46,21 @@
         </div>
       </div>
 
-      <div class="card flex between" @click="showServerModal = true">
+      <!-- <div class="card flex between" @click="handleAddModel">
         <div class="info">
           <div class="label">{{ t("createExchange.server") }}</div>
-          <div class="desc">{{ t("createExchange.serverDesc") }}</div>
+          <div class="desc">{{ t("createExchange.serverDesc",{days,hours}) }}</div>
         </div>
         <div class="flex center">
           <van-icon name="arrow" />
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
   <div class="flex center loading-page" v-else>
-    <van-loading color="#037CD6" />
+    <van-loading color="#9F54BA" />
   </div>
-  <ServerModal v-model="showServerModal" :exchangeName="exchangeName"  @updateStatus="handleUpdateStatus"/>
+  <ServerModal v-model="showServerModal" :exchangeName="exchangeName"  :days="days" :hours="hours" @updateStatus="handleUpdateStatus"/>
   <div class="guide-mask" @click.stop="closeGuide" v-if="showGuideMask">
     <div class="container">
       <div class="guide-header"></div>
@@ -73,14 +73,14 @@
           <div class="line-circle"></div>
         </div>
         <!-- <div class="guide-con-1 mask" v-if></div> -->
-        <div class="guide-con-2" v-if="showGuide">
+        <!-- <div class="guide-con-2" v-if="showGuide">
           <div class="guide-text">
             {{ t("guidePopup.createExchangGuideTip2") }}
           </div>
           <div class="line-box"></div>
           <div class="line-box"></div>
           <div class="line-circle"></div>
-        </div>
+        </div> -->
       </div>
       <div class="guide-footer"></div>
       <div class="guide-card" v-if="(showGuide && !showServer)  || (showServer && !showGuide)"></div>
@@ -90,14 +90,14 @@
 <script lang="ts">
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { encode, decode } from "js-base64";
-
+import { useExchanges } from '@/popup/hooks/useExchanges'
 import Tip from "@/popup/components/tip/index.vue";
-import { computed, defineComponent, onMounted, ref } from "@vue/runtime-core";
+import { computed, defineComponent, onMounted, Ref, ref } from "@vue/runtime-core";
 import { Button, Icon, Loading } from "vant";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-
+import moment from 'moment'
 import ServerModal from "./server-modal.vue";
 import {
   VUE_APP_EXCHANGESMANAGEMENT_URL,
@@ -106,6 +106,10 @@ import {
 import { getWallet } from "@/popup/store/modules/account";
 import eventBus from "@/popup/utils/bus";
 import { nextTick } from "process";
+import { useToast } from '@/popup/plugins/toast';
+import { ethers } from 'ethers';
+import { Toast } from 'vant';
+import BigNumber from 'bignumber.js';
 
 export default {
   name: "exchange-manage",
@@ -126,6 +130,7 @@ export default {
       () =>
         exchangeStatus.value.exchanger_flag && exchangeStatus.value.status == 2
     );
+    const {getContract} = useExchanges()
     const back = () => {
       router.back();
     };
@@ -137,7 +142,27 @@ export default {
       const add = state.account.accountInfo.address;
       return `${VUE_APP_EXCHANGESMANAGEMENT_URL}?address=${add.toLowerCase()}&exchangeAddress=${add.toLowerCase()}`;
     });
-
+    const days:Ref<number> = ref(0)
+    const hours:Ref<number> = ref(0)
+    const hasEnableServe = ref(false)
+    const getServerExpiDate = async() => {
+      const contractWithSigner = await getContract()
+      const [date] = await contractWithSigner.functions.endTime(state.account.accountInfo.address)
+      const nowTime = new Date().getTime()
+      const a = date.toNumber() > 0 ? date.toNumber() * 1000 : 0
+      const b = nowTime
+      if(a === 0) {
+        return
+      }
+      hasEnableServe.value = true
+      const timestamp = moment(a)
+      const nowTimestamp = moment(b);
+      const totalHours = timestamp.diff(nowTimestamp,'hours')
+      const hour = totalHours%24
+      const day = timestamp.diff(nowTimestamp, 'days')
+      days.value = day
+      hours.value = hour
+    }
     const toAdmin = () => {
       window.open(adminUrl.value);
     };
@@ -154,12 +179,12 @@ export default {
       loading.value = true;
       await dispatch('account/getExchangeStatus')
             const {exchanger_flag,status} = exchangeStatus.value
-            debugger
+            //debugger
       if (!state.account.exchangeGuidance && exchanger_flag) {
         showGuide.value = true;
         // commit("account/UPDATE_EXCHANGEGUIDANCE", true);
       }
-      if (!state.account.exchangeServer && status == 2) {
+      if (!state.account.exchangeServer) {
         showServer.value = true;
         // commit("account/UPDATE_EXCHANGESERVER", true);
       }
@@ -175,6 +200,7 @@ export default {
       } finally {
         loading.value = false;
       }
+      getServerExpiDate()
     };
     onMounted(initData);
     eventBus.on("walletReady", async () => {
@@ -200,7 +226,25 @@ export default {
     const handleUpdateStatus = () => {
       initData()
     }
+    
+    const {$toast} = useToast()
+    const handleAddModel = async() => {
+      Toast.loading({
+        duration:0
+      })
+      const wallet = await getWallet()
+      const balance = await wallet.getBalance()
+      const ethBalance = ethers.utils.formatEther(balance)
+      if(new BigNumber(ethBalance).lt(201)) {
+        $toast.warn(t('createExchange.nomoney'))
+        Toast.clear()
+        return
+      }
+      Toast.clear()
+      showServerModal.value = true
+    }
     return {
+      handleAddModel,
       handleUpdateStatus,
       t,
       back,
@@ -216,7 +260,10 @@ export default {
       showGuideMask,
       showServer,
       initData,
-      closeGuide
+      closeGuide,
+      days,
+      hours,
+      hasEnableServe
     };
   },
 };
@@ -233,7 +280,7 @@ export default {
     background: rgba(0, 0, 0, 0.7);
   }
   .guide-footer {
-    height: calc(100vh - 180px - 316px);
+    height: calc(100vh  - 260px);
     background: rgba(0, 0, 0, 0.7);
   }
   .guide-con-1 {
@@ -249,7 +296,7 @@ export default {
     .line-box {
       height: 75px;
       width: 0;
-      border-right: 1px dotted #037cd6;
+      border-right: 1px dotted #9F54BA;
       position: absolute;
       left: 50%;
       top: -62px;
@@ -257,7 +304,7 @@ export default {
     .line-circle {
       width: 6px;
       height: 6px;
-      background: #037cd6;
+      background: #9F54BA;
       border-radius: 3px;
       position: absolute;
       left: 50%;
@@ -278,7 +325,7 @@ export default {
     .line-box {
       height: 75px;
       width: 0;
-      border-right: 1px dotted #037cd6;
+      border-right: 1px dotted #9F54BA;
       position: absolute;
       left: 50%;
       bottom: -62px;
@@ -286,7 +333,7 @@ export default {
     .line-circle {
       width: 6px;
       height: 6px;
-      background: #037cd6;
+      background: #9F54BA;
       border-radius: 3px;
       position: absolute;
       left: 50%;
@@ -296,7 +343,7 @@ export default {
   }
   .guide-con-1,
   .guide-con-2 {
-    height: 158px;
+    height: 80px;
     position: relative;
     &.mask {
       background: rgba(0, 0, 0, 0.7);
@@ -312,7 +359,7 @@ export default {
       right: 7.5px;
       top: 11.5px;
       bottom: 13px;
-      border: 1px dotted #037cd6;
+      border: 1px dotted #9F54BA;
       border-radius: 5px;
     }
   }
@@ -324,7 +371,7 @@ export default {
 }
 .bourse-img {
   height: 135px;
-  background-color: #f4faff;
+  background-color: #F8F3F9;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -371,7 +418,7 @@ export default {
       .label,
       .desc,
       i {
-        color: #037cd6;
+        color: #9F54BA;
       }
     }
   }

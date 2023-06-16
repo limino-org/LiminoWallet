@@ -5,7 +5,7 @@
         <span>{{$t('minerspledge.minerspledge')}}</span>
       </div>
       <div class="flex center miners-icons">
-        <van-icon size="41" color="#037CD6" name="warning" />
+        <van-icon size="41" color="#9F54BA" name="warning" />
       </div>
       <div class="flex center column">
         <span class="text-s">{{$t('minerspledge.unfortunately')}}</span>
@@ -67,7 +67,7 @@ export default {
 
   .miners {
     width: 341px;
-    height: 427px;
+    height: 410px;
     background: #fff;
     margin: auto;
     border-radius: 8px;
@@ -93,7 +93,7 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #f8fcff;
+      background: #F8F3F9;
       font-size: 14px;
       color: #0f0f0f;
     }

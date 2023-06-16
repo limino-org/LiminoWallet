@@ -1,11 +1,5 @@
 <template>
-<van-sticky>
-      <NavHeader title="Close" :hasRight="true">
-        <template v-slot:title>
-          <div class="flex center title">{{t('setting.contacts')}}</div>
-        </template>
-      </NavHeader>
-    </van-sticky>
+      <NavHeader :title="t('receive.contants')" :hasRight="true"></NavHeader>
   <div class="contacts-list">
     <div class="list pt-16">
       <div
@@ -52,27 +46,27 @@
               >
                 <path
                   d="M278.74 206l-1.57 1.57V206h1.57zM315.07 101l-1.57 1.57V101h1.57z"
-                  :fill="sortType == '1' ? '#037CD6' : '#909090'"
+                  :fill="sortType == '1' ? '#9F54BA' : '#909090'"
                   p-id="27332"
                 ></path>
                 <path
                   d="M455.22 873.05h-61.74V151.63h61.74z"
-                  :fill="sortType == '1' ? '#037CD6' : '#909090'"
+                  :fill="sortType == '1' ? '#9F54BA' : '#909090'"
                   p-id="27333"
                 ></path>
                 <path
                   d="M209.16 424.58v-87.31l184.33-184.32 1.28-1.29 43.66 43.65-44.94 44.95-184.33 184.32z"
-                  :fill="sortType == '1' ? '#037CD6' : '#909090'"
+                  :fill="sortType == '1' ? '#9F54BA' : '#909090'"
                   p-id="27334"
                 ></path>
                 <path
                   d="M568.11 151.62h61.74v721.42h-61.74z"
-                  :fill="sortType == '1' ? '#909090' : '#037CD6'"
+                  :fill="sortType == '1' ? '#909090' : '#9F54BA'"
                   p-id="27335"
                 ></path>
                 <path
                   d="M814.17 600.09v87.31L629.85 871.72l-1.29 1.29-43.66-43.66 44.95-44.94 184.32-184.32z"
-                  :fill="sortType == '1' ? '#909090' : '#037CD6'"
+                  :fill="sortType == '1' ? '#909090' : '#9F54BA'"
                   p-id="27336"
                 ></path>
               </svg>
@@ -83,7 +77,7 @@
       </div>
         <div class="btn-groups">
           <div class="container pl-28 pr-28">
-          <van-button type="primary" @click="toAdd" plain block
+          <van-button  @click="toAdd" plain block
             >{{ t("contacts.newadd") }}</van-button
           >
         </div>
@@ -232,7 +226,7 @@ export default {
 
   :deep(.van-sticky--fixed) {
     .sort-box {
-      max-width: 750px;
+      max-width: 820px;
       margin: 0 auto;
       position: relative;
     }
@@ -257,7 +251,7 @@ export default {
     overflow-y: scroll;
   }
   .search-box {
-    border: 1PX solid #BBC0C5;
+    border: 1PX solid #B3B3B3;
     border-radius: 5px;
     :deep(){
       .van-cell {
@@ -268,14 +262,14 @@ export default {
       }
     }
     &:hover {
-      border-color: #037cd6;
+      border-color: #9F54BA;
     }
   }
 
   .ipt-box {
     width: 96%;
     i {
-      color: #037cd6;
+      color: #9F54BA;
       font-size: 22px;
     }
   }
@@ -283,7 +277,7 @@ export default {
     width: 30px;
     i {
       font-size: 16px;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
 }

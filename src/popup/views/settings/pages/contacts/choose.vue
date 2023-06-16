@@ -1,9 +1,9 @@
 <template>
   <van-sticky>
-    <NavHeader title="Close" :hasLeft="false">
-      <template v-slot:title>
-        <div class="flex center title">{{ t("setting.contacts") }}</div>
-      </template>
+    <NavHeader :title="t('setting.contacts')">
+      <template v-slot:left>
+     <span class="back hover f-12" @click="back">{{t('createAccountpage.back')}}</span>
+    </template>
     </NavHeader>
   </van-sticky>
   <div class="contacts-list">
@@ -49,27 +49,27 @@
                   >
                     <path
                       d="M278.74 206l-1.57 1.57V206h1.57zM315.07 101l-1.57 1.57V101h1.57z"
-                      :fill="sortType3 == '1' ? '#037CD6' : '#909090'"
+                      :fill="sortType3 == '1' ? '#9F54BA' : '#909090'"
                       p-id="27332"
                     ></path>
                     <path
                       d="M455.22 873.05h-61.74V151.63h61.74z"
-                      :fill="sortType3 == '1' ? '#037CD6' : '#909090'"
+                      :fill="sortType3 == '1' ? '#9F54BA' : '#909090'"
                       p-id="27333"
                     ></path>
                     <path
                       d="M209.16 424.58v-87.31l184.33-184.32 1.28-1.29 43.66 43.65-44.94 44.95-184.33 184.32z"
-                      :fill="sortType3 == '1' ? '#037CD6' : '#909090'"
+                      :fill="sortType3 == '1' ? '#9F54BA' : '#909090'"
                       p-id="27334"
                     ></path>
                     <path
                       d="M568.11 151.62h61.74v721.42h-61.74z"
-                      :fill="sortType3 == '1' ? '#909090' : '#037CD6'"
+                      :fill="sortType3 == '1' ? '#909090' : '#9F54BA'"
                       p-id="27335"
                     ></path>
                     <path
                       d="M814.17 600.09v87.31L629.85 871.72l-1.29 1.29-43.66-43.66 44.95-44.94 184.32-184.32z"
-                      :fill="sortType3 == '1' ? '#909090' : '#037CD6'"
+                      :fill="sortType3 == '1' ? '#909090' : '#9F54BA'"
                       p-id="27336"
                     ></path>
                   </svg>
@@ -100,27 +100,27 @@
                   >
                     <path
                       d="M278.74 206l-1.57 1.57V206h1.57zM315.07 101l-1.57 1.57V101h1.57z"
-                      :fill="sortType2 == '1' ? '#037CD6' : '#909090'"
+                      :fill="sortType2 == '1' ? '#9F54BA' : '#909090'"
                       p-id="27332"
                     ></path>
                     <path
                       d="M455.22 873.05h-61.74V151.63h61.74z"
-                      :fill="sortType2 == '1' ? '#037CD6' : '#909090'"
+                      :fill="sortType2 == '1' ? '#9F54BA' : '#909090'"
                       p-id="27333"
                     ></path>
                     <path
                       d="M209.16 424.58v-87.31l184.33-184.32 1.28-1.29 43.66 43.65-44.94 44.95-184.33 184.32z"
-                      :fill="sortType2 == '1' ? '#037CD6' : '#909090'"
+                      :fill="sortType2 == '1' ? '#9F54BA' : '#909090'"
                       p-id="27334"
                     ></path>
                     <path
                       d="M568.11 151.62h61.74v721.42h-61.74z"
-                      :fill="sortType2 == '1' ? '#909090' : '#037CD6'"
+                      :fill="sortType2 == '1' ? '#909090' : '#9F54BA'"
                       p-id="27335"
                     ></path>
                     <path
                       d="M814.17 600.09v87.31L629.85 871.72l-1.29 1.29-43.66-43.66 44.95-44.94 184.32-184.32z"
-                      :fill="sortType2 == '1' ? '#909090' : '#037CD6'"
+                      :fill="sortType2 == '1' ? '#909090' : '#9F54BA'"
                       p-id="27336"
                     ></path>
                   </svg>
@@ -152,27 +152,27 @@
                   >
                     <path
                       d="M278.74 206l-1.57 1.57V206h1.57zM315.07 101l-1.57 1.57V101h1.57z"
-                      :fill="sortType == '1' ? '#037CD6' : '#909090'"
+                      :fill="sortType == '1' ? '#9F54BA' : '#909090'"
                       p-id="27332"
                     ></path>
                     <path
                       d="M455.22 873.05h-61.74V151.63h61.74z"
-                      :fill="sortType == '1' ? '#037CD6' : '#909090'"
+                      :fill="sortType == '1' ? '#9F54BA' : '#909090'"
                       p-id="27333"
                     ></path>
                     <path
                       d="M209.16 424.58v-87.31l184.33-184.32 1.28-1.29 43.66 43.65-44.94 44.95-184.33 184.32z"
-                      :fill="sortType == '1' ? '#037CD6' : '#909090'"
+                      :fill="sortType == '1' ? '#9F54BA' : '#909090'"
                       p-id="27334"
                     ></path>
                     <path
                       d="M568.11 151.62h61.74v721.42h-61.74z"
-                      :fill="sortType == '1' ? '#909090' : '#037CD6'"
+                      :fill="sortType == '1' ? '#909090' : '#9F54BA'"
                       p-id="27335"
                     ></path>
                     <path
                       d="M814.17 600.09v87.31L629.85 871.72l-1.29 1.29-43.66-43.66 44.95-44.94 184.32-184.32z"
-                      :fill="sortType == '1' ? '#909090' : '#037CD6'"
+                      :fill="sortType == '1' ? '#909090' : '#9F54BA'"
                       p-id="27336"
                     ></path>
                   </svg>
@@ -392,6 +392,14 @@ export default {
         router.replace({ name: backUrl.toString() });
       }
     };
+    const back = () => {
+      const { backUrl } = route.query;
+      if (backUrl) {
+        router.replace({ name: backUrl.toString() });
+        return
+      }
+      router.back()
+    }
 
     // sort
     const toggleSort = (type: number) => {
@@ -433,6 +441,7 @@ export default {
       contacts3,
       contacts2,
       handlerClick,
+      back,
       toggleSort,
       t,
     };
@@ -462,7 +471,7 @@ export default {
   height: 46px !important;
 }
 :deep(.van-tab--active) {
-  color: rgba(3, 125, 214, 1);
+  color: #9F54BA;
 }
 :deep(.van-tabs__line) {
   display: none;
@@ -474,8 +483,8 @@ export default {
   color: #000;
 }
 :deep(.van-tab--active .van-tab__text) {
-  border-bottom: 1px solid #037cd6;
-  color: #037cd6;
+  border-bottom: 1px solid #9F54BA;
+  color: #9F54BA;
 }
 .contacts-list {
   * {
@@ -484,7 +493,7 @@ export default {
 
   :deep(.van-sticky--fixed) {
     .sort-box {
-      max-width: 750px;
+      max-width: 820px;
       margin: 0 auto;
       position: relative;
     }
@@ -509,17 +518,17 @@ export default {
     overflow-y: scroll;
   }
   .search-box {
-    border: 1px solid #bbc0c5;
+    border: 1px solid #B3B3B3;
     border-radius: 5px;
     &:hover {
-      border-color: #037cd6;
+      border-color: #9F54BA;
     }
   }
 
   .ipt-box {
     width: 96%;
     i {
-      color: #037cd6;
+      color: #9F54BA;
       font-size: 22px;
     }
   }
@@ -527,7 +536,7 @@ export default {
     width: 30px;
     i {
       font-size: 16px;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
 }

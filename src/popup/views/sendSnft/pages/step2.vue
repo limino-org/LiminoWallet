@@ -124,7 +124,7 @@
         />
       </van-tab>
     </van-tabs>
-    <van-sticky position="bottom" offset-bottom="30px">
+    <van-sticky position="bottom" offset-bottom="30px" v-if="hasChooseAddress">
       <div class="flex center btn-group">
         <van-button
           type="primary"
@@ -137,6 +137,7 @@
     </van-sticky>
     <AccountModal v-model="showModal" />
     <SendSuccessModal v-model="showSendSuccessModal" />
+    <SendNftModal v-model="showSendModal" :tx="tx" @handleComfirm="handleComfirm" />
   </div>
 </template>
 
@@ -177,6 +178,9 @@ import { useI18n } from "vue-i18n";
 import SendConfirm from "@/popup/views/transferAccounts/components/sendComfirm.vue";
 import ContactsList from "@/popup/views/settings/pages/contacts/components/contactsList.vue";
 import SendSuccessModal from "@/popup/components/sendSuccessModal/index.vue";
+import SendNftModal from '@/popup/views/sendSnft/components/sendSnftModal.vue'
+import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
+import { TradeStatus } from '@/popup/plugins/tradeConfirmationsModal/tradeConfirm';
 
 export default {
   name: "sendSnft-step2",
@@ -197,6 +201,7 @@ export default {
     SendConfirm,
     ContactsList,
     SendSuccessModal,
+    SendNftModal,
   },
   setup(props: any, context: SetupContext) {
     const router = useRouter();
@@ -211,6 +216,7 @@ export default {
     const currentNetwork = computed(() => store.state.account.currentNetwork);
     const nextLoading = ref(false);
     const addressErr = ref(false);
+    const {$tradeConfirm} = useTradeConfirm()
     const chooseToken = computed(() => {
       const symbol = currentNetwork.value.currencySymbol;
       const balance = accountInfo.value.amount;
@@ -238,43 +244,35 @@ export default {
       account.data = {};
     };
     const toAddress: Ref<string> = ref("");
-
+    const tx = ref({})
     // Submit send snft
     const loading = ref(false);
     const gonext = async () => {
       try {
         await checkAddress();
-        loading.value = true;
-        try {
-          // Snft data to be sent
-          let sendList = [];
-          try {
-            sendList = JSON.parse(sessionStorage.getItem("sendSnftList"));
-          } catch (err) {
-            console.error(err);
-          }
-          try {
-            for await (let item of sendList) {
-              const tx = {
-                to: toAddress.value,
-                nft_address: item.address,
-              };
-              await dispatch("nft/send", tx);
+        const sendList = JSON.parse(sessionStorage.getItem("sendSnftList"));
+        const list = []
+        for  (let item of sendList) {
+              let { MergeLevel, nft_address } = item
+              switch(MergeLevel){
+                case 0:
+                  break;
+                case 1:
+                nft_address = nft_address.substr(0,41)
+                  break;
+                case 2:
+                nft_address = nft_address.substr(0,40)
+                  break;
+              }
+              list.push(nft_address)
             }
-            showSendSuccessModal.value = true;
-          } catch (err) {
-            Toast(err.reason);
-          } finally {
-            loading.value = false;
-          }
+        tx.value = {
+          from: accountInfo.value.address,
+          to:toAddress.value,
+          nft_address: list,
 
-          // await dispatch("nft/send", tx);
-        } catch (err: any) {
-          console.error(err);
-          Toast(err?.reason);
-        } finally {
-          loading.value = false;
         }
+        showSendModal.value = true
       } catch (err) {
         console.error(err.toString());
       }
@@ -456,11 +454,98 @@ export default {
       toAddress.value = "";
       addressErr.value = false;
     };
+
+
+    const handleComfirm = async() => {
+      loading.value = true;
+      showSendModal.value = false
+      let failTotal = 0
+        try {
+          // Snft data to be sent
+          let sendList = [];
+          try {
+            sendList = JSON.parse(sessionStorage.getItem("sendSnftList"));
+          } catch (err) {
+            console.error(err);
+          }
+          const total = sendList.length
+          $tradeConfirm.open({
+            disabled: [TradeStatus.pendding],
+            approveMessage: t('sendSNFT.approveMessage',{total}),
+            successMessage: t('sendSNFT.successMessage',{total}),
+            wattingMessage: t('sendSNFT.wattingMessage'),
+            callBack(){
+              router.replace({name:'wallet'})
+            }
+     
+          })
+          const receiptList = []
+          try {
+            for await (let item of sendList) {
+              let { MergeLevel, nft_address } = item
+              switch(MergeLevel){
+                case 0:
+                  break;
+                case 1:
+                nft_address = nft_address.substr(0,41)
+                  break;
+                case 2:
+                nft_address = nft_address.substr(0,40)
+                  break;
+              }
+              const tx = {
+                to: toAddress.value,
+                nft_address,
+              };
+              const txData = await dispatch("nft/send", tx);
+              
+              receiptList.push(txData)
+            }
+            $tradeConfirm.update({status:"approve"})
+            const successList = []
+            for await (const iterator of receiptList) {
+              const re = await iterator.wait()
+              successList.push(re)
+            }
+            await dispatch('account/waitTxQueueResponse')
+            if(successList.length == sendList.length) {
+              $tradeConfirm.update({status:"success"})
+            } else {
+              $tradeConfirm.update({
+              status:"fail",
+              failMessage: t('sendSNFT.failMessage',{total: sendList.length - successList.length}),
+})
+            }
+
+            // showSendSuccessModal.value = true;
+          } catch (err) {
+            Toast(err.reason);
+            $tradeConfirm.update({
+              status:"fail",
+              failMessage: t('sendSNFT.failMessage2'),
+})
+
+          } finally {
+            loading.value = false;
+          }
+
+          // await dispatch("nft/send", tx);
+        } catch (err: any) {
+          console.error(err);
+          Toast(err?.reason);
+        } finally {
+          loading.value = false;
+        }
+    }
+    const showSendModal = ref(false)
     return {
+      showSendModal,
+      handleComfirm,
       showSendSuccessModal,
       gasFee,
       onChange,
       t,
+      tx,
       gonext,
       handleTokenModal,
       accountInfo,
@@ -498,6 +583,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  :deep(){
+    .van-cell {
+      padding: 0;
+      .van-field__body {
+        border: none;
+      }
+    }
+    
+  }
 .error-tip {
   color: #d73a49;
 }
@@ -521,7 +615,7 @@ export default {
 }
 .clearAddress {
   font-size: 16px;
-  color: #037cd6;
+  color: #9F54BA;
 }
 .slider-box.amount-info {
   width: 100% !important;
@@ -532,19 +626,19 @@ export default {
 }
 .cancel {
   font-size: 11px;
-  color: #037cd6;
+  color: #9F54BA;
 }
 .up-down-box {
   i {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 16px;
   }
   span {
-    color: #037cd6;
+    color: #9F54BA;
     word-break: keep-all;
   }
   font-size: 12px;
-  color: #037cd6;
+  color: #9F54BA;
 }
 :deep(input) {
   font-size: 12px;
@@ -571,7 +665,7 @@ export default {
 .to-btns {
   width: 20px;
   i {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 20px;
   }
 }
@@ -587,7 +681,7 @@ export default {
   justify-content: space-around;
   background: #fff;
   border-radius: 5px;
-  border: 1px solid rgba($color: #bbc0c5, $alpha: 0.5);
+  border: 1px solid rgba($color: #B3B3B3, $alpha: 0.5);
   &.error {
     border-color: #d73a49;
   }
@@ -613,7 +707,7 @@ export default {
     }
     &:hover {
       transition: ease 0.3s;
-      background-color: rgba(3, 125, 214, 0.1);
+      background: #F8F3F9;
     }
     .closeIcon {
       position: absolute;
@@ -696,7 +790,6 @@ export default {
   height: 30px;
   background-color: green;
 }
-// 最近交易用户
 .recent {
   .text {
     width: 100%;
@@ -704,13 +797,13 @@ export default {
     border: 1px solid rgba(216, 216, 216, 1);
     height: 28px;
     line-height: 28px;
-    font-size: 10px;
+    font-size: 12px;
     color: rgba(121, 121, 121, 1);
     padding-left: 15px;
   }
 }
 :deep(.van-tab--active) {
-  color: rgba(3, 125, 214, 1);
+  color: #9F54BA;
 }
 :deep(.van-tabs__line) {
   display: none;

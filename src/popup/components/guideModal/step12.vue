@@ -12,15 +12,15 @@
   >
     <div class="dialog-box">
       <div class="serial-number">
-        <span class="left">12</span>
-        <span>/</span> 13
+        <span class="left">8</span>
+        <span>/</span> 12
       </div>
       <div class="title">{{ t("bootstrapwindow.network") }}</div>
       <div class="small-tit pl-30 pr-30 mt-20">
         {{ t("bootstrapwindow.networkMessage") }}
       </div>
       <div class="flex center">
-        <van-button type="primary" @click="handleClick(12)">{{
+        <van-button type="primary" @click="handleClick(9)">{{
           t("bootstrapwindow.next")
         }}</van-button>
       </div>
@@ -45,19 +45,19 @@ export default defineComponent({
   props: {
     type: {
       type: Number,
-      default: 12,
+      default: 9,
     },
   },
   setup(props: any, context: SetupContext) {
     const { t } = useI18n();
     const { state, dispatch } = useStore();
-    const show12 = computed(() => state.system.show12);
+    const show9 = computed(() => state.system.show9);
     const handleClick = (v: number) => {
       dispatch("system/showDialog", v);
     };
     const showModal = ref(false);
     watch(
-      () => show12,
+      () => show9,
       (n) => (showModal.value = n.value),
       { immediate: true, deep: true }
     );
@@ -79,7 +79,7 @@ export default defineComponent({
     };
     return {
       t,
-      show12,
+      show9,
       beforeClose,
       handleClick,
       showModal,
@@ -98,9 +98,8 @@ export default defineComponent({
     padding-bottom: 14px;
     padding-right: 14px;
     font-size: 12px;
-    font-size: 12px;
     .left {
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .title {
@@ -108,11 +107,11 @@ export default defineComponent({
     font-size: 24px;
     font-weight: bold;
     line-height: 30px;
-    margin-top: 44px;
+    margin-top: 22px;
   }
   .small-tit {
     text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
     font-size: 12px;
     color: #848484;
   }

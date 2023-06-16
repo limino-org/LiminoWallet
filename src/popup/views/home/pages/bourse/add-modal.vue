@@ -2,6 +2,7 @@
   <van-dialog
     v-model:show="show"
     show-cancel-button
+    class="add-pledge-modal"
     teleport="#page-box"
     :lockScroll="false"
     :showConfirmButton="false"
@@ -54,7 +55,7 @@
             </template>
           </van-popover>
         </div>
-        <div class="value lh-16">{{ fee }} ERB(≈${{ toUsd(fee, 2) }})</div>
+        <div class="value lh-16">{{ fee }} ERB</div>
       </div>
       <div class="card">
         <div class="label lh-16 mb-2">
@@ -77,7 +78,7 @@
             </template>
           </van-popover>
         </div>
-        <div class="value lh-16">{{ amount }}ERB(≈${{ toUsd(amount, 2) }})</div>
+        <div class="value lh-16">{{ amount }}ERB</div>
       </div>
       <div class="card">
         <div class="label lh-16 mb-2">
@@ -101,7 +102,7 @@
           </van-popover>
         </div>
         <div class="value lh-16">
-          ≈{{ historyProfit }} ERB(≈${{ toUsd(historyProfit, 2) }})
+          ≈{{ historyProfit }} ERB
         </div>
       </div>
       <div class="card">
@@ -126,7 +127,7 @@
           </van-popover>
         </div>
         <div class="value lh-16">
-          ≈{{ myprofit }} ERB(≈${{ toUsd(myprofit, 2) }})
+          ≈{{ myprofit }} ERB
         </div>
       </div>
       <div class="card">
@@ -151,7 +152,7 @@
           </van-popover>
         </div>
         <div class="value lh-16 gasFee">
-          ≈{{ gasFee }} ERB(≈${{ toUsd(gasFee, 8) }})
+          ≈{{ gasFee }} ERB
         </div>
       </div>
     </div>
@@ -176,7 +177,6 @@ import {
 import { watch } from "vue";
 import { Dialog, Icon, Button, Popover } from "vant";
 import { useI18n } from "vue-i18n";
-import { toUsd } from "@/popup/utils/filters";
 import Bignumber, { BigNumber } from "bignumber.js";
 import { toHex, useExchanges } from "@/popup/hooks/useExchanges";
 import Tip from "@/popup/components/tip/index.vue";
@@ -268,10 +268,10 @@ export default defineComponent({
       data.Validators.forEach((item: any) => {
         total = total.plus(item.Balance);
       });
-      // 总质押量
+      // Total amount of pledge
       const totalStr = total.div(1000000000000000000).toFixed(6);
 
-      // 总收益
+      // total revenue
       const totalprofit = state.account.exchangeTotalProfit;
       const totalPledge = new BigNumber(props.amount).plus(props.fee);
       myprofit.value = new BigNumber(totalprofit)
@@ -304,7 +304,6 @@ export default defineComponent({
       showTip5,
       showTip6,
       t,
-      toUsd,
       submit,
       gasFee,
     };
@@ -317,7 +316,7 @@ export default defineComponent({
   font-weight: bold;
   color: #000000;
   line-height: 60px;
-  background: #f8fcff;
+  background: #F8F3F9;
 }
 .form-box {
   border-radius: 10px;

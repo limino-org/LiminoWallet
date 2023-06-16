@@ -1,12 +1,12 @@
 <template>
-  <van-overlay :show="dislogShow" z-index="100" class="custom-overlay">
+  <van-overlay :show="dislogShow" z-index="1000" class="custom-overlay">
     <div class="miners">
       <div class="miners-header">
         <span>{{ t("bourse.dialogTitle") }}</span>
       </div>
       <div class="miners-container flex column between">
         <div class="miners-container-item">
-          <div class="bourse-container-meaning bt">
+          <!-- <div class="bourse-container-meaning bt">
             <span class="c1">{{ t("bourse.marketName") }} </span>
             <el-tooltip
               popper-class="tooltip2-abc"
@@ -34,7 +34,7 @@
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
             <div class="exchange">{{ money }}%</div>
-          </div>
+          </div> -->
           <div class="bourse-container-meaning bt">
             <span class="c1">{{ t("bourse.stakingFee") }} </span>
             <el-tooltip
@@ -48,9 +48,9 @@
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
             <!-- <div class="exchange">{{money * 10}} ERB(≈$20)</div> -->
-            <div class="exchange">280 ERB(≈${{ toUsd(280, 2) }})</div>
+            <div class="exchange">700 ERB</div>
           </div>
-          <div class="bourse-container-meaning bt">
+          <!-- <div class="bourse-container-meaning bt">
             <span class="c1">{{ t("bourse.marketServer") }} </span>
             <el-tooltip
               popper-class="tooltip2-abc"
@@ -67,8 +67,8 @@
                 serverIndex != 0 ? toUsd(200, 0) : 0
               }})
             </div>
-          </div>
-          <div
+          </div> -->
+          <!-- <div
             class="bourse-container-meaning bt"
             v-if="!exchangeStatus.exchanger_flag && exchangeStatus.status == 0"
           >
@@ -84,11 +84,11 @@
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
             <div class="exchange">
-              {{ serverIndex == 0 ? 280 : 480 }} ERB(≈${{
-                toUsd(serverIndex == 0 ? 280 : 480, 0)
+              {{ serverIndex == 0 ? 700 : 900 }} ERB(≈${{
+                toUsd(serverIndex == 0 ? 700 : 900, 0)
               }})
             </div>
-          </div>
+          </div> -->
           <div class="">
             <span class="c1">{{ t("bourse.gasFee") }} </span>
             <el-tooltip
@@ -104,7 +104,7 @@
             <div class="exchange exchange-z">
               <span class="c2">≈ </span>
               <span class="gasfee">
-                {{ totalGas }} ERB(≈${{ toUsd(totalGas, 8) }})</span
+                {{ totalGas }} ERB</span
               >
             </div>
           </div>
@@ -133,7 +133,6 @@
 import { Button, Overlay, Field, Toast, Icon } from "vant";
 import { ref, SetupContext, computed, nextTick, watch } from "vue";
 import { ethers, utils } from "ethers";
-import { formatEther, toUsd } from "@/popup/utils/filters";
 import { useI18n } from "vue-i18n";
 import { ElTooltip } from "element-plus";
 import { useStore } from "vuex";
@@ -172,11 +171,8 @@ export default {
     const { t } = useI18n();
     const store = useStore();
     const { state } = store;
-    console.log("我加载了11111111111");
     const { emit }: any = context;
-    // 输入框name
     let amount = ref(props.minersMoney);
-    // 金额和金额的最大值和最小值
     let moneyMin = ref(100000);
     let moneyMax = ref(10000000);
     const { getContract } = useExchanges();
@@ -192,21 +188,21 @@ export default {
           const gasFee = ref();
           const { address } = state.account.accountInfo;
           const baseName = encode(props.name);
-          // 第一笔gas
+          //The first gas
           const str = `wormholes:{"version": "0","type": 11,"fee_rate": 100,"name":"${baseName}","url":""}`;
 
           const data3 = toHex(str);
           const tx1 = {
             from: address,
             to: address,
-            value: ethers.utils.parseEther(280 + ""),
+            value: ethers.utils.parseEther(700 + ""),
             data: `0x${data3}`,
           };
 
           gasFee.value = await getGasFee(tx1);
-          debugger
+
           const gas2 = ref();
-          // 第二笔gas
+          //The second gas
           if (props.serverIndex == 1) {
             const contract = await getContract();
             const gasPrice = await contract.provider.getGasPrice();
@@ -217,7 +213,7 @@ export default {
             gas2.value = new BigNumber(ethers.utils.formatEther(gasLimit))
               .dividedBy(ethers.utils.formatEther(gasPrice))
               .toFixed(9);
-              debugger
+              //debugger
           }
           totalGas.value = new BigNumber(gasFee.value)
             .plus(gas2.value || 0)
@@ -263,7 +259,6 @@ export default {
       submit,
       screentNumber,
       exchangeStatus,
-      toUsd,
       totalGas,
     };
   },
@@ -289,7 +284,7 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #f8fcff;
+      background: #F8F3F9;
       font-size: 15px;
       color: #0f0f0f;
     }
@@ -354,7 +349,7 @@ export default {
           font-weight: bold;
         }
         .ipt-server {
-          font-size: 10px;
+          font-size: 12px;
           color: #8f8f8f;
           font-weight: bold;
           span {
@@ -369,7 +364,7 @@ export default {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f4faff;
+            background: #F8F3F9;
             border-radius: 7px 7px 7px 7px;
             &:first-child {
               padding: 0 18px;
@@ -377,8 +372,8 @@ export default {
           }
           .ipt-server-i-active {
             color: #0287db;
-            background: #f4faff;
-            border: 1px solid #037cd6;
+            background: #F8F3F9;
+            border: 1px solid #9F54BA;
             span {
               color: #0287db;
             }

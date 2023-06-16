@@ -1,5 +1,5 @@
 <template>
-  <div class="setting-class  van-hairline--bottom">
+  <div class="setting-class">
     <div class="label pl-12 pr-10 f-18 f-12 lh-24 pt-18 pb-8"> 
         <slot name="icon"></slot>
          {{ label }}</div>
@@ -35,6 +35,7 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .setting-class {
+  border-bottom: 1px solid #E4E7E8;
   .label {
       color: #B3B3B3;
       font-size: 18px;

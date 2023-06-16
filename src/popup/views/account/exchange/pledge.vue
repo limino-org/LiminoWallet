@@ -49,7 +49,6 @@ export default {
     [Field.name]: Field
   },
   props: {
-    // 控制显示
     show: {
       type: Boolean,
       default: false
@@ -68,9 +67,7 @@ export default {
   setup(props: any, context: SetupContext) {
     const { t } = useI18n()
     const { emit }: any = context
-    // 输入框name
     let amount = ref(props.minersMoney)
-    // 金额和金额的最大值和最小值
     let moneyMin = ref(100000)
     let moneyMax = ref(10000000)
 
@@ -124,7 +121,7 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #f8fcff;
+      background: #F8F3F9;
       font-size: 14px;
       color: #0f0f0f;
     }

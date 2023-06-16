@@ -7,27 +7,24 @@
         }}</span>
       </template>
     </NavHeader>
-
-    <!-- 主体框 -->
-    <div class="content">
-      <div class="userwarning">
-        <div class="warning-icon">
-          <van-icon name="warning" style="color: #d63c4c" size="20" />
+    <div class="page-content">
+      <Tip :message="t('exportprivatekey.warn')" />
+      <div class="flex tab-box" v-if="check">
+        <div class="flex-1 flex center border-right">
+          <div :class="`card hover ${selectKey == 'a' ? 'active' : ''}`" @click="choose('a')">
+            <div class="text-center icon"><i class="iconfont icon-fuzhi3"></i></div>
+            <div class="text mt-4">{{t('exportprivatekey.copytext')}}</div>
+          </div>
         </div>
-        <div class="user-title">
-          {{ t("exportprivatekey.warn") }}
+        <div class="flex-1 flex center">
+          <div :class="`card hover ${selectKey == 'b' ? 'active' : ''}` "  @click="choose('b')">
+            <div class="text-center icon"><i class="iconfont icon-erweima"></i></div>
+            <div class="text mt-4">{{$t("exportprivatekey.qrcode")}}</div>
+          </div>
         </div>
       </div>
-
-      <van-tabs
-        v-if="check"
-        title-active-color="#037dd6"
-        title-inactive-color
-        v-model:active="activeName"
-      >
-        <van-tab :title="$t('exportprivatekey.text')" name="a">
-          <div class="privatekey-content">
-            <div class="title">{{ $t("exportprivatekey.hint") }}</div>
+      <div class="tab-con mt-24" v-if="check">
+        <div class="privatekey-content" v-show="selectKey == 'a'">
             <div class="display-box">
               {{ privateKey }}
             </div>
@@ -45,10 +42,7 @@
               </div>
             </div>
           </div>
-        </van-tab>
-        <van-tab :title="$t('exportprivatekey.qrcode')" name="b">
-          <div class="qccode-content">
-            <div class="title">{{ $t("exportprivatekey.hint") }}</div>
+          <div v-show="selectKey == 'b'"><div class="qccode-content">
             <div class="flex center">
               <div class="qccode-display flex center">
                 <qrcode-vue
@@ -59,8 +53,7 @@
                 />
               </div>
             </div>
-          </div>
-          <div  class="btn-groups">
+          </div>          <div  class="btn-groups">
                   <div class="container pl-26 pr-26">
                   <van-button
           type="default"
@@ -73,19 +66,18 @@
           {{ $t("exportprivatekey.saveText") }}</van-button
         >
                   </div>
-          </div>
-
-        </van-tab>
-      </van-tabs>
-      <div :class="`pwd-ipt pl-26 pr-26 ${isError ? 'error' : ''}`" v-if="!check">
+          </div></div>
+      </div>
+    
+      <div :class="`pwd-ipt pl-14 pr-14 ${isError ? 'error' : ''}`" v-if="!check">
         <div class="flex between pwd-tit">
-          <span>{{t('exportprivatekey.password')}}</span>
+          <span class="text-bold mb-4">{{t('exportprivatekey.password')}}</span>
           <span>
-            <i @click="mask = !mask" :class="`iconfont hover  ${mask ? 'icon-yanjing1' : 'icon-yanjing'} `"></i>
+            <i @click="mask = !mask" :class="`iconfont hover  ${mask ? 'icon-yanjing':'icon-yanjing1'} `"></i>
           </span>
         </div>
         <van-field
-
+         @keydown.enter="handleConfirm"
           v-model="password"
           :placeholder="t('loginwithpassword.pleaseinput')"
           :type="mask ? 'password' : 'text'"
@@ -140,7 +132,7 @@ import { useToast } from "@/popup/plugins/toast";
 import { createWalletByJson } from '@/popup/utils/ether';
 import { decryptPrivateKey } from "@/popup/utils/web3";
 import { regPassword1 } from '@/popup/enum/regexp';
-
+import Tip from '@/popup/components/tip/index.vue'
 export default {
   components: {
     SwitchNetwork,
@@ -154,6 +146,7 @@ export default {
     [Tabs.name]: Tabs,
     QrcodeVue,
     NavHeader,
+    Tip
   },
   setup() {
     const { t } = useI18n();
@@ -173,7 +166,8 @@ export default {
     const privateKey: Ref<string> = ref("");
     const initWallet = async () => {
       const wallet = await getWallet();
-      privateKey.value = wallet.privateKey;
+      const key = JSON.stringify({type:"pricateKey","data": wallet.privateKey})
+      privateKey.value = key;
     };
     initWallet();
     const {
@@ -236,8 +230,14 @@ export default {
         errMsg.value = t('loginwithpassword.wrong_password')
       }
     }
+    const selectKey = ref('a')
+    const choose = (v: string) => {
+      selectKey.value = v
+    }
     return {
       t,
+      selectKey,
+      choose,
       tocopy,
       activeName,
       handleConfirm,
@@ -267,15 +267,35 @@ export default {
 
 
 <style lang="scss" scoped>
+  .border-right {
+    border-right: 1px solid #B3B3B3;
+  }
+  .tab-box {
+    .card {
+      &.active {
+        color: #9F54BA;
+      }
+      .icon i {
+        font-size: 30px;
+      }
+      .text {
+
+      }
+    }
+  }
+  .error {
+
+  }
 .icon-yanjing1 {
+  color: #9F54BA;
   font-size: 14px !important;
 }
 .icon-yanjing {
   font-size: 18px !important;
-  color: #037cd6;
+
 }
 
-.content {
+.page-content {
 
       .pwd-ipt.error  {
     :deep(.van-field__body) {
@@ -302,30 +322,11 @@ export default {
     line-height: 21px;
     font-weight: bold;
   }
-  .userwarning {
-    margin: 15px;
-    border-radius: 5px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    padding-left: 15px;
-    padding-right: 15px;
-    background-color: #fbf2f3;
-    // padding: 0 22px;
-    font-size: 12px;
-    display: flex;
-    // justify-content: space-evenly;
-    align-items: center;
-
-
-    .user-title {
-      margin-left: 9px;
-      line-height: 16px;
-    }
-  }
   .display-box {
     margin: 0 15px;
     height: 90px;
     border: 1px solid #b3b3b3;
+    background: #F6F7FA;
     border-radius: 5px;
     word-wrap: break-word;
     padding: 16px;
@@ -335,7 +336,7 @@ export default {
       border-top: 1px solid rgba(104, 113, 123, 1);
       text-align: center;
       font-size: 12px;
-      color: #037cd6;
+      color: #9F54BA;
       line-height: 28px;
       padding: 15px;
     }
@@ -345,7 +346,7 @@ export default {
     z-index: 0;
     width: 50%;
     height: 0.05333rem;
-    background: #037dd6;
+    background: #9F54BA;
   }
   ::v-deep .van-tab {
     position: inherit;
@@ -376,7 +377,7 @@ export default {
     :deep(.van-field__body) {
       margin-bottom: 10px;
       &:hover {
-        border: 1px solid #1989fa;
+        border: 1px solid #9F54BA;
       }
     }
 .bourse {
@@ -460,14 +461,14 @@ export default {
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      background: #f4faff;
+      background: #F8F3F9;
       border-radius: 7.5px;
       box-sizing: border-box;
     }
     .active {
-      border: 1px solid #037cd6;
+      border: 1px solid #9F54BA;
       span {
-        color: #037cd6;
+        color: #9F54BA;
       }
     }
     .t1 {
@@ -503,7 +504,7 @@ export default {
   .bourse-container-error {
     margin: 0 15px 25px 15px;
     height: 56.5px;
-    background: #f4faff;
+    background: #F8F3F9;
     border-radius: 7.5px;
     display: flex;
     align-items: center;
@@ -515,7 +516,7 @@ export default {
   }
   .t1 {
     font-size: 14px;
-    color: #037cd6;
+    color: #9F54BA;
   }
   .t3 {
     font-size: 18px;
@@ -537,11 +538,11 @@ export default {
       color: #848484;
     }
     .right {
-      color: #037cd6;
+      color: #9F54BA;
       text-decoration: underline;
     }
-    .icon-yanjing {
-      color: #037dd6;
+    .icon-yanjing1 {
+      color: #9F54BA;
     }
     :deep(.van-field__label) {
       display: none;
@@ -557,11 +558,11 @@ export default {
     }
     .success-field {
       :deep(.van-field__body) {
-        border: 1px solid #1989fa !important;
+        border: 1px solid #9F54BA !important;
       }
     }
     .tool {
-      color: #037cd6;
+      color: #9F54BA;
     }
     .pointer {
       cursor: pointer;
@@ -576,7 +577,7 @@ export default {
 }
 .bourse-img {
   height: 135px;
-  background-color: #f4faff;
+  background-color: #F8F3F9;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -613,10 +614,21 @@ export default {
   position: fixed;
   bottom: 25px;
   width: 100%;
-  max-width: 750px;
+  max-width: 820px;
 }
 .right-img-copy {
   width: 15px;
   height: 15px;
+}
+
+@media screen and (max-width: 750px) {
+  .page-content {
+    width:375px;
+  }
+}
+@media screen and (min-width: 750px) {
+  .page-content {
+    width:100%;
+  }
 }
 </style>

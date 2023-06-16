@@ -1,26 +1,26 @@
 <template>
   <div class="guide-page">
-    <van-swipe class="my-swipe" :autoplay="13000" indicator-color="#39a9ed">
+    <van-swipe class="my-swipe" :autoplay="13000" indicator-color="#9F54BA">
       <van-swipe-item>
         <div>
           <WormTransition>
             <template v-slot:t1>
-              <img class="icon" src="../imgs/symbol2.png" alt />
+              <img class="icon" src="../imgs/symbol2.png" />
             </template>
             <template v-slot:t2>
-              <img class="icon" src="../imgs/symbol3.png" alt />
+              <img class="icon" src="../imgs/symbol3.png" />
             </template>
             <template v-slot:t3>
-              <img class="icon t3icon" src="../imgs/symbol4.png" alt />
+              <img class="icon t3icon" src="../imgs/symbol4.png" />
             </template>
             <template v-slot:t4>
-              <img class="icon" src="../imgs/symbol5.png" alt />
+              <img class="icon" src="../imgs/symbol5.png" />
             </template>
             <template v-slot:t5>
-              <img class="icon" src="@/assets/blacklogo.png" alt />
+              <img class="icon" src="@/assets/blacklogo.png" />
             </template>
             <template v-slot:icon>
-              <img class="logo" src="@/assets/logo1.png" alt />
+              <img class="logo" src="@/assets/logo1.png" />
             </template>
           </WormTransition>
           <div class="title tit-big text-center f-24">{{ t("introductorypage.bootstrap1") }}</div>
@@ -31,22 +31,22 @@
         <div>
           <WormTransition>
             <template v-slot:t1>
-              <img class="icon" src="../imgs/symbol2.png" alt />
+              <img class="icon" src="../imgs/symbol2.png" />
             </template>
             <template v-slot:t2>
-              <img class="icon" src="../imgs/symbol3.png" alt />
+              <img class="icon" src="../imgs/symbol3.png" />
             </template>
             <template v-slot:t3>
-              <img class="icon t3icon" src="../imgs/symbol4.png" alt />
+              <img class="icon t3icon" src="../imgs/symbol4.png" />
             </template>
             <template v-slot:t4>
-              <img class="icon" src="../imgs/symbol5.png" alt />
+              <img class="icon" src="../imgs/symbol5.png" />
             </template>
             <template v-slot:t5>
-              <img class="icon" src="@/assets/blacklogo.png" alt />
+              <img class="icon" src="@/assets/blacklogo.png" />
             </template>
             <template v-slot:icon>
-              <img src="../imgs/shakehands.png" alt />
+              <img src="../imgs/shakehands.png" />
             </template>
           </WormTransition>
           <div class="title tit-big text-center f-24">{{ t("introductorypage.bootstrap2") }}</div>
@@ -57,22 +57,22 @@
         <div>
           <WormTransition>
             <template v-slot:t1>
-              <img class="icon" src="../imgs/symbol2.png" alt />
+              <img class="icon" src="../imgs/symbol2.png" />
             </template>
             <template v-slot:t2>
-              <img class="icon" src="../imgs/symbol3.png" alt />
+              <img class="icon" src="../imgs/symbol3.png" />
             </template>
             <template v-slot:t3>
-              <img class="icon t3icon" src="../imgs/symbol4.png" alt />
+              <img class="icon t3icon" src="../imgs/symbol4.png" />
             </template>
             <template v-slot:t4>
-              <img class="icon" src="../imgs/symbol5.png" alt />
+              <img class="icon" src="../imgs/symbol5.png" />
             </template>
             <template v-slot:t5>
-              <img class="icon" src="@/assets/blacklogo.png" alt />
+              <img class="icon" src="@/assets/blacklogo.png" />
             </template>
             <template v-slot:icon>
-              <img src="../imgs/upload.png" alt />
+              <img src="../imgs/upload.png" />
             </template>
           </WormTransition>
           <div class="title tit-big text-center f-24">{{ t("introductorypage.bootstrap3") }}</div>
@@ -83,22 +83,22 @@
         <div>
           <WormTransition>
             <template v-slot:t1>
-              <img class="icon" src="../imgs/symbol2.png" alt />
+              <img class="icon" src="../imgs/symbol2.png" />
             </template>
             <template v-slot:t2>
-              <img class="icon" src="../imgs/symbol3.png" alt />
+              <img class="icon" src="../imgs/symbol3.png" />
             </template>
             <template v-slot:t3>
-              <img class="icon t3icon" src="../imgs/symbol4.png" alt />
+              <img class="icon t3icon" src="../imgs/symbol4.png" />
             </template>
             <template v-slot:t4>
-              <img class="icon" src="../imgs/symbol5.png" alt />
+              <img class="icon" src="../imgs/symbol5.png" />
             </template>
             <template v-slot:t5>
-              <img class="icon" src="@/assets/blacklogo.png" alt />
+              <img class="icon" src="@/assets/blacklogo.png" />
             </template>
             <template v-slot:icon>
-              <img src="../imgs/shield.png" alt />
+              <img src="../imgs/shield.png" />
             </template>
           </WormTransition>
           <div class="title tit-big text-center f-24">{{ t("introductorypage.bootstrap4") }}</div>
@@ -111,7 +111,7 @@
   <!-- Log in to create a new account -->
   <div class="btn-groups">
     <div class="container pl-22 pr-22 flex between f-12">
-      <van-button round block plain type="primary" class="mr-10" @click="tologin">
+      <van-button round block plain  class="mr-10" @click="tologin">
         {{
         t("createAccountpage.mnemonicBtn")
         }}

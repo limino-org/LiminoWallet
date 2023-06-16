@@ -1,5 +1,12 @@
 <template>
-  <van-overlay :show="dislogShow" class="custom-overlay">
+  <van-dialog v-model:show="dislogShow"     show-cancel-button
+    teleport="#page-box"
+    :lockScroll="false"
+    :showConfirmButton="false"
+    class="minerAdditionalModal"
+    :showCancelButton="false"
+    closeOnClickOverlay>
+    <div class="custom-overlay">
     <div class="miners">
       <div class="miners-header">
         <span>{{ t("minerspledge.addzhiya") }}</span>
@@ -33,11 +40,9 @@
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
             <div class="exchange">
-              {{ amount }} ERB(≈${{ toUsd(amount, 2) }})
+              {{ amount }} ERB
             </div>
           </div>
-          <!-- 历史总收益 -->
-
           <div class="bourse-container-meaning bt">
             <span class="c1">{{ t("createminerspledge.addStake") }} </span>
             <el-tooltip
@@ -51,7 +56,7 @@
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
             <div class="exchange">
-              {{ addNumber }} ERB(≈${{ toUsd(addNumber, 2) }})
+              {{ addNumber }} ERB
             </div>
           </div>
           <div class="bourse-container-meaning bt">
@@ -66,7 +71,7 @@
             >
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
-            <div class="exchange">≈{{ historyProfit }} ERB(≈ ${{toUsd(historyProfit,6)}})</div>
+            <div class="exchange">≈{{ historyProfit }} ERB</div>
           </div>
           <div class="bourse-container-meaning bt">
             <span class="c1">{{ t("minerspledge.stackingIncome") }} </span>
@@ -124,23 +129,25 @@
         </div>
       </div>
     </div>
-  </van-overlay>
+  </div>
+  </van-dialog>
+
 </template>
 
 <script lang="ts">
-import { Button, Overlay, Field, Toast, Icon } from "vant";
+import { Button, Overlay, Field, Toast, Icon,Dialog } from "vant";
 import { ref, SetupContext, computed, nextTick, watch } from "vue";
 import { ethers, utils } from "ethers";
-import { formatEther, toUsd } from "@/popup/utils/filters";
 import { useI18n } from "vue-i18n";
 import { ElTooltip } from "element-plus";
-import store from "@/store";
+import store from "@/popup/store";
 import { useStore } from "vuex";
 import { toHex } from "@/popup/utils/utils";
-import { getWallet } from "@/popup/store/modules/account";
+import { getWallet, getGasFee } from "@/popup/store/modules/account";
 import { BigNumber } from "bignumber.js";
 import { web3 } from "@/popup/utils/web3";
 import { getAccount } from "@/popup/http/modules/nft";
+import { getAccountAddr } from '@/popup/http/modules/common';
 
 export default {
   components: {
@@ -149,13 +156,14 @@ export default {
     [Field.name]: Field,
     ElTooltip,
     [Icon.name]: Icon,
+    [Dialog.Component.name]:Dialog.Component
   },
+  emits:['open'],
   props: ["show", "name", "address", "addNumber", "amount"],
   setup(props: any, context: SetupContext) {
     const { t } = useI18n();
     const store = useStore();
     const currentNetwork = computed(() => store.state.account.currentNetwork);
-    console.log("我加载了11111111111");
     const { emit }: any = context;
 
     let dislogShow = computed({
@@ -194,15 +202,7 @@ export default {
             data: `0x${data3}`,
           };
           try {
-            const wallet = await getWallet();
-            gasPrice.value = await wallet.provider.getGasPrice();
-            gasLimit.value = await wallet.estimateGas(tx1);
-            // @ts-ignore
-            gasFee.value = new BigNumber(
-              ethers.utils.formatEther(gasLimit.value)
-            )
-              .dividedBy(ethers.utils.formatEther(gasPrice.value))
-              .toFixed(9);
+            gasFee.value = await getGasFee(tx1)
           } catch (err: any) {
             console.error(err);
           }
@@ -216,6 +216,9 @@ export default {
     const calcProfit = async () => {
       const wallet = await getWallet();
       const blockNumber = await wallet.provider.getBlockNumber();
+      const addressInfo = await getAccountAddr(wallet.address)
+      const {rewardCoinCount} = addressInfo
+      historyProfit.value = new BigNumber(rewardCoinCount).multipliedBy(0.11).toString()
       const blockn = web3.utils.toHex(blockNumber.toString());
       const data = await wallet.provider.send("eth_getValidator", [blockn]);
       // const data2 = await getAccount(accountInfo.value.address)
@@ -223,16 +226,13 @@ export default {
       data.Validators.forEach((item: any) => {
         total = total.plus(item.Balance);
       });
-      // 总质押量
+      // Total amount of pledge
       const totalStr = total.div(1000000000000000000).toFixed(6);
-      // 总收益 一年
+      // Total revenue one year
       const totalprofit = store.state.account.minerTotalProfit;
       const totalPledge = new BigNumber(props.addNumber).plus(props.amount);
       myprofit.value = new BigNumber(totalprofit)
         .multipliedBy(totalPledge.div(totalStr))
-        .toFixed(6);
-      historyProfit.value = new BigNumber(totalprofit)
-        .multipliedBy(new BigNumber(props.amount).div(totalStr))
         .toFixed(6);
   
     };
@@ -243,7 +243,6 @@ export default {
       dislogShow,
       submit,
       currentNetwork,
-      toUsd,
       gasFee,
       myprofit,
       historyProfit,
@@ -257,7 +256,7 @@ export default {
 }
 .tip {
   margin: 12px 13px 0;
-  color: #037cd6;
+  color: #9F54BA;
   font-size: 12px;
   line-height: 16px;
 }
@@ -265,7 +264,6 @@ export default {
   display: flex;
 
   .miners {
-    width: 341px;
     min-height: 560px;
     padding-bottom: 30px;
     background: #fff;
@@ -277,7 +275,7 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #f8fcff;
+      background: #F8F3F9;
       font-size: 14px;
       color: #0f0f0f;
       border-bottom: 1px solid #f2f4f5;
@@ -346,7 +344,7 @@ export default {
           font-weight: bold;
         }
         .ipt-server {
-          font-size: 10px;
+          font-size: 12px;
           color: #8f8f8f;
           font-weight: bold;
           span {
@@ -361,7 +359,7 @@ export default {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f4faff;
+            background: #F8F3F9;
             border-radius: 7px 7px 7px 7px;
             &:first-child {
               padding: 0 18px;
@@ -369,8 +367,8 @@ export default {
           }
           .ipt-server-i-active {
             color: #0287db;
-            background: #f4faff;
-            border: 1px solid #037cd6;
+            background: #F8F3F9;
+            border: 1px solid #9F54BA;
             span {
               color: #0287db;
             }
@@ -461,5 +459,13 @@ export default {
 }
 .c2 {
   color: #3aae55;
+}
+@media screen and (max-width: 750px){
+  .exchange {
+    padding-bottom: 8px;
+  }
+  .miners {
+    padding-bottom: 15px;
+  }
 }
 </style>

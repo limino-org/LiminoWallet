@@ -1,9 +1,5 @@
 <template>
-    <div>
-        <van-sticky>
-            <NavHeader :hasRight="false"></NavHeader>
-        </van-sticky>
-    </div>
+    <NavHeader :hasRight="false"  title="LiminoWallet"></NavHeader>
     <div>
         <div class="flex center p-20">
             <textarea @blur="handleSig" class="text" name="" id="" cols="30" rows="10" v-model="sign"></textarea>

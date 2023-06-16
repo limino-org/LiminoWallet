@@ -1,9 +1,6 @@
 <template>
   <van-sticky>
-    <NavHeader :hasLeft="false">
-      <template v-slot:title>
-        <span class="header-tit">{{t('send.sendbutton')}}</span>
-      </template>
+    <NavHeader :hasLeft="false" :title="t('send.sendbutton')">
       <template v-slot:right>
         <van-icon name="cross" class="back-btn" @click="close" />
       </template>
@@ -47,6 +44,6 @@ export default {
 }
 .back-btn {
   font-size: 18px;
-  color: #037dd6;
+  color: #9F54BA;
 }
 </style>

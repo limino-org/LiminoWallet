@@ -1,18 +1,27 @@
 <template>
   <!-- The current node provids | | no exchange  -->
   <div class="exchange-btn-box">
-    <!-- 帮助中心 -->
     <Transition name="slider">
       <div class="help-center-box flex right" v-if="!isSelect">
         <div class="flex right pl-20 pr-20">
           <div
             class="help-btn flex center hover"
-            @click="toHelp"
-            @mouseover.self="showHelp = true"
-            @mouseout.self="showHelp = false"
+   
           >
+          <div class="btn-mask"
+
+          >
+          <div class="btn-mask-box flex center"
+          @click="toHelp"
+            @mouseover="showHelp = true"
+            @mouseout="showHelp = false"
+          >
+
             <GuideModal13 />
             <i class="iconfont icon-bangzhuzhongxin3"></i>
+          </div>
+        </div>
+
           </div>
           <Transition name="slider2">
             <div class="hint pl-10 pr-10" v-if="showHelp">
@@ -24,10 +33,7 @@
     </Transition>
     <Transition name="slider">
       <div v-if="!isSelect2" class="exchange-con">
-        <!-- 一键开设交易所 -->
-
         <div class="pl-20 pr-20">
- 
           <div
             class="wallet-suspension hover"
             @mouseover="showExchange = true"
@@ -40,7 +46,6 @@
             <i class="iconfont icon-university-full"></i>
           </div>
           <Transition name="slider2">
-            <!-- 交易所设置 -->
             <div
               v-if="showExchange"
               :class="[
@@ -80,6 +85,7 @@ import { Button, Sticky, Toast } from "vant";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import { decode } from "js-base64";
 
 export default defineComponent({
   name: "exchange-btn",
@@ -114,7 +120,7 @@ export default defineComponent({
     const showHelp = ref(false);
 
     const changeStatus = () => {
-      debugger;
+      //debugger;
       dispatch("system/toggleExchangeBtnStatus");
       slideFlag.value = eschangeBtnStatus.value;
     };
@@ -132,7 +138,7 @@ export default defineComponent({
       hideFlag.value = true;
     };
     const toHelp = () => {
-      window.open("https://www.wormholes.com/docs/wallet/");
+      window.open(decode('aHR0cHM6Ly93d3cud29ybWhvbGVzLmNvbS8=') + "docs/wallet/");
     };
     const getStatus = async () => {
       Toast.loading({
@@ -206,6 +212,19 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
+  .btn-mask {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    &-box {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 1000000;
+    }
+  }
 .wallet-hint-h {
   span {
     font-size: 12px;
@@ -217,11 +236,12 @@ export default defineComponent({
   min-width: 80px;
   max-width: 170px;
   position: absolute;
+  z-index: 1;
   right: 83px;
   top: 10px;
   height: 30px;
   border-radius: 5px;
-  background: #037dd6;
+  background: #9F54BA;
   box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.1);
   span {
     font-size: 12px;
@@ -233,7 +253,7 @@ export default defineComponent({
     position: absolute;
     bottom: 9px;
     right: -12px;
-    border-left: 8px solid #037dd6;
+    border-left: 8px solid #9F54BA;
     border-right: 8px solid transparent;
     border-top: 8px solid transparent;
     border-bottom: 8px solid transparent;
@@ -246,6 +266,7 @@ export default defineComponent({
   min-width: 50px;
   bottom: 90px;
   right: 0px;
+  z-index: 100;
   .help-btn {
     width: 50px;
     height: 50px;
@@ -256,7 +277,7 @@ export default defineComponent({
     position: relative;
     i {
       font-size: 22px;
-      color: #037dd6;
+      color: #9F54BA;
     }
   }
   .hint {
@@ -271,7 +292,7 @@ export default defineComponent({
     right: 83px;
     top: 10px;
     text-align: center;
-    color: #037dd6;
+    color: #9F54BA;
     &:after {
       content: " ";
       position: absolute;
@@ -294,7 +315,7 @@ export default defineComponent({
   align-items: center;
   position: relative;
   border-radius: 50%;
-  background: #037dd6;
+  background: #9F54BA;
   box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.1),
     0px 0px 10px 0px rgba(0, 0, 0, 0.1);
 
@@ -304,12 +325,12 @@ export default defineComponent({
   }
 }
 .ex-inner {
-  width: 750px;
+  width: 820px;
   margin: 0 auto;
   position: relative;
 }
 .exchange-box {
-  max-width: 750px;
+  max-width: 820px;
   box-sizing: border-box;
   margin: 0 auto;
 }
@@ -318,6 +339,7 @@ export default defineComponent({
   min-width: 50px;
   bottom: 30px;
   right: 0px;
+  z-index: 100;
   button {
     transition: all 0.5s ease;
     &:hover {

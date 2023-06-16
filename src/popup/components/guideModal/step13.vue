@@ -12,16 +12,16 @@
   >
     <div class="dialog-box">
       <div class="serial-number">
-        <span class="left">13</span><span>/</span> 13
+        <span class="left">12</span><span>/</span> 12
       </div>
       <div class="title">
         {{ t("bootstrapwindow.help") }}
       </div>
-<!--      <div class="small-tit pl-30 pr-30 mt-20">-->
-<!--        {{ t("bootstrapwindow.exchangeMessage") }}-->
-<!--      </div>-->
+      <div class="small-tit pl-30 pr-30 mt-20">
+        {{ t("bootstrapwindow.helpMsg") }}
+      </div>
       <div class="flex center">
-        <van-button type="primary" @click="handleClick(15)">{{
+        <van-button type="primary" @click="handleClick(14)">{{
             t("bootstrapwindow.next")
           }}</van-button>
       </div>
@@ -55,7 +55,7 @@ export default defineComponent({
     const show13 = computed(() => state.system.show13);
     const handleClick = (v: number) => {
       dispatch("system/showDialog", v);
-      dispatch("system/closeGuide");
+      // dispatch("system/closeGuide");
     };
     const showModal = ref(false);
     watch(
@@ -100,9 +100,8 @@ export default defineComponent({
     padding-bottom: 14px;
     padding-right: 14px;
     font-size: 12px;
-    font-size: 12px;
     .left {
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .title {
@@ -110,11 +109,11 @@ export default defineComponent({
     font-size: 24px;
     font-weight: bold;
     line-height: 30px;
-    margin-top: 44px;
+    margin-top: 22px;
   }
   .small-tit {
     text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
     font-size: 12px;
     color: #848484;
   }

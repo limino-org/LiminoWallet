@@ -1,15 +1,21 @@
 <template>
+      <NavHeader :title="t('wallet.takeover')">
+      <template v-slot:left>
+       <span class="back hover f-12" @click="back">{{t('createAccountpage.back')}}</span>
+      </template>
+    </NavHeader>
   <div class="text-center lh-16 f-12 tit mt-30">{{t('receive.transfer')}}</div>
   <div class="text-center lh-24 flex center" v-show="amount > 0">
     <span class="f-18">{{amount}} {{chooseToken.name}}</span>
-    <span class="f-12 meiyuan">≈ ${{toUsd(amount,2)}}</span>
   </div>
   <div class="flex center">
     <div class="code-box flex center mt-16">
       <qrcode-vue :value="code" class="code" :size="300" level="L" ref="coderef"></qrcode-vue>
     </div>
   </div>
-  <div class="load-btn pl-8 pr-4 lh-30 hover f-12 van-ellipsis">{{ tokenContractAddress || address }}</div>
+  <div class="flex center">
+    <div class="load-btn pl-10 pr-10 lh-30 hover f-12">{{ tokenContractAddress || address }}</div>
+  </div>
 
   <div class="flex between btn-group">
     <div class="btn-box">
@@ -35,7 +41,6 @@
 <script lang="ts">
 import QrcodeVue from 'qrcode.vue'
 import { downloadBase64Img } from '@/popup/utils/utils'
-import { setCookies, getCookies } from '@/popup/utils/jsCookie'
 import { ref, Ref, computed, toRaw, SetupContext, onMounted, onActivated, getCurrentInstance, ComponentInternalInstance  } from 'vue'
 import { Icon, NavBar, Form, Field, CellGroup, Button, Toast } from 'vant'
 import useClipboard from 'vue-clipboard3'
@@ -45,8 +50,8 @@ import CustomExchangeModal from '@/popup/views/home/components/customExchangeMod
 // @ts-ignore
 import { encrypt, decrypt } from '@/popup/utils/cryptoJS.js'
 import { useI18n } from 'vue-i18n'
-import { toUsd } from '@/popup/utils/filters'
 import { useToast } from '@/popup/plugins/toast'
+import NavHeader from '@/popup/components/navHeader/index.vue'
 
 export default {
   name: 'receive-code',
@@ -54,13 +59,17 @@ export default {
     [Icon.name]: Icon,
     [Button.name]: Button,
     CustomExchangeModal,
+    NavHeader,
     QrcodeVue
   },
   setup() {
     const { query } = useRoute()
     const { state } = useStore()
     const { tokenContractAddress } = query
+    const router = useRouter();
+    const route = useRoute();
     const { address } = state.account.accountInfo
+    const { backUrl,clickBackUrl } = query;
     const amount = ref(null)
     const { t } = useI18n()
     const code = ref('')
@@ -86,13 +95,15 @@ export default {
     const handleSetAmount = () => {
       setAmountModal.value = true
     }
-
+    const replaceBackUrl = ref(clickBackUrl || '')
     // Set Amount Acknowledge events
     const handleConfirm = (v: number) => {
       amount.value = v
       code.value = JSON.stringify({ data: { address, tokenContractAddress, value: amount.value }, type: 'receive' })
     }
-
+    const back = () => {
+      router.replace({name : replaceBackUrl.value?.toString() || 'wallet'})
+    }
     // Currently selected token
     const chooseToken = computed(() => {
       const token = state.transfer.chooseToken
@@ -104,6 +115,7 @@ export default {
           }
     })
     return {
+      back,
       code,
       t,
       toCopy,
@@ -113,7 +125,6 @@ export default {
       amount,
       handleSetAmount,
       setAmountModal,
-      toUsd,
       handleConfirm
     }
   }
@@ -137,17 +148,17 @@ export default {
   padding: 1px;
 }
 .load-btn {
-  width: 250px;
+  max-width: 350px;
   background: #f1f3f4;
   box-sizing: border-box;
   border-radius: 30px;
   margin: 15px auto 0;
-  color: #037cd6;
+  color: #9F54BA;
   i {
     font-size: 12px;
   }
   &:hover {
-    background: #dcecf9;
+    background: #F8F3F9;
   }
 }
 .btn-group {
@@ -160,21 +171,21 @@ export default {
     height: 34px;
     box-sizing: border-box;
     border-radius: 17px;
-    border: 1PX solid #037cd6;
+    border: 1PX solid #9F54BA;
     cursor: pointer;
     &:hover {
-      background: #037cd6;
+      background: #9F54BA;
       i {
         color: #fff;
       }
     }
     i {
       font-size: 18px;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .text {
-    color: #037cd6;
+    color: #9F54BA;
     font-size: 12px;
   }
 }

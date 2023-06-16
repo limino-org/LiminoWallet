@@ -7,18 +7,20 @@
   >
     <van-sticky offset-top="91">
       <div class="flex between center-v create-box">
-        <span class="f-12 text-bold label">{{t('createNft.createNFTs')}}</span>
+        <span class="f-12 text-bold label">{{ t('createNft.createNFTs') }}</span>
         <span class="add flex center" @click="toCreate"><van-icon name="plus" /></span>
       </div>
     </van-sticky>
-    <div :class="`nft-list ${layoutType}`" v-show="pageData.nftList.length">
+    <div :class="`nft-list ${layoutType}`" v-show="pageData.nftList.length" >
       <NftCard
         v-for="item in pageData.nftList"
         :key="item.address"
         :data="item"
       />
     </div>
-    <div
+
+  </van-list>
+  <div
       class="flex center no-list pt-30"
       v-show="!pageData.nftList.length && !nftErr && finished"
     >
@@ -45,7 +47,6 @@
         <van-button @click="reLoading">{{ t("createNft.retry") }}</van-button>
       </div>
     </div>
-  </van-list>
   <!-- </van-pull-refresh> -->
 </template>
 
@@ -67,9 +68,8 @@ import { useStore } from "vuex";
 import { List, Toast, Button, PullRefresh, Sticky, Icon } from "vant";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
-import { web3 } from "@/popup/utils/web3";
 import { useToast } from "@/popup/plugins/toast";
-import { encode, decode } from "js-base64";
+import { decode } from "js-base64";
 
 export default defineComponent({
   name: "nft-list",
@@ -91,7 +91,7 @@ export default defineComponent({
     const pageData = reactive({ nftList: [] });
     const { $toast } = useToast();
     // nft load
-    const loadNft: Ref<boolean> = ref(true);
+    const loadNft: Ref<boolean> = ref(false);
     const finished: Ref<boolean> = ref(false);
     const nftErr: Ref<boolean> = ref(false);
     let params = {
@@ -108,8 +108,11 @@ export default defineComponent({
       // @ts-ignore
       if (nfts && nfts.length) {
         nfts.forEach((item) => {
-          item.info = JSON.parse(decode(item.raw_meta_url));
-          console.log("nft名称", item.info);
+          try{
+            item.info = JSON.parse(decode(item.raw_meta_url));
+          }catch(err){
+            console.error(err)
+          }
         });
 
         pageData.nftList.push(...nfts);
@@ -118,6 +121,7 @@ export default defineComponent({
     };
     // List loading event
     const handleOnLoad = async () => {
+      console.log('load nft...')
       try {
         params.page = Number(params.page) + 1 + "";
         const list = await getNftList(params);
@@ -157,9 +161,6 @@ export default defineComponent({
       reLoading();
     };
 
-    const toAdd = () => {
-
-    }
     return {
       toCreate,
       layoutType,
@@ -187,7 +188,7 @@ export default defineComponent({
   .add {
     width: 36px;
 height: 18px;
-background: #037CD6;
+background: #9F54BA;
 border-radius: 9px;
 cursor: pointer;
 i {
@@ -210,8 +211,8 @@ i {
 }
 .tip1 {
   .toCreate {
-    color: #037cd6;
-    font-size: 10px;
+    color: #9F54BA;
+    font-size: 12px;
     &:hover {
       text-decoration: underline;
     }

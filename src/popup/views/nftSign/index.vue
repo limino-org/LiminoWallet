@@ -24,7 +24,7 @@
         <div class="value">{{ address }}</div>
         <div class="title">{{t('sign.signaturedata')}}</div>
         <div class="flex center" v-if="loading">
-          <van-loading color="#1989fa" />
+          <van-loading color="#9F54BA" />
         </div>
         <div v-else :class="`value ${signSelect ? 'focus' : ''}`" @click="toCopy">
           {{ sign }}
@@ -36,16 +36,6 @@
         <van-button type="primary" @click="goOn">{{t('sign.confirm')}}</van-button>
       </div>
     </div>
-    <!-- <div>
-        <van-field
-          type="password"
-          v-model="password"
-          placeholder="请输入密码"
-        ></van-field>
-        <div class="flex center btn-box">
-          <van-button type="primary" :loading="loading" @click="toSign" block>签名</van-button>
-        </div>
-      </div> -->
   </div>
 </template>
 <script lang="ts">
@@ -132,11 +122,11 @@ export default {
     }
   }
   .sign-bg {
-    background: #f4faff;
+    background: #F8F3F9;
     height: 135px;
     &-icon {
       font-size: 40px;
-      color: #037cd6;
+      color: #9F54BA;
     }
     &-tit {
       line-height: 20px;
@@ -167,7 +157,7 @@ export default {
     .value {
       line-height: 14px;
       // &.select {
-      //   background: #1989fa;
+      //   background: #9F54BA;
       //   color:#fff;
       // }
       &:nth-of-type(1) {

@@ -23,8 +23,7 @@
               <span>({{$t('createExchange.yield')}})</span>
             </div>
             <div class="money flex between center-v">
-              <!-- {{使用toUsd}} ${{toUsd(money)}}   ≈$ {{toUsd(money,2)}}-->
-              <span>{{money}}ERB ${{toUsd(money)}}</span>
+              <span>{{money}}ERB </span>
               <span @click="customClick">{{$t('createExchange.custom')}}</span>
             </div>
             <div class="ipt-slider">
@@ -74,7 +73,7 @@ import { useI18n } from 'vue-i18n'
 import { useExchanges } from '@/popup/hooks/useExchanges'
 import { useStore } from 'vuex'
 import { getWallet } from '@/popup/store/modules/account'
-import { formatEther, parseEther, toUsd } from '@/popup/utils/filters'
+import { formatEther } from '@/popup/utils/filters'
 import { utils } from 'ethers'
 export default {
   name: 'MinersView',
@@ -86,7 +85,6 @@ export default {
     [Checkbox.name]: Checkbox
   },
   props: {
-    // 控制显示
     show: {
       type: Boolean,
       default: false
@@ -103,8 +101,6 @@ export default {
     const store = useStore()
     const exchangeStatus: any = computed(() => store.state.account.exchangeStatus)
     const { emit }: any = context
-    // 开过交易所了
-
     onBeforeMount(async () => {
       if (exchangeStatus.exchanger_flag) {
         const wallet = await getWallet()
@@ -115,22 +111,16 @@ export default {
       }
     })
 
-    // 输入框name
     let name = ref('')
-    // 金额和金额的最大值和最小值
     let moneyMin = ref(0)
     let moneyMax = ref(10000000)
-    // 账户详情
     const accountInfo: any = computed(() => store.state.account.accountInfo)
-    // server选择
     let serverIndex = ref(1)
     console.log(props)
-    // 协议选择
     let checked = computed({
       get: () => props.check,
       set: v => emit('update:check', v)
     })
-    // 显示协议
     const agreement = () => {
       emit('agreement')
     }
@@ -173,20 +163,11 @@ export default {
       try {
         // const isServer = serverIndex.value === 1
         await toCreate(name.value, money.value)
-        // 成功了
         emit('minersConfirm')
       } catch (err) {
         Toast(JSON.stringify(err))
       }
-      // emit('minersConfirm')
     }
-    // const sliderChange = (value: any) => {
-    //   if (value === 200) {
-    //     serverIndex.value = 1
-    //   } else {
-    //     serverIndex.value = 0
-    //   }
-    // }
     const changeServerIndex = (value: number) => {
       serverIndex.value = value
     }
@@ -195,11 +176,6 @@ export default {
       n => {
         console.log(n)
         showCreateExchange.value = n
-        // if (!n) {
-        //   name.value = "wormholes exchanger"
-        //   firstamount.value = 100
-        //   emit("close");
-        // }
       }
     )
     watch(
@@ -236,7 +212,6 @@ export default {
       showCreateExchange,
       accountInfo,
       formatDateNumber,
-      toUsd
     }
   }
 }
@@ -257,13 +232,12 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #f8fcff;
+      background: #F8F3F9;
       font-size: 14px;
       color: #0f0f0f;
     }
     .miners-container {
       ::-webkit-input-placeholder {
-        /* WebKit browsers，webkit内核浏览器 */
         color: #232323;
         font-size: 12px;
       }
@@ -335,7 +309,7 @@ export default {
           font-weight: bold;
         }
         .ipt-server {
-          font-size: 10px;
+          font-size: 12px;
           color: #8f8f8f;
           font-weight: bold;
           span {
@@ -350,7 +324,7 @@ export default {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f4faff;
+            background: #F8F3F9;
             border-radius: 7px 7px 7px 7px;
             &:first-child {
               padding: 0 18px;
@@ -358,8 +332,8 @@ export default {
           }
           .ipt-server-i-active {
             color: #0287db;
-            background: #f4faff;
-            border: 1px solid #037cd6;
+            background: #F8F3F9;
+            border: 1px solid #9F54BA;
             span {
               color: #0287db;
             }

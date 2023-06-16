@@ -72,7 +72,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .loading-bg {
-  background: rgba(244, 250, 255, 1);
+  background: #F8F3F9;
   height: 135px;
   .tit-big {
     line-height: 21px;
@@ -80,7 +80,7 @@ export default {
   .step{
     width: 17px;
     height: 17px;
-    background-color: #037CD6;
+    background-color: #9F54BA;
     color: #fff;
     text-align: center;
     border-radius: 50%;
@@ -119,7 +119,7 @@ export default {
       transform: scale(0.8);
     }
   .tit-small{
-  color: #037CD6;
+  color: #9F54BA;
   }
   .now{
     color: #68B1E6;

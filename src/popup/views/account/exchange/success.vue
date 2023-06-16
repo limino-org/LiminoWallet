@@ -34,7 +34,6 @@ export default {
     [Icon.name]: Icon
   },
   props: {
-    // 控制显示
     show: {
       type: Boolean,
       default: false
@@ -83,7 +82,7 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #f8fcff;
+      background: #F8F3F9;
       font-size: 14px;
       color: #0f0f0f;
     }

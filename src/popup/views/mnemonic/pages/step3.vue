@@ -64,6 +64,7 @@ import { parseMnemonic } from "@/popup/utils/web3";
 import { randArr } from "@/popup/utils/utils";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import { useStore } from 'vuex';
 
 export default {
   name: "mnemonic-step3",
@@ -75,6 +76,7 @@ export default {
   setup() {
     const { t } = useI18n();
     const router = useRouter();
+    const store = useStore()
     // Unsorted
     const list = reactive({
       data: [],
@@ -132,8 +134,8 @@ export default {
     };
     onMounted(async () => {
       // Get the decrypted mnemonic
-      const password = getCookies("password");
-      const realmm = await parseMnemonic(password);
+      const password = await getCookies("password");
+      const realmm = await parseMnemonic(password,store.state.mnemonic.keyStore);
       // Correct sorting
       const nlist = realmm
         .split(" ")
@@ -172,7 +174,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .mnemonic-bg {
-  background: rgba(244, 250, 255, 1);
+  background: #F8F3F9;
   .tit-big {
     line-height: 21px;
   }
@@ -181,7 +183,7 @@ export default {
     color: rgba(132, 132, 132, 1);
   }
   .color-p {
-    color: #037cd6;
+    color: #9F54BA;
   }
 }
 .icon-box {
@@ -208,8 +210,8 @@ export default {
   }
   &-card {
     width: 90px;
-    background: #f4faff;
-    color: #037cd6;
+    background: #F8F3F9;
+    color: #9F54BA;
     transition: ease 0.3s;
     border-radius: 12px;
     &:hover {
@@ -233,7 +235,7 @@ export default {
     .icon {
       width: 24px;
       height: 24px;
-      background: #037cd6;
+      background: #9F54BA;
       border-radius: 50%;
       color: #fff;
       &.error {
@@ -245,7 +247,7 @@ export default {
     }
     &:after,
     .icon:after {
-      border-color: #037cd6;
+      border-color: #9F54BA;
       border-radius: 45px;
     }
   }

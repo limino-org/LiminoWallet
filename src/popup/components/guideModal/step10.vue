@@ -12,7 +12,7 @@
   >
     <div class="dialog-box">
       <div class="serial-number">
-        <span class="left">10</span> <span>/</span> 13
+        <span class="left">9</span> <span>/</span> 12
       </div>
       <div class="title">
         {{ t("bootstrapwindow.identifier") }}
@@ -21,7 +21,8 @@
         {{ t("bootstrapwindow.identifierMessage") }}
       </div>
       <span class="tip4">
-        <img class="user" src="@/popup/views/home/imgs/smallhome.png" alt="" />
+        <i class=" user iconfont icon-fangwujianzhuwugoujianbeifen"></i>
+        <!-- <img class="user" src="@/popup/views/home/imgs/smallhome.png" alt="" /> -->
       </span>
       <div class="flex center">
         <van-button type="primary" @click="handleClick(10)">{{
@@ -102,9 +103,8 @@ export default defineComponent({
     padding-bottom: 14px;
     padding-right: 14px;
     font-size: 12px;
-    font-size: 12px;
     .left {
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .title {
@@ -112,7 +112,7 @@ export default defineComponent({
     font-size: 24px;
     font-weight: bold;
     line-height: 30px;
-    margin-top: 44px;
+    margin-top: 22px;
   }
   .tip4 {
     position: absolute;
@@ -120,13 +120,13 @@ export default defineComponent({
     height: 12px;
     right: 20px;
     .user {
-      width: 15px;
-      height: 15px;
+      font-size: 12px;
+      color: #fff;
     }
   }
   .small-tit {
     text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
     font-size: 12px;
     color: #848484;
   }

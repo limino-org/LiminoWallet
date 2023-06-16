@@ -1,7 +1,5 @@
 <template>
-  <van-sticky>
     <NavHeader backUrl="wallet" :title="t('sendSNFT.collTit')" :hasRight="false"></NavHeader>
-  </van-sticky>
   <div id="tabBox">
     <van-tabs v-model:active="active" sticky :offset-top="48" @change="changeTab">
       <van-tab v-for="(item, idx) in categoryList" :key="item.value" :title="item.text">
@@ -66,7 +64,6 @@
                   <div class="flex right center-v">
                     <div class="coll-amount">
                       <div class="text-right num lh-16">{{ calcERBNum(abc.total_hold) }} ERB</div>
-                      <div class="text-right toUsd lh-16">$ {{ toUsd(calcERBNum(abc.total_hold), 2) }}</div>
                     </div>
                   </div>
                 </div>
@@ -90,7 +87,7 @@ import { queryOwnerSnftCollections, querySnftByCollection, queryOwnerSnftChipAmo
 import NftsModal from '@/popup/views/home/components/nftsModal.vue'
 import SnftCard from '@/popup/views/account/components/snftList/snftCard.vue'
 import { useStore } from 'vuex'
-import { addressMask, toUsd } from '@/popup/utils/filters'
+import { addressMask } from '@/popup/utils/filters'
 import { useRouter } from 'vue-router'
 import BigNumber from 'bignumber.js'
 import { useI18n } from 'vue-i18n'
@@ -438,7 +435,6 @@ export default {
       handleOnLoad,
       loading,
       error,
-      toUsd,
       finished
     }
   }
@@ -461,10 +457,10 @@ export default {
   width: 80px;
   padding: 0 5px;
   border-radius: 9.5px;
-  border: 1PX solid #037cd6;
+  border: 1PX solid #9F54BA;
   margin-right: 12.5px;
   flex: none;
-  color: #037cd6;
+  color: #9F54BA;
   span {
     font-size: 12px;
     -webkit-line-clamp: 1;
@@ -476,11 +472,11 @@ export default {
 }
 
 :deep(.van-tab--active) {
-  background: #037cd6;
+  background: #9F54BA;
   color: #fff;
 }
 :deep(.van-tabs__wrap) {
-  background: #f8fcff;
+  background: #F8F3F9;
   padding: 15px 0;
   height: auto;
   // width: 375px
@@ -511,20 +507,20 @@ export default {
   .van-tab {
     width: 60px;
     height: 60px;
-    background: #e9f5fe;
+    background: #9F54BA;
     border: 1PX solid #e4e7e8;
     border-radius: 50%;
-    color: #037cd6;
+    color: #9F54BA;
     padding: 0;
     position: relative;
     &.van-tab--active {
       background: #fff;
-      border: 1PX solid #037cd6;
+      border: 1PX solid #9F54BA;
       border-radius: 50%;
-      color: #037cd6;
+      color: #9F54BA;
       .van-tab__text .icon-num {
-        border: 1PX solid #037cd6;
-        color: #037cd6;
+        border: 1PX solid #9F54BA;
+        color: #9F54BA;
       }
     }
     .More {
@@ -609,7 +605,7 @@ export default {
   position: relative;
   .icon-num {
     position: absolute;
-    font-size: 10px;
+    font-size: 12px;
     &::after {
       border-radius: 16px;
       border-color: #acacac;

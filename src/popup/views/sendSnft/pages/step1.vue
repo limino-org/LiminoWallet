@@ -32,8 +32,7 @@
       <div class="content van-hairline--bottom">
         <div class="form-titie">{{t('sendSNFT.amount')}}</div>
         <div class="form-content van-ellipsis">
-          {{ pageData.erbNumber }} {{ currentNetwork.symbol }} / $
-          {{ toUsd(pageData.erbNumber) }}
+          {{ pageData.erbNumber }} {{ currentNetwork.symbol }}
         </div>
       </div>
       <div class="content">
@@ -69,7 +68,7 @@ import { ref, Ref, reactive, onMounted, computed, toRefs, watch, onBeforeMount }
 import NavHeader from '@/popup/components/navHeader/index.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { addressMask, decimal, weiToNumber, toUsd, snftToErb } from '@/popup/utils/filters'
+import { addressMask, snftToErb } from '@/popup/utils/filters'
 import { useStore } from 'vuex'
 
 export default {
@@ -107,7 +106,6 @@ export default {
       pageData,
       toSend,
       addressMask,
-      toUsd,
       snftToErb,
       currentNetwork,
       tomore
@@ -120,7 +118,7 @@ export default {
   padding-bottom: 50px;
   .back {
     font-size: 18px;
-    color: rgba(3, 125, 214, 1);
+    color: #9F54BA;
   }
   .code {
     width: 256px;
@@ -139,19 +137,19 @@ export default {
     .card {
       width: 105px;
       height: 65px;
-      background: #f4faff;
+      background: #F8F3F9;
       border-radius: 7.5px;
       text-align: center;
       padding: 4px 0;
       box-sizing: border-box;
       &.active {
-        border: 1PX solid #037cd6;
+        border: 1PX solid #9F54BA;
       }
       & > div {
         line-height: 20px;
       }
       &-t {
-        font-size: 10px;
+        font-size: 12px;
         color: #848484;
       }
       &-m {
@@ -159,7 +157,7 @@ export default {
         font-size: 12px;
       }
       &-b {
-        font-size: 10px;
+        font-size: 12px;
         color: #848484;
       }
     }
@@ -167,13 +165,13 @@ export default {
   .selection-box {
     width: 105px;
     height: 65px;
-    background: rgba(244, 250, 255, 1);
+    background: #F8F3F9;
     .price {
       color: rgba(132, 132, 132, 1);
     }
   }
   .selection-box:hover {
-    border: 1PX solid #037cd6;
+    border: 1PX solid #9F54BA;
   }
 
   .form {
@@ -200,7 +198,7 @@ export default {
       margin: 0 auto;
       width: 35px;
       height: 35px;
-      background-color: #037cd6;
+      background-color: #9F54BA;
       border-radius: 50%;
       i {
         font-size: 16px;
@@ -209,7 +207,7 @@ export default {
     }
     .send-action {
       line-height: 16px;
-      color: rgba(3, 125, 214, 1);
+      color: #9F54BA;
       font-size: 12px;
       margin-top: 7px;
     }

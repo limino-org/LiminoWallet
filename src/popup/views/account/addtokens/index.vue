@@ -1,12 +1,10 @@
 <template>
   <div class="page-addtokens">
-    <van-sticky>
       <NavHeader :hasRight="false" :title="$t('wallet.addtoken')">
         <template v-slot:left>
           <van-icon name="arrow-left" class="back" @click="back" />
         </template>
       </NavHeader>
-    </van-sticky>
     <div class="page-content">
       <!-- form -->
       <van-form @submit="onSubmit">
@@ -138,7 +136,7 @@ export default {
     .title {
       width: 345px;
       height: 56px;
-      background-color: #f4faff;
+      background-color: #F8F3F9;
       margin: 0 auto;
       font-size: 14px;
       align-items: center;

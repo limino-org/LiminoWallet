@@ -1,0 +1,66 @@
+.modal-enter-from {
+    opacity: 0;
+}
+
+.modal-leave-to {
+    opacity: 0;
+}
+
+.modal-container {
+    transition: all 0.3s ease;
+}
+
+.modal-enter-from .modal-container,
+.modal-leave-to .modal-container {
+    -webkit-transform: scale(.7);
+    transform: scale(.7);
+}
+
+
+// .toast-enter-from {
+//     opacity: 0;
+//   }
+
+// .toast-leave-to {
+//     opacity: 0;
+// }
+.toast-container {
+    transition: all 0.3s ease;
+    // animation: name duration timing-function delay iteration-count direction fill-mode;
+
+}
+
+
+// .toast-enter-active {
+//     animation: toastIn 0.3s ease;
+// }
+.toast-enter-from {
+    opacity: 0;
+}
+
+.toast-leave-to {
+    opacity: 0;
+}
+
+.toast-enter-from .toast-container,
+.toast-leave-to .toast-container {
+    -webkit-transform: scale(.7);
+    transform: scale(.7);
+}
+
+// .toast-enter-active .toast-container {
+//     opacity: 1;
+// }
+@keyframes toastIn {
+    0% {
+        opacity: 0;
+        -webkit-transform: scale(.7);
+        transform: scale(.7);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: scale(1);
+        transform: scale(1);
+    }
+}

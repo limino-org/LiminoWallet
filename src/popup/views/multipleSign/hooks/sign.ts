@@ -19,8 +19,8 @@ export const useSign = () => {
      */
     let { address, data: queryStr } = query
     const loading:Ref<boolean> = ref(false)
-    const password = getCookies('password')
     const toSign = async () => {
+        const password = await getCookies('password')
         if(!queryStr){
             Toast(i18n.global.t('sign.signature'))
             return
@@ -47,7 +47,6 @@ export const useSign = () => {
     return {
         toSign,
         loading,
-        password,
         sign,
         address,
     }

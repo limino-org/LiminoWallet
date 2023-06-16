@@ -1,4 +1,4 @@
-// 生成随机颜色
+// Generate random colors
 export const getRandomColor = () => {    
     var r = Math.floor(Math.random() * (200 - 50 + 1)) + 50;
     var g = Math.floor(Math.random() * (200 - 50 + 1)) + 50;
@@ -16,7 +16,7 @@ export interface IconData{
     color: string
 }
 
-// 生成随机svg
+// Generating random SVG
 export const getRandomIcon = () => {
     const list = []
     for(let i =0;i<3;i++){
@@ -43,7 +43,7 @@ export const getRandomIcon = () => {
 }
 
 
-//生成全局唯一标识符
+//Generate globally unique identifiers
 export function guid() {
     function S4() {
        return (((1+Math.random())*0x10000)|0).toString(16).substring(1);

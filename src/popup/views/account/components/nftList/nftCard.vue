@@ -3,7 +3,7 @@
     @click="toDetail"
     :class="`nft-card  clickActive  ${
       layoutType == 'list'
-        ? ' van-hairline--bottom flex between'
+        ? ' flex between'
         : 'van-hairline--surround'
     } ${layoutType}`"
   >
@@ -16,10 +16,10 @@
         <div class="add">{{ addressMask(data.address) }}</div>
       </div>
     </div>
-    <div class="amount" v-if="layoutType == 'list' && amountType != 'mask'">
+    <!-- <div class="amount flex center-v" v-if="layoutType == 'list' && amountType != 'mask'">
       <div class="val">{{ data.info.royalty }} {{ currentNetwork.currencySymbol }}</div>
-      <div class="usd">≈ ${{ data.to_doller }}</div>
-    </div>
+
+    </div> -->
     <div class="flex right center-v f-12" v-if="amountType == 'mask' && layoutType =='list'">********</div>
   </div>
 </template>
@@ -77,28 +77,39 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .nft-card {
-  transition: 0.2s ease-in-out;
-  &:hover {
+  transition: 0.3s ease-in-out;
+  &.card:hover {
     cursor: pointer;
-    box-shadow: 0px 1px 5px rgba($color: #ccc, $alpha: 0.6);
-    .info .icon img {
-      transform: scale(1.2);
+    box-shadow: 0px 2px 14px rgba($color: #ccc, $alpha: 0.4);
+    /* background:#F8F3F9; */
+    color:#9F54BA;
+    .usd,.address .add {
+      color:#9F54BA;
+    }
+  }
+  &.list:hover {
+    background:#F8F3F9;
+    color:#9F54BA;
+    .usd,.address .add {
+      color:#9F54BA !important;
     }
   }
   &.list {
     padding: 15px;
     overflow: hidden;
+    border-bottom:1px solid #E4E7E8;
     .info {
       .icon {
         width: 40px;
         height: 40px;
-        background: #e9f5fe;
-        border-radius: 7px;
+        /* background: #9F54BA; */
+        border-radius: 6px;
         margin-right: 15px;
         overflow: hidden;
         .van-image {
           width: 1.06667rem;
           height: 1.06667rem;
+
         }
         img {
           width: 40px;
@@ -123,10 +134,11 @@ export default defineComponent({
     width: calc(50vw - 15px - 7.5px);
     margin-bottom: 15px;
     &:after {
-      border-radius: 7px;
+      border-radius: 12px;
     }
     .info {
       padding: 7.5px 7.5px 0 7.5px;
+      border-radius: 6px;
       .icon {
         width: 100%;
         height: 150px;
@@ -135,6 +147,8 @@ export default defineComponent({
         .van-image {
           width: 100%;
           height: 100%;
+          border-radius:6px;
+          overflow: hidden;
         }
       }
     }

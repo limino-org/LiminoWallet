@@ -1,23 +1,19 @@
-import en from './en-US/index'
-import zh from './zh_CN/index'
-import { createI18n } from 'vue-i18n' //引入vue-i18n组件
-import { useStore } from 'vuex';
+
+//@ts-nocheck
+import en from './en/index.json'
+import zh from './zh/index.json'
+import { createI18n } from 'vue-i18n'
 import { Locale } from 'vant';
-import { ref } from 'vue'
 import enUS from 'vant/es/locale/lang/en-US';
 import zhCN from 'vant/es/locale/lang/zh-CN';
 import storeObj from '../store';
 import localforage from 'localforage';
-// Locale.use('en-US', enUS);
-// const store = localforage.getItem('vuex') ? JSON.parse(localStorage.getItem('vuex') || '') : null
-// localforage.getItem('vuex').then()
+import { ref } from 'vue';
 const messages = {
     zh,
     en,
 }
-
-const fallbackLocale = 'en'
-
+const fallbackLocale = 'zh'
 export const vantLangs = {
   'zh': {
     value: 'zh-CN',
@@ -29,22 +25,21 @@ export const vantLangs = {
   }
 }
 
-
-const i18n = createI18n({
-  silentFallbackWarn:true,
+const i18n:any = createI18n({
+  silentFallbackWarn: true,
+  legacy: false,
   fallbackLocale,
-  globalInjection:true,
-  locale: fallbackLocale,
+  globalInjection: true,
+  locale: ref(fallbackLocale),
   messages,
 });
-
 localforage.getItem('vuex').then(store => {
-  // @ts-ignore
   const fallbackLocale = store ? store.system.language : 'en'
   sessionStorage.setItem('systemLang',fallbackLocale)
   storeObj.dispatch('system/setLanguage', fallbackLocale)
   Locale.use(vantLangs[fallbackLocale].value, vantLangs[fallbackLocale]['package']);
-  i18n.global.locale = fallbackLocale
+  i18n.global.locale.value = fallbackLocale
+
 })
 
 export default i18n

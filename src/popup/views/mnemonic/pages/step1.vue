@@ -75,7 +75,7 @@ export default {
     };
     commit("system/UPDATE_LASTDELAYTIME", new Date().getTime());
     const remindLater = () => {
-      debugger
+      //debugger
       router.replace({ name: "wallet" });
     };
     return {
@@ -88,7 +88,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .mnemonic-bg {
-  background: rgba(244, 250, 255, 1);
+  background: #F8F3F9;
   .tit-big {
     line-height: 21px;
   }

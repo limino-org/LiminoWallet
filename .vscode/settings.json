@@ -1,0 +1,11 @@
+{
+    "i18n-ally.localesPaths": ["src/popup/language"],
+    "i18n-ally.displayLanguage": "zh",
+    "i18n-ally.enabledParsers": [
+        "json",
+    ],
+    "i18n-ally.enabledFrameworks": [
+        "vue"
+    ],
+    "i18n-ally.keystyle": "nested"
+}

@@ -1,9 +1,6 @@
 <template>
   <van-sticky>
-    <NavHeader title="Close" :hasRight="true">
-      <template v-slot:title>
-        <div class="flex center title">{{ t("setting.contacts") }}</div>
-      </template>
+    <NavHeader :title="t('receive.contants')" :hasRight="true">
     </NavHeader>
   </van-sticky>
   <div class="contacts-add">
@@ -12,22 +9,25 @@
         <div class="label text-bold">{{ t("contacts.name") }}</div>
         <van-field
           v-model="params.name"
+          :class="iptErr1 ? 'error' : ''"
           maxlength="12"
           :placeholder="$t('contacts.entername')"
           :rules="[
-            {
-              required: true,
-              message: t('contacts.namecannotbeempty'),
-            },
+            // {
+            //   required: true,
+            //   message: t('contacts.namecannotbeempty'),
+            // },
+            { validator: asynName },
           ]"
         />
         <div class="label text-bold">{{ t("contacts.address") }}</div>
         <van-field
           v-model="params.address"
           :placeholder="$t('contacts.enteraddress')"
+          :class="iptErr2 ? 'error' : ''"
           maxlength="50"
           :rules="[
-            { required: true, message: t('contacts.addresscannotbeempty') },
+            // { required: true, message: t('contacts.addresscannotbeempty') },
             {
               validator: asyncaddress,
               message: t('contacts.wrongaddressformat'),
@@ -44,7 +44,7 @@
         <div class="btn-groups" v-if="!query.address">
           <div class="container pl-28 pr-28">
             <van-button block type="primary" native-type="submit">
-              {{ t("addNetwork.add") }}
+              {{ t("contacts.confirmAdd") }}
             </van-button>
           </div>
         </div>
@@ -55,7 +55,7 @@
             <van-button block class="mr-10" type="danger" plain @click="handleDelete">{{
               t("contacts.delete")
             }}</van-button>
-            <van-button block type="primary" native-type="submit">{{
+            <van-button block type="primary"  native-type="submit">{{
               t("contacts.submit")
             }}</van-button>
           </div>
@@ -96,6 +96,8 @@ export default {
     const { dispatch } = store;
     const { query } = useRoute();
     const { state, commit } = store;
+    const iptErr1 = ref(false)
+    const iptErr2 = ref(false)
     const params: any = ref({
       name: "",
       address: "",
@@ -114,13 +116,27 @@ export default {
     const memo: Ref<string> = ref("");
     const { $toast } = useToast();
     const asyncaddress = (val: string) => {
+      iptErr2.value = false
+      if(!val) {
+        iptErr2.value = true
+        return t('contacts.addresscannotbeempty')
+      }
       try {
         utils.getAddress(val);
         return true;
       } catch (err) {
+        iptErr2.value = true
         return false;
       }
     };
+    const asynName = (val: string) => {
+      iptErr1.value = false
+      if(!val) {
+        iptErr1.value = true
+        return t('contacts.namecannotbeempty')
+      }
+      return true
+    }
     const handleDelete = () => {
       Dialog.confirm({
         title: t("contacts.hint"),
@@ -163,6 +179,8 @@ export default {
     return {
       t,
       onSubmit,
+      iptErr1,
+      iptErr2,
       asyncaddress,
       name,
       address,
@@ -170,6 +188,7 @@ export default {
       query,
       params,
       handleDelete,
+      asynName
     };
   },
 };
@@ -200,14 +219,14 @@ export default {
   }
   :deep(.van-field__body) {
     height: 42px;
-    border: 1px solid #adb8c5;
-    margin-bottom: 10px;
+    // border: 1px solid #adb8c5;
+    margin-bottom: 5px;
     padding: 0 10px;
     border-radius: 5px;
     transition: ease 0.3s;
     font-size: 12px;
     &:hover {
-      border: 1px solid #1989fa;
+      border: 1px solid #9F54BA;
     }
   }
 }

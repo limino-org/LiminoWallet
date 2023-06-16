@@ -29,14 +29,6 @@ export default {
       },
     }, 
     {
-      path: "/loginAccount/step2",
-      name: "loginAccount-step2",
-      component: () => import("@/popup/views/createAccount/pages/login-02.vue"),
-      meta: {
-        auth: false,
-      },
-    }, 
-    {
       path: "/loginAccount/export-mnemonic",
       name: "loginAccount-export-mnemonic",
       component:() =>  import("@/popup/views/createAccount/pages/mnemonic.vue"),

@@ -1,8 +1,6 @@
 <template>
   <van-sticky>
-    <NavHeader :hasRight="false" :hasLeft="false">
-        <template v-solt:title>{{t('common.connect')}}</template>
-    </NavHeader>
+    <NavHeader :hasRight="false" :hasLeft="false" :title="t('common.connect')"></NavHeader>
   </van-sticky>
   <div class="page-connect">
      <div>
@@ -29,8 +27,8 @@
   </div>
   <div class="btn-box pb-20 pt-20 " >
       <div class="container  flex between  pr-30 pl-30">
-        <van-button class="mr-20" block @click="cancel">{{t('restWallet.cancel')}}</van-button>
-        <van-button block @click="next" :disabled="selectLen?false:true" type="primary">{{t('common.connectTxt')}}</van-button>
+        <van-button class="mr-20" block @click="cancel" >{{t('restWallet.cancel')}}</van-button>
+        <van-button block @click="next" :disabled="selectLen?false:true" :loading="loading" type="primary">{{t('common.connectTxt')}}</van-button>
       </div>
   </div>
 </template>
@@ -39,11 +37,12 @@ import { Icon, Toast, Button, Sticky, Field,Checkbox, CheckboxGroup  } from "van
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { computed, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, toRaw } from "vue";
 import { useStore } from 'vuex';
 import AccountIcon from '@/popup/components/accountIcon/index.vue'
 import { addressMask } from '@/popup/utils/filters';
-import { handleType, getSenderAccounts } from '@/scripts/background';
+import { handleType } from '@/scripts/eventType';
+import { sendBackground } from '@/popup/utils/sendBackground';
 
 export default {
   name: "pageConnect",
@@ -61,33 +60,59 @@ export default {
     const router = useRouter();
     const store = useStore()
     const accountInfo = computed(() => store.state.account.accountInfo)
-    
+    const { t } = useI18n();
     const accountList = computed(() => {
         return store.state.account.accountList
     })
     // @ts-ignore
-    const bg = chrome.extension.getBackgroundPage();
-    const currentSender = bg.connectList.find(item => item.origin == bg.params[handleType.wallet_requestPermissions].sender.origin)
-    const accounts = currentSender ? currentSender.accountList : []
-    const { t } = useI18n();
-    const checkArr = [accountInfo.value.address,...accounts]
-    const checkedList = ref(checkArr)
-    const { sender } = route.query
+    // const bg = chrome.runtime.getBackgroundPage();
+    // const currentSender = bg.connectList.find(item => item.origin == bg.params[handleType.wallet_requestPermissions].sender.origin)
+    // const accounts = currentSender ? currentSender.accountList : []
+
+    // const checkArr = [accountInfo.value.address,...accounts]
+    const checkedList = ref([])
+
+    const { sender, method, sendId } = route.query
     console.warn('sender',sender)
     const senderData = ref(JSON.parse(decodeURIComponent(sender.toString())))
     const selectLen = computed(() => {
        return checkedList.value.length
     })
+
+    const handleKeydown = (e: any) => {
+      if(e.keyCode === 13) {
+        next()
+      }
+    }
+    
+    onUnmounted(() => {
+      window.removeEventListener('keydown', handleKeydown)
+    })
+
+    onMounted(async()=>{
+      window.addEventListener('keydown', handleKeydown)
+      // @ts-ignore
+      const list = await chrome.storage.local.get(['connectList'])
+       // @ts-ignore
+      const data = await chrome.storage.local.get([method])
+      const sendParams = data[method] ? data[method] : {}
+      const currentSender = list.connectList.find((item: any) => item.origin == sendParams.sender.origin)
+      const accounts = currentSender ? currentSender.accountList : []
+      console.warn('sendParams.sender', sendParams.sender)
+      const checkArr = [accountInfo.value.address,...accounts]
+      checkedList.value = checkArr
+    })
+    const loading = ref(false)
     const next = () => {
-      //   @ts-ignore
-      bg.params[handleType.wallet_requestPermissions].sendResponse({response: [...checkedList.value]})
+      console.warn('checkedList.value', checkedList.value)
+      loading.value = true
+      sendBackground({method,response: {code:'200',data:[...checkedList.value],sendId}})
     }
     const cancel = () => {
-        // @ts-ignore
-      const bg = chrome.extension.getBackgroundPage();
-      bg.handleReject(handleType.wallet_requestPermissions)
+      sendBackground({method:handleType.handleReject,response:{method,sendId}})
     }
     return {
+      loading,
       route,
       t,
       next,

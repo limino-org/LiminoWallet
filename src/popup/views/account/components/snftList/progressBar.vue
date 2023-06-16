@@ -2,8 +2,8 @@
   <div class="progress-bar" ref="barref">
     <div class="lh-14 f-12 ratio">
       {{ $t("sendSNFT.ratio") }}: 1:{{ ratio }}
-      <van-popover v-model:show="showPopover" theme="dark" placement="top">
-        <p class="f-12 p-10" style="margin: 0">hello world</p>
+      <van-popover v-model:show="showPopover" theme="dark" placement="top" class="popover-btn-tip">
+        <p class="f-12 p-10" style="margin: 0">{{t('transferNft.radioTip')}}</p>
         <template #reference>
           <van-icon
             name="question"
@@ -14,7 +14,7 @@
       </van-popover>
     </div>
     <div class="bar mt-4">
-      <div :style="{ width: `${width}%` }" class="h-10 bar-line-box">
+      <div :style="{ width: `${width <= 100 ? width : 100}%` }" class="h-10 bar-line-box">
         <div
           :class="`bar-scroll ${width > 0 ? 'scorll-enter-active' : ''}`"
         ></div>
@@ -28,12 +28,12 @@
       <!-- bubble -->
 
       <div class="bubble">
-        <div class="num">{{ ratio }}</div>
+        <div class="num">{{maxRadio}}</div>
       </div>
     </div>
     <div class="flex between scale">
-      <span>{{ start }}</span>
-      <span class="scale-r">{{ own }}/{{ total }}</span>
+      <span></span>
+      <span class="scale-r">{{ value }}/{{ total }}</span>
     </div>
   </div>
 </template>
@@ -41,6 +41,7 @@
 import { BigNumber } from "bignumber.js";
 import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import { Icon, Popover } from "vant";
+import { useI18n } from "vue-i18n";
 export default defineComponent({
   name: "progress-bar",
   components: {
@@ -50,11 +51,6 @@ export default defineComponent({
   props: {
     //current value
     value: {
-      type: Number,
-      default: 0,
-    },
-    // initial value
-    start: {
       type: Number,
       default: 0,
     },
@@ -73,6 +69,10 @@ export default defineComponent({
       type: Number,
       default: 0.15,
     },
+    maxRadio: {
+      type: Number,
+      default: 0.271
+    }
   },
   setup(props: any) {
     const width = ref(0);
@@ -81,9 +81,13 @@ export default defineComponent({
       () => props.value,
       () => {
         const { value, total } = props;
-        width.value = Number(
+        const nw = Number(
           new BigNumber(value).div(total).multipliedBy(100).toFixed(2)
         );
+        width.value =  nw > 100 ? 100 : nw
+        console.log('width', width.value, value, total)
+      },{
+        immediate: true,
       }
     );
     const showPopover = ref(false);
@@ -103,8 +107,10 @@ export default defineComponent({
       });
       intersectionObserver.observe(barref.value);
     });
+    const {t} = useI18n()
     return {
       width,
+      t,
       barref,
       showPopover,
       showPopover2,
@@ -114,8 +120,8 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .bubble {
-  border: 1px solid #aef0bf;
-  border-radius: 7px; /*圆角弧度为7px*/
+  border: 1px solid #3AAE55;
+  border-radius: 7px;
   position: relative;
 
   &::after {
@@ -124,9 +130,9 @@ export default defineComponent({
     height: 0;
     border: 5px solid;
     position: absolute;
-    bottom: -9px;
-    left: 50%;
-    margin-left: -5px;
+    bottom: -7px;
+    left: 75%;
+    transform: translateX(-50%);
     border-color: #fff transparent transparent;
   }
   &::before {
@@ -135,16 +141,16 @@ export default defineComponent({
     height: 0;
     border: 5px solid;
     position: absolute;
-    bottom: -10px;
-    left: 50%;
-    margin-left: -5px;
-    border-color: #aef0bf transparent transparent;
+    bottom: -8px;
+    left: 75%;
+    transform: translateX(-50%);
+    border-color: #3AAE55 transparent transparent;
   }
 }
 
 .progress-bar {
   padding: 4px 10px 7px 10px;
-  background: #f8fcff;
+  background: #fff;
   color: #bbbbbb;
   border-radius: 5px;
   .ratio {
@@ -206,14 +212,14 @@ export default defineComponent({
       border-radius: 10px;
       color: #fff;
       text-align: center;
-      font-size: 10px;
+      font-size: 12px;
       position: absolute;
-      right: -10px;
+      right: 0px;
       top: -16px;
       .num {
-        color: #aef0bf;
-        padding: 0 2px;
-        font-size: 10px;
+        color: #3AAE55;
+        padding: 0 4px;
+        font-size: 12px;
         // transform: scale(0.8);
       }
     }
@@ -238,6 +244,18 @@ export default defineComponent({
 
   100% {
     width: 100%;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .bubble{
+    &::before{
+      bottom: -10px;
+    }
+    &::after {
+      border: 4px solid;
+      border-color: #fff transparent transparent;
+    }
   }
 }
 </style>

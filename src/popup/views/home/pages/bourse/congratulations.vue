@@ -44,7 +44,7 @@
     </div>
     <div class="btns-footer">
       <div class="bourse-container-error">
-        <van-icon name="warning" color="#037CD6" />
+        <van-icon name="warning" color="#9F54BA" />
         <span>{{t('bourse.tip11')}}</span>
       </div>
       <div class="pl-28 pr-28">
@@ -80,15 +80,6 @@
         </div>
       </div>
     </div>
-
-    <!-- 网络连接成功的提示 -->
-    <!-- <dialog-warning
-      v-if="networkTypeValue === 1"
-      text="网络连接成功"
-      iconName="checked"
-      color="#3AAE55"
-    >
-    </dialog-warning> -->
   </div>
 </template>
 
@@ -173,7 +164,6 @@ export default defineComponent({
       const add = store.state.account.accountInfo.address
       return `${VUE_APP_EXCHANGESMANAGEMENT_URL}?address=${add.toLowerCase()}&exchangeAddress=${add.toLowerCase()}`
     })
-    // 跳转到后台
     const toGoCMS = () => {
       window.open(`${exchangeUrl.value}`)
     }
@@ -192,7 +182,6 @@ export default defineComponent({
         console.error(e)
       }
     }
-    // 跳转到交易所
     const toGoAmount = () => {
       window.open(`${adminUrl.value}`)
     }
@@ -265,9 +254,9 @@ export default defineComponent({
         }
         &:hover {
           .da-c {
-            color:#037cd6;
+            color:#9F54BA;
             i {
-            color:#037cd6;
+            color:#9F54BA;
             }
           }
         }
@@ -282,7 +271,7 @@ export default defineComponent({
       }
       i {
         font-size: 20px;
-        color: #037cd6;
+        color: #9F54BA;
       }
     }
     .da-img {
@@ -309,7 +298,7 @@ export default defineComponent({
       }
       &:hover {
         i {
-        color: #037cd6;       
+        color: #9F54BA;       
         
         }
       }
@@ -345,14 +334,14 @@ export default defineComponent({
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      background: #f4faff;
+      background: #F8F3F9;
       border-radius: 7.5px;
       box-sizing: border-box;
     }
     .active {
-      border: 1px solid #037cd6;
+      border: 1px solid #9F54BA;
       span {
-        color: #037cd6;
+        color: #9F54BA;
       }
     }
     .t1 {
@@ -388,7 +377,7 @@ export default defineComponent({
   .bourse-container-error {
     margin: 0 15px 25px 15px;
     height: 56.5px;
-    background: #F4FAFF;
+    background: #F8F3F9;
     border-radius: 7.5px;
     display: flex;
     align-items: center;
@@ -403,7 +392,7 @@ export default defineComponent({
   }
   .t1 {
     font-size: 14px;
-    color: #037cd6;
+    color: #9F54BA;
   }
   .t3 {
     font-size: 18px;
@@ -425,11 +414,11 @@ export default defineComponent({
       color: #848484;
     }
     .right {
-      color: #037cd6;
+      color: #9F54BA;
       text-decoration: underline;
     }
-    .icon-yanjing {
-      color: #037dd6;
+    .icon-yanjing1 {
+      color: #9F54BA;
     }
     :deep(.van-field__label) {
       display: none;
@@ -449,7 +438,7 @@ export default defineComponent({
       transition: ease 0.3s;
       font-size: 12px;
       &:hover {
-        border: 1px solid #1989fa;
+        border: 1px solid #9F54BA;
       }
     }
     .error-field {
@@ -459,11 +448,11 @@ export default defineComponent({
     }
     .success-field {
       :deep(.van-field__body) {
-      border: 1px solid #1989fa !important;
+      border: 1px solid #9F54BA !important;
       }
     }
     .tool {
-      color: #037cd6;
+      color: #9F54BA;
     }
     .pointer {
       cursor: pointer;
@@ -478,7 +467,7 @@ export default defineComponent({
 }
 .bourse-img {
   height: 135px;
-  background-color: #F4FAFF;
+  background-color: #F8F3F9;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -515,7 +504,7 @@ export default defineComponent({
   position: fixed;
   bottom: 25px;
   width: 100%;
-  max-width: 750px;
+  max-width: 820px;
 }
 </style>
 
@@ -548,7 +537,7 @@ background-color: rgba(0, 0, 0, .7);
             display: inline-block;
             z-index: 999999;
             transform: rotate(90deg);
-            border-top: 1px dotted #037cd6;
+            border-top: 1px dotted #9F54BA;
           }
           &:after {
           content: "";
@@ -557,7 +546,7 @@ background-color: rgba(0, 0, 0, .7);
           left: 120.5px;
           width: 4px;
           height: 4px;
-          background-color: #037CD6;
+          background-color: #9F54BA;
           border-radius: 50%;
           display: inline-block;
           z-index: 999999;
@@ -588,7 +577,7 @@ background-color: rgba(0, 0, 0, .7);
       display: block;
       width: 25px;
       height: 130px;
-      border: 1px dotted #037CD6;
+      border: 1px dotted #9F54BA;
       border-radius: 5px;
       position: absolute;
       right: 13px;
@@ -599,7 +588,7 @@ background-color: rgba(0, 0, 0, .7);
       display: block;
       width:230px;
       height: 130px;
-      border: 1px dotted #037CD6;
+      border: 1px dotted #9F54BA;
       border-radius: 5px;
       position: absolute;
       left: 10px;
@@ -638,7 +627,7 @@ background-color: rgba(0, 0, 0, .7);
         margin-right: 40px;
       }
       &:last-child {
-        background-color: #037cd6;
+        background-color: #9F54BA;
       }
     }
     }
@@ -659,7 +648,7 @@ background-color: rgba(0, 0, 0, .7);
         display: inline-block;
         z-index: 999999;
         transform: rotate(90deg);
-        border-top: 1px dotted #037cd6;
+        border-top: 1px dotted #9F54BA;
       }
       &:after {
       content: "";
@@ -668,7 +657,7 @@ background-color: rgba(0, 0, 0, .7);
       left: 121.5px;
       width: 4px;
       height: 4px;
-      background-color: #037CD6;
+      background-color: #9F54BA;
       border-radius: 50%;
       display: inline-block;
       z-index: 999999;
@@ -687,7 +676,7 @@ background-color: rgba(0, 0, 0, .7);
     padding-right: 14px;
     font-size: 12px;
     .left {
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .tip2 {

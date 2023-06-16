@@ -3,11 +3,10 @@ import { useStore } from "vuex";
 import { Toast } from "vant";
 import { computed, onMounted, ref, Ref, watch } from "vue";
 import { ethers } from "ethers";
-import { ExchangeStatus, getWallet, TransactionReceipt, handleGetTranactionReceipt, TransactionTypes } from "@/popup/store/modules/account";
+import { ExchangeStatus, getWallet, TransactionReceipt, handleGetTranactionReceipt, TransactionTypes, clone, TransactionSendStatus } from "@/popup/store/modules/account";
 import { hashMessage } from "@/popup/utils/ether";
 import { useSign } from "@/popup/views/sign/hooks/sign";
 import { web3 } from "@/popup/utils/web3";
-import { encode, decode } from 'js-base64';
 
 import {
   createExchange,
@@ -28,76 +27,73 @@ import BigNumber from "bignumber.js";
 import { TradeStatus } from "@/popup/plugins/tradeConfirmationsModal/tradeConfirm";
 
 
-// 一键交易所
 export const useExchanges = () => {
   const { $tradeConfirm } = useTradeConfirm()
-  // 是否展示一键交易所的弹层
   const showCreateExchange: Ref<boolean> = ref(false);
-  // 展示第二页的弹层
   const showExchange: Ref<boolean> = ref(false);
-  // 展示第三页的弹层
   const showExchange1: Ref<boolean> = ref(false);
 
-
-  // 交易所链接
   const exchangeUrl: Ref<string> = ref("");
-  // 后台链接
   const adminUrl: Ref<string> = ref("");
-  // 创建交易所成功的状态
   const ready: Ref<boolean> = ref(false);
 
   const { dispatch, state, commit, getters } = useStore();
   const { toSign, sign } = useSign();
 
   const sendTx2 = async (amount: any, callBack?: Function) => {
-   try {
-    const wallet = await getWallet()
-    const contractWithSigner = await getContract();
-    const { address } = wallet
-    const data = await contractWithSigner.functions.payForRenew({
-      value: ethers.utils.parseEther(amount + ''),
-    });
-    callBack ? callBack() : "";
-    localStorage.setItem('tx2', JSON.stringify(data))
-    // debugger
-    console.log("一键交易所", data);
-    $tradeConfirm.update({ status: "approve" })
-    const receipt = await wallet.provider.waitForTransaction(data.hash)
-    localStorage.setItem('receipt2', JSON.stringify(receipt))
-    const symbol = state.account.currentNetwork.currencySymbol
-    const rep: TransactionReceipt = handleGetTranactionReceipt(
-      TransactionTypes.contract,
-      receipt,
-      data,
-      symbol
-    );
-    const { status } = receipt;
-    if (status == 0) {
-      $tradeConfirm.update({ status: "fail" })
+    try {
+      // @ts-ignore
+      const network = clone(store.state.account.currentNetwork)
+      const wallet = await getWallet()
+      const contractWithSigner = await getContract();
+      const data = await contractWithSigner.functions.payForRenew({
+        value: ethers.utils.parseEther(amount + ''),
+      });
+
+      callBack ? callBack() : "";
+      localStorage.setItem('tx2', JSON.stringify(data))
+      // debugger
+      $tradeConfirm.update({ status: "approve" })
+      const receipt = await wallet.provider.waitForTransaction(data.hash, null, 60000)
+      localStorage.setItem('receipt2', JSON.stringify(receipt))
+      const { status } = receipt;
+      if (status == 0) {
+        $tradeConfirm.update({ status: "fail" })
+        resetData();
+        Toast(i18n.global.t("userexchange.transactionfailed"));
+        return Promise.reject()
+      }
+      dispatch("account/updateAllBalance");
+      // commit("account/PUSH_TRANSACTION", rep);
+      store.dispatch('account/waitTxQueueResponse')
+      return Promise.resolve(receipt)
+    } catch (err: any) {
+      if (err.toString().indexOf("timeout") > -1) {
+        $tradeConfirm.update({
+          status: "warn",
+          failMessage: i18n.global.t("error.timeout"),
+        });
+      } else {
+        $tradeConfirm.update({
+          status: "fail",
+          failMessage: err.reason,
+        });
+      }
+      console.log(err)
+      console.log("==========err2=============")
+      Toast(err.toString());
       resetData();
-      Toast(i18n.global.t("userexchange.transactionfailed"));
       return Promise.reject()
     }
-    dispatch("account/updateAllBalance");
-    commit("account/PUSH_TRANSACTION", rep);
-    return Promise.resolve(receipt)
-   }catch(err){
-    $tradeConfirm.update({ status: "fail" })
-    console.log(err)
-    console.log("==========err2=============")
-    Toast(err.toString());
-    resetData();
-    return Promise.reject()
-   }
   }
 
-  // 第二笔交易
   const send2 = async (amount: number = 200, exchange_name: string, callBack = () => { }, isDialog = true) => {
-    if(isDialog) {
+    if (isDialog) {
       $tradeConfirm.open({
         approveMessage: i18n.global.t('createExchange.create_approve'),
         successMessage: i18n.global.t('createExchange.create_waiting'),
         wattingMessage: i18n.global.t('createExchange.create_success'),
+        wattingTitle: i18n.global.t('createExchange.wattingTitle'),
         failMessage: i18n.global.t('createExchange.create_wrong'),
         callBack: () => { router.replace({ name: "exchange-management" }) },
         failBack: () => { router.replace({ name: "exchange-management" }) }
@@ -105,10 +101,10 @@ export const useExchanges = () => {
     }
 
     const wallet = await getWallet()
-    const {address} = wallet
+    const { address } = wallet
     try {
       const receipt = await sendTx2(amount)
-      const { status } = receipt;
+      const { status,transactionHash } = receipt;
       if (status == 0) {
         $tradeConfirm.update({ status: "fail" })
         resetData();
@@ -116,13 +112,11 @@ export const useExchanges = () => {
         return;
       }
       const params = await generateSign(exchange_name);
-      // 发送数据开交易所
       const sendData = {
         address,
         params: `'${JSON.stringify(params)}'`,
       };
       console.log(sendData)
-      // 发送给一键交易所接口
       const val: any = await createExchange(sendData);
       if (val.code == "true") {
         let time = setTimeout(async () => {
@@ -140,8 +134,10 @@ export const useExchanges = () => {
       } else {
         resetData();
         $tradeConfirm.update({ status: "fail" })
+
         return;
       }
+
     } catch (err) {
       $tradeConfirm.update({ status: "fail" })
       resetData();
@@ -149,7 +145,7 @@ export const useExchanges = () => {
   }
 
   /**
-   * 生成一个签名的交易所授权信息
+   * Generate a signed exchange authorization information
    */
   const generateSign = async (name: string) => {
     const wallet = await getWallet();
@@ -170,11 +166,15 @@ export const useExchanges = () => {
           const params = {
             type: "exchange_auth",
             exchange_name,
-            version: 1, //授权版本(固定)
-            exchanger_owner, //一键交易所创建者地址(钱包地址)
-            to, // 被授权者地址(固定地址，由李工提供)
-            block_number: blockNumber, // 授权时链的区块高度，用于确定授权有效性(从区块浏览器获得,如果拿不到就先写死)
-            sig: sigstr, //签名规则如下方解释
+            // Authorized version (fixed)
+            version: 1,
+            // One Click Exchange founder's address (wallet address)
+            exchanger_owner,
+            // Licensee's address (fixed address, provided by Li Gong)
+            to,
+            // The block height of the chain at the time of authorization, which is used to determine the validity of the authorization (obtained from the block browser, if not, write first).
+            block_number: blockNumber,
+            sig: sigstr,
           };
           resolve(params)
         },
@@ -184,8 +184,8 @@ export const useExchanges = () => {
 
   };
 
-  // 连合约，发交易
-const getContract = async () => {
+  // Even contract, issue trade
+  const getContract = async () => {
     const wallet = await getWallet();
     const { URL } = state.account.currentNetwork;
     let provider = ethers.getDefaultProvider(URL);
@@ -209,7 +209,7 @@ const getContract = async () => {
 
   };
 
-  // 发送一键开交易所交易
+  // Send one click to open exchange trading
   const sendTo = async (name: string, amount: number, isServer: boolean, fee_rate?: number) => {
     const wallet = await getWallet();
     const exchangeStatus: ExchangeStatus = state.account.exchangeStatus
@@ -218,71 +218,60 @@ const getContract = async () => {
       exchanger_flag
     } = exchangeStatus
     const { address } = wallet;
-    const baseName = encode(name);
+    // const baseName = encode(name);
     try {
-      const rate_str: number = fee_rate? new BigNumber(fee_rate).multipliedBy(10).toNumber() : 100
-      // 发送开设交易所的费用 100ERB 至官方公司账户  连公司自己的节点
-      const str = `wormholes:{"version": "0","type": 11,"fee_rate": ${rate_str},"name":"${baseName}","url":""}`;
+      const rate_str: number = fee_rate ? new BigNumber(fee_rate).multipliedBy(10).toNumber() : 100
+      const str = `wormholes:{"version": "0","type": 11,"fee_rate": ${rate_str},"name":"${name}","url":""}`;
       // const str = `wormholes:{"type":"9", "proxy_address":"0x591813F0D13CE48f0E29081200a96565f466B212", "version":"0.0.1"}`
-      const data3 = toHex(str);
+      const data3 = web3.utils.fromUtf8(str);
       const tx1 = {
         from: address,
         to: address,
-        value: ethers.utils.parseEther(amount + ''),
-        data: `0x${data3}`,
+        value: amount,
+        data: data3,
       };
-      // debugger
-      wallet.sendTransaction(tx1).then((receipt: any) => {
-        const { hash } = receipt;
-        localStorage.setItem('tx1', JSON.stringify(receipt))
-        if(!isServer){
-          $tradeConfirm.update({status:"approve"})
+      const data = await store.dispatch('account/transaction', tx1)
+      localStorage.setItem('tx1', JSON.stringify(data))
+      if (!isServer) {
+        $tradeConfirm.update({ status: "approve" })
+      }
+      const receipt2 = await data.wallet.provider.waitForTransaction(data.hash, null, 60000)
+      const { status, transactionHash } = receipt2
+      localStorage.setItem('receipt1', JSON.stringify(receipt2))
+      if (!isServer) {
+        if (status == 0) {
+          $tradeConfirm.update({ status: "fail" })
+        } else {
+          $tradeConfirm.update({ status: "success", callBack() { router.replace({ name: "exchange-management" }) } })
         }
-        wallet.provider
-          .waitForTransaction(hash).then(async (receipt2: any) => {
-            const { status } = receipt2
-            localStorage.setItem('receipt1', JSON.stringify(receipt2))
-            const symbol = state.account.currentNetwork.currencySymbol
-            const rep: TransactionReceipt = handleGetTranactionReceipt(
-              TransactionTypes.default,
-              receipt2,
-              receipt,
-              symbol
-            );
-            commit("account/PUSH_TRANSACTION", rep);
-            if(!isServer) {
-              if(status == 0) {
-                $tradeConfirm.update({status:"fail"})
-              } else {
-                $tradeConfirm.update({status:"success",callBack(){router.replace({name:"exchange-management"})}})
-              }
-            }
-            // 发送第二笔
-            if (isServer) {
-              if(!exchanger_flag && newStatus == 2){
-                $tradeConfirm.update({status:"success",callBack(){router.replace({name:"exchange-management"})}})
-                return
-              }
-              send2(200, name)
-            }
-          })
-
-      }).catch((err: any) => {
-        Toast(err.reason);
-        if(!isServer){
-          $tradeConfirm.update({status:"fail"})
+        store.dispatch('account/waitTxQueueResponse')
+      }
+      // Send the second stroke
+      if (isServer) {
+        if (!exchanger_flag && newStatus == 2) {
+          $tradeConfirm.update({ status: "success", callBack() { router.replace({ name: "exchange-management" }) } })
+          return
         }
-        resetData();
-
-      });
+        send2(200, name)
+      }
     } catch (err: any) {
-      if(!isServer){
-        $tradeConfirm.update({status:"fail"})
+      if (!isServer) {
+        if (err.toString().indexOf("timeout") > -1) {
+          $tradeConfirm.update({
+            status: "warn",
+            failMessage: i18n.global.t("error.timeout"),
+          });
+        } else {
+          $tradeConfirm.update({
+            status: "fail",
+            failMessage: err.reason,
+          });
+        }
       }
     }
   };
 
-  // 矿工质押
+  // Miners pledge
   const sendToPledge = async (amount: number, proxy_address?: string) => {
     // const wallet = await getWallet();
     const wallet = await getWallet()
@@ -298,8 +287,7 @@ const getContract = async () => {
     try {
       if (proxy_address) {
         const sigstr = `${proxy_address}${address}`
-        debugger
-        // 代理质押
+        // Agent pledge
         await toSign({
           address: proxy_address,
           sig: sigstr,
@@ -312,7 +300,7 @@ const getContract = async () => {
 
         return
       }
-      // 普通质押
+      // Ordinary pledge
       sendPledge(amount, '', '')
     } catch (err: any) {
       console.error(err)
@@ -330,60 +318,58 @@ const getContract = async () => {
       const data3 = toHex(str);
       const tx1 = {
         to: address,
-        value: ethers.utils.parseEther(amount + ''),
+        value: amount,
         data: `0x${data3}`,
+        transitionType: '9'
       };
       console.warn('tx1', tx1)
       console.warn('amount', amount)
 
-
-      const receipt: any = await wallet.sendTransaction(tx1)
-      localStorage.setItem('质押tx', JSON.stringify(receipt))
-
+      const receipt = await store.dispatch('account/transaction', tx1)
       $tradeConfirm.update({ status: "approve" })
-      const { hash } = receipt;
-      const receipt2 = await wallet.provider.waitForTransaction(hash)
-      localStorage.setItem('质押收据', JSON.stringify(receipt2))
-
-      const symbol = state.account.currentNetwork.currencySymbol
-      const rep: TransactionReceipt = handleGetTranactionReceipt(
-        TransactionTypes.default,
-        receipt2,
-        receipt,
-        symbol
-      );
-      commit("account/PUSH_TRANSACTION", rep);
-      console.log("我确实发送了");
-      const { status } = receipt2
+      const receipt2 = await wallet.provider.waitForTransaction(receipt.hash, null, 60000)
+      store.dispatch('account/waitTxQueueResponse')
+      const { status, transactionHash } = receipt2
       localStorage.setItem('receipt1', JSON.stringify(receipt2))
       if (status == 0) {
-        $tradeConfirm.update({ status: "fail" })
+        $tradeConfirm.update({ status: "fail", hash: transactionHash  })
         Toast(i18n.global.t('userexchange.transferfailed'))
         return false
       } else {
-        localStorage.setItem('质押receipt', JSON.stringify(receipt2))
+        localStorage.setItem('receipt', JSON.stringify(receipt2))
         $tradeConfirm.update({
           status: "success", callBack() {
             router.replace({ name: "wallet" })
-          }
+          },
+          hash: transactionHash
         })
       }
-    } catch (err) {
-      $tradeConfirm.update({ status: "fail" })
+    } catch (err: any) {
+      if (err.toString().indexOf("timeout") > -1) {
+        $tradeConfirm.update({
+          status: "warn",
+          failMessage: i18n.global.t("error.timeout"),
+        });
+      } else {
+        $tradeConfirm.update({
+          status: "fail",
+          failMessage: err.reason,
+        });
+      }
       console.error(err)
     }
   }
 
   /**
-   * 授权一键交易所
-   * @/popupreturns
+   * Authorized one-click exchange
+   * @returns
    */
   const authExchange = async () => {
     const wallet = await getWallet();
     const number = await wallet.provider.getBlockNumber();
     const block_number = utils.hexlify((number) + 6307200);
     const { address } = wallet;
-    // 等三十秒再往下跑
+    // watting 30 s
     await new Promise((resolve) => {
       setTimeout(() => {
         resolve(true)
@@ -399,7 +385,7 @@ const getContract = async () => {
     const str = `${address}${exchangeraddr}${block_number}`;
     const newstr = hashMessage(str);
     return new Promise((resolve, reject) => {
-      //@/popupts-ignore
+      //@ts-ignore
       toSign({
         sig: newstr,
         address: wallet.address,
@@ -418,10 +404,10 @@ const getContract = async () => {
     });
   };
 
-  // 查询交易所状态
+  // Querying Exchange Status
   /**
    *
-   * @/popupreturns 
+   * @returns 
    *
    */
   const exchangeStatus = async () => {
@@ -434,8 +420,8 @@ const getContract = async () => {
     }
   };
 
-  // 一键开交易所
-  const createExchanges = async (name: string, amount: number,  fee_rate?: number) => {
+  // One click to open the exchange
+  const createExchanges = async (name: string, amount: number, fee_rate?: number) => {
     const exchangeStatus: ExchangeStatus = state.account.exchangeStatus
     const {
       status,
@@ -443,8 +429,6 @@ const getContract = async () => {
     } = exchangeStatus
     console.log(status)
     console.log(exchanger_flag)
-    // debugger
-    // 两笔没交
     if ((status != 2 && exchanger_flag == false) || (!exchanger_flag && status == 2)) {
       $tradeConfirm.open({
         approveMessage: i18n.global.t('createExchange.create_approve'),
@@ -455,7 +439,7 @@ const getContract = async () => {
       sendTo(name, amount, true, fee_rate);
       return
     }
-    // 第一笔交了，第二笔没交
+    // The first payment was made, the second was missed
     if (exchanger_flag == true && status != 2) {
       $tradeConfirm.open({
         approveMessage: i18n.global.t('createExchange.create_approve'),
@@ -484,47 +468,27 @@ const getContract = async () => {
     const tx1 = {
       from: address,
       to: address,
-      value: ethers.utils.parseEther("0"),
+      value: '0',
       data: `0x${data3}`,
     };
+    const sendData = await store.dispatch('account/transaction', tx1)
+    $tradeConfirm.update({ status: "approve" })
+    localStorage.setItem("close-exchange-tx", JSON.stringify(sendData));
+    const receipt = await wallet.provider.waitForTransaction(sendData.hash, null, 60000)
+    await dispatch("account/getExchangeStatus");
+    store.dispatch('account/waitTxQueueResponse')
+    const { status,transactionHash } = receipt
+    if (status == 0) {
+      $tradeConfirm.update({ status: "fail", hash: transactionHash})
+    } else {
+      $tradeConfirm.update({ status: "success", callBack() { router.replace({ name: "wallet" }) },hash: transactionHash })
+    }
+    return receipt
 
-    return new Promise((resolve, reject) => {
-      wallet
-        .sendTransaction(tx1)
-        .then((receipt: any) => {
-          $tradeConfirm.update({ status: "approve" })
-          const { hash } = receipt;
-          localStorage.setItem("close-exchange-tx", JSON.stringify(receipt));
-          wallet.provider
-            .waitForTransaction(hash)
-            .then(async (receipt2: any) => {
-              const symbol = state.account.currentNetwork.currencySymbol
-              const rep: TransactionReceipt = handleGetTranactionReceipt(
-                TransactionTypes.default,
-                receipt2,
-                receipt,
-                symbol
-              );
-              commit("account/PUSH_TRANSACTION", rep);
-              await dispatch("account/getExchangeStatus");
-              resolve(receipt2);
-              const { status } = receipt2
-              if (status == 0) {
-                $tradeConfirm.update({ status: "fail" })
-              } else {
-                $tradeConfirm.update({ status: "success", callBack() { router.replace({ name: "wallet" }) } })
-              }
-            }).catch((err: any) => {
-              $tradeConfirm.update({ status: "fail" })
-            });
-        })
-        .catch((err: any) => {
-          reject(err);
-        });
-    });
+
   };
 
-  // 发送授权信息
+  // Sending Authorization Information
   const sendAuthData = async (address: string) => {
     try {
       const d: any = await getSysParams(address);
@@ -534,47 +498,49 @@ const getContract = async () => {
     }
   };
 
-  // 两笔交易都成功的时候，查询交易所是否生成成功,如果没有继续走后面的流程
+  // When both trades are successful, check whether the exchange was successfully generated, if not continue to follow the later process
   const initExchangeData = async () => {
     const wallet = await getWallet()
     const { address } = wallet
+    console.warn('wallet', wallet)
     const res = await wallet.provider.send('eth_getAccountInfo', [address, "latest"])
     const { ExchangerName, BlockNumber } = res
-    let exchange_name = decode(ExchangerName);
+    let exchange_name = ExchangerName;
     try {
-      // 如果交易所没有部署成功，重新部署
-      const res = await is_install(address)
-      // 查询 setExchangeSig 是否发成功,没有的话重新发
+      // If the exchange is not successfully deployed, redeploy it
+      const installData = await is_install(address)
+      // Check whether setExchangeSig is successfully sent. If no setExchangeSig is sent, send it again
+
       const data = await getExchangeSig(address)
-      if (res.data && !data.data) {
+      if (installData.code == 'true' && !data.data) {
         sendAuthData(address)
       }
     } catch (err) {
-      // 交易所没有部署成功，重新部署，和签名给后台
+      // The exchange failed to deploy successfully, redeploy, and sign to the backend
       const params = await generateSign(exchange_name);
-      // 发送数据开交易所
+      // Send data to open an exchange
       const sendData = {
         address,
         params: `'${JSON.stringify(params)}'`,
       };
-      // 发送给一键交易所接口
+      // Send to the one-click exchange interface
       const val: any = await createExchange(sendData);
       if (val.code == "true") {
         let time = setTimeout(async () => {
           sendAuthData(address)
           clearTimeout(time);
-        }, 10000);
+        }, 30000);
       }
     }
 
   }
 
-  // 修改托管服务费/质押金额
+  // Modify the escrow service fee/pledge amount
   const modifExchangeBalance = async (
     name: string,
     callBack = () => { }
   ) => {
-    // 发送第二笔托管服务费
+    // Send the second hosting fee
     try {
       await send2(200, name);
     } catch (err) {
@@ -586,20 +552,19 @@ const getContract = async () => {
 
 
 
-  // 追加质押金额
+  // Add the pledge amount  
   const addExchangeBalance = async (
     amount: number,
   ) => {
-    debugger
     const wallet = await getWallet();
     const { address } = wallet;
-    // 追加质押金额
+    // Add the pledge amount
     const str = `wormholes:{"version": "0.0.1","type": 21}`;
     const data3 = toHex(str);
     const tx1 = {
       from: address,
       to: address,
-      value: ethers.utils.parseEther(amount + ""),
+      value: amount,
       data: `0x${data3}`,
     };
     $tradeConfirm.open({
@@ -610,31 +575,39 @@ const getContract = async () => {
         router.replace({ name: 'wallet' })
       }
     })
-    // 发送第一笔质押金额
+    // Send the first pledge amount
     try {
-      const data1 = await wallet.sendTransaction(tx1);
+      const data1 = await store.dispatch('account/transaction', tx1)
       $tradeConfirm.update({ status: TradeStatus.approve })
       localStorage.setItem("data1", JSON.stringify(data1));
-      const receipt1 = await wallet.provider.waitForTransaction(data1.hash);
-      const symbol = state.account.currentNetwork.currencySymbol
-      const rep: TransactionReceipt = handleGetTranactionReceipt(
-        TransactionTypes.default,
-        receipt1,
-        data1,
-        symbol
-      );
+      const receipt1 = await wallet.provider.waitForTransaction(data1.hash, null, 60000);
+      const {transactionHash} = receipt1
       dispatch("account/updateAllBalance");
-      commit("account/PUSH_TRANSACTION", rep);
-      $tradeConfirm.update({ status: TradeStatus.success })
-      localStorage.setItem("tx1", JSON.stringify(receipt1));
-    } catch (err) {
-      $tradeConfirm.update({ status: TradeStatus.fail })
+      store.dispatch('account/waitTxQueueResponse')
+      if(receipt1.status) {
+        $tradeConfirm.update({ status: TradeStatus.success,hash: transactionHash })
+      } else {
+        $tradeConfirm.update({ status: TradeStatus.fail,hash: transactionHash })
+      }
+      
+    } catch (err: any) {
+      if (err.toString().indexOf("timeout") > -1) {
+        $tradeConfirm.update({
+          status: TradeStatus.warn,
+          failMessage:i18n.global.t("error.timeout"),
+        });
+      } else {
+        $tradeConfirm.update({
+          status: TradeStatus.fail,
+          failMessage: err.reason,
+        });
+      }
       return Promise.reject(err);
     }
     return Promise.resolve();
   };
 
-  // 减少质押金额
+  // Reduce the amount pledged
   const miunsExchangeBalance = async (amount: number) => {
     const wallet = await getWallet();
     const { address } = wallet;
@@ -643,7 +616,7 @@ const getContract = async () => {
     const tx1 = {
       from: address,
       to: address,
-      value: ethers.utils.parseEther(amount + ""),
+      value: amount,
       data: `0x${data3}`,
     };
     $tradeConfirm.open({
@@ -655,23 +628,32 @@ const getContract = async () => {
       }
     })
     try {
-      const data1 = await wallet.sendTransaction(tx1);
+      const data1 = await store.dispatch('account/transaction', tx1)
       $tradeConfirm.update({ status: TradeStatus.approve })
       localStorage.setItem("data1", JSON.stringify(data1));
-      const receipt1 = await wallet.provider.waitForTransaction(data1.hash);
+      const receipt1 = await wallet.provider.waitForTransaction(data1.hash, null, 60000);
+      const {transactionHash} = receipt1
+      if(receipt1.status) {
+        $tradeConfirm.update({ status: TradeStatus.success,hash: transactionHash })
+      } else {
+        $tradeConfirm.update({ status: TradeStatus.fail,hash: transactionHash })
+      }
       $tradeConfirm.update({ status: TradeStatus.success })
-      const symbol = state.account.currentNetwork.currencySymbol
-      const rep: TransactionReceipt = handleGetTranactionReceipt(
-        TransactionTypes.default,
-        receipt1,
-        data1,
-        symbol
-      );
       dispatch("account/updateAllBalance");
-      commit("account/PUSH_TRANSACTION", rep);
+      store.dispatch('account/waitTxQueueResponse')
       localStorage.setItem("tx1", JSON.stringify(receipt1));
-    } catch (err) {
-      $tradeConfirm.update({ status: TradeStatus.fail })
+    } catch (err: any) {
+      if (err.toString().indexOf("timeout") > -1) {
+        $tradeConfirm.update({
+          status: TradeStatus.warn,
+          failMessage:i18n.global.t("error.timeout"),
+        });
+      } else {
+        $tradeConfirm.update({
+          status: TradeStatus.fail,
+          failMessage: err.reason,
+        });
+      }
       return Promise.reject(err);
     }
   }
@@ -695,7 +677,8 @@ const getContract = async () => {
     miunsExchangeBalance,
     send2,
     sendTx2,
-    getContract
+    getContract,
+    authExchange
   };
 };
 

@@ -1,3 +1,18 @@
+.accName {
+  max-width: 180px;
+  .accNameSpan {
+    display: inline-block;
+    max-width: 160px;
+  }
+}
+.gotIt {
+  text-decoration: underline;
+  font-weight: bold;
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 12px;
+  color: #9F54BA;
+}
 .create-box {
   background: #f1f3f4;
   height: 30px;
@@ -8,7 +23,7 @@
   .add {
     width: 36px;
 height: 18px;
-background: #037CD6;
+background: #9F54BA;
 border-radius: 9px;
 cursor: pointer;
 i {
@@ -16,6 +31,9 @@ i {
   font-size: 14px;
 }
   }
+}
+:deep(.van-overlay) {
+  background: rgba(0, 0, 0, 0.5000);
 }
 .icon-box.hasExchange {
   i {
@@ -36,22 +54,23 @@ i {
   margin-bottom: 30px;
   margin-top: 8px;
 }
-// 账户详情模块
 .account-detail-box {
   min-height: 200px;
   color: #fff !important;
   &.hasExchange {
-    background: #057ed6;
+    background: #9F54BA;
     .account-card {
       .card {
         background: rgba($color: #fff, $alpha: 0.1);
       }
     }
     .actions-btn {
+  
+
       .action-icon {
         background: #fff;
         i {
-          color: #037cd6;
+          color: #9F54BA;
         }
       }
       .action-name {
@@ -63,76 +82,17 @@ i {
     .card {
       height: 120px;
       border-radius: 7.5px;
-      background: #037cd6;
+      background: #9F54BA;
       width: 100%;
       .icon-circle {
         width: 36px;
         overflow: hidden;
       }
-      .tag-list {
-        .tag-user {
-          width: 54px;
-          height: 12px;
-          .user {
-            width: 14px;
-            height: 14px;
-            display: block;
-            border-radius: 50%;
-            border: 1PX solid #108ae1;
-            // &::after {
-            //   border-color:#108ae1 ;
-            //   border-radius: 50%;
-            // }
-            position: absolute;
-            overflow: hidden;
-            left: -1px;
-            top: 0px;
-            img {
-              width: 100%;
-              height: 100%;
-              display: block;
-              vertical-align: top;
-  
-            }
-          }
-          .tag-label {
-            line-height: 14px;
-            border-radius: 7px;
-            padding-left: 6px;
-            span {
-              font-size: 12px;
-            transform: scale(.6);
-            transform-origin:center center;
-            display: inline-block;
-            }
-          }
-          &.type1 {
-            // 绿色
-            .user,.tag-label {
-              background: linear-gradient(270deg, #93EBAD 0%, #52E374 100%);
-            }
-          }
-          &.type2 {
-            // 橙色
-            .user,.tag-label {
-              background: linear-gradient(90deg, #D9B560 0%, #D3E492 100%);
-            }
-          }
-          &.type3 {
-            // 交易所
-            .user,.tag-label {
-              background: linear-gradient(270deg, #21245F 0%, #1E275A 100%);
-            }
-          }
-    
-        }
-  
-      }
       .account-r {
         width: calc(100% - 46px);
         .address-card {
           margin-top: 6px;
-          width: 160px;
+          width: 190px;
           padding: 0 10px;
           height: 20px;
           border-radius: 10px;
@@ -166,7 +126,6 @@ i {
   }
   .card-bottom {
     line-height: 50px;
-    margin-bottom: 3px;
     font-size: 30px;
     .amount-box {
       line-height: 50px;
@@ -210,7 +169,7 @@ i {
     width: 20px;
     height: 20px;
     i {
-      color: rgba(3, 125, 214, 1);
+      color: #9F54BA;
       font-size: 22px;
     }
   }
@@ -230,17 +189,18 @@ i {
     top: 4px;
     padding: 10px;
     &:hover i {
-      color: rgba(3, 125, 214, 1);
+      color: #9F54BA;
     }
     i {
       color: #9a9a9a;
+      font-size: 16px;
     }
   }
   .account-icon {
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    border: 1PX solid rgba(3, 125, 214, 1);
+    border: 1PX solid #9F54BA;
     background: rgba(234, 234, 234, 1);
     overflow: hidden;
     display: flex;
@@ -259,7 +219,7 @@ i {
   }
 
   .account-amount {
-    font-size: 10px;
+    font-size: 12px;
     line-height: 14px;
     color: rgba(121, 121, 121, 1);
   }
@@ -269,7 +229,7 @@ i {
     line-height: 24px;
     border-radius: 12px;
     background-color: rgba(216, 216, 216, 0.88);
-    font-size: 10px;
+    font-size: 12px;
     color: rgba(121, 121, 121, 1);
     padding: 0 10px;
     margin: 20px auto 0;
@@ -284,7 +244,7 @@ i {
     margin-top: 17px;
     &-btn:hover {
       .action-icon {
-        background: #057ed6;
+        background: #9F54BA;
         i {
           color: #fff;
         }
@@ -292,12 +252,13 @@ i {
     }
     &-btn {
       transition: 0.3s ease;
+      margin: 0 20px;
       .action-icon {
         transition: 0.3s ease;
         width: 35px;
         height: 35px;
         border-radius: 50%;
-        background: #037cd6;
+        background: #9F54BA;
         i {
           font-size: 18px;
           color: #fff;
@@ -306,7 +267,7 @@ i {
 
       .action-name {
         line-height: 16px;
-        color: #037cd6;
+        color: #9F54BA;
         font-size: 12px;
         margin-top: 7px;
       }
@@ -323,7 +284,7 @@ i {
     }
 
     .tip2 {
-      color: rgba(3, 125, 214, 1);
+      color: #9F54BA;
       font-size: 12px;
       line-height: 15px;
     }
@@ -331,7 +292,7 @@ i {
   .no-list {
     i {
       font-size: 40px;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .van-tab {
@@ -344,13 +305,13 @@ i {
   }
   .van-tabs__line {
     height: 0.5px;
-    background: rgba(3, 125, 214, 1);
+    background: #9F54BA;
     display: none;
   }
  
 
   .van-tab--active {
-    color: rgba(3, 125, 214, 1) !important;
+    color:#9F54BA  !important;
     .van-tab__text {
       text-decoration: underline;
     }
@@ -358,6 +319,7 @@ i {
   .van-tabs .van-sticky--fixed {
     background: none;
     border-bottom: 1px solid #cbe0f0;
+    z-index: 1000;
   }
   .van-tab {
     font-size: 12px;
@@ -380,25 +342,16 @@ i {
     /* Chrome Safari */
   }
 }
-// .van-tabs__nav {
-//   background: rgba($color: #fff, $alpha: 0.2);
-//   backdrop-filter: saturate(180%) blur(10px);
-// }
 
-// @media screen and (max-width: 750px) {
-//   .van-tabs__nav {
-//     background: none;
-//     backdrop-filter: saturate(60%) blur(10px);
-//   }
-// }
 .account-pop {
-  top: 106px !important;
+  // top: 100px !important;
   .van-popover__content {
-    background: rgba($color: #fff, $alpha: 0.8);
+    background: rgba($color: #fff, $alpha: 0.9);
     max-width: 175px;
   }
   .van-popover__arrow {
-    color: rgba($color: #fff, $alpha: 0.8);
+    color: rgba($color: #fff, $alpha: 0.9);
+    right: -2px !important;
   }
 }
 

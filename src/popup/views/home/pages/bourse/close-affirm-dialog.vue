@@ -33,7 +33,7 @@
                 <van-icon name="question" color="#9A9A9A" />
               </el-tooltip>
               <!-- <div class="exchange">{{money * 10}} ERB(≈$20)</div> -->
-               <div class="exchange">200 ERB(≈$20)</div>
+               <div class="exchange">200 ERB</div>
             </div>
             <div class="bourse-container-meaning bt">
               <span class="c1">{{t('bourse.hsitoryReturn')}}  </span>
@@ -47,7 +47,7 @@
               >
                 <van-icon name="question" color="#9A9A9A" />
               </el-tooltip>
-              <div class="exchange">100,000 ERB(≈$500,00)</div>
+              <div class="exchange">100,000 ERB</div>
             </div>
             <div class="bourse-container-meaning bt">
               <span class="c1">{{t('bourse.income')}} </span>
@@ -63,7 +63,7 @@
               </el-tooltip>
               <div class="exchange exchange-z">
                 <span>≈ </span>
-                <span style="color:#93D6A7;"> 0.000000001 ERB(≈$</span>
+                <span style="color:#93D6A7;"> 0.000000001 ERB</span>
               </div>
             </div>
             <div class="">
@@ -80,7 +80,7 @@
               </el-tooltip>
               <div class="exchange exchange-z">
                 <span >≈ </span>
-                <span class="c2"> 0.000000001 ERB(≈$)</span>
+                <span class="c2"> 0.000000001 ERB</span>
               </div>
             </div>
           </div>
@@ -102,7 +102,6 @@
 import { Button, Overlay, Field, Toast, Icon } from 'vant'
 import { ref, SetupContext, computed, nextTick } from 'vue'
 import { ethers, utils } from "ethers";
-import {formatEther,toUsd} from "@/popup/utils/filters";
 import { useI18n } from 'vue-i18n'
 import { ElTooltip } from 'element-plus'
 
@@ -118,11 +117,8 @@ export default {
   setup(props: any, context: SetupContext) {
     const { t } = useI18n()
 
-    console.log('我加载了11111111111')
     const { emit }: any = context
-    // 输入框name
     let amount = ref(props.minersMoney)
-    // 金额和金额的最大值和最小值
     let moneyMin = ref(100000)
     let moneyMax = ref(10000000)
 
@@ -161,7 +157,6 @@ export default {
       dislogShow,
       submit,
       screentNumber,
-      toUsd,
       ...props
     }
   }
@@ -184,7 +179,7 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #F8FCFF;
+      background: #F8F3F9;
       font-size: 14px;
       color: #B3B3B3;
     }
@@ -249,7 +244,7 @@ export default {
           font-weight: bold;
         }
         .ipt-server {
-          font-size: 10px;
+          font-size: 12px;
           color: #8f8f8f;
           font-weight: bold;
           span {
@@ -264,7 +259,7 @@ export default {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f4faff;
+            background: #F8F3F9;
             border-radius: 7px 7px 7px 7px;
             &:first-child {
               padding: 0 18px;
@@ -272,8 +267,8 @@ export default {
           }
           .ipt-server-i-active {
             color: #0287db;
-            background: #f4faff;
-            border: 1px solid #037cd6;
+            background: #F8F3F9;
+            border: 1px solid #9F54BA;
             span {
               color: #0287db;
             }
@@ -370,7 +365,7 @@ export default {
   padding: 40px 15px 10px 15px;
   line-height: 20px;
   font-size: 12px;
-  color: #037CD6;
+  color: #9F54BA;
 }
 </style>
 <style>

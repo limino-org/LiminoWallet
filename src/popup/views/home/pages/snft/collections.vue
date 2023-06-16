@@ -1,14 +1,12 @@
 <template>
   <div>
-    <van-sticky>
-      <NavHeader
-        title="COLLECTION"
+    <NavHeader
+        :title="t('sendSNFT.collTit')"
         backUrl="wallet"
         :hasRight="route.name == 'snftcollection-step1' ? false : true"
       >
 
       </NavHeader>
-    </van-sticky>
     <div class="snft-album flex">
       <div class="snft-collection" v-for="(item, i) in compData.children" :key="item.address">
         <van-image
@@ -21,7 +19,7 @@
     </div>
     <div>
       <div class="album-icon flex center">
-        <img :src="`${metaDomain}${compData.img_url}`" alt="" />
+        <img :src="`${metaDomain}${compData.img}`" alt="" />
       </div>
       <div class="albu-name f-10">{{compData.name}}</div>
       <div class="albu-title">
@@ -43,7 +41,7 @@
             ></van-image>
           </div>
           <div class="snft-name f-12">{{ item.name }}</div>
-          <div class="snft-address f-12">{{ addressMask(item.address) }}</div>
+          <div class="snft-address f-12">{{ addressMask(item.nft_address) }}</div>
         </div>
         <div class="snft" style="height:50px;opacity:0;"></div>
       </div>
@@ -58,6 +56,7 @@ import { useRoute, useRouter } from "vue-router";
 import { Sticky } from "vant";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { VUE_APP_METAURL } from '@/popup/enum/env';
+import { useI18n } from 'vue-i18n';
 export default {
   name: " snftcollcetion",
   components: {
@@ -70,14 +69,13 @@ export default {
     const route = useRoute();
     const pageData = ref(JSON.parse(sessionStorage.getItem("compData")));
     const compData = ref(pageData || {});
+    const {t} = useI18n()
     
     const metaDomain = ref(`${VUE_APP_METAURL}`);
     const toDetail = (data) => {
       router.push({ name: "coll-detail", query: data });
     };
 
-
-   
     onActivated(() => {
         pageData.value = JSON.parse(sessionStorage.getItem("compData"))
 
@@ -87,6 +85,7 @@ export default {
       addressMask,
       metaDomain,
       route,
+      t,
       toDetail,
     };
   },

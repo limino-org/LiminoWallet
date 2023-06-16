@@ -11,7 +11,6 @@
               <van-field type="number" class="user-field" v-model="amount" placeholder="0.00" />
               <span>ERB</span>
             </div>
-            <span class="text">${{Number(toUsd(amount)).toFixed(2)}}</span>
           </div>
         </div>
         <div class="container-btn flex center column">
@@ -29,7 +28,7 @@
 import { Button, Overlay, Field, Toast } from 'vant'
 import { ref, SetupContext, computed } from 'vue'
 import { ethers, utils } from 'ethers'
-import { formatEther, toUsd } from '@/popup/utils/filters'
+import { formatEther } from '@/popup/utils/filters'
 import { useI18n } from 'vue-i18n'
 export default {
   name: 'AmountView',
@@ -117,7 +116,6 @@ export default {
       dislogShow,
       submit,
       screentNumber,
-      toUsd
     }
   }
 }
@@ -138,7 +136,7 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #f8fcff;
+      background: #F8F3F9;
       font-size: 14px;
       color: #0f0f0f;
     }
@@ -203,7 +201,7 @@ export default {
           font-weight: bold;
         }
         .ipt-server {
-          font-size: 10px;
+          font-size: 12px;
           color: #8f8f8f;
           font-weight: bold;
           span {
@@ -218,7 +216,7 @@ export default {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f4faff;
+            background: #F8F3F9;
             border-radius: 7px 7px 7px 7px;
             &:first-child {
               padding: 0 18px;
@@ -226,8 +224,8 @@ export default {
           }
           .ipt-server-i-active {
             color: #0287db;
-            background: #f4faff;
-            border: 1PX solid #037cd6;
+            background: #F8F3F9;
+            border: 1PX solid #9F54BA;
             span {
               color: #0287db;
             }

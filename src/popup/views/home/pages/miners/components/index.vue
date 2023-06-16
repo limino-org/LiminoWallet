@@ -24,7 +24,6 @@
               </span>
             </div>
             <div class="money flex between center-v">
-              <!-- {{使用toUsd}} ${{toUsd(money)}}   ≈$ {{toUsd(money,2)}}-->
               <span>{{money}}ERB $({{ utils.formatEther(Math.abs(money) + '')}})</span>
               <span @click="customClick">{{$t('createminerspledge.custom')}}</span>
             </div>
@@ -63,7 +62,6 @@ import { useI18n } from 'vue-i18n'
 import { useExchanges } from '@/popup/hooks/useExchanges'
 import { useStore } from 'vuex'
 import { getWallet } from '@/popup/store/modules/account'
-import { formatEther, parseEther, toUsd } from '@/popup/utils/filters'
 import AmountView from '@/popup/views/account/exchange/amount.vue'
 import AgreementView from '@/popup/views/account/exchange/agreement.vue'
 import { utils } from 'ethers'
@@ -80,7 +78,6 @@ export default {
     [AgreementView.name]: AgreementView
   },
   props: {
-    // 控制显示
     show: {
       type: Boolean,
       default: false
@@ -99,9 +96,8 @@ export default {
     const accountInfo = computed(() => store.state.account.accountInfo)
     let address = accountInfo.value.address
     let showAgreement = ref(false)
-    // 开过交易所了
 
-    // 输入框name
+    // name
     let name = ref('https://api.wormholestest.com/')
     let isLoading = ref(false)
     let checked = ref(false)
@@ -125,9 +121,7 @@ export default {
         console.error(err)
       }
     }
-    // 协议返回
     const submitCheck = (type: string, flag: Boolean) => {
-      console.log('获取返回的类型', type)
       if (type === 'check' && flag) {
         checked.value = true
       } else {
@@ -144,7 +138,6 @@ export default {
         isLoading.value = true
         // const isServer = serverIndex.value === 1
         await toCreate(props.nodeValue, money.value, false)
-        // 成功了
         emit('minersConfirm')
       } catch (err) {
         Toast(JSON.stringify(err))
@@ -211,13 +204,13 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #f8fcff;
+      background: #F8F3F9;
       font-size: 14px;
       color: #0f0f0f;
     }
     .miners-container {
       ::-webkit-input-placeholder {
-        /* WebKit browsers，webkit内核浏览器 */
+        /* WebKit browsers，webkit */
         color: #232323;
         font-size: 12px;
       }
@@ -274,10 +267,10 @@ export default {
           -webkit-text-fill-color: #232323 !important;
         }
         ::v-deep .van-field__control {
-          font-size: 10px !important;
+          font-size: 12px !important;
         }
         ::-webkit-input-placeholder {
-          /* WebKit browsers，webkit内核浏览器 */
+          /* WebKit browsers，webkit*/
           color: #232323;
           font-size: 12px;
         }
@@ -318,7 +311,7 @@ export default {
           font-weight: bold;
         }
         .ipt-server {
-          font-size: 10px;
+          font-size: 12px;
           color: #8f8f8f;
           font-weight: bold;
           span {
@@ -333,7 +326,7 @@ export default {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f4faff;
+            background: #F8F3F9;
             border-radius: 7px 7px 7px 7px;
             &:first-child {
               padding: 0 18px;
@@ -341,8 +334,8 @@ export default {
           }
           .ipt-server-i-active {
             color: #0287db;
-            background: #f4faff;
-            border: 1px solid #037cd6;
+            background: #F8F3F9;
+            border: 1px solid #9F54BA;
             span {
               color: #0287db;
             }
@@ -421,7 +414,7 @@ export default {
   width: 285px;
   padding: 10px 5px 10px 15px;
 
-  font-size: 10px;
+  font-size: 12px;
   color: #000000 !important;
   background: #fcf0f5;
   border-radius: 4px 4px 4px 4px;

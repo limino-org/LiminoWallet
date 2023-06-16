@@ -1,5 +1,12 @@
 <template>
-  <van-overlay :show="dislogShow" class="custom-overlay">
+    <van-dialog v-model:show="dislogShow" 
+    teleport="#page-box"
+    :lockScroll="false"
+    class="minus-miner-stack-dialog"
+    :showConfirmButton="false"
+    :showCancelButton="false"
+    closeOnClickOverlay>
+  <div class="custom-overlay">
     <div class="miners">
       <div class="miners-header">
         <span>{{ t("createExchange.pledgeRed") }}</span>
@@ -33,11 +40,9 @@
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
             <div class="exchange">
-              {{ amount }} ERB(≈${{ toUsd(amount, 2) }})
+              {{ amount }} ERB
             </div>
           </div>
-          <!-- 历史总收益 -->
-
           <div class="bourse-container-meaning bt">
             <span class="c1">{{ t("minerspledge.redemingAmount") }} </span>
             <el-tooltip
@@ -51,7 +56,7 @@
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
             <div class="exchange">
-              {{ minusNumber }} ERB(≈${{ toUsd(minusNumber, 2) }})
+              {{ minusNumber }} ERB
             </div>
           </div>
           <div class="bourse-container-meaning bt">
@@ -66,7 +71,7 @@
             >
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
-            <div class="exchange">≈{{ historyProfit }} ERB(≈ $ 500)</div>
+            <div class="exchange">≈{{ historyProfit }} ERB</div>
           </div>
           <div class="bourse-container-meaning bt">
             <span class="c1">{{ t("minerspledge.stackingIncome") }} </span>
@@ -97,7 +102,7 @@
             </el-tooltip>
             <div class="exchange exchange-z">
               <span>≈ </span>
-              <span class="c2"> {{ gasFee }} ERB(≈$1)</span>
+              <span class="c2"> {{ gasFee }} ERB</span>
             </div>
           </div>
         </div>
@@ -124,20 +129,21 @@
         </div>
       </div>
     </div>
-  </van-overlay>
+  </div>
+    </van-dialog>
 </template>
 
 <script lang="ts">
-import { Button, Overlay, Field, Toast, Icon } from "vant";
+import { Button, Overlay, Field, Toast, Icon,Dialog } from "vant";
 import { ref, SetupContext, computed, nextTick, watch } from "vue";
 import { ethers, utils } from "ethers";
-import { formatEther, toUsd, transactionStatus } from "@/popup/utils/filters";
 import { useI18n } from "vue-i18n";
 import { ElTooltip } from "element-plus";
-import store from "@/store";
+
 import { useStore } from "vuex";
 import { toHex } from "@/popup/utils/utils";
 import {
+  getGasFee,
   getWallet,
   handleGetTranactionReceipt,
   TransactionTypes,
@@ -146,6 +152,7 @@ import { BigNumber } from "bignumber.js";
 import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
 import { useRouter } from "vue-router";
 import { web3 } from "@/popup/utils/web3";
+import { clone } from 'pouchdb-utils';
 
 export default {
   name: "minus-stack-dialog",
@@ -155,6 +162,7 @@ export default {
     [Field.name]: Field,
     ElTooltip,
     [Icon.name]: Icon,
+    [Dialog.Component.name]:Dialog.Component
   },
   props: ["show", "minusNumber", "amount"],
   setup(props: any, context: SetupContext) {
@@ -164,7 +172,6 @@ export default {
     const { dispatch, state, commit } = store;
     const currentNetwork = computed(() => store.state.account.currentNetwork);
     const { $tradeConfirm } = useTradeConfirm();
-    console.log("我加载了11111111111");
     const { emit }: any = context;
     const str = `wormholes:{"type":10,"version":"v0.0.1"}`;
     let dislogShow = computed({
@@ -186,6 +193,7 @@ export default {
         },
       });
       try {
+        const network =  clone(store.state.account.currentNetwork)
         const amount = props.minusNumber;
         const wallet = await getWallet();
         const { address } = wallet;
@@ -193,11 +201,10 @@ export default {
         const tx1 = {
           from: address,
           to: address,
-          value: ethers.utils.parseEther(amount + ""),
+          value: amount + "",
           data: `0x${data}`,
         };
-
-        const data1 = await wallet.sendTransaction(tx1);
+        const data1 = await dispatch("account/transaction", tx1)
         $tradeConfirm.update({ status: "approve" });
         const receipt1 = await wallet.provider.waitForTransaction(data1.hash);
         if (receipt1.status == 1) {
@@ -205,16 +212,9 @@ export default {
         } else {
           $tradeConfirm.update({ status: "fail" });
         }
-        const symbol = state.account.currentNetwork.currencySymbol;
-
-        const rep = handleGetTranactionReceipt(
-          TransactionTypes.default,
-          receipt1,
-          data1,
-          symbol
-        );
         dispatch("account/updateAllBalance");
-        commit("account/PUSH_TRANSACTION", rep);
+        await store.dispatch('account/waitTxQueueResponse')
+        // commit("account/PUSH_TRANSACTION", rep);
       } catch (err) {
         $tradeConfirm.update({ status: "fail" });
       }
@@ -244,15 +244,7 @@ export default {
             data: `0x${data3}`,
           };
           try {
-            const wallet = await getWallet();
-            gasPrice.value = await wallet.provider.getGasPrice();
-            gasLimit.value = await wallet.estimateGas(tx1);
-            // @ts-ignore
-            gasFee.value = new BigNumber(
-              ethers.utils.formatEther(gasLimit.value)
-            )
-              .dividedBy(ethers.utils.formatEther(gasPrice.value))
-              .toFixed(9);
+            gasFee.value = await getGasFee(tx1)
           } catch (err: any) {
             console.error(err);
           }
@@ -274,9 +266,9 @@ export default {
       data.Validators.forEach((item: any) => {
         total = total.plus(item.Balance);
       });
-      // 总质押量
+      // Total amount of pledge
       const totalStr = total.div(1000000000000000000).toFixed(6);
-      // 总收益
+      // total revenue
       const totalprofit = store.state.account.minerTotalProfit;
       const totalPledge = new BigNumber(props.minusNumber);
       myprofit.value = new BigNumber(totalprofit)
@@ -294,7 +286,6 @@ export default {
       myprofit,
       historyProfit,
       currentNetwork,
-      toUsd,
       accountInfo,
       gasFee,
     };
@@ -307,7 +298,7 @@ export default {
 }
 .tip {
   margin: 12px 13px 0;
-  color: #037cd6;
+  color: #9F54BA;
   font-size: 12px;
   line-height: 16px;
 }
@@ -315,7 +306,6 @@ export default {
   display: flex;
 
   .miners {
-    width: 341px;
     min-height: 560px;
     padding-bottom: 30px;
     background: #fff;
@@ -327,7 +317,7 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #f8fcff;
+      background: #F8F3F9;
       font-size: 14px;
       color: #0f0f0f;
       border-bottom: 1px solid #f2f4f5;
@@ -396,7 +386,7 @@ export default {
           font-weight: bold;
         }
         .ipt-server {
-          font-size: 10px;
+          font-size: 12px;
           color: #8f8f8f;
           font-weight: bold;
           span {
@@ -411,7 +401,7 @@ export default {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f4faff;
+            background: #F8F3F9;
             border-radius: 7px 7px 7px 7px;
             &:first-child {
               padding: 0 18px;
@@ -419,8 +409,8 @@ export default {
           }
           .ipt-server-i-active {
             color: #0287db;
-            background: #f4faff;
-            border: 1px solid #037cd6;
+            background: #F8F3F9;
+            border: 1px solid #9F54BA;
             span {
               color: #0287db;
             }

@@ -12,7 +12,7 @@
   >
     <div class="dialog-box">
       <div class="serial-number">
-        <span class="left">5</span> <span>/</span> 13
+        <span class="left">5</span> <span>/</span> 12
       </div>
       <div class="title">
         {{ t("bootstrapwindow.transaction") }}
@@ -101,9 +101,8 @@ export default defineComponent({
     padding-bottom: 14px;
     padding-right: 14px;
     font-size: 12px;
-    font-size: 12px;
     .left {
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .tip2 {
@@ -121,11 +120,11 @@ export default defineComponent({
     font-size: 24px;
     font-weight: bold;
     line-height: 30px;
-    margin-top: 44px;
+    margin-top: 22px;
   }
   .small-tit {
     text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
     font-size: 12px;
     color: #848484;
   }

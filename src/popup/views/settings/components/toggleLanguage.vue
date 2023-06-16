@@ -13,7 +13,7 @@
       </div>
       <div class="languages-list">
         <div
-          class="language-card flex between van-hairline--top clickActive"
+          class="language-card flex between border-bottom clickActive"
           v-for="item in langs"
           :key="item.value"
           @click="setLanguage(item)"
@@ -60,7 +60,7 @@ import { Language, languages } from "@/popup/enum/language";
 import { vantLangs } from "@/popup/language/index";
 import { Locale } from "vant";
 import { useBroadCast } from "@/popup/utils/broadCost";
-
+import i18n from '@/popup/language/index'
 export default defineComponent({
   name: "toggle-language-modal",
   components: {
@@ -82,8 +82,7 @@ export default defineComponent({
   setup(props: any, context: SetupContext) {
     const { emit }: any = context;
     const showModal: Ref<boolean> = ref(false);
-    const { t } = useI18n();
-    const { locale } = useI18n();
+    const { t, locale } = useI18n();
     const store = useStore();
     const { dispatch, state } = store;
     const lang = computed(() => state.system.language);
@@ -98,8 +97,10 @@ export default defineComponent({
       dispatch("system/setLanguage", langName);
     }
     const setLanguage = async (item: Language) => {
+      console.log('locale', locale, i18n)
       const { value } = item;
-      locale.value = value;
+      i18n.global.locale.value = value;
+      i18n.global.fallbackLocale.value = value
       // @ts-ignore
       Locale.use(vantLangs[value].value, vantLangs[value]["package"]);
       await dispatch("system/setLanguage", value);
@@ -153,7 +154,7 @@ export default defineComponent({
   color: #000;
   font-size: 15px;
   line-height: 62px;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-weight: bold;
 
 }
@@ -187,7 +188,7 @@ export default defineComponent({
   border-radius: 5px;
   transition: ease 0.3s;
   &:hover {
-    border: 1PX solid #1989fa;
+    border: 1PX solid #9F54BA;
   }
 }
 .language-card {
@@ -195,13 +196,13 @@ export default defineComponent({
   height: 52px;
   transition: ease 0.3s;
   &:hover {
-    background: rgb(244, 247, 250);
+    background: #F8F3F9;
   }
   .net-status {
     width: 20px;
     color: #ccc;
     i {
-      color: #057ed6;
+      color: #9F54BA;
       font-size: 16px;
     }
     i.icon-xuanzhong1 {

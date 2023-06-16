@@ -9,21 +9,26 @@ import account from './modules/account'
 import price from './modules/price'
 import system from './modules/system'
 import transfer from './modules/transfer'
+import mnemonic from './modules/mnemonic'
 import nft from './modules/nft'
+import txList from './modules/txList'
+import configuration from './modules/configuration'
 import VuexPersistence from 'vuex-persist';
 
 const vuexLocal = new VuexPersistence({
   storage: localforage,
   asyncStorage: true,
   reducer: (store) => {
-    // console.warn('-----------------------',store)
     const {
       account,
       common,
       nft,
       price,
       system,
-      transfer
+      transfer,
+      mnemonic,
+      txList,
+      configuration
     } = store
     const {
       amountType,
@@ -50,7 +55,9 @@ const vuexLocal = new VuexPersistence({
       show13,
       show14,
       show15,
-      show16
+      show16,
+      wallet_token,
+      chainVersion
     } = system
     return clone(({
       account,
@@ -60,6 +67,7 @@ const vuexLocal = new VuexPersistence({
       transfer,
       system: {
         amountType,
+        chainVersion,
         ethAccountInfo,
         exchangeBtnStatus,
         finishedGuide,
@@ -83,8 +91,12 @@ const vuexLocal = new VuexPersistence({
         show13,
         show14,
         show15,
-        show16
-      }
+        show16,
+        wallet_token
+      },
+      mnemonic,
+      txList,
+      configuration
     }))
   },
 });
@@ -102,7 +114,10 @@ const store = createStore({
     system,
     common,
     transfer,
-    nft
+    nft,
+    mnemonic,
+    txList,
+    configuration
   },
   plugins: [
     vuexLocal.plugin
@@ -115,3 +130,4 @@ export default store
 export interface StoreReturns {
   [key: string]: any
 }
+

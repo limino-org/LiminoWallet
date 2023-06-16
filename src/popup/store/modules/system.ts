@@ -4,8 +4,16 @@ import { useStore } from "vuex";
 import { addressMask, decimal } from "@/popup/utils/filters";
 import { erb_price } from '@/popup/http/modules/price'
 import { getWallet } from '@/popup/store/modules/account'
-import { guid } from '@/popup/utils/utils'
+import { useBroadCast } from '@/popup/utils/broadCost'
+import localforage from 'localforage';
+import store from '../index'
 
+const { handleUpdate } = useBroadCast()
+type WalletToken = {
+  seconds: number
+  time: number
+  value: string | null
+}
 interface State {
   language: string;
   // List arrangement
@@ -38,12 +46,15 @@ interface State {
   transferUSDRate: number
   transferCNYRate: number
   conversationId: string
+  wallet_token: WalletToken;
+  chainVersion: string;
 }
 export default {
   state: {
     language: "",
     // Homepage NFT, list display method card list
     layoutType: "card",
+    chainVersion:'',
     layoutList: [
       // Arrangement method list: list, card
       { value: "list", name: "list" },
@@ -85,9 +96,17 @@ export default {
     transferCNYRate: 0.6,
     // Password encryption iv
     iv:'',
-    conversationId:''
+    conversationId:'',
+    wallet_token:{
+      seconds: 0,
+      time: 0,
+      value: null
+    },
   },
   mutations: {
+    UPDATE_CHAINVERSION(state: State, value: string) {
+      state.chainVersion = value
+    },
     UPDATE_LANGUAGE(state: State, value: string) {
       state.language = value;
     },
@@ -102,18 +121,23 @@ export default {
     },
     UPDATA_SHOW(state: State, idx: number) {
       state[`show${idx}`] = true;
+      handleUpdate()
     },
     UPDATA_HIDE(state: State, idx: number) {
       state[`show${idx}`] ? (state[`show${idx}`] = false) : "";
+      handleUpdate()
     },
     UPDATE_GUIDEFLAG(state: State, val: boolean){
       state.finishedGuide = val
+      handleUpdate()
     },
     UPDATE_HASBACKUPMNEMONIC(state: State, val: boolean){
       state.hasBackUpMnemonic = val
+      handleUpdate()
     },
     UPDATE_LASTDELAYTIME(state:State, time: number){
       state.lastDelayTime = time
+      handleUpdate()
     },
     UPDATA_ACCOUNTINFO(state: State, info: any) {
       state.ethAccountInfo = info
@@ -125,9 +149,17 @@ export default {
       state.transferCNYRate = val
     },
     UPDATA_CONVERSATIONID(state: State, id: string) {
-      console.warn('UPDATA_CONVERSATIONID', id)
       state.conversationId = id
-    }
+    },
+    UPDATE_WALLET_TOKEN(state: State, token: WalletToken) {
+      const {seconds,time,value} = token
+      state.wallet_token = {
+        seconds,
+        time,
+        value:''
+      }
+      handleUpdate()
+    },
   },
   getters: {
     // Current account balance
@@ -182,7 +214,11 @@ export default {
     // Open pop-up window
     showDialog({ commit, state }: any, idx: number) {
       commit("UPDATA_HIDE", idx);
-      commit("UPDATA_SHOW", idx+1);
+      if(idx === 6) {
+        commit("UPDATA_SHOW", idx+2);
+      }else {
+        commit("UPDATA_SHOW", idx+1);
+      }
     },
     // Turn off boot
     closeGuide({commit,state}:any){
@@ -197,24 +233,43 @@ export default {
     },
     // Get account details
     async getEthAccountInfo({commit, state}: any){
-      const wallet = await getWallet()
-      const { address } = wallet
-      wallet.provider.send('eth_getAccountInfo',[address, "latest"]).then((res:any)=>{
-        sessionStorage.setItem('链上账户详情', JSON.stringify(res))
+      const wall = await getWallet()
+      const { address } = wall
+      wall.provider.send('eth_getAccountInfo',[address, "latest"]).then((res:any)=>{
+        sessionStorage.setItem('eth_addountInfo', JSON.stringify(res))
         commit('UPDATA_ACCOUNTINFO', res)
       })
     },
-    // Get conversion rate to USD
-    // getTransferUSDRate({commit, state}: any) {
-    //   return erb_price().then(res => {
-    //     const { CNY,USD } = res
-    //     commit('UPDATE_TRANSFERUSDRATE', USD)
-    //     commit('UPDATE_TRANSFERCNYRATE', CNY)
-    //   })
-    // },
     setConversationid({commit, state}: any, id: string) {
       commit('UPDATA_CONVERSATIONID',id)
-    }
+    },
+    async getChainVersion({commit, state}: any, wallet: any){
+      const version =  await wallet.provider.send('eth_version')
+      const { chainId } =  await wallet.provider.getNetwork()
+      const { id } = store.state.account.currentNetwork
+      const queryList = [
+        `async-${id}-${chainId}`,
+        `txQueue-${id}-${chainId}`,
+        `txlist-${id}-${chainId}`
+      ]
+      
+      const oldVersion = state.chainVersion
+      if(oldVersion && version != oldVersion) {
+        localforage.iterate((value, key, iterationNumber) => {
+          console.log('clear cancel', key)
+          if (key !== "vuex") {
+            const flag = queryList.some(str => key.indexOf(str) > -1)
+            console.log('clear cancel', key)
+            if(flag){
+              localforage.removeItem(key);
+            }
+          } else {
+            [key, value]
+          }
+        });
+      }
+      commit('UPDATE_CHAINVERSION', version)
+    },
   },
   namespaced: true,
 };

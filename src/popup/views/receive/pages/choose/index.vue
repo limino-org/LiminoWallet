@@ -1,14 +1,9 @@
 <template>
-  <van-sticky>
-    <NavHeader>
+    <NavHeader :title="t('bootstrapwindow.tOKENs')">
       <template v-slot:left>
        <span class="back hover f-12" @click="back">{{t('createAccountpage.back')}}</span>
       </template>
-      <template v-slot:title>
-        <div class="flex center title">{{t('bootstrapwindow.tOKENs')}}</div>
-      </template>
     </NavHeader>
-  </van-sticky>
   <div class="choose-list">
     <div class="list pt-16">
       <div class="search-box ml-14 mr-14 flex center-v between">
@@ -215,7 +210,7 @@ export default {
     padding: 0;
   }
   :deep(.van-index-bar__index--active) {
-    background: #037cd6;
+    background: #9F54BA;
     color: #fff;
     border-radius: 9px;
   }
@@ -227,17 +222,17 @@ export default {
     overflow-y: scroll;
   }
   .search-box {
-    border: 1px solid #bbc0c5;
+    border: 1px solid #B3B3B3;
     border-radius: 5px;
     &:hover {
-      border-color: #037cd6;
+      border-color: #9F54BA;
     }
   }
 
   .ipt-box {
     width: 96%;
     i {
-      color: #037cd6;
+      color: #9F54BA;
       font-size: 22px;
     }
   }
@@ -245,7 +240,7 @@ export default {
     width: 30px;
     i {
       font-size: 18px;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
 }

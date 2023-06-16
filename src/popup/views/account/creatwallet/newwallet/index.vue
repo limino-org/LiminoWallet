@@ -1,15 +1,10 @@
 <template>
   <div>
-    <van-sticky>
-      <NavHeader :hasRight="false">
+      <NavHeader :hasRight="false" :title="t('createwallet.createwallet')">
         <template v-slot:left>
           <van-icon name="arrow-left" @click="onClickLeft" class="back-icon" />
         </template>
-        <template v-slot:title>
-          <div class="tit">{{t('createwallet.createwallet')}}</div>
-        </template>
       </NavHeader>
-    </van-sticky>
     <div class="content">
       <div class="notice">{{t('createwallet.title')}}</div>
       <!-- Create password form validation -->
@@ -63,7 +58,7 @@ import { useStore } from "vuex";
 import { encryptPrivateKey, EncryptPrivateKeyParams } from "@/popup/utils/web3";
 import { createRandomWallet } from "@/popup/utils/ether";
 import NavHeader from "@/popup/components/navHeader/index.vue";
-import { setCookies, getCookies, loginOut } from "@/popup/utils/jsCookie";
+import { setCookies, loginOut } from "@/popup/utils/jsCookie";
 import { passwordExpires } from "@/popup/enum/time";
 import { useI18n } from 'vue-i18n'
 import localforage from 'localforage';
@@ -86,7 +81,6 @@ export default {
     const { commit, dispatch } = store;
     const onClickLeft = () => {
       router.go(-1);
-      console.log("返回");
     };
     const loading = ref(false)
     const password: Ref<string> = ref("");
@@ -98,7 +92,7 @@ export default {
         loading.value = true
         // Store password
         try {
-          const pwd: string = setCookies("password", password.value, passwordExpires);
+          const pwd = setCookies("password", password.value, passwordExpires);
           const wallet = await dispatch("account/createRandomWallet");
           const { mnemonic, privateKey, address } = wallet;
           const { phrase, path } = mnemonic;
@@ -176,7 +170,7 @@ export default {
   font-size: 16px;
 }
 .back-icon {
-  color: rgba(3, 125, 214, 1);
+  color: #9F54BA;
   font-size: 22px;
   margin-left: -6px;
 }

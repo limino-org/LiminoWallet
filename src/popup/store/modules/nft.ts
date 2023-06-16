@@ -3,6 +3,8 @@ import { toHex } from "@/popup/utils/utils";
 import { Toast } from "vant";
 import { utils } from "ethers";
 import { web3 } from "@/popup/utils/web3";
+import { clone } from 'pouchdb-utils';
+
 import {
   getSnftOwner,
   collectionList,
@@ -46,21 +48,13 @@ export default {
         from: address,
         to: address,
         data: `0x${data3}`,
-        value: utils.parseEther("0"),
+        value: '0',
       };
       sessionStorage.setItem('nft_address', nft_address)
       sessionStorage.setItem("blockNumber", blockNumber)
-      const data = await wallet.sendTransaction(tx1)
+      const data = await store.dispatch('account/transaction', tx1)
       const receipt = await wallet.provider.waitForTransaction(data.hash)
-      const symbol = store.state.account.currentNetwork.currencySymbol
-      const rep: TransactionReceipt = handleGetTranactionReceipt(
-        TransactionTypes.other,
-        receipt,
-        data,
-        symbol
-      );
-      // Add to transaction
-      store.commit("account/PUSH_TRANSACTION", rep);
+      store.dispatch('account/waitTxQueueResponse')
       return receipt
     },
     // Personal casting NFT
@@ -68,35 +62,35 @@ export default {
       const wallet = await getWallet();
       const { address } = wallet
       const { royalty, meta_url, name, desc, category } = nft_data;
-
-      const str = `wormholes:{"version": "0.0.1","type":0,"royalty":${royalty},"exchanger":"","meta_url":"${encode(JSON.stringify(nft_data))}"}`;
-      console.warn('str----', str)
-      const data3 = toHex(str);
+      const par = {
+        version: '0.0.1',
+        type: 0,
+        royalty: royalty,
+        exchanger: "",
+        meta_url: web3.utils.fromUtf8(JSON.stringify(nft_data))
+      }
+      const parstr = `wormholes:${JSON.stringify(par)}`
+      const newdata = web3.utils.fromUtf8(parstr)
+      // const str = `wormholes:{"version": "0.0.1","type":0,"royalty":${royalty},"exchanger":"","meta_url":"${web3.utils.fromUtf8(JSON.stringify(nft_data))}"}`;
+      // console.warn('str----', str,nft_data)
+      // const data3 = web3.utils.fromUtf8(str);
+      
       const tx = {
         from: address,
         to: address,
-        data: `0x${data3}`,
-        value: utils.parseEther("0"),
+        data: newdata,
+        value: "0",
       };
-      const data = await wallet.sendTransaction(tx)
-      const receipt = await wallet.provider.waitForTransaction(data.hash)
-      // ts-ignore
-      const symbol = store.state.account.currentNetwork.currencySymbol
-      const rep: TransactionReceipt = handleGetTranactionReceipt(
-        TransactionTypes.other,
-        receipt,
-        data,
-        symbol
-      );
-      // Add to transaction
-      store.commit("account/PUSH_TRANSACTION", rep);
-      return receipt
+      const data = await store.dispatch('account/transaction', tx)
+      // const receipt = await wallet.provider.waitForTransaction(data.hash)
+      store.dispatch('account/waitTxQueueResponse')
+      return data
     },
     // Transfer NFT
     async send({ commit, state }: any, params: TransferData) {
       const wallet = await getWallet();
       const { address } = wallet
-      const { nft_address, to } = params
+      const { nft_address, to, checkTxQueue } = params
       // Update recent contacts
       store.commit("account/PUSH_RECENTLIST", to);
       const str = `wormholes:{"version": "v0.0.1","type": 1,"nft_address":"${nft_address}"}`;
@@ -105,24 +99,12 @@ export default {
       const tx = {
         from: address,
         to,
-        data: `0x${data3}`
+        data: `0x${data3}`,
+        checkTxQueue: false
       };
       console.warn('tx', tx)
-      const data = await wallet
-      .sendTransaction(tx)
-      const { hash } = data;
-      console.log('11111', hash);
-      const receipt = await wallet.provider.waitForTransaction(hash)
-        const symbol = store.state.account.currentNetwork.currencySymbol
-        const rep: TransactionReceipt = handleGetTranactionReceipt(
-          TransactionTypes.other,
-          receipt,
-          data,
-          symbol
-        );
-        // Add to transaction
-        store.commit("account/PUSH_TRANSACTION", rep);
-      return receipt
+      const data = await store.dispatch('account/transaction', tx)
+      return data
     },
     // Get asset list according to owner
     async getSnftOwner({ commit, state }: any, page: string) {
@@ -144,5 +126,6 @@ export default {
 
 export type TransferData = {
   nft_address: string,
-  to: string
+  to: string,
+  checkTxQueue: boolean
 }

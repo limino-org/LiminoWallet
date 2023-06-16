@@ -1,6 +1,6 @@
 <template>
   <div class="bourse">
-       <NavHeader :title="`${toName ? t('restWallet.restWallet') : t('setting.safety')}`">
+       <NavHeader :title="`${toName !== 'resetPwd-step2' ? t('restWallet.restWallet') : t('setting.resetPwd')}`">
       <template v-slot:left>
         <span class="back" @click="appProvide.back">{{t('common.back')}}</span>
       </template>
@@ -24,7 +24,7 @@
               <i
                 @click="toggleMask"
                 :class="`iconfont hover ${
-                  switchPassType ? 'icon-yanjing' : 'icon-yanjing1'
+                  switchPassType ?  'icon-yanjing1' :'icon-yanjing'
                 }`"
               ></i>
             </span>
@@ -36,7 +36,7 @@
               :class="isError ? 'error' : ''"
               :type="`${switchPassType ? 'text' : 'password'}`"
               @click-right-icon="switchPassType = !switchPassType"
-              :placeholder=" isError ? t('loginwithpassword.wrong_password') :  $t('exportprivatekey.password')"
+              :placeholder="$t('resetPwd.input')"
               :rules="[{ validator: asyncPwd },]"
             />
           </div>
@@ -49,7 +49,7 @@
             block
             type="primary"
             native-type="submit"
-          >{{t('wallet.next')}}</van-button>
+          >{{t('common.confirm')}}</van-button>
         </div>
           </div>
 
@@ -66,7 +66,6 @@
 <script lang="ts">
 import SwitchNetwork from "@/popup/components/switchNetwork/index.vue";
 import { CreateWalletByJsonParams, CreateWalletByMnemonicParams,createWalletByJson } from '@/popup/utils/ether'
-import { setCookies, getCookies } from '@/popup/utils/jsCookie'
 import { ref, Ref, computed, toRaw, SetupContext, onMounted, inject } from 'vue'
 import { Icon, NavBar, Form, Field, CellGroup, Button, Toast } from 'vant'
 import { useRoute, useRouter } from 'vue-router'
@@ -77,6 +76,7 @@ import { useNetWork } from "@/popup/components/navHeader/hooks/netWork";
 import NavHeader from '@/popup/components/navHeader/index.vue'
 import { useToast } from '@/popup/plugins/toast';
 import WormTransition from '@/popup/components/wromTransition/index.vue'
+import { encrypt } from '@/popup/utils/cryptoJS';
 export default {
   components: {
     [Icon.name]: Icon,
@@ -117,7 +117,7 @@ export default {
       }
       const accountInfo = store.state.account.accountInfo
       const { keyStore } = accountInfo
-      // 通过密码解锁当前账户的keyStore文件
+      //Unlock the keyStore file of the current account with a password
       const data: CreateWalletByJsonParams = {
         password: password.value,
         json: keyStore
@@ -133,8 +133,9 @@ export default {
     const onSubmit = async (value: object) => {
       accountLoading.value = true
       const accountInfo = store.state.account.accountInfo
+      //debugger
       const { keyStore } = accountInfo
-      // 通过密码解锁当前账户的keyStore文件
+      // Unlock the keyStore file of the current account with a password
       const data: CreateWalletByJsonParams = {
         password: password.value,
         json: keyStore
@@ -142,10 +143,18 @@ export default {
       try {
         await createWalletByJson(data)
         isError.value = false
-        router.replace({ name: route.query.toName ? route.query.toName :'successpage',query:{clearCache: 'true'} })
+        //   Encrypt and store the time with a password according to the, transfer it to Step2, and then use PWD to restore the time at Step2
+        const {toName} = route.query
+        // @ts-ignore
+        await chrome.storage.local.set({comfirm_password:password.value})
+        if(toName == 'loginAccount-step1') {
+          router.replace({ name: toName })
+        } else {
+          router.replace({ name: route.query.toName ? route.query.toName :'successpage' })
+        }
       }catch(err){
+        console.error(err)
         isError.value = true
-        $toast.warn(err)
       } finally {
         password.value = ''
         accountLoading.value = false
@@ -259,15 +268,15 @@ export default {
   }
   
   .tit-small {
-    color: #bbc0c5;
+    color: #B3B3B3;
   }
   .right {
-    color: #037cd6;
+    color: #9F54BA;
     text-decoration: underline;
   }
 
-  .icon-yanjing {
-    color: #037dd6;
+  .icon-yanjing1 {
+    color: #9F54BA;
   }
   :deep(.van-field__label) {
     display: none;
@@ -284,7 +293,7 @@ export default {
   :deep(.van-field__body) {
     margin-bottom: 10px;
     &:hover {
-      border: 1px solid #1989fa;
+      border: 1px solid #9F54BA;
     }
   }
 }
@@ -395,14 +404,14 @@ export default {
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      background: #f4faff;
+      background: #F8F3F9;
       border-radius: 7.5px;
       box-sizing: border-box;
     }
     .active {
-      border: 1px solid #037cd6;
+      border: 1px solid #9F54BA;
       span {
-        color: #037cd6;
+        color: #9F54BA;
       }
     }
     .t1 {
@@ -438,7 +447,7 @@ export default {
   .bourse-container-error {
     margin: 0 15px 25px 15px;
     height: 56.5px;
-    background: #F4FAFF;
+    background: #F8F3F9;
     border-radius: 7.5px;
     display: flex;
     align-items: center;
@@ -450,7 +459,7 @@ export default {
   }
   .t1 {
     font-size: 14px;
-    color: #037cd6;
+    color: #9F54BA;
   }
   .t3 {
     font-size: 18px;
@@ -472,11 +481,11 @@ export default {
       color: #848484;
     }
     .right {
-      color: #037cd6;
+      color: #9F54BA;
       text-decoration: underline;
     }
-    .icon-yanjing {
-      color: #037dd6;
+    .icon-yanjing1 {
+      color: #9F54BA;
     }
     :deep(.van-field__label) {
       display: none;
@@ -493,7 +502,7 @@ export default {
     :deep(.van-field__body) {
       margin-bottom: 10px;
       &:hover {
-        border: 1px solid #1989fa;
+        border: 1px solid #9F54BA;
       }
     }
     .error-field {
@@ -503,11 +512,11 @@ export default {
     }
     .success-field {
       :deep(.van-field__body) {
-      border: 1px solid #1989fa !important;
+      border: 1px solid #9F54BA !important;
       }
     }
     .tool {
-      color: #037cd6;
+      color: #9F54BA;
     }
     .pointer {
       cursor: pointer;
@@ -522,7 +531,7 @@ export default {
 }
 .bourse-img {
   height: 135px;
-  background-color: #F4FAFF;
+  background-color: #F8F3F9;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -566,7 +575,7 @@ export default {
   position: fixed;
   bottom: 25px;
   width: 100%;
-  max-width: 750px;
+  max-width: 820px;
 }
 .right-img-copy {
   width: 15px;

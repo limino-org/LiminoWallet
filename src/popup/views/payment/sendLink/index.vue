@@ -51,7 +51,7 @@ export default {
       'https://metamask.app.link/send/ 0xcD6fg77755dfrgddfgdfgdgdhfdhdfhfhdfhdhdhs 5dfgdfgdgdfghdfggdgdfgdf.gdgdgd'
     )
 
-    // 复制连接
+    // Copy Link
     const { toClipboard } = useClipboard()
     const toCopy = async () => {
       try {

@@ -6,6 +6,55 @@
   "description": "钱包2.0",
   "glyphs": [
     {
+      "icon_id": "6150969",
+      "name": "key",
+      "font_class": "key",
+      "unicode": "e775",
+      "unicode_decimal": 59253
+    },
+    {
+      "icon_id": "1273432",
+      "name": "操作-循环1",
+      "font_class": "caozuo-xunhuan1",
+      "unicode": "e62b",
+      "unicode_decimal": 58923
+    },
+    {
+      "icon_id": "14835602",
+      "name": "上箭头",
+      "font_class": "arrowTop",
+      "unicode": "e65d",
+      "unicode_decimal": 58973
+    },
+    {
+      "icon_id": "14666102",
+      "name": "展开",
+      "font_class": "zhankai",
+      "unicode": "e734",
+      "unicode_decimal": 59188
+    },
+    {
+      "icon_id": "4848889",
+      "name": "copy",
+      "font_class": "copy",
+      "unicode": "e7b8",
+      "unicode_decimal": 59320
+    },
+    {
+      "icon_id": "15838433",
+      "name": "bottom",
+      "font_class": "bottom",
+      "unicode": "e667",
+      "unicode_decimal": 58983
+    },
+    {
+      "icon_id": "5450774",
+      "name": "复制",
+      "font_class": "fuzhi3",
+      "unicode": "e619",
+      "unicode_decimal": 58905
+    },
+    {
       "icon_id": "8019596",
       "name": "分类",
       "font_class": "fenlei3",

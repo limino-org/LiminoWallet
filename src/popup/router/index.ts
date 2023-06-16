@@ -25,7 +25,6 @@ import store from "@/popup/store";
 import connect from '@/popup/views/connect/route'
 
 
-const isProduct = process.env.NODE_ENV == "production";
 const routes: Array<RouteRecordRaw> = [
   // Transactions
   {
@@ -137,24 +136,6 @@ const routes: Array<RouteRecordRaw> = [
       },
     ],
   },
-  {
-    path: "/currency",
-    name: "currency",
-    redirect: {
-      name: "currencyHome",
-    },
-    component:() =>  import("@/popup/views/currency/index.vue"),
-    children: [
-      {
-        path: "/currency/home",
-        name: "currencyHome",
-        component:() =>  import("@/popup/views/currency/home/index.vue"),
-        meta: {
-          auth: true,
-        },
-      },
-    ],
-  },
   // Single signature
   {
     path: "/sign",
@@ -251,15 +232,15 @@ router.beforeEach(async(to, form, next) =>  {
  await store.restored; 
  const { name, meta } = to;
  const { auth } = meta;
+
  const { authentication, hasAccount } = useLogin();
  const hasAccountFlag = await hasAccount();
- 
+
  // Whether the password is valid
- const authFlag = authentication();
  const query = getQuery();
- const password = getCookies('password')
+ const password = await getCookies('password')
  
-// 钱包未创建  -> 引导页
+// Wallet not created -> Boot page
 const filterNames1 = ['guide-step1','guide-step2','loginAccount-create-step1','loginAccount-create-step2','loginAccount-step1','loginAccount-step2','loginAccount-export-mnemonic','loginAccount-mnemonic-import','loginAccount-createing']
 if(!hasAccountFlag && !password && !filterNames1.includes(name.toString())) {
   console.log('11111111111111111111111111',name,filterNames1)
@@ -268,7 +249,7 @@ if(!hasAccountFlag && !password && !filterNames1.includes(name.toString())) {
   })
   return
 }
-// 已创建，未登录  -> 登录页
+// Created, not logged in -> Logged in page
 if(hasAccountFlag && !password && name != 'loginAccount-step1' && name != 'resetPwd-step1') {
   console.log('2222222222222222222222222222222222222',password,hasAccountFlag)
 
@@ -290,9 +271,20 @@ if(hasAccountFlag && password && form.fullPath == '/' && to.fullPath == '/' && n
 }
 
 const filterNames2 = ['connect','sign','send']
+const filterNames3 = ['guide-step1','loginAccount-step1']
+
 if(hasAccountFlag && password && form.fullPath == '/' && name != 'wallet' && !filterNames2.includes(to.name.toString())) {
+  if(filterNames3.includes(to.name.toString())) {
+    next({name:"wallet"})
+    return
+  }
   console.log('33333333333333333333333333333333')
   next()
+  return
+}
+
+if(hasAccountFlag && password && filterNames3.includes(to.name.toString())) {
+  next({name:"wallet"})
   return
 }
 console.log('4444444444444444444444444444444444444444444')

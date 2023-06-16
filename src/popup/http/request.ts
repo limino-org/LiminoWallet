@@ -27,8 +27,8 @@ service.interceptors.response.use(
       }
     },
     error => {
-      console.error(JSON.stringify(error))
-      Toast(error.message || `Request Error code:${error.code}`)
+      console.error('request: ', JSON.stringify(error))
+      // Toast(error.message || `Request Error code:${error.code}`)
       return Promise.reject(error)
     }
   )

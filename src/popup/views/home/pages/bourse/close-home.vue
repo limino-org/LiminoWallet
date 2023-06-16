@@ -103,7 +103,7 @@ export default {
       text-align: center;
       font-size: 15px;
       color: #B3B3B3;
-      background: #F8FCFF;
+      background: #F8F3F9;
     }
     .warning-icon {
         padding: 25px;

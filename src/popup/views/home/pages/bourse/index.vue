@@ -2,35 +2,36 @@
   <div class="bourse">
     <NavHeader :title="!isExchanger_flag ? t('createExchange.headerTitle') : t('sidebar.exchangemanagement')">
       <template v-slot:left>
-        <span class="back" @click="back">{{ t("wallet.back") }}</span>
+        <span class="back" @click="back">{{ t("common.back") }}</span>
       </template>
       <template v-slot:right>
         <cancel-btn />
       </template>
     </NavHeader>
     <div class="bourse-container" id="bourse-page" v-if="!loading">
-      <div class="bourse-container-name">
-        <span>{{ t("bourse.name") }}({{ name.length }}/12)</span>
+     <div class="bourse-container-name" v-if="false">
+        <span>{{ t("bourse.name") }} ({{ name.length }}/20)</span>
         <el-tooltip
           popper-class="tooltip4"
           class="box-item"
           effect="dark"
-          :content="t('bourse.tip5')"
+          :content="t('bourse.tip20')"
           placement="right"
           trigger="hover"
         >
           <van-icon name="question" class="ml-4" color="#9A9A9A" />
         </el-tooltip>
       </div>
-
-      <div class="create-new-password" v-show="!isExchanger_flag">
+ 
+      <div class="create-new-password" v-show="false">
         <van-form @submit="onSubmit" ref="formDom">
-          <div>
+          <div v-if="false">
             <van-field
               :disabled="isExchanger_flag"
-              maxlength="12"
+              maxlength="20"
               validate-trigger="onSubmit"
               v-model="name"
+              readonly
               :class="`text ${nameError ? 'error' : ''}`"
               type="text"
               :placeholder="t('bourse.placename')"
@@ -42,28 +43,28 @@
           </div>
         </van-form>
       </div>
-      <div v-show="isExchanger_flag" class="f-12 text-bold mt-8">
+      <div v-show="false" class="f-12 text-bold mt-8">
         {{ name }}
       </div>
 
-      <div class="bourse-container-name bt mt-14 pt-10" v-if="isExchanger_flag">
+      <div class="bourse-container-name bt mt-14 pt-10" v-if="false">
         <span class="mt-8">{{ t("createExchange.formCharge") }}</span>
         <el-tooltip
           popper-class="tooltip4"
           class="box-item"
           effect="dark"
-          :content="t('createExchange.commission')"
+          :content="feilvstr"
           placement="right"
           trigger="hover"
         >
           <van-icon class="ml-6" name="question" color="#9A9A9A" />
         </el-tooltip>
       </div>
-      <div v-if="isExchanger_flag" class="f-14 text-bold mt-8">
+      <div v-if="false" class="f-14 text-bold mt-8">
         {{ money / 10 }}%
       </div>
 
-      <div v-if="isExchanger_flag" class="bourse-container-name bt mt-14 pt-10 ">
+      <div v-if="isExchanger_flag" class="bourse-container-name  pt-10 ">
         <span class="mt-8">{{ t("bourse.stakingFee") }}</span>
         <el-tooltip
           popper-class="tooltip4"
@@ -78,46 +79,46 @@
       </div>
       <div v-if="isExchanger_flag" class="f-14 text-bold mt-8">
         {{ exchangerBalance }} ERB
-        <span>≈{{ toUsd(exchangerBalance, 2) }}</span>
       </div>
-
-      <div class="bourse-container-meaning bt mt-14" v-if="!isExchanger_flag">
+    
+      <div class="bourse-container-meaning bt mt-14" v-if="false">
         <span>{{ t("bourse.marketCom") }}</span>
         <el-tooltip
           popper-class="tooltip1"
           class="box-item"
           effect="dark"
-          :content="t('createExchange.commission')"
+          :content="feilvstr"
           placement="right"
           trigger="hover"
         >
           <van-icon class="ml-4" name="question" color="#9A9A9A" />
         </el-tooltip>
       </div>
-      <div class="bourse-container-pull" v-if="!isExchanger_flag">
+      <div class="bourse-container-pull" v-if="false">
         <div>
           <span class="hundred">{{ money / 10 }}%</span>
           <span>（{{ t("bourse.tip12") }}）</span>
         </div>
       </div>
-      <div class="bourse-container-slider" v-if="!isExchanger_flag">
+      <div class="bourse-container-slider" v-if="false">
         <el-slider
           v-model="money"
-          :disabled="isExchanger_flag"
+          :disabled="true"
           :min="10"
           :max="100"
           :marks="marks"
           :format-tooltip="(v) => v / 10"
         />
         <van-field
-          :disabled="isExchanger_flag"
+          :disabled="true"
           v-model="money2"
           class="slider-ipt"
           type="number"
           @change="handleMoney"
         />
       </div>
-      <div class="bourse-container-meaning bt mt-14" v-if="!isExchanger_flag">
+   
+      <div class="bourse-container-meaning" v-if="!isExchanger_flag">
         <span>{{ t("bourse.stakingFee") }}</span>
         <el-tooltip
           popper-class="tooltip2"
@@ -131,134 +132,146 @@
         </el-tooltip>
       </div>
       <div class="t3" v-if="!isExchanger_flag">
-        280ERB <span>(≈${{ toUsd(280, 2) }})</span>
+        700ERB 
       </div>
 
-      <!-- 追加质押金额 -->
-      <div class="bourse-container-meaning bt mt-14" v-if="isExchanger_flag">
-        <span>{{ t("createExchange.addPl") }} </span>
-        <el-tooltip
-          popper-class="tooltip3"
-          class="box-item"
-          effect="dark"
-          :content="t('bourse.tip4')"
-          placement="right"
-          trigger="hover"
-        >
-          <van-icon name="question" class="ml-4" color="#9A9A9A" />
-        </el-tooltip>
-        <div class="add-amount f-14 text-bold mt-6 mb-14">
-          {{ addAmount || 0 }} ERB
-        </div>
-        <el-slider
-          v-model="addAmount"
-          :min="minBalance"
-          :max="maxBalance"
-          @input="changeAdd"
-          :marks="marks2"
-          :step="1"
-        />
-        <div class="mt-16">
-          <van-field type="number" v-model="addAmount" @change="handleAdd" />
-        </div>
-      </div>
-      <div class="bourse-container-meaning bt mt-14" v-if="!isExchanger_flag">
-        <span>{{ t("bourse.marketServer") }} </span>
-        <el-tooltip
-          popper-class="tooltip3"
-          class="box-item"
-          effect="dark"
-          :content="t('bourse.tip4')"
-          placement="right"
-          trigger="hover"
-        >
-          <van-icon name="question" class="ml-4" color="#9A9A9A" />
-        </el-tooltip>
-      </div>
-      <div
-        v-if="!isExchanger_flag"
-        :class="[
-          'bourse-container-server',
-          isExchanger_flag ? 'bourse-container-server-b' : '',
-        ]"
-      >
-        <van-popover
-          v-model:show="visible1"
-          placement="bottom-start"
-          :class="`${isExchangeStatusStatus ? 'appendtobear' : 'appendto1'}`"
-          v-if="!isExchanger_flag"
-        >
-          <div>
-            {{ t("bourse.tip13") }}
-          </div>
-          <template #reference>
-            <div
-              :class="`${
-                serverIndex === 0 && !isExchangeStatusStatus
-                  ? 'active'
-                  : !isExchangeStatusStatus
-                  ? 'active-d'
-                  : ''
-              }`"
-              @click="changeServerIndex(0)"
-            >
-              <span class="t1 flex center">0ERB</span>
-              <span class="t2 flex center"
-                ><span class="flex right">None</span>
-                <i
-                  :class="`iconfont ${
-                    serverIndex == 0 ? 'icon-duigouxiao' : 'icon-dui'
-                  }`"
-                ></i
-              ></span>
-              <span class="t1 flex center">0$</span>
-            </div>
-          </template>
-        </van-popover>
-        <van-popover
-          v-model:show="visible2"
-          placement="bottom-end"
-          :class="isExchangeStatusStatus ? 'appendtobear' : 'appendto2'"
-        >
-          <span>{{ t("bourse.tip14") }}</span>
-          <template #reference>
-            <div
-              :class="
-                serverIndex === 1 && !isExchangeStatusStatus
-                  ? 'active'
-                  : isExchangeStatusStatus
-                  ? 'active-d'
-                  : ''
-              "
-              @click="changeServerIndex(1)"
-            >
-              <span class="t1 flex center">280ERB</span>
+     <!--
+       // <div class="bourse-container-meaning bt mt-14" v-if="isExchanger_flag">
+      //   <span>{{ t("createExchange.addPl") }} </span>
+      //   <el-tooltip
+      //     popper-class="tooltip3"
+      //     class="box-item"
+      //     effect="dark"
+      //     :content="t('bourse.tip4')"
+      //     placement="right"
+      //     trigger="hover"
+      //   >
+      //     <van-icon name="question" class="ml-4" color="#9A9A9A" />
+      //   </el-tooltip>
+      //   <div class="add-amount f-14 text-bold mt-6 mb-14">
+      //     {{ addAmount || 0 }} ERB
+      //   </div>
+      //   <el-slider
+      //     v-model="addAmount"
+      //     :min="minBalance"
+      //     :max="maxBalance"
+      //     @input="changeAdd"
+      //     :marks="marks2"
+      //     :step="1"
+      //   />
+      //   <div class="mt-16">
+      //     <van-field type="number" v-model="addAmount" @change="handleAdd" />
+      //   </div>
+      // </div>
+    
+      // <div class="bourse-container-meaning bt mt-14" v-if="!isExchanger_flag">
+      //   <span>{{ t("bourse.marketServer") }} </span>
+      //   <el-tooltip
+      //     popper-class="tooltip3"
+      //     class="box-item"
+      //     effect="dark"
+      //     :content="t('bourse.tip4')"
+      //     placement="right"
+      //     trigger="hover"
+      //   >
+      //     <van-icon name="question" class="ml-4" color="#9A9A9A" />
+      //   </el-tooltip>
+      // </div>
+      // <p v-show="insufficientMoney && !isExchanger_flag" class="insufficientMoney-tip">{{ insufficientMoney ? t('createExchange.insufficientMoney', {value: addBalance}) : '' }}</p>
+ 
+      // <div
+      //   v-if="!isExchanger_flag"
+      //   :class="[
+      //     'bourse-container-server',
+      //     isExchanger_flag ? 'bourse-container-server-b' : '',
+      //   ]"
+      // >
+      //   <van-popover
+      //     v-model:show="visible1"
+      //     placement="bottom-start"
+      //     :class="`${isExchangeStatusStatus ? 'appendtobear' : 'appendto1'}`"
+      //     v-if="!isExchanger_flag"
+      //   >
+      //     <div>
+      //       {{ t("bourse.tip13") }}
+      //     </div>
+      //     <template #reference>
+      //       <div
+      //         :class="`${
+      //           serverIndex === 0 && !isExchangeStatusStatus
+      //             ? 'active'
+      //             : (!isExchangeStatusStatus
+      //             ? 'active-d'
+      //             : '')
+      //         }`"
+      //         @click="changeServerIndex(0)"
+      //       >
+      //         <span class="t1 flex center">0ERB</span>
+      //         <span class="t2 flex center"
+      //           ><span class="flex right">None</span>
+      //           <i
+      //             :class="`iconfont ${
+      //               serverIndex == 0 ? 'icon-duigouxiao' : 'icon-dui'
+      //             }`"
+      //           ></i
+      //         ></span>
+      //         <span class="t1 flex center">0$</span>
+      //       </div>
+      //     </template>
+      //   </van-popover>
+      //   <van-popover
+      //     v-model:show="visible2"
+      //     placement="bottom-end"
+      //     :class="isExchangeStatusStatus ? 'appendtobear' : 'appendto2'"
+      //   >
+      //     <span>{{ t("bourse.tip14") }}</span>
+      //     <template #reference>
+      //       <div
+      //         :class="
+      //           serverIndex === 1 && !isExchangeStatusStatus
+      //             ? 'active'
+      //             : (isExchangeStatusStatus
+      //             ? 'active-d'
+      //             : '') + (insufficientMoney === true ? 'disabled' : '')
+      //         "
+      //         @click="changeServerIndex(1)"
+      //       >
+      //         <span class="t1 flex center">200ERB</span>
 
-              <span class="t2 flex center"
-                ><span>Best</span>
-                <i
-                  :class="`iconfont ${
-                    serverIndex == 1 ? 'icon-duigouxiao' : 'icon-dui'
-                  }`"
-                ></i
-              ></span>
+      //         <span class="t2 flex center"
+      //           ><span>Best</span>
+      //           <i
+      //             :class="`iconfont ${
+      //               serverIndex == 1 ? 'icon-duigouxiao' : 'icon-dui'
+      //             }`"
+      //           ></i
+      //         ></span>
 
-              <span class="t1 flex center">{{toUsd(280,0)}}$</span>
-            </div>
-          </template>
-        </van-popover>
-      </div>
+      //         <span class="t1 flex center">{{toUsd(200,0)}}$</span>
+      //       </div>
+      //     </template>
+      //   </van-popover>
+      // </div>
+    -->
       <div class="bourse-container-warning" v-if="isWarning">
         <van-icon name="warning" color="#F7BF03" size="20" />
         <span>{{ t("bourse.tip15") }}</span>
       </div>
-      <!-- <div class="bourse-container-error" v-if="isError">
-        <van-icon name="question" color="#D73A49" />
+      <!-- 
+      //   <div class="bourse-container-error" v-if="isError">
+      //   <van-icon name="question" color="#D73A49" />
 
-        <span>{{ t("bourse.tip16") }}</span>
-      </div> -->
+      //   <span>{{ t("bourse.tip16") }}</span>
+      // </div>
+       -->
 
       <div :class="!isExchanger_flag ? 'bourse-container-btns' : 'btn-groups'">
+        <div class="pwd-tip mb-24">
+        <i18n-t keypath="createAccountpage.pwdTip2" tag="div" class="text-center mt-20 lh-16">
+          <template v-slot:br><br></template>
+          <template v-slot:link1><span class="hover" @click="routerTo">{{t('createAccountpage.link3')}}</span></template>
+        </i18n-t>
+      </div>
         <div class="container flex between pl-12 pr-12 btn-box">
           <van-button
             v-if="!isExchanger_flag"
@@ -274,7 +287,7 @@
                 v-if="!isTimeQualified"
                 theme="dark"
                 :close-on-click-outside="false"
-                placement="top"
+                placement="top-end"
                 trigger="manual"
                 class="popover-btn-tip"
               >
@@ -310,21 +323,22 @@
                 type="primary"
                 >{{ t("bourse.saveExchange") }}</van-button
               >
+              <!--
               <van-button
                 v-else
                 class="b1"
                 @click="addSubmit"
                 block
                 type="primary"
-                >{{ t("bourse.saveExchange") }}</van-button
-              >
+                >{{ t("bourse.saveExchange") }}</van-button>
+              -->
             </template>
           </template>
         </div>
       </div>
     </div>
     <div class="flex center loading-page" v-else>
-      <van-loading color="#037CD6" />
+    <van-loading color="#9F54BA" />
     </div>
     <CustomExchangeModal
       v-model="showAcount"
@@ -378,14 +392,13 @@
     <ModifPledgeModal
       v-model="showPledgeModal"
       :max="parseInt(exchangerBalance)"
-      :defaultValue="280"
+      :defaultValue="700"
       @confirm="handleConfirmMinus"
     />
   </div>
 </template>
 <script lang="ts">
 import NavHeader from "@/popup/components/navHeader/index.vue";
-
 import {
   defineComponent,
   Ref,
@@ -432,8 +445,6 @@ import AmountView from "@/popup/views/account/exchange/amount.vue";
 import AgreementView from "@/popup/views/account/exchange/agreement.vue";
 import success from "@/popup/views/account/exchange/success.vue";
 import {
-  formatEther,
-  toUsd,
   scientificToNumber,
 } from "@/popup/utils/filters";
 import AddModal from "./add-modal.vue";
@@ -455,11 +466,12 @@ import Bignumber from "bignumber.js";
 import ModifPledgeModal from "@/popup/views/account/components/modifPledgeModal/index.vue";
 import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
 import { getAccount } from "@/popup/http/modules/nft";
+import { web3 } from "@/popup/utils/web3";
 interface Mark {
   style: CSSProperties;
   label: string;
 }
-
+console.log("saaaaa")
 type Marks = Record<number, Mark | string>;
 export default defineComponent({
   name: "createExchange",
@@ -495,13 +507,11 @@ export default defineComponent({
     ModifPledgeModal,
 
   },
-
   setup(props: any, context: SetupContext) {
     const blockNumber = ref(0);
     const accountInfoBlockNumber = ref(0);
     const { $toast } = useToast();
     const appProvide = inject("appProvide");
-
     const marks = reactive<Marks>({
       10: "",
       20: "",
@@ -514,7 +524,10 @@ export default defineComponent({
       90: "",
       100: "",
     });
-
+    // Open exchange status
+    const exchangeStatus: ComputedRef<ExchangeStatus> = computed(
+      () => store.state.account.exchangeStatus
+    );
     const loading: Ref<boolean> = ref(false);
     const account = ref({});
     const initPageData = async () => {
@@ -534,10 +547,8 @@ export default defineComponent({
         ethAccountInfo.value = accountInfo;
         accountInfoBlockNumber.value = accountInfo.BlockNumber;
         console.log(blockNumber.value - accountInfoBlockNumber.value);
-        dispatch("account/getExchangeStatus");
+        
         if (exchangeStatus.value.exchanger_flag) {
-          console.log("获取质押调整的字段", accountInfo);
-          // console.log("交易所检测节点是ExchangerURL从data中获取",data)
           const { ExchangerBalance, ExchangerName, ExchangerURL, FeeRate } =
             accountInfo;
           let formatValue;
@@ -562,9 +573,10 @@ export default defineComponent({
       initPageData();
     });
 
-    const isTimeQualified = computed(
-      () => blockNumber.value - accountInfoBlockNumber.value >= 72
-    );
+    const nftminer_redemption_number = computed(() => store.state.configuration.setting.redemption.nftminer_redemption_number)
+
+    const isTimeQualified = computed(() => blockNumber.value - accountInfoBlockNumber.value >= nftminer_redemption_number.value);
+
 
     const minusDisabled = computed(() => !isTimeQualified.value);
     const {
@@ -591,17 +603,14 @@ export default defineComponent({
 
       addExchangeBalance,
     } = useExchanges();
-    const name = ref("");
+    const name = ref("Exchanger");
     const store = useStore();
     const { dispatch } = store;
-    const amount = ref(280);
+    const amount = ref(700);
     const accountInfo = computed(() => store.state.account.accountInfo);
-    // 开设交易所状态
-    const exchangeStatus: ComputedRef<ExchangeStatus> = computed(
-      () => store.state.account.exchangeStatus
-    );
-    const visible1 = computed(() => serverIndex.value === 0);
-    const visible2 = computed(() => serverIndex.value === 1);
+
+    let visible1 = computed(() => serverIndex.value === 0);
+    let visible2 = computed(() => serverIndex.value === 1);
     const toCreate = async (name: string, amount: number) => {
       const fee_rate = money.value;
       try {
@@ -616,8 +625,6 @@ export default defineComponent({
         console.error(err);
       }
     };
-
-    // 滑块功能
     const value = ref(50);
 
     const isClose = ref(false);
@@ -627,7 +634,6 @@ export default defineComponent({
 
     showCreateExchange.value = props.show;
 
-    // server选择
     // let serverIndex = ref(1);
     let money = ref(0);
     let moneyMin = ref(0);
@@ -637,14 +643,17 @@ export default defineComponent({
     let showAgreement = ref(false);
     let moneyMax = ref(10);
     let isOne = ref(true);
-    // 第一次成功显示弹框
+    // The first successful display of the pop-up box
     let successDialog = ref(false);
     const customClick = () => {
       showAcount.value = true;
     };
-    // server选择
-    let serverIndex = ref(1);
+    // servr selection
+    let serverIndex = ref(0);
     const changeServerIndex = (value: number) => {
+      if(value && insufficientMoney.value) {
+        return
+      }
       if (exchangeStatus.value.exchanger_flag) {
         return;
       }
@@ -666,14 +675,17 @@ export default defineComponent({
         nameError.value = true;
         return t("bourse.vainame");
       }
-      if (val.length < 4 || val.length > 12) {
+      console.log(val.length)
+
+      if (val.length < 4 || val.length > 20) {
         nameError.value = true;
         return false;
       }
-      if (regExchangeName.test(val)) {
-        nameError.value = true;
-        return false;
-      }
+      // if (regExchangeName.test(val)) {
+      //   console.log(val)
+      //   nameError.value = true;
+      //   return false;
+      // }
       return true;
     };
     const { $tradeConfirm } = useTradeConfirm();
@@ -695,21 +707,23 @@ export default defineComponent({
           });
           await sendTo(
             name.value,
-            280,
-            serverIndex.value == 0 ? false : true,
+            700,
+            // serverIndex.value == 0 ? false : true,
+            false,
             fee_rate
           );
         }
       } catch (err) {
         console.error(err);
       }
-      // 关闭上一页
-      console.log("执行到了这里");
       showCreateExchange.value = false;
     };
-
+    const insufficientMoney = computed(() => {
+      return new Bignumber(accountInfo.value.amount).lt(901) ? true : false
+    })
     let changeexchangerName = (value: any) => {
-      return decode(value);
+      console.warn('value',value)
+      return value;
     };
     const ethAccountInfo = ref({ ExchangerBalance: 0 });
     const exchangerBalance = computed(() =>
@@ -722,6 +736,11 @@ export default defineComponent({
 
     onMounted(() => {
       initPageData();
+      console.warn('insufficientMoney.value', insufficientMoney.value, isExchangeStatusStatus.value)
+      if(insufficientMoney.value) {
+        serverIndex.value = 0
+        console.warn('serverIndex.value---', serverIndex.value)
+      }
     });
     const isExchanger_flag = computed(
       () => store.state.account.exchangeStatus.exchanger_flag
@@ -737,7 +756,8 @@ export default defineComponent({
     const formDom = ref();
     const router = useRouter();
     const back = () => {
-      // 没有开交易所直接跳首页，否则上一页
+      serverIndex.value=  2;
+      // Do not open the exchange directly jump home page, otherwise the previous page
       if (isExchangeStatusStatus.value) {
         router.replace({ name: "exchange-management" });
       } else {
@@ -749,10 +769,10 @@ export default defineComponent({
       const { exchanger_flag, status } = store.state.account.exchangeStatus;
       const am = new BigNumber(accountInfo.value.amount);
 
-      // 未开过
+      // Did not open
       if (!exchanger_flag && status != 2) {
-        if (am.lt(281)) {
-          $toast.warn(t("createExchange.ispoor"));
+        if (am.lt(701)) {
+          $toast.warn(t("createExchange.isPoor"));
           return;
         }
       }
@@ -767,20 +787,23 @@ export default defineComponent({
         console.log(error);
       }
     };
-    // 追加质押金额
-    // 追加质押确认弹窗
+    const routerTo = () => {
+      window.open('https://limino.com/upload/tsm.html')
+
+    }
+    // Additional pledge confirmation pop-up window
     const showAddModal = ref(false);
     const handleAddAmount = () => {
       const am = new BigNumber(accountInfo.value.amount);
       const addnum = new BigNumber(addAmount.value);
-      if (addnum.lt(280)) {
+      if (addnum.lt(700)) {
         isCloseDialog.value = true;
         return;
       }
       const diffAm = new Bignumber(maxBalance.value).minus(
         exchangerBalance.value
       );
-      debugger;
+      //debugger;
       if (am.lt(diffAm)) {
         $toast.warn(t("createExchange.ispoor"));
         return;
@@ -830,13 +853,19 @@ export default defineComponent({
       }
     );
 
+    watch(() => serverIndex.value, n => {
+      console.log('serverIndex:', n)
+    },{
+      deep: true,
+      immediate: true
+    })
     const addAmount = ref();
     const minBalance = computed(() => 0);
     const maxBalance = computed(() =>
       new Bignumber(accountInfo.value.amount).minus(1).toNumber()
     );
     const handleAdd = () => {
-      // 超过了可质押金额
+      // Exceeds the amount that can be pledged
       if (new Bignumber(addAmount.value || 0).gt(maxBalance.value)) {
         const ama = parseInt(new Bignumber(maxBalance.value).toString());
         addAmount.value = ama;
@@ -853,40 +882,9 @@ export default defineComponent({
     const closeBtnDisabled = ref(true);
 
     const changeAdd = () => {
-      // const am = new Bignumber(accountInfo.value.amount);
-      // const addNum = new Bignumber(addAmount.value);
-      // const exchangeBalance = exchangerBalance.value;
-      // if (addNum.eq(exchangeBalance)) {
-      //   closeBtnDisabled.value = true;
-      //   return;
-      // }
-      // if (addNum.gt(exchangeBalance)) {
-      //   closeBtnTxt.value = t("createExchange.pledgeRed");
-      //   closeBtnDisabled.value = false;
-      // } else {
-      //   // 如果小于200 关闭
-      //   if (addNum.lt(280)) {
-      //     closeBtnTxt.value = t("bourse.closeExchange");
-      //   }
-      //   // 大于等于200 小于质押,
-      //   if (addNum.gte(280) && addNum.lt(exchangeBalance)) {
-      //     closeBtnTxt.value = t("createExchange.pledgeRed");
-      //   }
-      //   closeBtnDisabled.value = false;
-      // }
+ 
     };
-    // const showCloseBtn = computed(() => {
-    //   const addNum = new Bignumber(addAmount.value);
-    //   const exchangeBalance = exchangerBalance.value;
-    //   if (addNum.lte(280) && !isTimeQualified.value) {
-    //     return false;
-    //   }
-    //   // if(addNum.eq(200)) {
-    //   //   return false
-    //   // }
-    //   // // 追加金额小于200
-    //   return true;
-    // });
+
     const bigAmount = new BigNumber(accountInfo.value.amount);
 
     const marks2 = ref<Marks>({});
@@ -918,8 +916,20 @@ export default defineComponent({
       showMinusModal.value = true;
     };
     const showClose = ref(true);
+
+    const feilvstr = computed(() => {
+      console.warn('moneyStr.value', t('createExchange.commission',{value: moneyStr.value}))
+      return t('createExchange.commission',{value: moneyStr.value})
+    })
+    const addBalance = computed(() => {
+      return new Bignumber(901).minus(accountInfo.value.amount).toFixed(6)
+    })
     return {
+      addBalance,
+      feilvstr,
+      routerTo,
       showClose,
+      insufficientMoney,
       handleClose,
       minusAmount,
       handleConfirmMinus,
@@ -962,7 +972,6 @@ export default defineComponent({
       handleAddAmount,
       appProvide,
       t,
-      toUsd,
       value,
       showCreateExchange,
       name,

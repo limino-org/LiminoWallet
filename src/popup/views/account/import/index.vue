@@ -19,7 +19,7 @@
           <van-field
             v-model="privatekey"
             autosize
-            name="私钥"
+            name="privacy"
             type="textarea"
             class="content"
             :placeholder="$t('import.forexample')"
@@ -93,9 +93,9 @@ export default {
       );
       // Verify whether the private key is valid
       dispatch("account/importPrivateKey", privatekey.value.trim())
-        .then((wallet) => {
+        .then(async(wallet) => {
           const { privateKey, mnemonic, address } = wallet;
-          const password = getCookies("password") || "";
+          const password = await getCookies("password") || "";
           if (!password) {
             router.replace({ name: "loginAccount-step1" });
             return false;
@@ -142,7 +142,7 @@ export default {
 .introduce {
   width: 100%;
   height: 319px;
-  background-color: #e9f5fe;
+  background-color: #9F54BA;
   .close-icon {
     display: inline-block;
     position: absolute;
@@ -209,7 +209,7 @@ export default {
     margin: 20px 25px;
     width: 325px;
     height: 45px;
-    background: #037cd6;
+    background: #9F54BA;
     border-radius: 24px;
   }
 }

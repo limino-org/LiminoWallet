@@ -1,5 +1,6 @@
 <template>
   <van-dialog
+    class="server-modal"
     v-model:show="show"
     show-cancel-button
     teleport="#page-box"
@@ -53,7 +54,7 @@
             </template>
           </van-popover>
         </div>
-        <div class="value lh-16">300 days / 1560 hour</div>
+        <div class="value lh-16">{{ t("createExchange.serverDesc",{days,hours}) }}</div>
       </div>
       <div class="card">
         <div class="label lh-16 mb-2">
@@ -101,7 +102,7 @@
           </van-popover>
         </div>
         <div class="value lh-16 gas">
-          ≈ {{ gasFee }} ERB (≈ ${{ toUsd(gasFee, 8) }})
+          ≈ {{ gasFee }} ERB
         </div>
       </div>
     </div>
@@ -126,7 +127,6 @@ import {
 import { watch } from "vue";
 import { Dialog, Icon, Button, Popover } from "vant";
 import { useI18n } from "vue-i18n";
-import { toUsd } from "@/popup/utils/filters";
 import Bignumber from "bignumber.js";
 import { useExchanges } from "@/popup/hooks/useExchanges";
 import Tip from "@/popup/components/tip/index.vue";
@@ -157,6 +157,14 @@ export default defineComponent({
       type: String,
       default: "",
     },
+    hours: {
+      type: Number,
+      default: 0
+    },
+    days: {
+      type: Number,
+      default: 0
+    }
   },
   setup(props: any, context: SetupContext) {
     const { emit } = context;
@@ -168,8 +176,6 @@ export default defineComponent({
     const exchangeStatus = computed(() => state.account.exchangeStatus);
     const gasFee = ref("");
     const {
-      addExchangeBalance,
-      miunsExchangeBalance,
       send2,
       sendTx2,
       getContract,
@@ -182,13 +188,14 @@ export default defineComponent({
         if (n) {
           const contract = await getContract();
           const gasPrice = await contract.provider.getGasPrice();
+          const priceStr = ethers.utils.formatUnits(gasPrice,'wei')
           const gasLimit = await contract.estimateGas.payForRenew({
             value: ethers.utils.parseEther(200 + ""),
           });
-          gasFee.value = gasFee.value = new Bignumber(
+          gasFee.value = new Bignumber(
             ethers.utils.formatEther(gasLimit)
           )
-            .dividedBy(ethers.utils.formatEther(gasPrice))
+            .multipliedBy(priceStr)
             .toFixed(9);
    
         }
@@ -253,7 +260,6 @@ export default defineComponent({
       showpop2,
       showpop1,
       t,
-      toUsd,
       submit,
       gasFee,
     };
@@ -261,6 +267,7 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
+
 .popover-tip {
   max-width: 150px;
 }
@@ -269,12 +276,12 @@ export default defineComponent({
   font-weight: bold;
   color: #000000;
   line-height: 60px;
-  background: #f8fcff;
+  background: #F8F3F9;
 }
 .form-box {
   border-radius: 10px;
   border: 1px solid #e4e7e8;
-  margin: 27px 15px 15px;
+  margin: 26px 15px 15px;
   padding: 12px 15px 0;
 }
 .card {
@@ -297,13 +304,13 @@ export default defineComponent({
 .tips {
   margin: 15px;
   padding: 12px 15px;
-  background: #f4faff;
+  background: #F8F3F9;
   border-radius: 5px;
   .text {
     line-height: 16px;
   }
   i {
-    color: #037dd6;
+    color: #9F54BA;
     margin-right: 9px;
   }
 }

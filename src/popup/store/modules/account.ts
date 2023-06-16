@@ -1,7 +1,13 @@
 import { Toast, Notify, GridItem } from "vant";
 import { ethers, utils } from "ethers";
-import {clone} from 'pouchdb-utils';
 import storeObj from '@/popup/store/index'
+import { useBroadCast } from '@/popup/utils/broadCost'
+import { getConverAmount, getInput } from "./txList";
+import { guid } from '@/popup/utils/utils';
+
+const { handleUpdate } = useBroadCast()
+import eventBus from "@/popup/utils/bus";
+
 // @ts-ignore
 window.utils = utils;
 import {
@@ -16,7 +22,7 @@ import { getRandomIcon } from "@/popup/utils/index";
 import { toRaw } from "vue";
 import { TransactionData, TransactionParams } from "./index";
 import { ETH, Token } from "@/popup/utils/token";
-import { checkAuth } from "@/popup/http/modules/common";
+import { checkAuth, getAccountAddr, getCreator, getPeriodById } from "@/popup/http/modules/common";
 import { useStore } from "vuex";
 import {
   NetWorkData,
@@ -24,7 +30,7 @@ import {
 } from "@/popup/enum/network";
 import { setCookies, getCookies } from "@/popup/utils/jsCookie";
 import router from "@/popup/router";
-import { getQuery, toHex ,getURLPath} from "@/popup/utils/utils";
+import { getQuery, toHex, getURLPath } from "@/popup/utils/utils";
 import i18n from "@/popup/language/index";
 const erc20Abi: any = require("@/popup/assets/json/erc20Abi.json");
 import {
@@ -37,12 +43,17 @@ import {
 } from "@/popup/utils/web3";
 import { eventHandler } from "@/popup/hooks/useEvent";
 import BigNumber from "bignumber.js";
-import store from "@/store";
+import store from "@/popup/store";
 import { getContractAddress } from "@/popup/http/modules/common";
 import Bignumber from 'bignumber.js'
+import { sendBackground } from "@/popup/utils/sendBackground";
+import localforage from "localforage";
+import { Wallet } from "ethers";
 export interface State {
   // Mnemonic words
   mnemonic: Mnemonic;
+  ethNetwork: Object;
+
   // route
   path: string;
   wallet: any;
@@ -63,6 +74,11 @@ export interface State {
   firstTime: Boolean,
   exchangeGuidance: boolean
   exchangeServer: boolean;
+  exchangeTotalProfit: number
+  minerTotalProfit: number
+  netStatus: NetStatus
+  creatorStatus: Object | null,
+    ethAccountInfo: Object,
 
 }
 export type ContactInfo = {
@@ -79,7 +95,10 @@ export interface AddressBalance {
   address: string;
   balance: string;
 }
-
+export enum TransactionSendStatus {
+  pendding = "pendding",
+  success = 'success',
+}
 export interface Mnemonic {
   path: string;
   phrase?: string;
@@ -104,13 +123,22 @@ export interface AccountInfo {
   imported?: boolean;
 }
 // Ordinary transaction params
+
 export interface SendTransactionParams {
   value: string;
   to: string;
   gasPrice: string;
   gasLimit: number;
-  // Callback of transaction confirmation
-  call?: Function;
+  data?: string
+  transitionType?: string
+  nft_address?: string
+  checkTxQueue?: boolean
+  nonce?: number
+  maxFeePerGas? :string
+  maxPriorityFeePerGas? :string
+  type? :string
+  
+
 }
 
 // Token transaction params
@@ -121,6 +149,17 @@ export interface SendTokenParams {
   gasPrice: string;
   gasLimit: number;
   to: string;
+  call?: Function;
+}
+
+export interface SendTokenParams {
+  address: string;
+  amount: any;
+  gasPrice: string;
+  gasLimit: number;
+  to: string;
+  checkTxQueue?: boolean
+  nonce?: number
 }
 
 export interface AddAccountParams {
@@ -131,7 +170,11 @@ export interface AddAccountParams {
   address: string;
   imported: boolean;
 }
-
+export enum NetStatus {
+  pendding = "pendding",
+  success = "success",
+  fail = "fail"
+}
 export interface RandomWallet {
   password: string;
   mnemonic: CreateWalletByMnemonicParams;
@@ -157,10 +200,12 @@ export type UpdateKeyStoreByAddressParams = {
 
 // Transactions
 export type TransactionReceipt = {
+  network: NetWorkData,
   // Transaction type is used for list / detail display
   txType: string;
   // Transaction type
   type: number;
+  blockNumber: any,
   // state
   status: number;
   // date
@@ -179,13 +224,20 @@ export type TransactionReceipt = {
   hash: string;
   // gas price
   effectiveGasPrice: BigNumber;
-  // symbol
-  symbol: string
-  tokenAddress?: string
+  tokenAddress?: string,
+  // transition type
+  transitionType?: string
+  // nft_address
+  nft_address?: string
+  //  convert amount
+  convertAmount?: string
 };
+
+let waitTime = null;
+
 export let wallet: any = null;
 export const getWallet = () => {
-  if (!wallet) {
+  if (!wallet || !wallet.provider) {
     const { dispatch } = storeObj;
     const w = dispatch("account/getWallet");
     return w;
@@ -199,12 +251,13 @@ export const getGasFee = async (tx: any) => {
     const gasPrice = await wall.provider.getGasPrice()
     const gasLimit = await wall.estimateGas(tx)
     const limitStr = ethers.utils.formatEther(gasLimit)
-    const priceStr = ethers.utils.formatUnits(gasPrice,'wei')
-    debugger
+    const priceStr = ethers.utils.formatUnits(gasPrice, 'wei')
+    //debugger
     const gasFee = new Bignumber(limitStr).multipliedBy(priceStr).toFixed(9)
     return gasFee
   } catch (err) {
     console.error(err)
+    return Promise.reject(err)
   }
 }
 // Clear the current wallet instance
@@ -227,6 +280,9 @@ export default {
     netWorkList: netWorklist.map((item) => item),
     // Instances of the currently selected network
     currentNetwork: { ...netWorklist[0] },
+    ethNetwork: {
+      chainId: 51888
+    },
     // Of the current wallet instance keyStore
     keyStore: {},
     // Current account data
@@ -260,6 +316,12 @@ export default {
     firstTime: true,
     exchangeGuidance: false,
     exchangeServer: false,
+    // miner total profit
+    minerTotalProfit: 4856544,
+    // exchange total profit
+    exchangeTotalProfit: 2522880,
+    creatorStatus: null,
+    ethAccountInfo: {},
   },
   getters: {
     // Token of current account
@@ -270,7 +332,7 @@ export default {
     },
     // Whether to open the exchange
     hasExchange(state: State) {
-      if(!state.exchangeStatus){
+      if (!state.exchangeStatus) {
         return false
       }
       return state.exchangeStatus.exchanger_flag == true ? true : false;
@@ -281,11 +343,33 @@ export default {
       return list.length ? list[0] : {};
     },
     // Current transaction pop-up status
-    tranactionModel(state: State){
+    tranactionModel(state: State) {
       return state.tranactionModel
-    }
+    },
   },
   mutations: {
+        // Update EthAccountInfo
+        UPDATE_ETHACCOUNTINFO(state: State, info: any) {
+          state.ethAccountInfo = info
+        },
+    UPDATE_CREATORSTATUS(state: State, val: any) {
+      state.creatorStatus = val
+    },
+    UPDATE_ETHNETWORK(state: State, val: any) {
+      state.ethNetwork = val
+      if (val && val.chainId) {
+        state.currentNetwork.chainId = val.chainId
+        state.netWorkList.forEach(item => {
+          if (item.id.toUpperCase() === state.currentNetwork.id.toUpperCase()) {
+            item.chainId = val.chainId
+          }
+        })
+      }
+    },
+    // Updating the Network Status
+    UPDATE_NETSTATUS(state: State, status: NetStatus) {
+      state.netStatus = status
+    },
     UPDATE_EXCHANGEGUIDANCE(state: State, value: boolean) {
       state.exchangeGuidance = value
     },
@@ -297,65 +381,62 @@ export default {
       const { path, pathIndex } = value;
       const data = { path, pathIndex };
       state.mnemonic = data;
+      handleUpdate()
     },
     // Update Wallet
     UPDATE_WALLET(state: State, value: any) {
-      console.log('wallet',value)
       wallet = value;
-      if(wallet.provider) {
-      // @ts-ignore
-       const bg = chrome.extension.getBackgroundPage();
-       bg.initWallet()
+      if (wallet.provider) {
+        sendBackground({ method: 'update-wallet' })
       }
-      localStorage.setItem("wallet", JSON.stringify({ ...value }));
     },
     // New account
     ADD_ACCOUNT(state: State, value: Array<Object>) {
       state.accountList = value;
     },
     // Update URL of wormholes network
-// Update wormholes URL
-UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
-  let flag = false
-  if (state.currentNetwork.isMain) {
-    if(state.currentNetwork.URL != URL || state.currentNetwork.browser != browser) {
-      flag = true
-    }
-    state.currentNetwork.URL = URL;
-    state.currentNetwork.browser = browser;
-    state.currentNetwork.id = 'wormholes-network-1'
-  }
-  state.netWorkList.forEach(item => {
-    if(item.isMain){
-      if(item.URL != URL || item.browser != browser) {
-        flag = true
+    // Update wormholes URL
+    UPDATE_WORMHOLES_URL(state: State, { URL, browser, chainId }: any) {
+      let flag = false
+      if (state.currentNetwork.isMain) {
+        if (state.currentNetwork.URL != URL || state.currentNetwork.browser != browser) {
+          flag = true
+        }
+        state.currentNetwork.URL = URL;
+        state.currentNetwork.browser = browser;
+        state.currentNetwork.id = 'wormholes-network-1'
       }
-      item.URL = URL;
-      item.browser = browser;
-      item.id = 'wormholes-network-1'
-    }
-  })
-  if(flag){
-    Toast.loading({
-      message: i18n.global.t('common.asyncData'),
-      duration: 0
-    })
-    setTimeout(() => {
-      if(flag) {
-        location.reload()
+      state.netWorkList.forEach(item => {
+        if (item.isMain) {
+          if (item.URL != URL || item.browser != browser) {
+            flag = true
+          }
+          item.URL = URL;
+          item.browser = browser;
+          item.id = 'wormholes-network-1'
+        }
+      })
+      if (flag) {
+        Toast.loading({
+          message: i18n.global.t('common.asyncData'),
+          duration: 0
+        })
+        setTimeout(() => {
+          if (flag) {
+            location.reload()
+          }
+        }, 1000)
       }
-    },1000)
-  }
 
 
-},
+    },
     // Update wormholes ChainId
-    UPDATE_WORMHOLES_CHAINID(state:State, chainId: number) {
+    UPDATE_WORMHOLES_CHAINID(state: State, chainId: number) {
       if (state.currentNetwork.isMain) {
         state.currentNetwork.chainId = chainId
       }
       state.netWorkList.forEach(item => {
-        if(item.isMain){
+        if (item.isMain) {
           item.chainId = chainId
         }
       })
@@ -377,11 +458,23 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
           state.netWorkList[i] = network;
         }
       }
+      handleUpdate()
     },
     // Delete network by ID
     DETETE_NETWORK(state: State, id: string) {
       const list = state.netWorkList.filter((item) => item.id != id);
+      if (state.currentNetwork.id == id) {
+        list.forEach(item => {
+          if (item.isMain) {
+            item.select = true
+          } else {
+            item.select = false
+          }
+        })
+        state.currentNetwork = list[0]
+      }
       state.netWorkList = list;
+      handleUpdate()
     },
     // Update network selection status
     UPDATE_NETWORKSTATUS(state: State, value: NetWorkData) {
@@ -397,6 +490,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
     // Update the keystore of the current Wallet
     UPDATE_KEYSTORE(state: State, value: Object) {
       state.keyStore = value;
+      handleUpdate()
     },
     // Update the keystore of an address
     UPDATE_KEYSTORE_BYADDRESS(
@@ -413,41 +507,47 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
       if (state.accountInfo.address.toUpperCase() == address.toUpperCase()) {
         state.accountInfo.keyStore = json;
       }
+      handleUpdate()
     },
     // Update account information
     UPDATE_ACCOUNTINFO(state: State, value: AccountInfo) {
       state.accountInfo = value;
+      state.accountList.forEach(item => {
+        if (item.address.toUpperCase() == value.address.toUpperCase()) {
+          item = value
+        }
+      })
     },
     // Transaction list pushed to current account
-    PUSH_TRANSACTION(state: State, value: TransactionReceipt) {
-      const { to, from, tokenAddress } = value;
-      const currentNetwork: NetWorkData = { ...toRaw(state.currentNetwork) };
-      const netWorkList = toRaw(state.netWorkList);
-      const tokenAdd = tokenAddress ? tokenAddress.toUpperCase() : '';
+    async PUSH_TRANSACTION(state: State, value: TransactionReceipt) {
+      const { to, from, tokenAddress, network } = value;
+      const txNetwork: NetWorkData = { ...network };
+      const { id, currencySymbol } = txNetwork
       const formAdd = from.toUpperCase();
-      const len2 =
-        typeof currentNetwork.transactionList[formAdd] != undefined &&
-        currentNetwork.transactionList[formAdd]
-          ? currentNetwork.transactionList[formAdd].length
-          : 0;
-
-      if (len2) {
-        Object.keys(currentNetwork.transactionList).forEach((key) => {
-          const keyVal = key.toUpperCase();
-          if (keyVal == formAdd) {
-            currentNetwork.transactionList[keyVal].unshift(value);
-          }
-        });
+      const txListKey = `txlist-${id}`
+      let txList: any = await localforage.getItem(txListKey)
+      console.log('txList', txList)
+      if (txList && typeof txList == 'object') {
+        const receipt = { ...value, symbol: currencySymbol }
+        delete receipt.network
+        if (txList[formAdd] && txList[formAdd].length) {
+          const hasHash = txList[formAdd].find((tx: any) => tx.hash.toUpperCase() == value.hash.toUpperCase())
+          !hasHash ? txList[formAdd].unshift(clone(receipt)) : ''
+        } else {
+          txList[formAdd] = [clone(receipt)]
+        }
       } else {
-        currentNetwork.transactionList[formAdd] = [value];
-      }
-      for (let i = 0; i < netWorkList.length; i++) {
-        if (netWorkList[i].chainId == currentNetwork.chainId) {
-          netWorkList[i] = currentNetwork;
+        const receipt = { ...value, symbol: currencySymbol }
+        delete receipt.network
+        txList = {
+          [formAdd]: [clone(receipt)]
         }
       }
-      state.currentNetwork = currentNetwork;
-      state.netWorkList = netWorkList;
+      store.commit('account/DEL_TXQUEUE', value)
+      console.log('set txList', txList)
+      // save txlist
+      localforage.setItem(txListKey, clone(txList))
+      handleUpdate()
     },
     // Update balance
     UPDATE_BALANCE(state: State, balance: string) {
@@ -506,6 +606,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
     // Add network to list
     PUSH_NETWORK(state: State, network: NetWorkData) {
       state.netWorkList.push(network);
+      handleUpdate()
     },
     // Update data on the chain
     UPDATE_CHAINACCOUNTINFO(state: State, val: any) {
@@ -516,7 +617,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
       state.exchangeStatus = val;
     },
     // Add token for current account address
-    ADD_ADDRESS(state: State, VAL: Token) {},
+    ADD_ADDRESS(state: State, VAL: Token) { },
     // Update an account name
     UPDATE_ACCOUNTNAME(state: State, opt: SetAccountNameParams) {
       const add = opt.address.toUpperCase()
@@ -528,21 +629,25 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
           acc = item
         }
       });
-      if(state.accountInfo.address.toUpperCase() == add && acc){
-        state.accountInfo = {...acc}
+      if (state.accountInfo.address.toUpperCase() == add && acc) {
+        state.accountInfo = { ...acc }
       }
+      handleUpdate()
     },
     // Add address book
     ADD_CONTACTS(state: State, opt: ContactInfo) {
       state.contacts.unshift(opt);
+      handleUpdate()
     },
     // Delete Contact
     DELETE_CONTACT(state: State, index: number) {
       state.contacts.splice(index, 1);
+      handleUpdate()
     },
     // Edit Contact
     MODIF_CONTACT(state: State, { targetIndex, opt }: any) {
       state.contacts[targetIndex] = opt;
+      handleUpdate()
     },
     // Push to transaction queue
     ADD_TRANACTIONLIST(state: State, data: any) {
@@ -550,7 +655,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
       const f = state.tranactionList.find((item) => item.hash == hash);
       const list = state.tranactionList
       if (!f) {
-        list.unshift({...data, code: "pending" });
+        list.unshift({ ...data, code: "pending" });
         const len = list.length;
         if (len > 10) {
           // The length of the control queue is 10
@@ -560,6 +665,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
         }
         state.tranactionModel = true;
       }
+      handleUpdate()
     },
     // Update transaction queue data
     UPDATE_TRANACTIONLIST(state: State, data: TransactionReceipt) {
@@ -573,12 +679,14 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
         }
       }
       state.tranactionModel = true;
+      handleUpdate()
     },
     // Remove a transaction from the transaction queue according to the hash
     DELETE_TRANACTIONLIST(state: State, hash: string) {
       const list = state.tranactionList;
       let idx = list.find((item) => item.hash == hash);
       list.splice(idx, 1);
+      handleUpdate()
     },
     // Close the transaction queue pending pop-up window
     CLOSE_TRANACTIONMODAL(state: State) {
@@ -623,16 +731,64 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
       if (len > 10) {
         state.recentList.splice(len - 1, 1);
       }
+      handleUpdate()
     },
     // Update contractAddress
     UPDATE_CONTRACTADDRESS(state: State, ERBPay: string) {
       state.contractAddress = ERBPay
     },
-    UPDATE_FIRSTTIME(state: State, bool: Boolean){
+    UPDATE_FIRSTTIME(state: State, bool: Boolean) {
       state.firstTime = bool
-    }
+    },
+    // New trades are pushed to the trade queue
+    async PUSH_TXQUEUE(state: State, tx: any) {
+      const { network: { id } } = tx
+      const queuekey = `txQueue-${id}`
+      const list: any = await localforage.getItem(queuekey)
+      const txQueue = list && list.length ? list : []
+      txQueue.push(tx)
+      await localforage.setItem(queuekey, txQueue)
+    },
+    // Delete data from a queue
+    // Delete data from a queue
+    async DEL_TXQUEUE(state: State, tx: any) {
+      const { network: { id } } = tx
+      const queueKey = `txQueue-${id}`
+      const list: any = await localforage.getItem(queueKey)
+      const txQueue = list && list.length ? list : []
+      const newList = txQueue.filter((item: any) => item.hash.toUpperCase() != tx.hash.toUpperCase())
+      await localforage.setItem(queueKey, newList)
+    },
   },
   actions: {
+        // get ethAccountInfo
+        async getEthAccountInfo({ commit, state }: any) {
+          const wall = await getWallet()
+          console.log('get ---', wall.address, state.accountInfo.address)
+          return wall.provider.send(
+            "eth_getAccountInfo",
+            [state.accountInfo.address, "latest"]
+          ).then((res: any) => {
+            commit('UPDATE_ETHACCOUNTINFO', res)
+            return res
+          });
+        },
+    async getCreatorStatus({commit, state}, address: string) {
+      try {
+       const data = await getCreator(address)
+       const res = await getAccountAddr(address)
+       const provider = ethers.getDefaultProvider(state.currentNetwork.URL)
+       const block = await provider.getBlockNumber()
+       const weight = new BigNumber(block - data.lastNumber).multipliedBy(utils.formatEther(res.snftValue)).toString()
+       const rewardEth = utils.formatEther(data.reward)
+       const profitStr = utils.formatEther(data.profit)
+       const stateData = {...data, account: res, weight, rewardEth, profitStr}
+       console.warn('state', stateData)
+       commit('UPDATE_CREATORSTATUS', stateData)
+      }catch(err) {
+        commit('UPDATE_CREATORSTATUS', null)
+      }
+    },
     // Judge whether there is an account with a certain address in the wallet
     hasAccountByAddress({ commit, dispatch, state }: any, address: string) {
       const accountList = toRaw(state.accountList);
@@ -644,30 +800,27 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
     },
     // According to the current network status, the wallet status returns the wallet instance
     async getWallet({ commit, dispatch, state }: any) {
-      // @ts-ignore
-      const bg = chrome.extension.getBackgroundPage();
       try {
         const { accountInfo } = state;
         const { keyStore } = accountInfo;
-        const password: string = getCookies("password") || "";
+        const password: string = await getCookies("password") || "";
+        console.warn('password', password)
         if (!password) {
           const query = getQuery();
           // @ts-ignore
-          router.push({ name: "loginAccount-step1", query:{...query,backUrl: getURLPath()} });
+          router.push({ name: "loginAccount-step1", query: { ...query, backUrl: getURLPath() } });
           return Promise.reject(i18n.global.t("common.withpassword"));
         }
         // Load wallet via password and keystore
         await dispatch("createWalletByJson", { password, json: keyStore });
         // Link current network provider
         wallet = await dispatch("getProviderWallet");
-        // @ts-ignore
-        bg.wallet = wallet
         commit("UPDATE_WALLET", wallet);
-
+        sendBackground({ method: 'update-wallet' })
         return Promise.resolve(wallet);
       } catch (err) {
         // @ts-ignore
-        bg.wallet = null
+        // bg.wallet = null
         return Promise.reject(err);
       }
     },
@@ -695,13 +848,21 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
       { commit, state, dispatch }: any,
       { keyStore, mnemonic, address, imported }: AddAccountParams
     ) {
+      // check repeat address
+      const vuex = await localforage.getItem('vuex')
+      // @ts-ignore
+      const localAccountList = vuex.account.accountList
+      if(localAccountList.find(item => address.toUpperCase() ==item.address.toUpperCase())){
+        return Promise.reject('The address is exist!')
+      }
+
       let list = state.accountList;
       const len = list.length;
       const icon = getRandomIcon();
-      const balance = await dispatch("getBalance");
+      let balance = '0.000000'
       const { path, pathIndex }: any = mnemonic;
       const account = {
-        name: `Account ${len + 1}`,
+        name: `Account${len + 1}`,
         keyStore,
         address,
         icon,
@@ -714,14 +875,15 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
       if (len) {
         list.push(account);
       } else {
-        // 第一个账户默认选中
+        // The first account is selected by default
         // account.select = true
         list = [account];
       }
       dispatch("getProviderWallet");
       commit("UPDATE_ACCOUNTINFO", account);
-      dispatch("updateAccount");
       commit("ADD_ACCOUNT", list);
+      dispatch("updateAccount");
+      dispatch('updateBalance')
       return Promise.resolve()
     },
     // Creating wallets with mnemonics
@@ -731,6 +893,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
     ) {
       try {
         const { phrase, pathIndex } = params;
+        console.warn('000', params)
         wallet = await createWalletByMnemonic({ phrase, pathIndex });
         return Promise.resolve(wallet);
       } catch ({ reason }) {
@@ -805,20 +968,25 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
       }
     },
     // Import account via private key
+    // Import the account using the private key
     async importPrivateKey({ commit, state }: any, privatekey: string) {
       try {
-        wallet = await ImportPrivateKey({ privatekey });
-        // During import, judge whether the address exists in the current account list. If it does, an exception will be thrown and the import will not continue
-        const { address } = wallet;
+        const wa = await ImportPrivateKey({ privatekey });
+        const { URL } = state.currentNetwork;
+        // debugger
+        let provider = ethers.getDefaultProvider(URL);
+        const newWallet = wa.connect(provider)
+        // During the import, check whether the address exists in the current account list. If the address exists, an exception is thrown and the import will not continue
+        const { address } = newWallet;
         const { accountList } = state;
         const a = accountList.find(
           (item: any) => item.address.toUpperCase() == address.toUpperCase()
         );
         if (a) {
-          return Promise.reject({ reason: i18n.global.t("common.existed") });
+          return Promise.reject({ reason: i18n.global.t("common.existed"), address: a.address });
         } else {
-          commit("UPDATE_WALLET", wallet);
-          return Promise.resolve(wallet);
+          commit("UPDATE_WALLET", newWallet);
+          return newWallet;
         }
       } catch (err) {
         return Promise.reject(err);
@@ -836,203 +1004,305 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
     },
     // Update for all accounts balance
     async updateAllBalance({ commit, state, dispatch }: any) {
-      const accountList = state.accountList;
-      const list: Array<string> = accountList.map(
-        (item: AccountInfo) => item.address
-      );
-      const asyncList = list.map((address) => {
-        return dispatch("getBalanceByAddress", address);
-      });
-      const data = await Promise.all(asyncList);
-      const banList: any = {};
-      list.forEach((address, index) => {
-        banList[address] = data[index];
-      });
-      commit("UPDATE_ALLACCOUNT", banList);
-      dispatch("updateTokensBalances");
-      return Promise.resolve(banList);
+      const wallet = await getWallet()
+      try {
+        const accountList = state.accountList;
+        const list: Array<string> = accountList.map(
+          (item: AccountInfo) => item.address
+        );
+        const asyncList = list.map((address) => {
+          return dispatch("getBalanceByAddress", { address, wallet });
+        });
+        const data = await Promise.all(asyncList);
+        const banList: any = {};
+        list.forEach((address, index) => {
+          banList[address] = data[index];
+        });
+        commit('UPDATE_NETSTATUS', NetStatus.success)
+        commit("UPDATE_ALLACCOUNT", banList);
+        dispatch("updateTokensBalances");
+        return Promise.resolve(banList);
+      } catch (err) {
+        commit('UPDATE_NETSTATUS', NetStatus.fail)
+      }
+      // return Promise.resolve([])
     },
     // Return the balance of the current address account
-    async getBalanceByAddress({ commit, state }: any, address: string) {
-      // Verification address
+    async getBalanceByAddress({ commit, state }: any, { address, wallet }: any) {
       if (!address || !wallet) {
         return Promise.reject(i18n.global.t("common.cannotbeempty"));
       }
-      // Return balance
       return wallet.provider.getBalance(address);
     },
     // Update balance in current account currency
-    async updateBalance({ commit, state, dispatch }: any) {
-      const newwallet = await dispatch("getProviderWallet");
-      const balance = await newwallet.getBalance();
-      const amount = ethers.utils.formatEther(balance);
-      commit("UPDATE_WALLET", newwallet);
-      commit("UPDATE_BALANCE", amount);
-      return Promise.resolve(amount);
+    async updateBalance({ commit, state, dispatch }: any, wall: any) {
+      const newwallet = wall || wallet && wallet.provider && wallet.provider.connection.url === state.currentNetwork.URL ? wallet : await dispatch("getProviderWallet");
+      try {
+        if (newwallet) {
+          const balance = await newwallet.getBalance();
+          const amount = ethers.utils.formatEther(balance);
+          commit("UPDATE_WALLET", newwallet);
+          commit("UPDATE_BALANCE", amount);
+          commit('UPDATE_NETSTATUS', NetStatus.success)
+          return Promise.resolve(amount);
+        }
+      } catch (err) {
+        commit('UPDATE_NETSTATUS', NetStatus.fail)
+      }
+
     },
     // Link current network provider wallet instance
-    async getProviderWallet({ commit, state }: any) {
+    async getProviderWallet({ commit, state, dispatch }: any) {
+      let provider = null
+      const { URL } = state.currentNetwork;
+      if(wallet && wallet.provider && (wallet.provider.connection.url == URL)){
+        return wallet
+      }
+      if (!wallet || !wallet.provider || (wallet.provider.connection.url != URL)) {
+        provider = ethers.getDefaultProvider(URL)
+      }
       try {
-        const { URL } = state.currentNetwork;
-        let provider = ethers.getDefaultProvider(URL);
-        const newwallet = wallet.connect(provider);
-        commit("UPDATE_WALLET", newwallet);
-        return Promise.resolve(newwallet);
+        if (!wallet) {
+          const { accountInfo } = state;
+          const { keyStore } = accountInfo;
+          const json = toRaw(keyStore)
+          const password: string = await getCookies("password") || "";
+          const wall = await dispatch("createWalletByJson", { password, json });
+          const newWallet = wall.connect(provider)
+          const res = await newWallet.provider.getNetwork()
+          commit('UPDATE_ETHNETWORK', res)
+          commit('UPDATE_NETSTATUS', NetStatus.success)
+          commit("UPDATE_WALLET", newWallet);
+          return newWallet
+        }
+        if (wallet && wallet.provider) {
+          const { connection: { url } } = wallet.provider
+          if (URL != url) {
+            const newWallet = wallet.connect(provider)
+            const res = await newWallet.provider.getNetwork()
+            commit('UPDATE_NETSTATUS', NetStatus.success)
+            commit("UPDATE_WALLET", newWallet);
+            commit('UPDATE_ETHNETWORK', res)
+            return newWallet
+          } else {
+            commit('UPDATE_NETSTATUS', NetStatus.success)
+            commit("UPDATE_WALLET", wallet);
+
+            return wallet
+          }
+
+        }
+        if (wallet && !wallet.provider) {
+          const newWallet = wallet.connect(provider)
+          const res = await newWallet.provider.getNetwork()
+          commit('UPDATE_ETHNETWORK', res)
+
+          commit('UPDATE_NETSTATUS', NetStatus.success)
+          commit("UPDATE_WALLET", newWallet);
+          return newWallet
+        }
       } catch (err: any) {
+        console.warn('showNotify', Notify)
+        console.error('err:----2', err)
+        // if(JSON.stringify(err).indexOf('could not detect network') > -1) {
+        //   Notify({ type: 'danger', message: i18n.global.t('error.netErr'),duration: 5000 })
+        // }
+        Notify({ type: 'danger', message: i18n.global.t('error.netErr'),duration: 5000, position: 'bottom' })
+        commit('UPDATE_NETSTATUS', NetStatus.fail)
         return Promise.reject(err);
       }
     },
-    // Initiate ordinary transaction
+    // Whether there is card trading on the current exchange
+    async hasPendingTransactions({ state, commit }: any) {
+      const { id } = state.currentNetwork
+      const from = state.accountInfo.address
+      // @ts-ignore
+      const txListKey = `txQueue-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
+      // const txListKey = `txQueue-${id}-${from.toUpperCase()}`
+      let txList: any = await localforage.getItem(txListKey)
+      console.warn('txList', txList)
+      return txList && txList.length ? true : false
+    },
     async transaction(
       { state, commit, dispatch }: any,
       params: SendTransactionParams
     ) {
-      const { to, value, call, gasPrice, gasLimit } = params;
-      const gasp = new BigNumber(gasPrice).dividedBy(1000000000).toFixed(12);
-      let tx = {
-        to,
-        value: utils.parseEther(value),
-        gasPrice: ethers.utils.parseEther(gasp),
-        gasLimit,
-      };
+      const { to, value, gasPrice, gasLimit, data, transitionType, nft_address, checkTxQueue, nonce: sendNonce, type: newType, maxPriorityFeePerGas, maxFeePerGas } = { checkTxQueue: true, ...params };
+      // Determine whether there are transactions in the current trading pool that have not returned transaction receipts, and if so, do not allow them to be sent
+      if (checkTxQueue && await dispatch('hasPendingTransactions')) {
+        return Promise.reject({ reason: i18n.global.t('common.sendTipPendding'), code: 500 })
+      }
+      console.warn('params', params)
+      try {
+        const newData = data || ''
+        const { currentNetwork } = state
+        let tx: any = {
+          to,
+          value: utils.parseEther(value && Number(value) ? value.toString() : '0')
+        };
+        if (Number(gasPrice)) {
+          const bigPrice = new BigNumber(gasPrice)
+          console.warn('bigPrice', bigPrice.toNumber())
+          const gasp = Number(gasPrice) ? bigPrice.dividedBy(1000000000).toFixed(12) : '0.0000000012';
+          tx.gasPrice = ethers.utils.parseEther(gasp)
+        }
+        if (gasLimit) {
+          tx.gasLimit = gasLimit
+        }
+        if (newData) {
+          tx.data = newData
+        }
+        if (typeof sendNonce != undefined) {
+          tx.nonce = sendNonce
+        }
+        // if(newType){
+        //   tx.gasPrice = tx.gasPrice = ethers.utils.parseEther('0.000000053')
+        // }
+        if(maxPriorityFeePerGas){
+          tx.maxPriorityFeePerGas = maxPriorityFeePerGas
+        }
+        if(maxFeePerGas){
+          tx.maxFeePerGas = maxFeePerGas
+        }
+        // Update recent contacts
+        commit("PUSH_RECENTLIST", to);
+        const newwallet = await getWallet();
+        let sendData = await newwallet.sendTransaction(tx);
 
-      // Update recent contacts
-      commit("PUSH_RECENTLIST", to);
-      const newwallet = await dispatch("getProviderWallet");
-      let sendPromise = newwallet.sendTransaction(tx);
-      console.log("i18n", i18n);
-      return new Promise((resolve, reject) => {
-        sendPromise
-          .then((data: any) => {
-            // Add to transaction queue
-            commit("ADD_TRANACTIONLIST", JSON.parse(JSON.stringify(data)));
-            resolve(data);
-            newwallet.provider
-              .waitForTransaction(data.hash)
-              .then((receipt: any) => {
-                const symbol = state.currentNetwork.currencySymbol
-                const rep: TransactionReceipt = handleGetTranactionReceipt(
-                  TransactionTypes.default,
-                  receipt,
-                  data,
-                  symbol
-                );
-                call ? call(rep) : "";
-                // Update transaction queue
-                commit("UPDATE_TRANACTIONLIST", rep);
-                // Add to transaction
-                commit("PUSH_TRANSACTION", rep);
-                dispatch("updateAllBalance");
-              });
-          })
-          .catch((err: any) => {
-            console.error(err);
-            const { code, reason } = err;
-            Toast(i18n.global.t("common.transactionfailed"));
-            localStorage.setItem(
-              i18n.global.t("common.transactionfailed"),
-              JSON.stringify(err)
-            );
-            reject(err);
-          });
-      });
+        const { from, gasLimit: newLimit, gasPrice: newPrice, hash, nonce, to: toAddr, type, value: newVal } = sendData;
+        await PUSH_TXQUEUE({
+          hash,
+          from,
+          gasLimit: gasLimit || utils.formatUnits(newLimit, 'wei'),
+          gasPrice,
+          nonce,
+          to: toAddr,
+          type,
+          value: newVal,
+          transitionType: transitionType || null,
+          txType: TransactionTypes.default,
+          network: clone(currentNetwork),
+          data: newData,
+          sendStatus: TransactionSendStatus.pendding,
+          sendData: clone(sendData),
+          nft_address: nft_address || ''
+        })
+
+        console.log("i18n", i18n);
+        sendData.wallet = newwallet
+        return sendData
+      } catch (err) {
+        console.error(err)
+        return Promise.reject(err)
+      }
     },
     // Initiate token transaction
     async tokenTransaction(
       { state, commit, dispatch }: any,
       params: SendTokenParams
     ) {
-      const { address, amount, to, gasPrice, gasLimit } = params;
-      // Update recent contacts
-      commit("PUSH_RECENTLIST", to);
+      const { address: tokenAddress, amount, to, gasPrice, gasLimit, checkTxQueue, nonce: sendNonce } = params;
+      // Determine whether there are transactions in the current trading pool that have not returned transaction receipts, and if so, do not allow them to be sent
+      if (checkTxQueue && await dispatch('hasPendingTransactions')) {
+        return Promise.reject({ reason: i18n.global.t('common.sendTipPendding'), code: 500 })
+      }
+      try {
+        const { currentNetwork, accountInfo } = state
+        // Update recent contacts
+        commit("PUSH_RECENTLIST", to);
+        debugger
+        // Get contract token instance object
+        const { contractWithSigner, contract } = await dispatch(
+          "connectConstract",
+          tokenAddress
+        );
+        const { precision } = state.currentNetwork.tokens[accountInfo.address.toUpperCase()].find(item => item.tokenContractAddress.toUpperCase() == tokenAddress.toUpperCase())
+        const amountWei = utils.parseUnits(amount.toString(), precision).toString()
+        console.warn('amountWei', amountWei)
+        console.log(" contract.estimate", contract, contractWithSigner);
+        const gasp = Number(gasPrice) ? new BigNumber(gasPrice).dividedBy(1000000000).toFixed(12) : '0.0000000012';
+        const transferParams: any = {
+          gasLimit: gasLimit,
+          gasPrice: ethers.utils.parseEther(gasp),
+        };
+        if (typeof sendNonce != undefined) {
+          transferParams['nonce'] = sendNonce
+        }
+        console.log("transferParams", transferParams);
+        const data = await contractWithSigner.transfer(to, amountWei, transferParams)
+        const { from, gasLimit: newLimit, gasPrice: newPrice, hash, nonce, type, value: newVal, to: toAddr } = data;
+        await PUSH_TXQUEUE({
+          hash,
+          from,
+          gasLimit: gasLimit || utils.formatUnits(data.gasLimit, 'wei'),
+          gasPrice,
+          nonce,
+          to: toAddr,
+          type,
+          value: newVal,
+          transitionType: null,
+          txType: TransactionTypes.default,
+          network: clone(currentNetwork),
+          data: '',
+          sendStatus: TransactionSendStatus.pendding,
+          sendData: clone(data),
+          tokenAddress,
+          amount,
+          toAddress: to
+        })
+        data.wallet = wallet
+        return data
+      } catch (err) {
+        return Promise.reject(err)
+      }
+    },
+    // send data
+    async sendTransaction({ commit, dispatch, state }: any, tx: any) {
       return new Promise(async (resolve, reject) => {
         try {
-          // Get contract token instance object
-          const { contractWithSigner, contract } = await dispatch(
-            "connectConstract",
-            address
+          const wallet = await getWallet();
+          console.log('newtx', tx)
+          const { to } = tx
+          // Update recent contacts
+          commit("PUSH_RECENTLIST", to);
+          const symbol = state.currentNetwork.currencySymbol
+          const data = await wallet.sendTransaction(tx);
+          const { from, gasLimit, gasPrice, hash, nonce, type, value } = data;
+          commit("PUSH_TXQUEUE", {
+            date: new Date(),
+            hash,
+            from,
+            gasLimit,
+            gasPrice,
+            nonce,
+            to,
+            type,
+            value,
+            transitionType: null,
+            network: clone(state.currentNetwork),
+            txType: TransactionTypes.default,
+
+          });
+          // const penddingRep = handleGetPenddingTranactionReceipt(TransactionTypes.default,data, symbol)
+          // commit("PUSH_TRANSACTION", penddingRep);
+          const receipt = await wallet.provider.waitForTransaction(data.hash)
+          const { currentNetwork } = state
+          const rep: TransactionReceipt = handleGetTranactionReceipt(
+            TransactionTypes.default,
+            receipt,
+            data,
+            currentNetwork
           );
-          console.log(" contract.estimate", contract, contractWithSigner);
-          contractWithSigner.estimateGas
-            .transfer(to, amount)
-            .then((gas: any) => {
-              const gasp = new BigNumber(gasPrice)
-                .dividedBy(1000000000)
-                .toFixed(12);
-              console.log("gas-->", utils.formatEther(gas));
-              const transferParams = {
-                gasLimit: gasLimit,
-                gasPrice: ethers.utils.parseEther(gasp),
-              };
-              console.log("transferParams", transferParams);
-              contractWithSigner
-                .transfer(to, amount, transferParams)
-                .then((data: any) => {
-                  // Add to transaction queue
-                  commit("ADD_TRANACTIONLIST", JSON.parse(JSON.stringify(data)));
-                  sessionStorage.setItem("token tx", JSON.stringify(data));
-                  resolve(data);
-                  // Monitor on chain confirmation
-                  wallet.provider
-                    .waitForTransaction(data.hash)
-                    .then(async (receipt: any) => {
-                      // Rewrite balance consistent with ordinary transaction bigNumber
-                      data.value = utils.parseEther(amount);
-                      sessionStorage.setItem(
-                        "token receipt",
-                        JSON.stringify(receipt)
-                      );
-   
-                      const token = state.currentNetwork.tokens[wallet.address.toUpperCase()].find(item => item.tokenContractAddress.toUpperCase() == address.toUpperCase())
-                      const symbol = token.symbol
-                      const rep: TransactionReceipt =
-                        handleGetTranactionReceipt(
-                          TransactionTypes.default,
-                          receipt,
-                          data,
-                          symbol,
-                        );
-                      // Update transaction queue
-                      commit("UPDATE_TRANACTIONLIST", rep);
-                      // Update account balance
-                      dispatch("updateTokensBalances");
-                      // Add to transaction
-                      commit("PUSH_TRANSACTION", {...rep, tokenAddress:address});
-                    });
-                })
-                .catch((err: any) => {
-                  console.error(err);
-                  reject(err);
-                });
-            })
-            .catch((err: any) => {
-              console.error(err);
-              reject(err);
-            });
+          // Update transaction queue
+          commit("UPDATE_TRANACTIONLIST", rep);
+          // Add to transaction
+          commit("UPDATE_TRANSACTION", rep);
+          resolve(data)
         } catch (err) {
-          reject(err);
-        }
-      });
-    },
-   // send data
-   async sendTransaction({ commit, dispatch, state }: any, tx: any) {
-    const wallet = await getWallet();
-    console.log('newtx',tx)
-    const {to} = tx
-    // Update recent contacts
-    commit("PUSH_RECENTLIST", to);
-    return new Promise((resolve, reject) => {
-      wallet
-        .sendTransaction(tx)
-        .then((data: any) => {
-          resolve(data);
-        })
-        .catch((err: any) => {
           console.error(err)
-          reject(err);
-        });
-    });
-  },
+        }
+      })
+    },
 
     // Load wallet with address and password
     async connectWalletByPwdAddress(
@@ -1084,14 +1354,15 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
           "connectConstract",
           tokenContractAddress
         );
-        console.log("contractWithSigner", contractWithSigner);
         const name = await contractWithSigner.name();
         const decimal = await contractWithSigner.decimals();
         const symbol = await contractWithSigner.symbol();
         const logoUrl = "eth.jpg";
         let balance = "0";
         try {
-          balance = await contractWithSigner.balanceOf(wallet.address);
+          const ban = await contractWithSigner.balanceOf(wallet.address)
+          console.warn('获取合约资产', utils.formatUnits(ban.toString(), decimal))
+          balance = utils.formatUnits(ban.toString(), decimal);
         } catch (err: any) {
           // Toast(i18n.global.t("currencyList.importerror"));
           return Promise.reject(i18n.global.t("currencyList.importerror"))
@@ -1125,7 +1396,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
           commit("UPDATE_NETWORK", network);
           return Promise.resolve();
         }
-      }catch(err){
+      } catch (err) {
         return Promise.reject(i18n.global.t("currencyList.error"))
       }
     },
@@ -1149,11 +1420,11 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
       }
     },
     // Get the status of whether to open an exchange
-    async getExchangeStatus({ commit, state }: any, call: Function = () => {}) {
+    async getExchangeStatus({ commit, state }: any, call: Function = () => { }) {
       const wallet = await getWallet();
       const { address } = wallet;
       return checkAuth(address).then((res: any) => {
-        commit("UPDATE_EXCHANGERSTATUS", res.data);
+        commit("UPDATE_EXCHANGERSTATUS", clone(res.data));
         call(res.data);
         return res.data;
       });
@@ -1170,8 +1441,9 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
         );
         Promise.all(plist).then((result) => {
           for (let i = 0; i < tokens.length; i++) {
+            console.log('result[i]', result[i])
             // @ts-ignore
-            tokens[i].balance = result[i].toString();
+            tokens[i].balance = result[i];
           }
         });
       }
@@ -1186,6 +1458,8 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
         return Promise.reject("Address cannot be empty!");
       }
       try {
+        const addr = state.accountInfo.address.toUpperCase()
+        const { precision } = state.currentNetwork.tokens[addr].find(item => item.tokenContractAddress.toUpperCase() == tokenAddress.toUpperCase())
         const wallet = await getWallet();
         const contract = new ethers.Contract(
           tokenAddress,
@@ -1194,9 +1468,10 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
         );
         const contractWithSigner = contract.connect(wallet);
         console.warn("contractWithSigner--------------", contractWithSigner);
-        return Promise.resolve(
-          await contractWithSigner.balanceOf(wallet.address)
-        );
+        const amount = await contractWithSigner.balanceOf(wallet.address)
+        const newban = utils.formatUnits(amount.toString(), precision)
+        console.log('amount 合约', utils.formatUnits(amount.toString(), precision))
+        return Promise.resolve(newban);
       } catch (err) {
         return Promise.reject(err);
       }
@@ -1243,7 +1518,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
         Toast(i18n.global.t('createAccountpage.pwdRequired'));
         return Promise.reject();
       }
-      const pwd = getCookies("password");
+      const pwd = await getCookies("password");
       state.accountList.forEach(async (item: any) => {
         const { keyStore, address } = item;
         const privateKey = decryptPrivateKey({
@@ -1256,7 +1531,7 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
         commit("UPDATE_KEYSTORE_BYADDRESS", { json: newStore, address });
       });
       // Unlock mnemonic and return
-      const mnemonic = await parseMnemonic(pwd);
+      const mnemonic = await parseMnemonic(pwd, storeObj.state.mnemonic.keyStore);
       // Re encrypt mnemonics
       encryptMnemonic({ mnemonic, password });
       return Promise.resolve();
@@ -1285,14 +1560,166 @@ UPDATE_WORMHOLES_URL(state: State, { URL, browser,chainId }: any) {
       });
     },
     // Get the smart contract address
-    async getContractAddress({commit, state}: any) {
+    async getContractAddress({ commit, state }: any) {
       try {
         const { ERBPay } = await getContractAddress()
-        commit('UPDATE_CONTRACTADDRESS',ERBPay)
+        commit('UPDATE_CONTRACTADDRESS', ERBPay)
         return Promise.resolve(ERBPay)
-      }catch(err){
+      } catch (err) {
         return Promise.reject(err)
       }
+    },
+    //Determines whether the current hash has a transaction queue
+    async checkHashHasQueue({ commit, state }, hash: string) {
+      const { id } = state.currentNetwork
+      const from = state.accountInfo.address
+      // @ts-ignore
+      const queuekey = `txQueue-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
+      const list: Array<any> = await localforage.getItem(queuekey)
+      let hasExits = false
+      if(list && list.length) {
+        hasExits = list.find((item) => item.hash.toUpperCase() === hash.toUpperCase())
+      }
+      return Promise.resolve(hasExits)
+    },
+    // The result of polling the transaction queue
+    // async waitTxQueueResponse({ commit, state }: any) {
+    //   // // The service worker performs
+    //   return sendBackground({ method: 'waitTxQueueResponse' })
+    // }
+    //  Stop polling
+    //  Stop polling
+    clearWaitTime(){
+      clearTimeout(waitTime)
+      waitTime = null
+      if(wallet && wallet.provider) {
+         wallet.provider.removeAllListeners()
+      }
+    },
+    // The result of polling the transaction queue
+    // The result of polling the transaction queue
+    async waitTxQueueResponse({ commit, state }: any, opt?: Object) {
+      console.warn('waitTxQueueResponse---')
+      const _opt = {
+        time: 60000,
+        callback: (e: any) => { },
+        ...opt
+      }
+      const { id } = state.currentNetwork
+      const from = state.accountInfo.address
+      // @ts-ignore
+      const queuekey = `txQueue-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
+      let txkey = ''
+      if(id === 'wormholes-network-1') {
+        txkey = `async-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
+      }else {
+        txkey = `txlist-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
+      }
+      let data1 = null
+      return new Promise((resolve, reject) => {
+        waitTime = setTimeout(async () => {
+          const list: any = await localforage.getItem(queuekey)
+          const txQueue = list && list.length ? list : []
+          if (!txQueue.length) {
+            resolve(true)
+          }
+          const receiptList = []
+          //  const newWallet = await getWallet()
+          try {
+            for await (const iterator of txQueue) {
+              let { hash, transitionType, nft_address, blockNumber, network, txType, txId, amount, isCancel, sendData, date, value, nonce } = iterator
+              const txInfo: any = await localforage.getItem(txkey)
+              let txList: any = []
+              if(id === 'wormholes-network-1') {
+                txList = txInfo && txInfo.list ? txInfo.list : []
+              }else {
+                txList = txInfo || []
+              }
+              const sameNonceTx = txList.find((item: any) => item.nonce === nonce)
+              const hashArr = !sameNonceTx ? [hash] : [hash, sameNonceTx.hash]
+              if (_opt.time != null) {
+                data1 = await waitForTransactions(hashArr, _opt.time)
+                // data1 = await wallet.provider.waitForTransaction(hash, null, _opt.time);
+              } else {
+                data1 = await waitForTransactions(hashArr)
+                // data1 = await wallet.provider.waitForTransaction(hash);
+
+              }
+              receiptList.push(data1)
+              let convertAmount: any = ''
+              if (transitionType && transitionType == '6') {
+                const len = nft_address.length
+                switch (len) {
+                  case 42:
+                    break;
+                  case 41:
+                    nft_address += '0'
+                    break;
+                  case 40:
+                    nft_address += '00'
+                    break;
+                  case 39:
+                    nft_address += '000'
+                    break;
+                }
+                const nftAccountInfo = await wallet.provider.send(
+                  "eth_getAccountInfo",
+                  [nft_address, web3.utils.toHex((data1.blockNumber - 1).toString())]
+                );
+                const { MergeLevel, MergeNumber } = nftAccountInfo
+                //  @ts-ignore
+                const { t0, t1, t2, t3 } = store.state.configuration.setting.conversion
+
+                if (MergeLevel === 0) {
+                  convertAmount = new BigNumber(MergeNumber).multipliedBy(t0).toNumber()
+                } else if (MergeLevel === 1) {
+                  convertAmount = new BigNumber(MergeNumber).multipliedBy(t1).toNumber()
+                } else if (MergeLevel === 2) {
+                  convertAmount = new BigNumber(MergeNumber).multipliedBy(t2).toNumber()
+                } else if (MergeLevel === 3) {
+                  convertAmount = new BigNumber(MergeNumber).multipliedBy(t3).toNumber()
+                }
+              }
+
+
+              await DEL_TXQUEUE({ ...iterator, txId, txType })
+              const newtx = {
+                receipt: data1,
+                network,
+                sendData,
+                txId,
+                date,
+                value
+              }
+              if(id === 'wormholes-network-1') {
+                await UPDATE_TRANSACTION(newtx)
+              }else {
+                await PUSH_TRANSACTION({...newtx, txId: guid()})
+              }
+              
+            }
+            eventBus.emit('waitTxEnd')
+            resolve(receiptList)
+          } catch (err) {
+            reject(err)
+          } finally {
+            clearTimeout(waitTime)
+          }
+        }, 1000)
+
+        _opt.callback(waitTime)
+      })
+    },
+    // Indicates that the current transaction exists in the transaction queue
+    async checkIsTxHash({commit, state}: any, hash: string) {
+      const { id } = state.currentNetwork
+      const from = state.accountInfo.address
+      const queuekey = `txQueue-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
+      const list: any = await localforage.getItem(queuekey)
+      if(!list || !list.length) {
+        return false
+      }
+      return list.some((item: any) => item.hash.toUpperCase() == hash.toUpperCase())
     }
   },
   namespaced: true,
@@ -1323,19 +1750,17 @@ export function handleGetTranactionReceipt(
   txType: string,
   receipt: any,
   tx: any,
-  symbol: string
+  network: NetWorkData
 ) {
-  const { from, to, value, nonce, hash } = tx;
-  const { gasUsed, status, effectiveGasPrice, type } = receipt;
+  const { from, to, value, nonce, hash, transitionType, nft_address, convertAmount } = tx;
+  const { gasUsed, status, effectiveGasPrice, type, blockNumber } = receipt;
   const date = new Date();
-  sessionStorage.setItem("receipt", JSON.stringify(receipt));
-  sessionStorage.setItem("tx", JSON.stringify(tx));
   let newType = txType;
   // If it is a contract transaction and to is 0xFFFFFF, rewrite to swap type
   if (
-    txType == TransactionTypes.contract &&
+    txType == TransactionTypes.contract && to &&
     to.toUpperCase() ==
-      "0xffffffffffffffffffffffffffffffffffffffff".toUpperCase()
+    "0xffffffffffffffffffffffffffffffffffffffff".toUpperCase()
   ) {
     newType = TransactionTypes.swap;
   }
@@ -1351,7 +1776,322 @@ export function handleGetTranactionReceipt(
     gasUsed,
     hash,
     effectiveGasPrice,
-    symbol
+    blockNumber,
+    transitionType: transitionType || '',
+    nft_address: nft_address || '',
+    convertAmount: convertAmount || '',
+    network
   };
   return rec;
+}
+
+
+
+
+export const clone = (params = {}) => {
+  return JSON.parse(JSON.stringify(params))
+}
+
+
+export const getTxInfo = async (res: any) => {
+  const { receipt, sendData, value } = res
+  const { convertAmount, date, nonce, data } = sendData
+  const {
+    blockHash,
+    blockNumber,
+    cumulativeGasUsed,
+    effectiveGasPrice,
+    gasUsed,
+    transactionHash,
+    from,
+    to,
+    contractAddress,
+    transactionIndex,
+    status,
+  } = receipt
+  const newReceipt = {
+    blockHash,
+    blockNumber,
+    contractAddress,
+    cumulativeGasUsed: ethers.utils.formatUnits(cumulativeGasUsed, 'wei'),
+    from,
+    gasPrice: ethers.utils.formatUnits(effectiveGasPrice, 'wei'),
+    gasUsed: Number(ethers.utils.formatUnits(gasUsed, 'wei')),
+    hash: transactionHash,
+    nonce,
+    to,
+    input: data,
+    transactionIndex,
+    convertAmount,
+    timestamp: Math.floor(new Date(date).getTime() / 1000),
+    status,
+    value: value ? ethers.utils.formatUnits(value, 'wei') : '0'
+  }
+  if (data) {
+    const convertAmount = await getConverAmount(wallet, { input: data, blockNumber })
+    newReceipt['convertAmount'] = convertAmount
+  }
+  return Promise.resolve(newReceipt)
+}
+
+
+
+export const PUSH_TXQUEUE = async (tx: any) => {
+  const { network: { id, chainId }, from } = tx
+  // @ts-ignore
+  const queuekey = `txQueue-${id}-${chainId}-${from.toUpperCase()}`
+  const list: any = await localforage.getItem(queuekey)
+  const txQueue = list && list.length ? list : []
+  tx.txId = guid()
+  tx.date = new Date()
+  txQueue.unshift(clone(tx))
+  await localforage.setItem(queuekey, txQueue)
+  eventBus.emit('txQueuePush', tx)
+  return tx
+}
+
+export const DEL_TXQUEUE = async (tx: any) => {
+  const { network: { id, chainId }, txId, from } = tx
+  if (id && chainId && txId && from) {
+    // @ts-ignore
+    let queueKey = `txQueue-${id}-${chainId}-${from.toUpperCase()}`
+    const list: any = await localforage.getItem(queueKey)
+    const txQueue = list && list.length ? list : []
+    debugger
+    const newList = txQueue.filter((item: any) => item.txId.toUpperCase() != txId.toUpperCase())
+    await localforage.setItem(queueKey, newList)
+    eventBus.emit('delTxQueue', tx)
+  }
+  return tx
+}
+
+export const PUSH_TRANSACTION = async (da: any) => {
+  const state = store.state.account
+  console.warn('push', da)
+  const { receipt, sendData, network, txId, value, date, sendType, txType } = da
+  const { convertAmount, nonce, data } = sendData
+  const {
+    blockHash,
+    blockNumber,
+    cumulativeGasUsed,
+    effectiveGasPrice,
+    gasUsed,
+    transactionHash,
+    from,
+    to,
+    contractAddress,
+    transactionIndex,
+    status,
+  } = receipt
+  /**
+   * blockHash: "0x1482d2f2e879c9e02fe79469609d4e1c6ffed21c8b3cc09617df6b9228e81a08"
+   * blockNumber:60454
+   * contractAddress: null
+      convertAmount: 0
+      cumulativeGasUsed: 21000
+      from: "0x612dfa56dca1f581ed34b9c60da86f1268ab6349"
+      gas: 21000
+      gasPrice: 1200000000
+      gasUsed: 21000
+      hash: "0xc3b29fb20ac5ff813a9371e7d6d2913e450d950759a06a1d71fd866a3960978a"
+      input: "0x"
+      nonce: 0
+      status: 1
+      timestamp: 1672376574
+      to: "0x352deea28e6b15620c75acf0debe6aacbda965c9"
+      transactionIndex: 0
+      value: "230000000000000000"
+   */
+  const newReceipt = {
+    blockHash,
+    blockNumber,
+    contractAddress,
+    cumulativeGasUsed: ethers.utils.formatUnits(cumulativeGasUsed, 'wei'),
+    from,
+    gasPrice: ethers.utils.formatUnits(effectiveGasPrice, 'wei'),
+    gasUsed: Number(ethers.utils.formatUnits(gasUsed, 'wei')),
+    hash: transactionHash,
+    nonce,
+    to,
+    input: data,
+    transactionIndex,
+    convertAmount,
+    timestamp: Math.floor(new Date(date).getTime() / 1000),
+    status,
+    value: value ? ethers.utils.formatUnits(value, 'wei') : '0',
+    txId,
+    sendType,
+    txType
+  }
+  console.warn('newReceipt', newReceipt)
+  if (data) {
+    const convertAmount = await getConverAmount(wallet, { input: data, blockNumber })
+    newReceipt['convertAmount'] = convertAmount
+  }
+  const formAdd = from.toUpperCase();
+  // @ts-ignore
+  const chainId = state.ethNetwork.chainId
+  let txListKey = ''
+  if (state.currentNetwork.id == 'wormholes-network-1') {
+    txListKey = `async-${state.currentNetwork.id}-${chainId}-${formAdd}`
+  } else {
+    txListKey = `txlist-${state.currentNetwork.id}-${chainId}-${formAdd}`
+  }
+  let txList: any = await localforage.getItem(txListKey)
+  console.log('txList', txList)
+
+  if (state.currentNetwork.id == 'wormholes-network-1') {
+    if (txList && txList.list.length) {
+      const tx = txList.list.find((item: any) => item.txId.toUpperCase() == newReceipt.txId.toUpperCase())
+      if (!tx) {
+        txList.list.unshift(clone(newReceipt))
+      }
+    } else {
+      txList.list = [clone(newReceipt)]
+    }
+  } else {
+    if (txList && txList.length) {
+      const tx = txList.find((item: any) => item.txId.toUpperCase() == newReceipt.txId.toUpperCase())
+      if (!tx) {
+        txList.unshift(clone(newReceipt))
+      }
+    } else {
+      txList = [clone(newReceipt)]
+    }
+  }
+
+  // store.commit('account/DEL_TXQUEUE', value)
+  console.log('set txList', txList)
+  // save txlist
+  await localforage.setItem(txListKey, clone(txList))
+  eventBus.emit('txPush', clone(newReceipt))
+  return newReceipt
+}
+
+
+export const UPDATE_TRANSACTION = async (da: any) => {
+  const state = store.state.account
+  const { receipt, sendData, network, txId, value, date } = da
+  const { id, currencySymbol } = network
+  const { convertAmount, nonce, data } = sendData
+  const {
+    blockHash,
+    blockNumber,
+    cumulativeGasUsed,
+    effectiveGasPrice,
+    gasUsed,
+    transactionHash,
+    from,
+    to,
+    contractAddress,
+    transactionIndex,
+    status,
+  } = receipt
+  /**
+   * blockHash: "0x1482d2f2e879c9e02fe79469609d4e1c6ffed21c8b3cc09617df6b9228e81a08"
+   * blockNumber:60454
+   * contractAddress: null
+      convertAmount: 0
+      cumulativeGasUsed: 21000
+      from: "0x612dfa56dca1f581ed34b9c60da86f1268ab6349"
+      gas: 21000
+      gasPrice: 1200000000
+      gasUsed: 21000
+      hash: "0xc3b29fb20ac5ff813a9371e7d6d2913e450d950759a06a1d71fd866a3960978a"
+      input: "0x"
+      nonce: 0
+      status: 1
+      timestamp: 1672376574
+      to: "0x352deea28e6b15620c75acf0debe6aacbda965c9"
+      transactionIndex: 0
+      value: "230000000000000000"
+   */
+  const newReceipt = {
+    blockHash,
+    blockNumber,
+    contractAddress,
+    cumulativeGasUsed: ethers.utils.formatUnits(cumulativeGasUsed, 'wei'),
+    from,
+    gasPrice: ethers.utils.formatUnits(effectiveGasPrice, 'wei'),
+    gasUsed: Number(ethers.utils.formatUnits(gasUsed, 'wei')),
+    hash: transactionHash,
+    nonce,
+    to,
+    input: data,
+    transactionIndex,
+    convertAmount,
+    timestamp: Math.floor(new Date(date).getTime() / 1000),
+    status,
+    value: value ? ethers.utils.formatUnits(value, 'wei') : '0',
+    txId
+  }
+  if (data) {
+    const convertAmount = await getConverAmount(wallet, { input: data, blockNumber })
+    newReceipt['convertAmount'] = convertAmount
+  }
+  const formAdd = from.toUpperCase();
+  // @ts-ignore
+  const chainId = state.ethNetwork.chainId
+  let txListKey = ''
+  if (state.currentNetwork.id == 'wormholes-network-1') {
+    txListKey = `async-${id}-${chainId}-${formAdd}`
+  } else {
+    txListKey = `txlist-${id}-${chainId}-${formAdd}`
+  }
+  let txList: any = await localforage.getItem(txListKey)
+  console.warn('has txID', txList)
+  if (state.currentNetwork.id == 'wormholes-network-1') {
+    if (txList && txList.list.length) {
+      for (let i = 0; i < txList.list.length; i++) {
+        const item = txList.list[i]
+        if (item.txId.toUpperCase() === txId.toUpperCase()) {
+          txList.list[i] = newReceipt
+        }
+      }
+
+    }
+  } else {
+    if (txList && txList.length) {
+      if (txList && txList.length) {
+        for (let i = 0; i < txList.length; i++) {
+          const item = txList[i]
+          if (item.txId.toUpperCase() === txId.toUpperCase()) {
+            txList[i] = newReceipt
+          }
+        }
+
+      }
+    }
+  }
+  await localforage.setItem(txListKey, txList)
+  if (newReceipt.status) {
+    await DEL_TXQUEUE(da)
+  }
+  eventBus.emit('txUpdate', newReceipt)
+  return newReceipt
+}
+
+export function waitForTransactions(hashs: Array<any>, time: number | null = null):Promise<TransactionReceipt>{
+  return new Promise((resolve, reject) => {
+    if(hashs.length) {
+      hashs.forEach((hash) => {
+        if(time != null) {
+          wallet.provider.waitForTransaction(hash, null, time).then((res: TransactionReceipt) => {
+            resolve(res)
+            wallet.provider.removeAllListeners()
+          }).catch((err: any) => {
+            reject(err)
+          })
+        } else {
+          wallet.provider.waitForTransaction(hash).then((res: TransactionReceipt) => {
+            resolve(res)
+            wallet.provider.removeAllListeners()
+          }).catch((err: any) => {
+            reject(err)
+          })
+        }
+
+      })
+    }
+  })
 }

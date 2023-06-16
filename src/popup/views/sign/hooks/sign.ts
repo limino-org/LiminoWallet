@@ -16,16 +16,16 @@ export const useSign = () => {
     const sign: Ref<string> = ref('')
     /**
      * address string
-     * sig  Hex 字符串
-     * backUrl  返回地址
+     * sig  Hex 
+     * backUrl  
      */
     let { address, sig, backUrl: back } = query
     let isAdmin:Boolean = true
     const loading:Ref<boolean> = ref(false)
-    const password = getCookies('password')
     const backUrl: Ref<string> = ref('')
-    // 先链接该地址钱包
-    const toSign = (opt: SignParams) => {
+    // Link the address wallet first
+    const toSign = async(opt: SignParams) => {
+        const password = await getCookies('password')
         let call: Function = () => {}
         if(opt){
             address =  opt.address
@@ -47,14 +47,13 @@ export const useSign = () => {
             password,
             address: address?.toString() || ''
         }
-        
-        
         return dispatch('account/connectWalletByPwdAddress', params).then(async (wallet) => {
             console.log('wallet', wallet)
             try {
                 const sstr = sig
+                console.warn('sstr-----------------', sstr, isAdmin)
                 if(isAdmin){
-                    //@/popupts-ignore   给hash字符串签名
+                    //@/popupts-ignore   Sign the hash string
                     sign.value = ethers.utils.joinSignature(new ethers.utils.SigningKey(wallet.privateKey).signDigest(sstr))
                     backUrl.value = `${back || ''}?sig=${sign.value}`
                 } else {
@@ -72,7 +71,6 @@ export const useSign = () => {
     return {
         toSign,
         loading,
-        password,
         sign,
         address,
         backUrl

@@ -1,14 +1,8 @@
 <template>
-  <van-sticky>
-    <NavHeader title="Close" :hasRight="hasRight">
-      <template v-slot:title>
-        <div class="flex center title">{{t('setting.resetPwd')}}</div>
-      </template>
-    </NavHeader>
-  </van-sticky>
+    <NavHeader :title="t('setting.resetPwd')" :hasRight="true"></NavHeader>
   <WormTransition size="small">
     <template v-slot:icon>
-      <img class="iconele flex center" src="@/assets/icon_blue.svg" alt />
+      <img class="iconele flex center" src="@/assets/logoeth.png" />
     </template>
   </WormTransition>
   <div class="f-24 text-center text-bold mt-10">{{t('resetPwd.resetpasswords')}}</div>
@@ -25,12 +19,10 @@
         v-model="password"
         maxlength="30"
         :type="`${mask ? 'password' : 'string'}`"
+        :class="pwd1Err ? 'error' : ''"
         :placeholder="$t('resetPwd.input')"
         :rules="[
-          {
-            required: true,
-            message: t('resetPwd.password1'),
-          },
+
           {
             validator: asynPwd,
             message:
@@ -50,15 +42,12 @@
       <van-field
         v-model="password2"
         maxlength="30"
+        :class="pwd2Err ? 'error' : ''"
         :type="`${mask2 ? 'password' : 'string'}`"
         :placeholder="$t('resetPwd.input')"
         :rules="[
           {
-            required: true,
-            message: t('resetPwd.password1'),
-          },
-          {
-            validator: asynPwd,
+            validator: asynPwd2,
             message:
               t('createAccountpage.pwdWorng'),
           },
@@ -80,10 +69,10 @@
 import WormTransition from '@/popup/components/wromTransition/index.vue'
 import { Icon, Toast, Button, Sticky, Field, Form, CellGroup, Switch, Checkbox, CheckboxGroup } from 'vant'
 import NavHeader from '@/popup/components/navHeader/index.vue'
-
+import { createWalletByJson, CreateWalletByJsonParams } from '@/popup/utils/ether'
 import { defineComponent, Ref, ref, watch, SetupContext, onBeforeMount, onBeforeUpdate, onMounted, nextTick } from 'vue'
 import router from '@/popup/router'
-import { setCookies, getCookies } from '@/popup/utils/jsCookie'
+import { setCookies } from '@/popup/utils/jsCookie'
 // @ts-ignore
 import { encrypt, decrypt } from '@/popup/utils/cryptoJS.js'
 import { useI18n } from 'vue-i18n'
@@ -91,6 +80,9 @@ import { regPassword1 } from '@/popup/enum/regexp'
 import { useStore } from 'vuex'
 import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import localforage from 'localforage'
+import { useToast } from '@/popup/plugins/toast'
+import { useLogin } from "@/popup/components/navHeader/hooks/login";
+
 export default {
   name: 'restPwd-step1',
   components: {
@@ -107,14 +99,42 @@ export default {
     const mask = ref(true)
     const router = useRouter()
     const route: any = useRoute()
-    const { dispatch } = useStore()
+    const { dispatch, state } = useStore()
     const mask2 = ref(true)
+    const pwd1Err = ref(false)
+    const pwd2Err = ref(false)
+    const {$toast} = useToast()
+    const { logout } = useLogin()
     const asynPwd = (val: string) => {
+      pwd1Err.value = false
+      if(!val) {
+        pwd1Err.value = true
+        return t('resetPwd.password1')
+      }
       if (regPassword1.test(password.value)) {
         return true
       }
+      pwd1Err.value = true
       return false
     }
+    const asynPwd2 = (val: string) => {
+      pwd2Err.value = false
+      if(!val) {
+        pwd2Err.value = true
+        return t('resetPwd.password1')
+      }
+      if (regPassword1.test(password2.value)) {
+        if(val == password.value) {
+          return true
+        } else {
+          pwd2Err.value = true
+          return t('createwallet.notmatch')
+        }
+      }
+      pwd2Err.value = true
+      return t('createAccountpage.pwdWorng')
+    }
+    const accountInfo = state.account.accountInfo
 
     const toggleMask = () => {
       mask.value ? (mask.value = false) : (mask.value = true)
@@ -122,21 +142,37 @@ export default {
     const toggleMask2 = () => {
       mask2.value ? (mask2.value = false) : (mask2.value = true)
     }
-    const checkTime = () => {
-      const resetpwdtk = localStorage.getItem('resetpwdtk')
-      const { time } = route.params
-      const tk = decrypt(resetpwdtk, time.toString())
-      if (!resetpwdtk || !time || tk != 'reset-token' + time) {
-        localforage.removeItem('resetpwdtk')
+    const pwd = ref()
+    const checkPwd = async () => {
+      if(!pwd.value) {
+       // @ts-ignore
+       pwd.value = await chrome.storage.local.get('comfirm_password')
+       // @ts-ignore
+       await chrome.storage.local.set({comfirm_password:''})
+      }
+
+      if (!pwd.value.comfirm_password) {
+        router.back()
+        return
+      }
+      const { keyStore } = accountInfo
+      //Unlock the keyStore file of the current account with a password
+      const data: CreateWalletByJsonParams = {
+        password: pwd.value.comfirm_password,
+        json: keyStore
+      }
+      try {
+        await createWalletByJson(data)
+      }catch(err){
+        console.warn('err', err)
         router.back()
       }
     }
     onMounted(() => {
-      checkTime()
+      checkPwd()
     })
 
     const onSubmit = async () => {
-      checkTime()
       if (password.value != password2.value) {
         Toast(t('createwallet.notmatch'))
         return
@@ -144,31 +180,32 @@ export default {
       try {
         // Before resetting the password, re encrypt all cached keystores
         await dispatch('account/updateKeyStoreByPwd', password.value)
-        Toast(t('resetPwd.resetsuccessful'))
-        localStorage.removeItem('resetpwdtk')
-        setCookies('password', password.value)
-        router.replace({ name: 'loginAccount-step1' })
+        $toast.success(t('resetPwd.resetsuccessful'))
+        
+        nextTick(async() => {
+          await logout()
+          router.replace({ name: 'loginAccount-step1' })
+        })
       } catch (err) {
-        Toast(t('resetPwd.failedtochange'))
+        console.log('err---', err)
+        $toast.warn(t('resetPwd.failedtochange'))
       }
     }
     // Right cancel button
-    const hasRight = () => {
-      router.push({
-        name: 'wallet'
-      })
-    }
+
     return {
       password,
       onSubmit,
+      pwd1Err,
+      pwd2Err,
       t,
       asynPwd,
+      asynPwd2,
       mask,
       toggleMask,
       mask2,
       toggleMask2,
       password2,
-      hasRight
     }
   }
 }
@@ -188,7 +225,7 @@ export default {
   margin-bottom: 40px;
 }
 .icon-yanjing1 {
-  color: #037dd6;
+  color: #9F54BA;
 }
 .btn-groups {
   margin-top: 30px;
@@ -209,13 +246,13 @@ export default {
 :deep(.van-field__body) {
   height: 42px;
   border: 1PX solid #adb8c5;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   padding: 0 10px;
   border-radius: 5px;
   transition: ease 0.3s;
   font-size: 12px;
   &:hover {
-    border: 1PX solid #1989fa;
+    border: 1PX solid #9F54BA;
   }
 }
 </style>

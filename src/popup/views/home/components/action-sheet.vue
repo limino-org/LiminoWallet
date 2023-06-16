@@ -2,14 +2,14 @@
 <template>
     <van-dialog
       v-model:show="show"
-      show-cancel-button
       teleport="#page-box"
+      class="account-list-modal1"
       :showConfirmButton="false"
       :showCancelButton="false"
       closeOnClickOverlay
     >
       <!-- <van-action-sheet v-model:show="show" class="account-action-sheet" teleport="#page-box"> -->
-      <div class="sheet-header">
+      <div class="sheet-header van-hairline--bottom">
         {{ t("wallet.account") }}
       </div>
       <div class="account-container">
@@ -27,7 +27,7 @@
             :data-selected="accountInfo.address.toUpperCase() ==
                     item.address.toUpperCase() ? true : false"
           >
-            <div class="flex account-card-s">
+            <div class="flex account-card-s" :title="item.address">
               <div class="flex center account-icon">
                 <i
                   :class="`iconfont f-14 ${
@@ -57,7 +57,7 @@
                 <span v-show="item.imported" class="imported">{{
                   t("sidebar.imported")
                 }}</span>
-                <van-loading
+                <!-- <van-loading
                   class="ml-14"
                   size="22px"
                   v-show="
@@ -65,8 +65,8 @@
                     clickAccountIdx != null &&
                     clickAccountIdx == index
                   "
-                  color="#1989fa"
-                />
+                  color="#9F54BA"
+                /> -->
               </div>
             </div>
           </div>
@@ -196,7 +196,6 @@
   
       const handleScroll = () => {
         const listDoms = listDom.value
-        // 获取选中地址的dom
         const newList = Array.from(listDoms.children)
         const ele: any = newList.find((item: any) => item.dataset.selected == 'true')
         const hei = ele.offsetTop - ele.offsetHeight
@@ -231,6 +230,10 @@
   });
   </script>
   <style lang="scss" scoped>
+  .account-list {
+    max-height: 350px;
+    overflow-y: scroll;
+  }
   .btn-box {
      button {
       height: 58px;
@@ -252,7 +255,7 @@
       font-size: 20px;
     }
     i.icon-xuanzhong1 {
-      color: #037dd6;
+      color: #9F54BA;
     }
   }
   .imported {
@@ -264,7 +267,7 @@
   }
   .account-groups {
     .createBtn {
-      color: rgba(3, 125, 214, 1);
+      color: #9F54BA;
       font-size: 12px;
       line-height: 50px;
       border: none !important;
@@ -272,7 +275,7 @@
     }
   
     .acc-btn {
-      color: rgba(3, 125, 214, 1);
+      color: #9F54BA;
       font-size: 12px;
       line-height: 50px;
     }
@@ -283,7 +286,7 @@
     transition: ease 0.3s;
     &:hover {
       .account-value,.account-name {
-        color: #037dd6;
+        color: #9F54BA;
       }
     }
     .account-icon-s {
@@ -297,7 +300,7 @@
       }
     }
     .account-name {
-      line-height: 24px;
+      line-height: 16px;
       font-size: 15px;
       justify-content: flex-start;
       font-weight: bold;
@@ -309,7 +312,7 @@
     }
   
     .account-info-box {
-      min-width: 160px;
+      min-width: 210px;
       &.half {
         width: 100px;
       }
@@ -322,7 +325,7 @@
         border: 1px solid rgba(133, 141, 151, 1);
         text-align: center;
         border-radius: 10px;
-        font-size: 10px;
+        font-size: 12px;
         color: rgba(154, 161, 168, 1);
       }
     }
@@ -337,24 +340,22 @@
     padding: 14px 0;
   }
   .account-list {
-    max-height: 45vh;
-    overflow-y: scroll;
     .bt.select {
-      color: #037dd6;
+      color: #9F54BA;
       .account-value {
-        color: #037dd6;
+        color: #9F54BA;
       }
     }
   }
   .create {
     text-align: center;
     font-size: 12px;
-    color: #037dd6;
+    color: #9F54BA;
   }
   .import {
     text-align: center;
     font-size: 12px;
-    color: #037dd6;
+    color: #9F54BA;
   }
   .bt {
     border-bottom: 1px solid #ecedef;
@@ -365,7 +366,7 @@
     text-align: center;
     align-items: center;
     justify-content: center;
-    background: #f8fcff;
+    background: #F8F3F9;
     font-size: 15px;
     font-weight: bold;
     // border-radius: 20px 20px 0px 0px;

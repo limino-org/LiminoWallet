@@ -12,7 +12,6 @@
       >
         {{ t("createExchange.anto_exchange") }}
       </div>
-      <!-- 加载图标 -->
       <img
         class="exchange-welcome-icon"
         src="@/popup/assets/exchange/SketchPngd639df730ff6d003324f6bb2b005d2a46f1f8b4b97a5840681e048ee15e4f94b.png"
@@ -21,7 +20,6 @@
         {{ t("createExchange.wait") }}
       </div>
       <div class="text-center please">{{t('createExchange.please')}}</div>
-      <!-- 添加进度图 -->
       <van-circle
         class="progress-bar"
         v-model:current-rate="currentRate"
@@ -32,9 +30,6 @@
         :color="gradientColor"
         :text="text"
       ></van-circle>
-      <!-- <div v-if="ready" style="padding: 20px">
-          <div>一键生成交易所成功！</div>
-        </div>-->
     </div>
     <van-dialog
       v-model:show="showExchange1"
@@ -54,7 +49,6 @@
         >
           {{ t("createExchange.anto_exchange") }}
         </div>
-        <!-- 加载图标 -->
         <img
           class="exchange-welcome-icon"
           src="@/popup/assets/exchange/SketchPng6487f59e1a3e4adec886c6b63f8c41c4aa0d61ebfe43fcaad735b3ff5ca97e8d.png"
@@ -62,7 +56,6 @@
         <div class="echange-slogan1 text-bold">
           {{ t("createExchange.opensuccessfully") }}
         </div>
-        <!-- 交易所信息 -->
         <div>
           <div class="exchange-create">
             <div class="table">
@@ -77,7 +70,6 @@
               </div>
               <div @click="toGoCMS" class="down">{{ adminUrl }}</div>
             </div>
-            <!-- 分割线 -->
             <div class="exchange-line"></div>
             <div class="table">
               <div class="top">
@@ -92,12 +84,10 @@
               <div @click="toGoAmount" class="down">{{ exchangeUrl }}</div>
             </div>
           </div>
-          <!-- 标语 -->
           <div class="echange-slogan2">
             <span class="left">{{ t("createExchange.confirm") }}</span>
             <span class="right">{{ t("createExchange.terms") }}</span>
           </div>
-          <!-- 控制按钮 -->
           <div class="exchange-button" style="margin: auto">
             <van-button size="normal" @click="tohome">{{
               t("createExchange.close")
@@ -124,7 +114,7 @@ import {
 import { useRouter, useRoute } from "vue-router";
 import { ethers, utils } from "ethers";
 import { useStore, mapState } from "vuex";
-import { useExchanges } from "@/popup/views/home/hooks/useExchange";
+import { useExchanges } from "@/popup/hooks/useExchanges";
 import BigNumber from "bignumber.js";
 import { ExchangeStatus } from "@/popup/store/modules/account";
 import {
@@ -142,6 +132,7 @@ import useClipboard from "vue-clipboard3";
 import { getWallet, wallet } from "@/popup/store/modules/account";
 import { useI18n } from "vue-i18n";
 import { VUE_APP_EXCHANGESMANAGEMENT_URL,VUE_APP_EXCHANGES_URL } from "@/popup/enum/env";
+import { refDebounced } from "@vueuse/shared";
 export default defineComponent({
   name: "createExchange",
   components: {
@@ -180,10 +171,7 @@ export default defineComponent({
     const {
       showExchange,
       showExchange1,
-      currentRate,
       ready,
-      speed,
-      rate,
       createExchanges,
     } = useExchanges();
     const store = useStore();
@@ -227,10 +215,6 @@ export default defineComponent({
       return `${VUE_APP_EXCHANGES_URL}/c${add.toLowerCase()}/#/`;
     });
 
-    //环形图
-    const text = computed(() => currentRate.value.toFixed(0) + "%");
-
-    // 复制地址
     const { toClipboard } = useClipboard();
     const toCopyCMS = async () => {
       try {
@@ -249,28 +233,21 @@ export default defineComponent({
       }
     };
 
-    // 跳转到后台
     const toGoCMS = () => {
       window.open(`${adminUrl.value}`);
     };
-    // 跳转到交易所
     const toGoAmount = () => {
       window.open(`${exchangeUrl.value}`);
     };
-    // 按钮
     const tohome = () => {
-      console.log("关闭");
       showExchange1.value = false;
     };
 
     watch(
-      () => currentRate.value,
+      () => ready.value,
       async (n) => {
-        if (Number(n) == 100) {
+        if (n) {
           console.warn("watch------ currentRate", n);
-          // showExchange.value = false;
-          // showExchange1.value = true;
-          // 判断是否是发两笔交易
           nextTick(() => {
             const { amount, amount2 } = props;
             if (amount && amount2) {
@@ -290,18 +267,14 @@ export default defineComponent({
 
 const gradientColor = {
       '0%': '#d0e1ee',
-      '100%': '#037CD6',
+      '100%': '#9F54BA',
     };
     return {
       gradientColor,
       t,
       showExchange,
       showExchange1,
-      currentRate,
-      speed,
-      rate,
       ready,
-      text,
       toCopyCMS,
       toCopyAmount,
       tohome,
@@ -314,6 +287,7 @@ const gradientColor = {
 });
 </script>
 <style lang="scss" scoped>
+
   .please{
     color: rgba(132, 132, 132, 1);
     font-size: 12px;
@@ -321,7 +295,7 @@ const gradientColor = {
   :deep(.van-circle__text){
     font-size: 18px;
 font-weight: 400;
-color: #037CD6;
+color: #9F54BA;
 line-height: 25px;
   }
 .exchange-container1 {
@@ -331,7 +305,7 @@ line-height: 25px;
     height: 62px;
     font-size: 15px;
     line-height: 62px;
-    background-color: #f8fcff;
+    background-color: #F8F3F9;
     color: #b3b3b3;
   }
   .exchange-welcome-icon {
@@ -364,7 +338,7 @@ line-height: 25px;
     margin: 21px auto 23px;
     text-align: center;
     .right {
-      color: #037cd6;
+      color: #9F54BA;
       text-decoration: underline;
     }
   }
@@ -380,7 +354,7 @@ line-height: 25px;
     height: 62px;
     font-size: 15px;
     line-height: 62px;
-    background-color: #f8fcff;
+    background-color: #F8F3F9;
   }
   .exchange-welcome-icon {
     height: 40px;
@@ -406,7 +380,7 @@ line-height: 25px;
     margin: 21px auto 23px;
     text-align: center;
     .right {
-      color: #037cd6;
+      color: #9F54BA;
       text-decoration: underline;
     }
   }
@@ -443,7 +417,7 @@ line-height: 25px;
     .down {
       height: 24px;
       line-height: 24px;
-      color: #037cd6;
+      color: #9F54BA;
       text-decoration: underline;
       white-space: nowrap;
       overflow: hidden;

@@ -12,7 +12,7 @@
             <i class="iconfont icon-duihao" v-if="checked && !check"></i>
             <i class="iconfont icon-cuowuguanbiquxiao" v-if="check"></i>
           </div>
-          <i class="iconfont icon-youjiantou" color="#037CD6"></i>
+          <i class="iconfont icon-youjiantou" color="#9F54BA"></i>
         </div>
       </div>
       <div class="tit privacy flex between hover" @click="toprivacy">
@@ -22,7 +22,7 @@
             <i class="iconfont icon-duihao" v-if="checked1 && !check1"></i>
             <i class="iconfont icon-cuowuguanbiquxiao" v-if="check1"></i>
           </div>
-          <i class="iconfont icon-youjiantou" color="#037CD6"></i>
+          <i class="iconfont icon-youjiantou" color="#9F54BA"></i>
         </div>
       </div>
     </div>
@@ -147,7 +147,7 @@ export default {
     border: 1px solid #e4e7e8;
     margin: 22px 27px;
     .tit {
-      color: #037cd6;
+      color: #9F54BA;
       height: 80px;
       line-height: 80px;
       padding-right: 15px;

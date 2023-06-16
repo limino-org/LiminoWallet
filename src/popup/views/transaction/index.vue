@@ -21,7 +21,7 @@
               @click="handleShowAccountModal(0)"
               placeholder="Form"
               right-icon="arrow"
-              :rules="[{ validator, message: 'Form 地址' }]"
+              :rules="[{ validator, message: 'Form ' }]"
             />
           </van-cell>
           <!-- to -->
@@ -107,13 +107,15 @@ import {
 } from "vant";
 import { utils } from "ethers";
 import { toHex } from "@/popup/utils/utils";
-import { getWallet } from "@/popup/store/modules/account";
+import { getWallet, TransactionTypes } from "@/popup/store/modules/account";
 import { ref, Ref, reactive, onMounted, computed, toRaw } from "vue";
 import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useRoute, useRouter } from "vue-router";
 import AccountModal from "@/popup/components/accountModal/index.vue";
 import { useStore } from "vuex";
 import { useI18n } from "vue-i18n"
+import { clone } from 'pouchdb-utils';
+
 interface Tx {
   from: string;
   to: string;
@@ -178,7 +180,7 @@ export default {
       const tx1: Tx = {
         from: from.value,
         to: to.value,
-        value: utils.parseEther(value.value),
+        value: value.value,
       };
       if (data.value) {
         const s = `${data.value}`
@@ -186,8 +188,8 @@ export default {
         tx1["data"] = `0x${newStr}`;
       }
       localStorage.setItem('sendData', JSON.stringify(tx1))
-      wallet.sendTransaction(tx1).then((transactionTX: any) => {
-        const { hash, error } = transactionTX;
+      store.dispatch('account/transaction', tx1).then((transactionTX: any) => {
+        const { from, gasLimit, gasPrice, nonce,  type, value, hash, to } = transactionTX;
         transactiontx.value = transactionTX;
         wallet.provider.waitForTransaction(hash).then((res: any) => {
           receipt.value = res;
@@ -232,7 +234,7 @@ export default {
 .transaction {
   .back {
     font-size: 18px;
-    color: rgba(3, 125, 214, 1);
+    color: #9F54BA;
   }
   :deep(.van-cell__title) {
     flex: inherit;

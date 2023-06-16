@@ -1,11 +1,5 @@
 <template>
-  <van-sticky>
-    <NavHeader title="Close" :hasRight="true">
-      <template v-slot:title>
-        <div class="flex center title">{{ $t("castingnft.createNFT") }}</div>
-      </template>
-    </NavHeader>
-  </van-sticky>
+    <NavHeader :title="$t('castingnft.createNFT')" :hasRight="false"></NavHeader>
   <router-view v-slot="{ Component }">
     <keep-alive>
       <component :is="Component" />

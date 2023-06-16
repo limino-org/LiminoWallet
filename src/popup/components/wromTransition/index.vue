@@ -126,7 +126,7 @@ export default defineComponent({
       background-position: left 0 top 0 right 0 bottom 0;
       font-size: 26px;
       font-weight: bold;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
 }
@@ -174,7 +174,7 @@ export default defineComponent({
 .tbox {
   width: 20px;
   height: 20px;
-  // background: #037cd6;
+  // background: #9F54BA;
   position: absolute;
   left: 50%;
   top: 50%;

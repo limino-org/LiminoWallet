@@ -1,5 +1,5 @@
 <template>
-  <van-overlay :show="dislogShow" class="custom-overlay" z-index="100">
+  <van-overlay :show="dislogShow" class="custom-overlay" z-index="1000">
     <div class="miners">
         <div class="miners-header">
           <span>{{$t('minerspledge.setamount')}}</span>
@@ -16,7 +16,7 @@
                 />
                 <span>ERB</span>
               </div>
-              <span class="text">${{Number(toUsd(amount)).toFixed(2)}}</span>  
+  
             </div>
           </div>
           <div class="container-btn flex center column">
@@ -34,7 +34,7 @@
 import { Button, Overlay, Field, Toast } from 'vant'
 import { ref, SetupContext, computed } from 'vue'
 import { ethers, utils } from "ethers";
-import {formatEther,toUsd} from "@/popup/utils/filters";
+import {formatEther} from "@/popup/utils/filters";
 import { useI18n } from 'vue-i18n'
 export default {
   name: 'AmountView',
@@ -44,7 +44,6 @@ export default {
     [Field.name]: Field
   },
   props: {
-    // 控制显示
     show: {
       type: Boolean,
       default: false
@@ -73,11 +72,8 @@ export default {
   setup(props: any, context: SetupContext) {
     const { t } = useI18n()
 
-    console.log('我加载了11111111111')
     const { emit }: any = context
-    // 输入框name
     let amount = ref(props.minersMoney)
-    // 金额和金额的最大值和最小值
     let moneyMin = ref(100000)
     let moneyMax = ref(10000000)
 
@@ -90,7 +86,7 @@ export default {
       set: v => emit('update:minersMoney', v)
     })
     const submit = () => {
-      debugger
+      //debugger
       if (amount.value) {
           if (amount.value > Number(props.moneyMax)) {
             Toast(t('amountreminder.my'))
@@ -122,7 +118,6 @@ export default {
       dislogShow,
       submit,
       screentNumber,
-      toUsd
     }
   }
 }
@@ -144,7 +139,7 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #f8fcff;
+      background: #F8F3F9;
       font-size: 14px;
       color: #0f0f0f;
     }
@@ -209,7 +204,7 @@ export default {
           font-weight: bold;
         }
         .ipt-server {
-          font-size: 10px;
+          font-size: 12px;
           color: #8f8f8f;
           font-weight: bold;
           span {
@@ -224,7 +219,7 @@ export default {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f4faff;
+            background: #F8F3F9;
             border-radius: 7px 7px 7px 7px;
             &:first-child {
               padding: 0 18px;
@@ -232,8 +227,8 @@ export default {
           }
           .ipt-server-i-active {
             color: #0287db;
-            background: #f4faff;
-            border: 1px solid #037cd6;
+            background: #F8F3F9;
+            border: 1px solid #9F54BA;
             span {
               color: #0287db;
             }

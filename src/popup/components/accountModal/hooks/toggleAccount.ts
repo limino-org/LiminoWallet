@@ -16,7 +16,7 @@ import eventBus from "@/popup/utils/bus";
 import router from "@/popup/router";
 import { Mnemonic } from "ethers/lib/utils";
 import { AccountInfo } from "@/popup/store/modules/account";
-import { useExchanges } from "@/popup/views/home/hooks/useExchange";
+import { useExchanges } from "@/popup/hooks/useExchanges";
 export const useToggleAccount = () => {
   const store = useStore();
   const { initExchangeData } = useExchanges()
@@ -54,15 +54,17 @@ export const useToggleAccount = () => {
     accountLoading.value = true;
     clickAccountIdx.value = idx;
     const { currentNetwork } = store.state.account;
-    const password: string = getCookies("password") || "";
+    const password: string = await getCookies("password") || "";
     const keyStore = toRaw(account.keyStore);
     const data: CreateWalletByJsonParams = {
       password,
       json: keyStore,
     };
     try {
-      await dispatch("account/createWalletByJson", data);
+      const wall = await dispatch("account/createWalletByJson", data);
       commit("account/UPDATE_ACCOUNTINFO", account);
+      // eventBus.emit('changeAccount', wall.address)
+
       dispatch("account/updateTokensBalances");
       const wallet = await dispatch("account/getProviderWallet");
       dispatch("account/getExchangeStatus").then(res => {
@@ -89,8 +91,8 @@ export const useToggleAccount = () => {
   const createWalletByPath = async (callBack: Function = () => {}) => {
     // Get the current BIP44 path
     const { pathIndex, path }: any = { ...store.state.account.mnemonic };
-    const password: string = getCookies("password") || "";
-    let phrase: string = await parseMnemonic(password);
+    const password: string = await getCookies("password") || "";
+    let phrase: string = await parseMnemonic(password, store.state.mnemonic.keyStore);
     let mnemonic: CreateWalletByMnemonicParams = { pathIndex, phrase, path };
     let wallet = await dispatch("account/createWallet", mnemonic);
     let { privateKey, address } = wallet;
@@ -109,9 +111,9 @@ export const useToggleAccount = () => {
     }
   };
 
-  const createAccount = () => {
+  const createAccount = async() => {
     // Store mnemonic words
-    const password: string = getCookies("password") || "";
+    const password: string = await getCookies("password") || "";
     if (!password) {
       router.replace({ name: "loginAccount-step1" });
     }
@@ -131,9 +133,15 @@ export const useToggleAccount = () => {
             address,
             imported: false,
           })
+          dispatch("account/getExchangeStatus").then(res => {
+            if(res.status == 2 && res.exchanger_flag){
+              initExchangeData()
+            }
+          })
           eventBus.emit("changeAccount", wallet.address);
           resolve(wallet)
         }catch(err){
+          reject(err)
           console.error(err)
         }
       });

@@ -5,11 +5,12 @@
     teleport="#page-box"
     :showConfirmButton="false"
     :showCancelButton="false"
+    class="minus-stack-dialog"
     closeOnClickOverlay
   >
     <div class="title text-center">{{ t("bourse.minusTit") }}</div>
     <div class="form-box">
-      <div class="card">
+      <!-- <div class="card">
         <div class="label lh-16 mb-2">
           {{ t("createExchange.name") }}
 
@@ -32,7 +33,7 @@
           </van-popover>
         </div>
         <div class="value lh-16">{{ name }}</div>
-      </div>
+      </div> -->
       <div class="card">
         <div class="label lh-16 mb-2">
           {{ t("bourse.stakingFee") }}
@@ -55,7 +56,7 @@
             </template>
           </van-popover>
         </div>
-        <div class="value lh-16">{{ fee }} ERB({{ toUsd(fee, 2) }})</div>
+        <div class="value lh-16">{{ fee }} ERB</div>
       </div>
       <div class="card">
         <div class="label lh-16 mb-2">
@@ -175,7 +176,6 @@ import {
 import { watch } from "vue";
 import { Dialog, Icon, Button, Popover } from "vant";
 import { useI18n } from "vue-i18n";
-import { toUsd } from "@/popup/utils/filters";
 import Bignumber, { BigNumber } from "bignumber.js";
 import { toHex, useExchanges } from "@/popup/hooks/useExchanges";
 import { useStore } from "vuex";
@@ -281,10 +281,10 @@ export default defineComponent({
       data.Validators.forEach((item: any) => {
         total = total.plus(item.Balance);
       });
-      // 总质押量
+      // Total amount of pledge
       const totalStr = total.div(1000000000000000000).toFixed(6);
 
-      // 总收益
+      // total revenue
       const totalprofit = state.account.exchangeTotalProfit;
       const totalPledge = new BigNumber(props.amount);
       myprofit.value = new BigNumber(totalprofit)
@@ -318,7 +318,6 @@ export default defineComponent({
       show,
       accountInfo,
       t,
-      toUsd,
       submit,
       gasFee,
     };
@@ -331,7 +330,7 @@ export default defineComponent({
   font-weight: bold;
   color: #000000;
   line-height: 60px;
-  background: #f8fcff;
+  background: #F8F3F9;
 }
 .form-box {
   border-radius: 10px;

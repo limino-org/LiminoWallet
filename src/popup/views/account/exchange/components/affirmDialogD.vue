@@ -5,7 +5,7 @@
         <span>{{$t('closeexchange.minerspledge')}}</span>
       </div>
       <div class="flex center miners-icons">
-        <van-icon size="41" color="#037CD6" name="warning" />
+        <van-icon size="41" color="#9F54BA" name="warning" />
       </div>
       <div class="flex center column">
         <span class="text-s">{{$t('closeexchange.unfortunately')}}</span>
@@ -36,7 +36,6 @@ export default {
     [Icon.name]: Icon
   },
   props: {
-    // 控制显示
     show: {
       type: Boolean,
       default: false
@@ -94,7 +93,7 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #f8fcff;
+      background: #F8F3F9;
       font-size: 14px;
       color: #0f0f0f;
     }

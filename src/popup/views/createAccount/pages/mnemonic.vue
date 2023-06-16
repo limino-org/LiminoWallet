@@ -1,4 +1,9 @@
 <template>
+    <NavHeader :hasRight="false" :title="t('createAccountpage.mnemonicBtn')">
+    <template v-slot:left>
+     <span class="back hover f-12" @click="back">{{t('createAccountpage.back')}}</span>
+    </template>
+  </NavHeader>
   <div class="mnemonic-page">
     <WormTransition size="small">
       <template v-slot:icon>
@@ -156,7 +161,7 @@
   
       const {$toast} = useToast()
   
-      const next = () => {
+      const next = async() => {
         const mnemonic = list.value.map(item => item.value.trim()).join(' ')
         const check = list.value.find(item => item.validator)
         const len = list.value.filter(item => item.value.trim()).length
@@ -166,7 +171,9 @@
         }
         try {
           ethers.Wallet.fromMnemonic(mnemonic, "m/44'/60'/0'/0/0")
-          router.push({ name: "loginAccount-mnemonic-import", query: { mnemonic: encodeURIComponent(mnemonic) } })
+          // @ts-ignore
+          await chrome.storage.local.set({mnemonic: mnemonic})
+          router.push({ name: "loginAccount-mnemonic-import"})
         }catch(err){
           console.error(err.toString())
           $toast.warn(t('importByMnemonic.errorMonic'))
@@ -208,7 +215,7 @@
       width: 20px;
     }
   .icon-yanjing1 {
-    color: #037cd6;
+    color: #9F54BA;
   }
   .logo {
     width: 20px !important;
@@ -239,9 +246,9 @@
     .ipt {
       width: 89px;
       height: 25px;
-      background: #f4faff;
+      background: #F8F3F9;
       border-radius: 25px;
-      border: 1PX solid #037cd6;
+      border: 1PX solid #9F54BA;
       position: relative;
       margin-right: 10px;
       margin-bottom: 10px;
@@ -262,7 +269,7 @@
         width: 24px;
         line-height: 24px;
         height: 24px;
-        background: #037cd6;
+        background: #9F54BA;
         border-radius: 12px;
         position: absolute;
         left: -0.5px;
@@ -275,7 +282,7 @@
         width: 65px;
         border: none;
         text-align: center;
-        color: #037cd6;
+        color: #9F54BA;
         border-radius: 25px;
         font-size: 12px;
         margin-right: 2px;
@@ -288,12 +295,12 @@
     flex-wrap: wrap;
     .card {
       line-height: 25px;
-      background: #f4faff;
+      background: #F8F3F9;
       border-radius: 12.5px;
       padding: 0 13px;
       margin-right: 10px;
       margin-bottom: 10px;
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .warning {
@@ -303,7 +310,7 @@
     margin-top: 12px;
   }
   .link {
-    color: #037cd6;
+    color: #9F54BA;
   }
   :deep() {
     .van-checkbox__icon {

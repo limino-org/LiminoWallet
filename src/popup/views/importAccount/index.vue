@@ -1,11 +1,5 @@
 <template>
-  <van-sticky>
-    <NavHeader title="Close" :hasRight="route.name =='importAccount-step1' ? false : true">
-      <template v-slot:title>
-        <div class="flex center title">{{t('import.importaccount')}}</div>
-      </template>
-    </NavHeader>
-  </van-sticky>
+    <NavHeader :hasRight="route.name =='importAccount-step1' ? false : true" :title="t('import.importaccount')"></NavHeader>
   <router-view v-slot="{ Component }">
     <keep-alive>
       <component :is="Component" />

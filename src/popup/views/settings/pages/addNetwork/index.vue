@@ -11,7 +11,7 @@
     </div>
 
     <div>
-      <van-form @submit="onSubmit">
+      <van-form ref="form">
         <div class="label text-bold">
           <span>*</span>{{ t("addNetwork.networkname") }}
         </div>
@@ -36,7 +36,7 @@
           :class="urlError ? 'error' : ''"
           v-model="URL"
           :placeholder="$t('addNetwork.newRpcPlaceholder')"
-          maxlength="50"
+          maxlength="200"
           :disabled="isMain ? true : false"
 
           validate-trigger="onChange"
@@ -99,7 +99,7 @@
               @click="handleDelNet"
               >{{ t("addNetwork.delete") }}</van-button
             >
-            <van-button block type="primary" native-type="submit">
+            <van-button block type="primary" :loading="loading" @click="onSubmit">
               {{ isModif ? t("addNetwork.submit") : t("addNetwork.add") }}
             </van-button>
           </div>
@@ -125,6 +125,7 @@ import { ethers, utils } from "ethers";
 import { useBroadCast } from "@/popup/utils/broadCost";
 import { useToast } from "@/popup/plugins/toast";
 import { getWallet } from "@/popup/store/modules/account";
+import { useDialog } from "@/popup/plugins/dialog";
 
 
 export default {
@@ -151,16 +152,23 @@ export default {
       id,
       icon: qicon,
     }: any = data;
-    const { state, commit } = store;
+
+    
+    const { state, commit, dispatch } = store;
     const label: Ref<string> = ref(qlabel);
     const URL: Ref<string> = ref(qurl);
-    const chainId: Ref<number> = ref(qid);
+    const chainId: Ref<number> = ref(qid || null);
+
     const ID: Ref<string> = ref("");
     const currencySymbol: Ref<string> = ref(qsymbol);
     const browser: Ref<string> = ref(qbrowser);
     // Listen to the broadcast of the same source window
     const { handleUpdate } = useBroadCast();
-
+    // watch(() => chainId.value, (n) => {
+    //   console.error('watch chainid', n)
+    // },{
+    //   immediate: true,
+    // })
     // Edit operation
     const isModif = computed(() => {
       return qid ? true : false;
@@ -194,6 +202,7 @@ export default {
         }
       } else {
         urlError.value = true;
+        loading.value = false;
         return t("addNetwork.Invalidrpcurl");
       }
     };
@@ -239,21 +248,19 @@ export default {
     });
     const netWorkList = computed(() => state.account.netWorkList);
     const { $toast } = useToast();
-
-    const onSubmit = () => {
+    const form = ref()
+    const onSubmit = async() => {
       console.warn("netWorkList", netWorkList);
-      // if (hasChainId.value) {
-      //   let time = setTimeout(() => {
-      //     saveData();
-      //     clearTimeout(time);
-      //   }, 1000);
-      //   return;
-      // }
       loading.value = true;
+      try {
+        await form.value.validate()
       let time = setTimeout(()=>{
         saveData();
         clearTimeout(time)
-      },0)
+      },300)
+      }finally{
+        loading.value = false;
+      }
     };
     const nameError = ref(false)
     const asyncName = (v: string) => {
@@ -275,16 +282,17 @@ export default {
         URL: URL.value,
         browser: browser.value,
         currencySymbol: currencySymbol.value,
-        transactionList: {},
         chainId: Number(chainId.value),
         tokens: {},
         id: id || guid(),
+        isMain: false
       };
       console.log("netWork", netWork, qicon);
       store.commit(
         isModif.value ? "account/MODIF_NETWORK" : "account/PUSH_NETWORK",
         netWork
       );
+      dispatch("account/getProviderWallet");
       handleUpdate();
       loading.value = false;
       $toast.success(
@@ -295,19 +303,25 @@ export default {
       router.back();
     };
 
+    const {$dialog} = useDialog()
     // Delete network
     const handleDelNet = () => {
-      Dialog.confirm({
-        title: t("addNetwork.hint"),
-        message: t("addNetwork.confirmdeletion", { qlabel: qlabel }),
-      }).then(() => {
-        // on confirm
+
+      $dialog.open({
+        message:t("addNetwork.confirmdeletion", { qlabel: qlabel }),
+        type: "warn",
+        theme: "dark",
+        confirmBtnText: t("common.no"),
+        cancelBtnText: t("common.yes"),
+        callBack() {},
+        cancelBack() {
+                  // on confirm
         store.commit("account/DETETE_NETWORK", id);
         $toast.success(
           t("addNetwork.deletingnetworksucceeded", { qlabel: qlabel })
         );
         router.back();
-        return true;
+        },
       });
     };
 
@@ -319,6 +333,7 @@ export default {
         const newwallet = wallet.connect(provider);
         const network = await newwallet.provider.getNetwork();
         urlError.value = false;
+        debugger
         chainId.value = network.chainId;
       } catch (err: any) {
         urlError.value = true;
@@ -327,11 +342,14 @@ export default {
     };
 
     const isMain = computed(() => data ? data.isMain : false )
-    watch(()=>isMain.value,async() => {
+    watch(()=>isMain.value,async(n) => {
+      if(n) {
       const provider = ethers.getDefaultProvider(URL.value)
       const net = await provider.getNetwork()
+      console.error('net.chainId', net.chainId)
       chainId.value = net.chainId
       store.commit('account/UPDATE_WORMHOLES_CHAINID',net.chainId)
+      }
     },{
       immediate: true
     })
@@ -344,8 +362,10 @@ export default {
       ID,
       currencySymbol,
       browser,
+      form,
       RegUrl,
       asyncurl,
+      loading,
       urlError,
       chainError,
       asyncName,
@@ -363,7 +383,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .addNetwork {
-  padding: 0 13px 25px;
+  padding: 0 13px 70px;
   .error {
     :deep(.van-field__body) {
       border-color: #d73a49;
@@ -384,12 +404,12 @@ export default {
     font-size: 12px;
   }
   .w-tips {
-    // background: #f4faff;
+    // background: #F8F3F9;
     border-radius: 7px;
     // margin: 15px 0;
     .icon {
       width: 28px;
-      color: #037cd6;
+      color: #9F54BA;
       font-size: 18px;
     }
     .text {
@@ -432,7 +452,7 @@ export default {
   :deep(.van-field__body) {
     margin-bottom: 20px;
     &:hover {
-      border: 1px solid #1989fa;
+      border: 1px solid #9F54BA;
     }
   }
 }

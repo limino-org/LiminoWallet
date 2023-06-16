@@ -1,10 +1,7 @@
 <template>
-  <NavHeader>
+  <NavHeader :title="t('wallet.send')">
     <template v-slot:left>
      <span class="back hover" @click="back">{{t('createAccountpage.back')}}</span>
-    </template>
-    <template v-slot:title>
-      <div class="flex center title">{{t('wallet.send')}}</div>
     </template>
   </NavHeader>
 <div class="gas-fee-page">
@@ -123,14 +120,14 @@
 </div>
 </template>
 <script lang="ts">
-import { ref } from "@vue/reactivity";
+import { ref,onActivated } from "vue";
 import { getWallet } from "@/popup/store/modules/account";
 import { utils } from "ethers";
 import BigNumber from "bignumber.js";
 import { computed, onMounted } from "@vue/runtime-core";
 import { useI18n } from "vue-i18n";
 import NavHeader from '@/popup/components/navHeader/index.vue'
-
+import {web3} from '@/popup/utils/web3'
 import {
 Icon,
 Toast,
@@ -141,7 +138,7 @@ Slider,
 Popover,
 Skeleton,
 } from "vant";
-import store from "@/store";
+
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 import { toUsd } from "@/popup/utils/filters";
@@ -240,6 +237,7 @@ setup(props: any) {
     const { tokenContractAddress } = chooseToken.value;
     // Token transfer dynamic estimation gaslimit
     if (tokenContractAddress) {
+      const amountWei = web3.utils.toWei(amount.value.toString(),'ether')
       // Get contract token instance object
       const { contractWithSigner, contract } = await dispatch(
         "account/connectConstract",
@@ -248,10 +246,12 @@ setup(props: any) {
       contractWithSigner.estimateGas
         .transfer(
           toAddress.value || accountInfo.value.address,
-          (amount.value || "0") + ""
+          amountWei
         )
         .then((gas: any) => {
-          gasLimit.value = utils.formatUnits(gas, "wei");
+          const limitWei = utils.formatUnits(gas, "wei")
+          gasLimit.value = parseFloat(new BigNumber(limitWei).plus(new BigNumber(limitWei).multipliedBy(0.2)).toFixed(0));
+          console.log('gasLimit.value', gasLimit.value,limitWei)
         });
     } else {
       gasLimit.value = 21000;
@@ -313,7 +313,7 @@ setup(props: any) {
     };
     router.replace({ name: backUrl || "send", query });
   };
-  onMounted(async () => {
+  onActivated(async () => {
     calcGasLimit();
     initGas();
   });
@@ -345,15 +345,15 @@ setup(props: any) {
 </script>
 <style lang="scss" scoped>
 .back {
-color: #037CD6;
+color: #9F54BA;
 font-size: 12px;
 }
 .slider-box {
 &:hover {
-  border: 1px solid #037CD6 !important;
+  border: 1px solid #9F54BA !important;
   .van-hairline--bottom {
     &:after {
-      border-color: #037CD6;
+      border-color: #9F54BA;
     }
   }
 }
@@ -404,7 +404,7 @@ font-size: 12px;
   }
 }
 .userinfo {
-  border: 1px solid #bbc0c5;
+  border: 1px solid #B3B3B3;
   border-radius: 5px;
 }
 .slider-dian {
@@ -464,7 +464,7 @@ font-size: 12px;
   background: #f1f3f4;
   border-radius: 22px;
   .ipt-box {
-    width: 60px;
+    width: 160px;
     background: none;
     .van-cell {
       background: none;
@@ -481,7 +481,7 @@ font-size: 12px;
     width: 17.5px;
     height: 17.5px;
     border-radius: 50%;
-    border: 1px solid #037cd6;
+    border: 1px solid #9F54BA;
     cursor: pointer;
     &.disabled {
       border: 1px solid #ccc;
@@ -492,7 +492,7 @@ font-size: 12px;
     }
     i {
       font-size: 12px;
-      color: #037cd6;
+      color: #9F54BA;
       font-weight: bold;
     }
   }

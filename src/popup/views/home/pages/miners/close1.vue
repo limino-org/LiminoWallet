@@ -1,5 +1,5 @@
 <template>
-  <van-overlay :show="dislogShow" :z-index="9999" class="custom-overlay">
+  <van-overlay :show="dislogShow" :z-index="99" class="custom-overlay">
     <div class="miners">
         <div class="miners-header">
           <span style="color: #000">{{t('minerspledge.stackinglabel')}}</span>
@@ -27,7 +27,6 @@
 import { Button, Overlay, Field, Toast, Icon } from 'vant'
 import { ref, SetupContext, computed, nextTick } from 'vue'
 import { ethers, utils } from "ethers";
-import {formatEther,toUsd} from "@/popup/utils/filters";
 import { useI18n } from 'vue-i18n'
 import { ElTooltip } from 'element-plus'
 
@@ -43,11 +42,10 @@ export default {
   setup(props: any, context: SetupContext) {
     const { t } = useI18n()
 
-    console.log('我加载了11111111111')
     const { emit }: any = context
-    // 输入框name
+    // Input box name
     let amount = ref(props.minersMoney)
-    // 金额和金额的最大值和最小值
+    // The amount and the maximum and minimum value of the amount
     let moneyMin = ref(100000)
     let moneyMax = ref(10000000)
 
@@ -85,7 +83,6 @@ export default {
       dislogShow,
       submit,
       screentNumber,
-      toUsd,
       ...props
     }
   }
@@ -108,7 +105,7 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #F8FCFF;
+      background: #F8F3F9;
       font-size: 14px;
       color: #B3B3B3;
     }
@@ -173,7 +170,7 @@ export default {
           font-weight: bold;
         }
         .ipt-server {
-          font-size: 10px;
+          font-size: 12px;
           color: #8f8f8f;
           font-weight: bold;
           span {
@@ -188,7 +185,7 @@ export default {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f4faff;
+            background: #F8F3F9;
             border-radius: 7px 7px 7px 7px;
             &:first-child {
               padding: 0 18px;
@@ -196,8 +193,8 @@ export default {
           }
           .ipt-server-i-active {
             color: #0287db;
-            background: #f4faff;
-            border: 1px solid #037cd6;
+            background: #F8F3F9;
+            border: 1px solid #9F54BA;
             span {
               color: #0287db;
             }
@@ -265,6 +262,9 @@ export default {
       }
     }
   }
+}
+:deep(.popover-btn-tip) {
+  z-index: 99!important;
 }
 .miners-container-item {
   margin: 25px 12.5px 0 12.5px;

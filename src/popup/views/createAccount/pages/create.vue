@@ -1,10 +1,7 @@
 <template>
-  <NavHeader :hasRight="false">
+    <NavHeader :hasRight="false" title="Wormholes">
     <template v-slot:left>
-     <span class="back hover" @click="back">{{t('createAccountpage.back')}}</span>
-    </template>
-    <template v-slot:title>
-      <div class="flex center title">{{t('wallet.wormHoles')}}</div>
+     <span class="back hover f-12" @click="back">{{t('createAccountpage.back')}}</span>
     </template>
   </NavHeader>
 <div>
@@ -31,7 +28,7 @@
             <i
               @click="toggleMask"
               :class="`iconfont hover ${
-                choice ? 'icon-yanjing' : 'icon-yanjing1'
+                choice ? 'icon-yanjing1' : 'icon-yanjing'
               }`"
             ></i>
           </span>
@@ -87,23 +84,28 @@
       </div>
     </van-form>
     <div class="pwd-tip">
+        <i18n-t keypath="createAccountpage.pwdTip" tag="div" class="text-center mt-20 lh-16">
+          <template v-slot:br><br></template>
+          <template v-slot:link1><span class="hover" @click="routerTo('termsOfUse')">{{t('createAccountpage.link1')}}</span></template>
+          <template v-slot:link2><span class="hover" @click="routerTo('privacyNotice')">{{t('createAccountpage.link2')}}</span></template>
+        </i18n-t>
+      </div>
+    <!-- <div class="pwd-tip">
       <i18n-t keypath="createAccountpage.pwdTip" tag="div" class="text-center mt-20 lh-16">
         <template v-slot:br><br></template>
-        <template v-slot:link1><span class="hover" @click="modal1 = true">{{t('createAccountpage.link1')}}</span></template>
-        <template v-slot:link2><span class="hover" @click="modal2 = true">{{t('createAccountpage.link2')}}</span></template>
+        <template v-slot:link1><a class="hover" 
+          :href="VUE_APP_TERMSOFUSE" target="__blank">{{t('createAccountpage.link1')}}</a></template>
+        <template v-slot:link2><a class="hover"  :href="VUE_APP_PRIVACYNOTICE" target="__blank">{{t('createAccountpage.link2')}}</a></template>
       </i18n-t>
-    </div>
+    </div> -->
   </div>
 </div>
-  <!-- Terms of service -->
-<TermsService  v-model:show="modal1" :hasSelect="false" />
-<!-- Privacy policy -->
-<PrivacyPolicy  v-model:show="modal2" :hasSelect="false" />
+
 
 
 </template>
 <script lang="ts">
-import Vue from "vue";
+import Vue, { nextTick } from "vue";
 import { useStore } from "vuex";
 import NavHeader from '@/popup/components/navHeader/index.vue'
 
@@ -121,7 +123,7 @@ CheckboxGroup,
 } from "vant";
 import { encryptPrivateKey, EncryptPrivateKeyParams } from "@/popup/utils/web3";
 import { ref, Ref, computed, toRaw, SetupContext, onMounted } from "vue";
-import { setCookies, getCookies, loginOut } from "@/popup/utils/jsCookie";
+import { setCookies } from "@/popup/utils/jsCookie";
 import { passwordExpires } from "@/popup/enum/time";
 import { web3 } from "@/popup/utils/web3";
 import { useRouter } from "vue-router";
@@ -131,7 +133,7 @@ import TermsService from '@/popup/components/termsservice/index.vue'
 import PrivacyPolicy from '@/popup/components/privacypolicy/index.vue'
 import WormholesTransition from '@/popup/components/wromTransition/index.vue'
 import localforage from 'localforage';
-
+import {VUE_APP_TERMSOFUSE,VUE_APP_PRIVACYNOTICE} from '@/popup/enum/env'
 export default {
 name: "newwallet",
 components: {
@@ -169,7 +171,7 @@ setup() {
       loading.value = true;
       // Store password
       try {
-        const pwd: string = setCookies(
+        const pwd = setCookies(
           "password",
           password.value,
           passwordExpires
@@ -187,10 +189,10 @@ setup() {
           privateKey,
           password: password.value,
         };
-        debugger;
+        //debugger;
         // Encrypt the password and private key into a keystore/ JSON file for storage
         const keyStore = encryptPrivateKey(params);
-        debugger;
+        //debugger;
         await dispatch("account/addAccount", {
           keyStore,
           mnemonic: mnemonicParams,
@@ -202,11 +204,13 @@ setup() {
           privateKey: web3.utils.toHex(phrase),
           password: password.value,
         });
-        await localforage.setItem("mnemonic", mnemonicData);
-
-        router.replace({
+        // await localforage.setItem("mnemonic", mnemonicData);
+        commit('mnemonic/UPDATE_MNEMONIC', mnemonicData)
+        nextTick(() => {
+          router.replace({
           name: "loginAccount-createing",
         });
+        })
       } catch (err) {
         console.error(err);
         loading.value = false;
@@ -265,7 +269,17 @@ setup() {
   const back = () => {
     router.back()
   }
+
+  const routerTo = (name: any) => {
+      if(name == 'termsOfUse') {
+        window.open('https://limino.com/upload/tst.html')
+      }
+      if(name =='privacyNotice') {
+        window.open('https://limino.com/upload/pn.html')
+      }
+    }
   return {
+    routerTo,
     back,
     t,
     pw1Error,
@@ -285,13 +299,15 @@ setup() {
     loading,
     modal1,
     modal2,
+    VUE_APP_TERMSOFUSE,
+    VUE_APP_PRIVACYNOTICE
   };
 },
 };
 </script>
 <style lang="scss" scoped>
 .back {
-color: #037CD6;
+color: #9F54BA;
 font-size: 12px;
 }
 .title {
@@ -300,9 +316,9 @@ font-size: 16px;
 font-weight: bold;
 }
 .pwd-tip {
-span {
-  color: #037CD6;
-}
+  span {
+    color: #9F54BA;
+  }
 }
 .btn-box {
 margin-top: 30px;
@@ -334,11 +350,11 @@ margin-top: 30px;
   color: #848484;
 }
 .right {
-  color: #037cd6;
+  color: #9F54BA;
   text-decoration: underline;
 }
-.icon-yanjing {
-  color: #037dd6;
+.icon-yanjing1 {
+  color: #9F54BA;
 }
 :deep(.van-field__label) {
   display: none;
@@ -358,11 +374,11 @@ margin-top: 30px;
   transition: ease 0.3s;
   font-size: 12px;
   &:hover {
-    border: 1px solid #1989fa;
+    border: 1px solid #9F54BA;
   }
 }
 .tool {
-  color: #037cd6;
+  color: #9F54BA;
 }
 .pointer {
   cursor: pointer;

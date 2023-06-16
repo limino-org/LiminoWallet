@@ -73,7 +73,7 @@ export default  {
         },
       },
       {
-        path: "/settings/resetPwd-step2/:time",
+        path: "/settings/resetPwd-step2",
         name: "resetPwd-step2",
         component:() =>  import("@/popup/views/settings/pages/resetPwd/step2.vue"),
         meta: {
@@ -115,6 +115,15 @@ export default  {
         meta: {
           auth: true,
           tltle:'Account Management'
+        },
+      },
+      {
+        path: "/settings/snft-creator",
+        name: "snft-creator",
+        component: () => import("@/popup/views/settings/pages/snftCreator/index.vue"),
+        meta: {
+          auth: true,
+          tltle:'Snft Creator'
         },
       },
       {

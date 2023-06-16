@@ -580,7 +580,7 @@ export default defineComponent({
   }
   .tit-big {
     color: #0287db;
-    // background: #F8FCFF;
+    // background: #F8F3F9;
     padding: 0 15px;
     line-height: 34px;
     font-size: 24px;

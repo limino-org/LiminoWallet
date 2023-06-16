@@ -1,38 +1,49 @@
 <template>
   <van-sticky>
-    <NavHeader :hasRight="false">
-      <template v-slot:left>
-        <div class="flex center cancel" @click="clickLeft">
-          {{ t("wallet.return") }}
-        </div>
-      </template>
-    </NavHeader>
+    <NavHeader :hasRight="false" :hasLeft="false"></NavHeader>
   </van-sticky>
-  <!-- Account selection area -->
-  <div class="page-container">
-    <div class="userinfo">
+  <div class="send-page">
+
+   <div class="page-container" >
+     <!-- Account selection area -->
+     <div class="userinfo">
       <!-- sender -->
-      <div class="from">
+
+      <div class="from " :title="formAddr">
         <div class="userfrom">{{ t("sendto.from") }}:</div>
         <!-- Sender information -->
         <div class="information van-hairline--surround">
-          <div class="flex">
+           
+              <div class="userbalance van-ellipsis" :title="accountInfo.address">
+                <div class="flex">
             <div class="avatar">
               <AccountIcon :data="accountInfo.icon" />
             </div>
             <div class="flex column userinformation">
               <div class="username">{{ accountInfo.name }}</div>
               <div class="userbalance">
-                {{ t("sendto.balance") }}:{{ decimal(accountInfo.amount) }}
-                {{ currentNetwork.currencySymbol }}
+                {{ t("sendto.balance") }}:{{ decimal(accountInfo.amount) }} {{ currentNetwork.currencySymbol }}
               </div>
+            </div>
+            </div>
+
+                <!-- {{ accountInfo.address }} -->
+              <!-- <div class="username van-ellipsis">{{ accountInfo.name }}</div> -->
+              <!-- {{ t("sendto.balance") }}:{{ decimal(accountInfo.amount) }}
+                {{ currentNetwork.currencySymbol }} -->
             </div>
           </div>
         </div>
       </div>
+      <!-- <div class="flex center-v pl-16 pr-16 diffAddr" v-if="!diffAddr">
+        <van-icon name="warning" />{{ t('common.diffAddr') }}
+      </div> -->
+      <div class="balance pl-14 pr-14">   {{ t("sendto.balance") }}:{{ decimal(accountInfo.amount) }}
+                {{ currentNetwork.currencySymbol }}
+              </div>
       <!-- recipient -->
-      <div class="to from">
-        <div class="sendto text-center">{{ t("sendto.to") }} :</div>
+      <div class="to from" v-if="txJSON.type != '0x2'">
+        <!-- <div class="sendto text-center">{{ t("sendto.to") }} :</div> -->
         <div class="information van-hairline--surround">
           <div class="flex">
             <div class="avatar">
@@ -47,17 +58,42 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
+      <div class="contract-info pb-20 pt-10 pl-20 pr-20" v-if="txJSON.type == '0x2'">
+        <div class="type pt-10 pb-10">{{ t('common.deployContract') }}</div>
+        <div class="origin pt-10 pb-10">
+          <div class="pl-10 pr-10 source flex center-v">
+            {{ t('common.source') }}<span class="flex center-v van-ellipsis"
+              ><img :src="senderData.tab.favIconUrl" alt="" />{{
+                senderData.origin
+              }}</span
+            >
+          </div>
+        </div>
+      </div>
 
-  <!-- Click to go to the next step-->
-  <van-sticky position="bottom" offset-bottom="30px">
-    <div class="btn-group">
-      <van-button type="primary" @click="gonext" :loading="nextLoading" block>{{
-        t("sendto.next")
-      }}</van-button>
+      <div class="json-box">
+      <div class="tx-json">{{ txJSON }}</div>
     </div>
-  </van-sticky>
+    </div>
+
+
+
+    <!-- Click to go to the next step-->
+    <div class="btn-boxs">
+      <div class="container pl-26 pr-26 flex evenly">
+        <van-button @click="calcel" class="mr-10" plain block>{{
+          t("common.cancel")
+        }}</van-button>
+        <van-button
+          type="primary"
+          @click="gonext"
+          :loading="nextLoading"
+          block
+          >{{ t("sendto.next") }}</van-button
+        >
+      </div>
+    </div>
+   </div>
 </template>
 
 <script lang="ts">
@@ -70,6 +106,7 @@ import {
   onMounted,
   onBeforeMount,
   nextTick,
+  onUnmounted,
 } from "vue";
 import { Icon, Toast, Button, Sticky, Field } from "vant";
 import { useRoute, useRouter } from "vue-router";
@@ -82,8 +119,9 @@ import { ethers, utils } from "ethers";
 import { web3 } from "@/popup/utils/web3";
 import { getWallet } from "@/popup/store/modules/account";
 import { useI18n } from "vue-i18n";
-import { getRandomIcon } from '@/popup/utils/index'
-import { handleType } from '@/scripts/background';
+import { getRandomIcon } from "@/popup/utils/index";
+import { handleType } from "@/scripts/eventType";
+import { sendBackground } from "@/popup/utils/sendBackground";
 
 export default {
   name: "pageSendComfirm",
@@ -104,33 +142,46 @@ export default {
     const { t } = useI18n();
     const { dispatch } = store;
     const accountInfo = computed(() => store.state.account.accountInfo);
+    const formAddr = computed(() => store.state.account.accountInfo.address)
     const currentNetwork = computed(() => store.state.account.currentNetwork);
     const route = useRoute();
     const { query } = route;
-    const { tx }: any = query;
-    const newtx = JSON.parse(tx)
-        console.warn('tx----------------',newtx)
-
+    const { tx, sendId, sender }: any = query;
+    const newtx = JSON.parse(tx);
+    const senderData = JSON.parse(sender);
+    console.log("senderData", senderData);
+    const txJSON = ref(newtx);
+    txJSON.value['from'] = accountInfo.value.address
+    // const currentAccountInfo = computed(() => store.state.account.accountList.find(item => item.address.toUpperCase() ==from.toString().toUpperCase()))
+    // console.warn("tx----------------", txJSON.value);
+    // const diffAddr = ref(from.toString().toUpperCase() == accountInfo.value.address.toUpperCase() ? true : false)
+    // console.warn('diffAddr', diffAddr.value)
     const clickRight = () => {
       router.replace({ name: "wallet" });
     };
     const clickLeft = () => {
-      router.back();
+      router.replace({ name: "wallet" });
     };
-    const toAccount: any = reactive({ data: {
-      icon: getRandomIcon()
-    } });
-    const toAddress: Ref<string> = ref(newtx.to.toString());
+    const toAccount: any = reactive({
+      data: {
+        icon: getRandomIcon(),
+      },
+    });
+    const toAddress: Ref<string> = ref(newtx?.to?.toString());
     // Initiate transaction
     const gonext = async () => {
       nextLoading.value = true;
+      let receipt = null;
       try {
-        const { from,to,value,data} = newtx
-        const receipt = await dispatch("account/sendTransaction", {from,to: utils.getAddress(to),value,data});
-        console.log('receipt',receipt)
-        // @ts-ignore 
-          const bg = chrome.extension.getBackgroundPage();
-          bg.params[handleType.eth_sendTransaction].sendResponse({ response: receipt });
+        receipt = await dispatch("account/transaction", {
+          ...newtx,
+          checkTxQueue: false,
+        });
+        console.warn("receipt", receipt);
+        sendBackground({
+          method: handleType.eth_sendTransaction,
+          response: { code: "200", data: receipt, sendId },
+        });
       } catch (err: any) {
         Toast(err.reason);
       } finally {
@@ -138,13 +189,34 @@ export default {
       }
     };
     const nextLoading: Ref<boolean> = ref(false);
+    const calcel = () => {
+      sendBackground({
+        method: handleType.handleReject,
+        response: { method: handleType.eth_sendTransaction, sendId },
+      });
+    };
 
+    const handleKeydown = (e: any) => {
+      if(e.keyCode === 13) {
+        gonext()
+      }
+    }
+    onMounted(() => {
+      window.addEventListener('keydown', handleKeydown)
+    })
+    onUnmounted(() => {
+      window.removeEventListener('keydown', handleKeydown)
+    })
     return {
       t,
+      calcel,
       clickRight,
       clickLeft,
+      txJSON,
+      senderData,
       gonext,
       accountInfo,
+      formAddr,
       toAddress,
       nextLoading,
       toAccount,
@@ -157,16 +229,59 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.send-page {
+  padding-top: 20px;
+}
+.json-box {
+  max-height: 270px;
+  overflow-y: scroll;
+  margin:0 20px 0;
+}
+.balance {
+  background: #f3f4f5;
+  line-height: 24px;
+}
+.tx-json{
+  background: #f3f4f5;
+  min-height: 260px;
+  font-size: 14px;
+}
+.contract-info {
+  .origin {
+    background: #f3f4f5;
+    .source {
+      img {
+        width: 13px;
+        margin-right: 5px;
+      }
+      span {
+        width: 87%;
+      }
+    }
+  }
+  .type {
+    width: auto;
+    display: inline-block;
+    border: 1px solid #ccc;
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 5px;
+  }
+}
+.tx-json {
+  padding: 10px;
+  border-radius: 4px;
+  word-break: break-all;
+}
 .cancel {
   font-size: 11px;
-  color: #037cd6;
+  color: #9F54BA;
 }
 .btn-group {
   padding: 0 15px;
 }
 .userinfo {
   width: 100%;
-  height: 127px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -188,7 +303,6 @@ export default {
     border-collapse: collapse;
     width: 100%;
     height: 46px;
-    margin-right: 13px;
     position: relative;
     .closeIcon {
       position: absolute;
@@ -198,7 +312,7 @@ export default {
       color: #6a737d;
     }
     &::after {
-      border-radius: 20px;
+      border-radius: 5px;
     }
     .avatar {
       margin-top: 5px;
@@ -211,15 +325,26 @@ export default {
     .userinformation {
       margin-left: 10px;
       margin-top: 9px;
+      max-width: 80%;
       .username {
-        font-size: 12px;
+        font-size: 12px; 
+
       }
       .userbalance {
-        font-size: 10px;
+        font-size: 12px;
         margin-top: 5px;
         color: rgba(132, 140, 150, 1);
       }
     }
+  }
+}
+.diffAddr {
+  color: #D73A49;
+  line-height: 16px;
+  margin-bottom: 10px;
+  i {
+    font-size: 18px;
+    margin-right: 5px;
   }
 }
 .to {
@@ -248,7 +373,7 @@ export default {
     width: 286px;
     height: 46px;
     border-radius: 10px;
-    border: 1PX solid rgba(209, 212, 215, 1);
+    border: 1px solid rgba(209, 212, 215, 1);
   }
 }
 .transfer {
@@ -267,10 +392,10 @@ export default {
   .text {
     width: 100%;
     background-color: rgba(241, 243, 244, 1);
-    border: 1PX solid rgba(216, 216, 216, 1);
+    border: 1px solid rgba(216, 216, 216, 1);
     height: 28px;
     line-height: 28px;
-    font-size: 10px;
+    font-size: 12px;
     color: rgba(121, 121, 121, 1);
     padding-left: 15px;
   }
@@ -292,7 +417,7 @@ export default {
     }
     .recent-address {
       margin-top: 5px;
-      font-size: 10px;
+      font-size: 12px;
     }
   }
 }
@@ -300,10 +425,10 @@ export default {
   .text {
     width: 100%;
     background-color: rgba(241, 243, 244, 1);
-    border: 1PX solid rgba(216, 216, 216, 1);
+    border: 1px solid rgba(216, 216, 216, 1);
     height: 28px;
     line-height: 28px;
-    font-size: 10px;
+    font-size: 12px;
     color: rgba(121, 121, 121, 1);
     padding-left: 15px;
   }
@@ -325,7 +450,7 @@ export default {
     }
     .myself-address {
       margin-top: 5px;
-      font-size: 10px;
+      font-size: 12px;
     }
   }
 }

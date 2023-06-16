@@ -13,7 +13,7 @@
                 class="box-item"
                 effect="dark"
                 :content="t('minerspledge.nodeTip')"
-                placement="right"
+                placement="top"
                 trigger="hover"
               >
                 <van-icon name="question" color="#9A9A9A" />
@@ -27,7 +27,7 @@
                 class="box-item"
                 effect="dark"
                 :content="t('minerspledge.proxyAddr')"
-                placement="right"
+                placement="top"
                 trigger="hover"
               >
                 <van-icon name="question" color="#9A9A9A" />
@@ -37,16 +37,17 @@
             <div class="bourse-container-meaning bt">
               <span class="c1">{{t('minerspledge.stackTit')}}  </span>
               <el-tooltip
-                popper-class="tooltip2"
+                popper-class="tooltip3"
                 class="box-item"
                 effect="dark"
-                :content="t('minerspledge.stackTip')"
-                placement="right"
+                placement="top"
                 trigger="hover"
+                :content="t('minerspledge.stackTip')"
               >
                 <van-icon name="question" color="#9A9A9A" />
+<!--                <span slot="content" style="width: 300px;">{{t('minerspledge.stackTip')}}</span>-->
               </el-tooltip>
-              <div class="exchange">{{amount}} ERB(≈${{toUsd(amount,2)}})</div>
+              <div class="exchange">{{amount}} ERB</div>
             </div>
             <div class="">
               <span class="c1">{{t('send.gasfee')}}  </span>
@@ -55,14 +56,15 @@
                 class="box-item"
                 effect="dark"
                 :content="t('common.gasFee')"
-                placement="right"
+                placement="top"
                 trigger="hover"
+                style="width: 300px;"
               >
                 <van-icon name="question" color="#9A9A9A" />
               </el-tooltip>
               <div class="exchange exchange-z">
                 <span >≈ </span>
-                <span class="c2"> 0.000021000 ERB(≈$1)</span>
+                <span class="c2"> {{gasFee}} ERB</span>
               </div>
             </div>
           </div>
@@ -79,12 +81,13 @@
 
 <script lang="ts">
 import { Button, Overlay, Field, Toast, Icon } from 'vant'
-import { ref, SetupContext, computed, nextTick } from 'vue'
+import { ref, SetupContext, computed, nextTick, watch } from 'vue'
 import { ethers, utils } from "ethers";
-import {formatEther,toUsd} from "@/popup/utils/filters";
 import { useI18n } from 'vue-i18n'
 import { ElTooltip } from 'element-plus'
-import store from '@/store';
+import { toHex } from '@/popup/utils/utils';
+import { getGasFee } from '@/popup/store/modules/account';
+
 import { useStore } from 'vuex';
 
 export default {
@@ -95,15 +98,35 @@ export default {
     ElTooltip,
     [Icon.name]: Icon
   },
+  emits:['open'],
   props: ['show', 'name', 'address', 'money','amount'],
   setup(props: any, context: SetupContext) {
     const { t } = useI18n()
     const store = useStore()
     const currentNetwork = computed(() => store.state.account.currentNetwork)
-    console.log('我加载了11111111111')
     const { emit }: any = context
-    // 输入框name
     let amount = ref(props.minersMoney)
+
+    const gasFee = ref('0')
+    watch(() => props.show, async() => {
+      const {address} = store.state.account.accountInfo
+
+        // Agent pledge
+        const str = `wormholes:{"type":9,"proxy_address":"","proxy_sign":"","version":"v0.0.1"}`
+            const data3 = toHex(str);
+            debugger
+      const tx1 = {
+        to: address,
+        value:  ethers.utils.parseEther(props.amount + ""),
+        data: `0x${data3}`,
+      };
+      gasFee.value = await getGasFee(tx1) || '0'
+
+
+    },{
+      deep: true,
+      immediate: true
+    })
     let dislogShow = computed({
       get: () => props.show,
       set: v => emit('update:show', v)
@@ -137,15 +160,17 @@ export default {
       submit,
       screentNumber,
       currentNetwork,
-      toUsd,
-      ...props
+      ...props,
+      gasFee
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-
+:deep(.el-popper)  {
+  width: 300px;
+}
 .add-box {
   letter-spacing: -0.8px;
 }
@@ -164,7 +189,7 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #F8FCFF;
+      background: #F8F3F9;
       font-size: 14px;
       color: #0f0f0f;
       border-bottom: 1px solid #f2f4f5;
@@ -233,7 +258,7 @@ export default {
           font-weight: bold;
         }
         .ipt-server {
-          font-size: 10px;
+          font-size: 12px;
           color: #8f8f8f;
           font-weight: bold;
           span {
@@ -248,7 +273,7 @@ export default {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f4faff;
+            background: #F8F3F9;
             border-radius: 7px 7px 7px 7px;
             &:first-child {
               padding: 0 18px;
@@ -256,8 +281,8 @@ export default {
           }
           .ipt-server-i-active {
             color: #0287db;
-            background: #f4faff;
-            border: 1px solid #037cd6;
+            background: #F8F3F9;
+            border: 1px solid #9F54BA;
             span {
               color: #0287db;
             }

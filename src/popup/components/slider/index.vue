@@ -1,145 +1,276 @@
 <template>
   <!-- sidebar -->
-  <van-popup
-    v-model:show="showSlider"
-    close-on-popstate
-    position="left"
-    :style="{ width: '70%', height: '100vh' }"
-    :duration="0.3"
-    class="nav-header-slider-box"
-    teleport="#page-box"
-  >
-    <div class="slider-con">
-      <div class="slider-bg">
-        <div class="flex back-box">
-          <van-icon name="arrow-left hover" @click="showSlider = false" />
-        </div>
-
-        <div class="user-img flex">
-          <div class="user-img-circle flex hover">
-            <AccountIcon :data="accountInfo.icon" @click="toAccountManagement" />
-          </div>
-          <!-- Switch account -->
-          <div class="account">
-            <div class="flex center-v" @click="toAccountManagement">
-              {{ accountInfo.name }}
-              <i
-                :class="`iconfont ml-4 f-14 ${
-                  showAccount ? 'icon-shangjiantou' : 'icon-xiajiantou'
-                }`"
-              ></i>
-            </div>
-            <!-- Address, copy, QR code-->
-            <div class="address-card flex center-v">
-              <div class="add">{{ addressMask(accountInfo.address) }}</div>
-              <i class="iconfont icon-fuzhi2 ml-6 hover" @click="toCopy"></i>
-              <div class="shuxian ml-10 mr-6"></div>
-              <i class="iconfont icon-erweima1 hover" @click="handleShowCode"></i>
-              <!-- qr code popover -->
-              <AddressQRModal v-model="showCode" :data="accountInfo.address" />
-            </div>
-          </div>
-        </div>
-        <!-- Label set -->
-        <div class="tag-list flex">
-          <van-popover v-model:show="showPopover" trigger="manual" class="account-pop MR-10" placement="bottom-start">
-            <div class="lh-14 pt-8 pb-8 pl-16 pr-16 f-12">{{ t("common.right_and_interests") }}</div>
-            <template #reference>
-              <div
-                class="tag-user type2 position relative hover mr-8"
-                @mouseover="showPopover = true"
-                @mouseleave="showPopover = false"
-                v-show="
-                  ethAccountInfo
-                    ? ethAccountInfo.PledgedBalance > 0
-                      ? true
-                      : false
-                    : false
-                "
-              >
-                <span class="user">
-                  <img src="@/popup/views/home/imgs/wakuang.png" alt />
-                </span>
-                <div class="tag-label flex center-v">
-                  <span>Validator</span>
-                </div>
-              </div>
-            </template>
-          </van-popover>
-          <van-popover v-model:show="showPopover2" trigger="manual" class="account-pop" placement="bottom-start">
-            <div class="lh-14 pt-8 pb-8 pl-16 pr-16 f-12">{{ t("common.exchange_pledge") }}</div>
-            <template #reference>
-              <div
-                class="tag-user type3 position relative mr-8 hover"
-                @mouseover="showPopover2 = true"
-                @mouseleave="showPopover2 = false"
-                v-show="ethAccountInfo ? ethAccountInfo.ExchangerFlag : false"
-              >
-                <span class="user">
-                  <img src="@/popup/views/home/imgs/smallhome.png" alt />
-                </span>
-                <div class="tag-label flex center-v">
-                  <span>Exchange</span>
-                </div>
-              </div>
-            </template>
-          </van-popover>
-        </div>
-        <!-- AccountModal -->
-        <AccountModal v-model="showAccount" />
-      </div>
-      <!-- Bottom button group -->
-      <div class="slider-bottom">
-        <!-- Send Add Account -->
-        <div class="send-groups-box">
-          <div>
-            <div class="send-add-groups flex between van-hairline--bottom">
-              <div class="icon-btn hover" @click="toReceive">
-                <div class="icon-box flex center">
-                  <i class="iconfont icon-teshujiantouzuoxiantiao"></i>
-                </div>
-                <div class="text-center f-12 lh-18">{{ t("sidebar.recive") }}</div>
-              </div>
-
-              <div class="icon-btn hover" @click="toSend">
-                <div class="icon-box flex center">
-                  <!-- <van-icon name="back-top" /> -->
-                  <i class="iconfont icon-teshujiantouzuoxiantiao-copy"></i>
-                </div>
-                <div class="text-center f-12 lh-18">{{ t("sidebar.send") }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Group of transaction information buttons -->
-        <div class="setting-list">
-          <div class="setting-btn van-hairline--bottom flex between center-v clickActive" @click="tobrowser">
-            <div class="flex center">
-              <i class="iconfont icon-liulanqi"></i>
-              {{ t("sidebar.browser") }}
-            </div>
-
-            <van-icon name="arrow" />
+  <transition name="slider-left">
+    <div
+      v-if="showSlider"
+      :style="{ width: '90%', height: '100%' }"
+      class="nav-header-slider-box"
+    >
+      <div class="slider-con">
+        <div :class="`slider-bg ${hasExchange ? 'blue' : ''}`">
+          <div class="flex back-box">
+            <van-icon name="cross" class="hover" @click="showSlider = false" />
           </div>
 
-          <!-- One-click exchange -->
-          <div class="setting-btn van-hairline--bottom active flex center-v between clickActive" @click="toCopy">
-            <div class="flex center">
-              <i class="iconfont icon-31fenxiang"></i>
-              {{ t("sidebar.shareMyPublicAddress") }}
+          <div :class="`user-img `">
+            <div class="user-img-circle flex center-v hover">
+              <AccountIcon
+                :data="accountInfo.icon"
+                @click="toAccountManagement"
+              />
+              <!-- Label set -->
+              <div class="tag-list flex slider">
+                <van-popover
+                  v-model:show="showPopover3"
+                  trigger="manual"
+                  class="account-pop"
+                  placement="bottom-start"
+                >
+                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"
+                        @mouseover="showPopoverText3 = true"
+                        @mouseleave="handleMouseLeavetext3">
+                        <div> {{ t("creatorSnft.labelPeriod") }}: {{ creatorStatus.count }}</div>
+                      <div>{{ t("creatorSnft.labelProfit") }}: {{ creatorStatus.profitStr }} ERB</div>
+                      <div>{{ t("creatorSnft.labelTimes") }}: {{ creatorStatus.count }}</div>
+                      <div>{{ t("creatorSnft.labelAward") }}: {{ creatorStatus.rewardEth }} ERB</div>
+                      <div>{{ t("creatorSnft.labelWeight") }}: {{ creatorStatus.weight }}</div>
+                  </div>
+                  <template #reference>
+                    <div
+                      class="tag-user type1 position relative hover"
+                      @mouseover="showPopover3 = true"
+                      @mouseleave="handleMouseLeave3"
+                      v-show="
+                        creatorStatus
+                      "
+                    >
+                      <span class="user flex center" @click="toCreator">
+                        <i class="iconfont icon-Add"></i>
+                      </span>
+                      <div class="tag-label flex center-v" @click="toCreator">
+                        <span class="van-ellipsis">{{ t("creatorSnft.creator") }}</span>
+                      </div>
+                    </div>
+                  </template>
+                </van-popover>
+                <van-popover
+                  v-model:show="showPopover"
+                  trigger="manual"
+                  class="account-pop MR-10"
+                  placement="bottom-start"
+                >
+                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"                         @mouseover="showPopoverText = true"
+                        @mouseleave="handleMouseLeavetext1">
+                    <!-- {{ t("common.right_and_interests") }} -->
+                    <i18n-t
+                      tag="div"
+                      v-if="expresionClass == 'smile'"
+                      keypath="minerspledge.smileTip"
+                    >
+                      <template v-slot:value>{{ Coefficient }}</template>
+                      <template v-slot:btn>
+                        <span class="gotIt" @click="minerpledge">{{
+                          t("minerspledge.gotIt")
+                        }}</span>
+                      </template>
+                    </i18n-t>
+                    <i18n-t
+                      tag="div"
+                      v-if="expresionClass == 'sad'"
+                      keypath="minerspledge.homeTip"
+                    >
+                      <!-- <template v-slot:value>{{Coefficient}}</template> -->
+                      <template v-slot:btn>
+                        <span class="gotIt" @click="minerpledge">{{
+                          t("minerspledge.gotIt")
+                        }}</span>
+                      </template>
+                    </i18n-t>
+                    <i18n-t
+                      tag="div"
+                      v-if="expresionClass == 'neutral'"
+                      keypath="minerspledge.homeTip"
+                    >
+                      <!-- <template v-slot:value>{{Coefficient}}</template> -->
+                      <template v-slot:btn>
+                        <span class="gotIt" @click="minerpledge">{{
+                          t("minerspledge.gotIt")
+                        }}</span>
+                      </template>
+                    </i18n-t>
+                  </div>
+                  <template #reference>
+                    <div
+                      class="tag-user type2 position relative hover ml-8"
+                      @mouseover="showPopover = true"
+                      @mouseleave="handleMouseLeave1"
+                      @click="minerpledge"
+                      v-show="
+                        ethAccountInfo
+                          ? ethAccountInfo.PledgedBalance > 0
+                            ? true
+                            : false
+                          : false
+                      "
+                    >
+                      <span class="user flex center">
+                        <i class="iconfont icon-chuiziicon"></i>
+                        <!-- <img src="@/popup/views/home/imgs/wakuang.png" alt /> -->
+                      </span>
+                      <div class="tag-label flex center-v">
+                        <span class="van-ellipsis">{{ t("common.validator") }}</span>
+                      </div>
+                    </div>
+                  </template>
+                </van-popover>
+                <van-popover
+                  v-model:show="showPopover2"
+                  trigger="manual"
+                  class="account-pop"
+                  placement="bottom-start"
+                >
+                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"                         @mouseover="showPopoverText2 = true"
+                        @mouseleave="handleMouseLeavetext2">
+                    {{ t("common.exchange_pledge") }}
+                  </div>
+                  <template #reference>
+                    <div
+                      class="tag-user type3 position relative ml-8 hover"
+                      @mouseover="showPopover2 = true"
+                      @mouseleave="handleMouseLeave2"
+                      @click="oneClick"
+                      v-show="hasExchange
+                      "
+                    >
+                      <span class="user flex center">
+                        <i
+                          class="iconfont icon-fangwujianzhuwugoujianbeifen"
+                        ></i>
+                      </span>
+                      <div class="tag-label flex center-v">
+                        <span class="van-ellipsis">{{ t("common.marketplace") }}</span>
+                      </div>
+                    </div>
+                  </template>
+                </van-popover>
+              </div>
             </div>
-            <van-icon name="arrow" />
-          </div>
-          <div class="setting-btn van-hairline--bottom flex center-v between clickActive" @click="routerTo('transaction-history')">
-            <div class="flex center">
-              <i class="iconfont icon-lishijilu"></i>
-              {{ t("sidebar.transationHistory") }}
+            <!-- Switch account -->
+            <div :class="`account mt-6 ${pageType === 'Tab' ? 'mt-14' :''}`">
+              <div class="flex center-v name" @click="toAccountManagement">
+                {{ accountInfo.name }}
+                <i
+                  :class="`iconfont ml-4 f-14 ${
+                    showAccount ? 'icon-shangjiantou' : 'icon-xiajiantou'
+                  }`"
+                ></i>
+              </div>
+              <!-- Address, copy, QR code-->
+              <div :class="`address-card flex mt-6 ${pageType === 'Tab' ? 'mt-14' :''}`" @click="toCopy">
+                <div class="add">{{ accountInfo.address }}</div>
+              </div>
+              <div :class="`amount mt-8 ${pageType === 'Tab' ? 'mt-14' :''}`">
+                {{ amount }} {{ currentNetwork.currencySymbol }}
+              </div>
             </div>
-            <van-icon name="arrow" />
           </div>
-          <!-- setting -->
+
+          <!-- AccountModal -->
+          <AccountModal v-model="showAccount" />
+        </div>
+        <!-- Bottom button group -->
+        <div class="slider-bottom">
+          <!-- Group of transaction information buttons -->
           <div class="setting-list">
-            <div class="setting-btn van-hairline--bottom flex center-v between clickActive" @click="routerTo('settings')">
+            <!-- websize -->
+            <div
+              :class="`setting-btn flex between center-v clickActive ${pageType}`"
+              @click="toOfficiaWebsite"
+            >
+              <div class="flex center">
+                <i class="iconfont icon-zailiulanqidakai"></i>
+                <span>{{ t("sidebar.aboutAs") }}</span>
+              </div>
+
+              <van-icon name="arrow" />
+            </div>
+
+            <div
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
+              v-if="currentNetwork.isMain"
+              @click="minerpledge"
+            >
+              <div class="flex center">
+                <i class="iconfont icon-chuiziicon"></i>
+                {{ $t("sidebar.minerspledge") }}
+              </div>
+              <van-icon name="arrow" />
+            </div>
+
+            <!-- One-click exchange -->
+            <div
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
+              v-if="currentNetwork.isMain"
+              @click="oneClick"
+            >
+              <div class="flex center">
+                <i class="iconfont icon-fangwujianzhuwugoujianbeifen"></i>
+                {{
+                  hasExchange
+                    ? t("sidebar.exchangemanagement")
+                    : t("wallet.openexchange")
+                }}
+              </div>
+              <van-icon name="arrow" />
+            </div>
+
+            <div
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
+              @click="tobrowser"
+            >
+              <div class="flex center">
+                <i class="iconfont icon-liulanqi"></i>
+                {{ t("sidebar.browser") }}
+              </div>
+
+              <van-icon name="arrow" />
+            </div>
+            <div
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
+              @click="routerTo('transaction-history')"
+            >
+              <div class="flex center">
+                <i class="iconfont icon-lishijilu"></i>
+                {{ t("sidebar.transationHistory") }}
+              </div>
+              <van-icon name="arrow" />
+            </div>
+
+            <div
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
+              @click="toHelp"
+            >
+              <div class="flex center">
+                <i class="iconfont icon-bangzhuzhongxin31"></i>
+                <span>{{ t("sidebar.help") }}</span>
+              </div>
+              <van-icon name="arrow" />
+            </div>
+            <div
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
+              @click="toCreator"
+              v-if="currentNetwork.isMain && creatorStatus"
+            >
+              <div class="flex center">
+                <i class="iconfont icon-Add"></i>
+                <span>{{ t("sidebar.snftCreator") }}</span>
+              </div>
+              <van-icon name="arrow" />
+            </div>
+            <div
+            :class="`setting-btn flex between center-v clickActive ${pageType}`"
+              @click="routerTo('settings')"
+            >
               <div class="flex center">
                 <i class="iconfont icon-shezhi"></i>
                 {{ t("sidebar.settings") }}
@@ -147,70 +278,84 @@
               <van-icon name="arrow" />
             </div>
           </div>
-          <!-- One-click exchange -->
-          <div
-            class="setting-btn van-hairline--bottom flex between center-v clickActive"
-            v-if="currentNetwork.isMain"
-            @click="oneClick"
-          >
-            <div class="flex center">
-              <i class="iconfont icon-a-weibiaoti-1_huaban1fuben38"></i>
-              {{
-              hasExchange
-              ? t("sidebar.exchangemanagement")
-              :   t("wallet.openexchange")
-              }}
-            </div>
-            <van-icon name="arrow" />
+        </div>
+
+        <div class="slider-bottom-box">
+          <!-- logout -->
+          <div class="logout-box flex center pl-14 pr-14">
+            <van-button block @click="handleLogout" class="logoutBtn">{{
+              t("sidebar.logout")
+            }}</van-button>
           </div>
-          <div class="setting-list" v-if="currentNetwork.isMain">
-            <div class="setting-btn van-hairline--bottom flex center-v between clickActive" @click="minerpledge">
-              <div class="flex center">
-                <i class="iconfont icon-044chuizi"></i>
-                {{$t('sidebar.minerpledge')}}
-              </div>
-              <van-icon name="arrow" />
-            </div>
+          <!-- version number -->
+          <div class="text-center f-12 lh-16 mt-12 mb-12 version">
+            LiminoWallet V{{ version }} ({{ new Date().getFullYear() }})
           </div>
         </div>
       </div>
 
-      <div class="slider-bottom-box">
-        <!-- logout -->
-        <div class="logout-box flex center pl-14 pr-14">
-          <van-button block @click="handleLogout">{{ t("sidebar.logout") }}</van-button>
-        </div>
-        <!-- version number -->
-        <div class="text-center f-12 lh-16 mt-16 mb-20 version">WormHoles V{{ version }} ({{ new Date().getFullYear() }})</div>
-      </div>
+      <!-- switching network -->
+      <SwitchNetwork
+        v-model:show="showModalNetwork"
+        @close="showModalNetwork = false"
+      />
     </div>
-
-    <!-- switching network -->
-    <SwitchNetwork v-model:show="showModalNetwork" @close="showModalNetwork = false" />
-  </van-popup>
+  </transition>
+  <van-overlay :show="showSlider" :z-index="999" @click="showSlider = false" />
 </template>
 <script lang="ts">
-import { SetupContext, Ref, ref, reactive, defineComponent, computed, nextTick, registerRuntimeCompiler, watch, getCurrentInstance, ComponentInternalInstance } from 'vue'
-import { Popup, Icon, ActionSheet, Dialog, Button, Loading, Circle, Toast, Slider, Popover } from 'vant'
-import { addressMask, decimal } from '@/popup/utils/filters'
-import AddressQRModal from '@/popup/components/addressQRModal/index.vue'
-import { version } from '@/popup/enum/version'
+import {
+  SetupContext,
+  Ref,
+  ref,
+  reactive,
+  defineComponent,
+  computed,
+  nextTick,
+  registerRuntimeCompiler,
+  watch,
+  getCurrentInstance,
+  ComponentInternalInstance,
+  onUnmounted,
+  onActivated,
+  onDeactivated,
+} from "vue";
+import {
+  Popup,
+  Icon,
+  ActionSheet,
+  Dialog,
+  Button,
+  Loading,
+  Circle,
+  Toast,
+  Slider,
+  Popover,
+  Overlay,
+} from "vant";
+import { addressMask, decimal } from "@/popup/utils/filters";
+import AddressQRModal from "@/popup/components/addressQRModal/index.vue";
+import { version } from "@/popup/enum/version";
 
-import { useToggleAccount } from '@/popup/components/accountModal/hooks/toggleAccount'
-import AccountIcon from '@/popup/components/accountIcon/index.vue'
-import AccountModal from '@/popup/components/accountModal/index.vue'
-import SwitchNetwork from '@/popup/components/switchNetwork/index.vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { useLogin } from '../navHeader/hooks/login'
-import AcceptCode from '@/popup/views/account/components/acceptCode/index.vue'
-import { useNetWork } from '../navHeader/hooks/netWork'
-import useClipboard from 'vue-clipboard3'
-import { useToast } from '@/popup/plugins/toast'
+import { useToggleAccount } from "@/popup/components/accountModal/hooks/toggleAccount";
+import AccountIcon from "@/popup/components/accountIcon/index.vue";
+import AccountModal from "@/popup/components/accountModal/index.vue";
+import SwitchNetwork from "@/popup/components/switchNetwork/index.vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { useLogin } from "../navHeader/hooks/login";
+import AcceptCode from "@/popup/views/account/components/acceptCode/index.vue";
+import { useNetWork } from "../navHeader/hooks/netWork";
+import useClipboard from "vue-clipboard3";
+import { useToast } from "@/popup/plugins/toast";
+import { useDialog } from "@/popup/plugins/dialog";
+import BigNumber from "bignumber.js";
+import { getWallet } from "@/popup/store/modules/account";
+import { decode } from "js-base64";
 
 export default defineComponent({
-  name: 'slider-menu',
+  name: "slider-menu",
   components: {
     [Popup.name]: Popup,
     [Icon.name]: Icon,
@@ -220,111 +365,146 @@ export default defineComponent({
     [Loading.name]: Loading,
     [Circle.name]: Circle,
     [Popover.name]: Popover,
+    [Overlay.name]: Overlay,
     AccountIcon,
     AccountModal,
     SwitchNetwork,
     AcceptCode,
-    AddressQRModal
+    AddressQRModal,
   },
   props: {
     modelValue: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   setup(props: any, context: SetupContext) {
-    const showSlider = ref(false)
-    const { emit } = context
-    const store = useStore()
-    const router = useRouter()
-    const { t } = useI18n()
-    const { dispatch } = store
+    // @ts-ignore
+    const pageType = window.pageType
+    const showSlider = ref(false);
+    const { emit } = context;
+    const store = useStore();
+    const router = useRouter();
+    const { t } = useI18n();
+    const { dispatch } = store;
     // Main network account details
-    const ethAccountInfo = computed(() => store.state.system.ethAccountInfo)
+    const ethAccountInfo = computed(() => store.state.system.ethAccountInfo);
+    const creatorStatus = computed(() => store.state.account.creatorStatus)
+
     // Exchange status
     const hasExchange = computed(() => {
-      const { exchanger_flag, status } = store.state.account.exchangeStatus
-      return exchanger_flag
-    })
+      const { exchanger_flag, status } = store.state.account.exchangeStatus;
+      return exchanger_flag;
+    });
     // Account details
-    const accountInfo = computed(() => store.state.account.accountInfo)
-    const { logout } = useLogin()
-    const { netWorkList, currentNetwork, showModalNetwork, chooseNetWork, handleChoose, handleChooseComfirm } = useNetWork()
-    console.warn('currentNetwork', currentNetwork.value)
+    const accountInfo = computed(() => store.state.account.accountInfo);
+    const { logout } = useLogin();
+    const {
+      netWorkList,
+      currentNetwork,
+      showModalNetwork,
+      chooseNetWork,
+      handleChoose,
+      handleChooseComfirm,
+    } = useNetWork();
+    console.warn("currentNetwork", currentNetwork.value);
     watch(
       () => props.modelValue,
-      n => {
-        showSlider.value = n
+      (n) => {
+        showSlider.value = n;
         if (n) {
-          dispatch('account/getExchangeStatus')
+          dispatch("account/getExchangeStatus");
         }
       },
       {
-        immediate: true
+        immediate: true,
       }
-    )
+    );
     watch(
       () => showSlider.value,
-      n => {
+      (n) => {
         if (!n) {
-          emit('update:modelValue', false)
+          emit("update:modelValue", false);
         }
       }
-    )
+    );
+    const amount = computed(() => store.getters["system/getAmount"]);
     // Copy user address
-    const { toClipboard } = useClipboard()
-    const { $toast } = useToast()
+    const { toClipboard } = useClipboard();
+    const { $toast } = useToast();
     const toCopy = async () => {
       try {
-        await toClipboard(`${accountInfo.value.address}`)
-        $toast.success(t('copy.title'))
+        await toClipboard(`${accountInfo.value.address}`);
+        $toast.success(t("copy.title"));
       } catch (e) {
-        console.error(e)
+        console.error(e);
       }
-    }
+    };
 
-    const { options, showAccount, toggleAccount, handleAccount, createAccount, createLoading, accountLoading } = useToggleAccount()
+    const {
+      options,
+      showAccount,
+      toggleAccount,
+      handleAccount,
+      createAccount,
+      createLoading,
+      accountLoading,
+      
+    } = useToggleAccount();
 
     const toAccountManagement = () => {
-      router.push({ name: 'account-management' })
-    }
-    const network = computed(() => store.state.account.currentNetwork)
+      router.push({ name: "account-management" });
+    };
+    const network = computed(() => store.state.account.currentNetwork);
     const tobrowser = () => {
-      window.open(`${network.value.browser}`)
-    }
+      window.open(`${network.value.browser}`);
+    };
 
     const routerTo = (name: string) => {
-      showSlider.value = false
+      showSlider.value = false;
       let time = setTimeout(() => {
-        router.push({ name })
-        clearTimeout(time)
-      }, 300)
-    }
+        router.push({ name });
+        clearTimeout(time);
+      }, 300);
+    };
 
     const handleLogout = () => {
-      showSlider.value = false
-      logout()
-    }
+      $dialog.open({
+        message: t("sidebar.logoutTip"),
+        type: "warn",
+        theme: "dark",
+        confirmBtnText: t("common.no"),
+        cancelBtnText: t("common.yes"),
+        callBack() {},
+        cancelBack() {
+          showSlider.value = false;
+          logout();
+        },
+      });
+    };
 
     const toSend = () => {
-      showSlider.value = false
-      router.push({ name: 'send' })
-    }
+      showSlider.value = false;
+      router.push({ name: "send" });
+    };
     // Popover expands and closes
     const toReceive = () => {
       router.push({
-        name: 'receive-choose',
-        query: { backUrl: 'receive-choose-code' }
-      })
-    }
+        name: "receive-choose",
+        query: { backUrl: "receive-choose-code" },
+      });
+    };
+    const toOfficiaWebsite = () => {
+      window.open("https://www.wormholes.com");
+    };
     // One-click exchange click events
     const oneClick = async () => {
       Toast.loading({
-        duration:0
-      })
+        duration: 0,
+      });
       showSlider.value = false;
-      const exchangeStatus = await dispatch('account/getExchangeStatus')
-      Toast.clear()
+      const exchangeStatus = await dispatch("account/getExchangeStatus");
+      Toast.clear();
       if (exchangeStatus.exchanger_flag) {
         router.push({
           name: "exchange-management",
@@ -334,25 +514,148 @@ export default defineComponent({
           name: "bourse",
         });
       }
-    }
+    };
 
     // Display qr code address
-    const showCode = ref(false)
+    const showCode = ref(false);
     const handleShowCode = () => {
-      showCode.value = true
-    }
+      showCode.value = true;
+    };
 
-    const minerpledge = () => {
-      router.push({ name: 'minersDeal' })
-    }
+    const { $dialog } = useDialog();
+    const minerpledge = async () => {
+      showSlider.value = false;
+      const wallet = await getWallet();
+      const ethAccountInfo = await wallet.provider.send("eth_getAccountInfo", [
+        wallet.address,
+        "latest",
+      ]);
+      if (ethAccountInfo.PledgedBalance) {
+        router.push({ name: "minersDeal" });
+        return;
+      }
+      let accountAmount = new BigNumber(accountInfo.value.amount);
+
+      if (accountAmount.gte(70001)) {
+        showSlider.value = false;
+        // router.push({ name: 'minersPledge' })
+        router.push({ name: "minersDeal" });
+      } else {
+        $dialog.open({
+          type: "warn",
+          theme: "dark",
+          hasCancelBtn: false,
+          message: t("send.sendMessage"),
+        });
+        // isWarnings.value = true;
+        return;
+      }
+    };
+
+    const toHelp = () => {
+      // $toast.warn(t('common.commingsoon'))
+      window.open(decode('aHR0cHM6Ly93d3cud29ybWhvbGVzLmNvbS8=') + "docs/wallet/");
+    };
     // The account label pops up
-    const showPopover = ref(false)
-    const showPopover2 = ref(false)
+    const showPopover = ref(false);
+    const showPopover2 = ref(false);
+    const showPopover3 = ref(false);
+    const toCreator = () => {
+      router.push({ name: "snft-creator" });
+    };
+
+    const Coefficient = computed(() => {
+      return ethAccountInfo.value.Coefficient;
+    });
+    const expresionClass = computed(() => {
+      const num = Number(Coefficient.value);
+      if (num < 40) return "sad";
+      if (num >= 40 && num <= 50) return "neutral";
+      if (num > 50) return "smile";
+    });
+
+
+    const showPopoverText = ref(false);
+    const showPopoverText2 = ref(false);
+    const showPopoverText3 = ref(false);
+    const handleMouseLeave1 = () => {
+      // showPopover.value
+      let time = setTimeout(() => {
+        if (!showPopoverText.value) {
+          showPopover.value = false;
+        } else {
+          showPopover.value = true;
+        }
+        clearTimeout(time);
+      }, 70);
+    };
+    const handleMouseLeave2 = () => {
+      // showPopover.value
+      let time = setTimeout(() => {
+        if (!showPopoverText2.value) {
+          showPopover2.value = false;
+        } else {
+          showPopover2.value = true;
+        }
+        clearTimeout(time);
+      }, 70);
+    };
+    const handleMouseLeave3 = () => {
+      // showPopover.value
+      let time = setTimeout(() => {
+        if (!showPopoverText3.value) {
+          showPopover3.value = false;
+        } else {
+          showPopover3.value = true;
+        }
+        clearTimeout(time);
+      }, 70);
+    };
+    const handleMouseLeavetext1 = () => {
+      // showPopover.value
+      showPopoverText.value = false;
+      if (showPopover.value) {
+        showPopover.value = false;
+      }
+    };
+    const handleMouseLeavetext2 = () => {
+      // showPopover.value
+      showPopoverText2.value = false;
+      if (showPopover2.value) {
+        showPopover2.value = false;
+      }
+    };
+    const handleMouseLeavetext3 = () => {
+      // showPopover.value
+      showPopoverText3.value = false;
+      if (showPopover3.value) {
+        showPopover3.value = false;
+      }
+    };
+    
+
+
     return {
+      expresionClass,
+      showPopoverText,
+      showPopoverText2,
+      showPopoverText3,
+      handleMouseLeave1,
+      handleMouseLeave2,
+      handleMouseLeave3,
+      handleMouseLeavetext1,
+      handleMouseLeavetext2,
+      handleMouseLeavetext3,
+      creatorStatus,
+      Coefficient,
       showPopover,
+      showPopover3,
+      toCreator,
       showPopover2,
+      toOfficiaWebsite,
       handleShowCode,
       showCode,
+      toHelp,
       accountInfo,
       options,
       showAccount,
@@ -360,6 +663,7 @@ export default defineComponent({
       toAccountManagement,
       handleAccount,
       createAccount,
+      amount,
       createLoading,
       accountLoading,
       oneClick,
@@ -383,16 +687,40 @@ export default defineComponent({
       ethAccountInfo,
       hasExchange,
       t,
-      minerpledge
-    }
-  }
-})
+      minerpledge,
+      pageType
+    };
+  },
+});
 </script>
 <style lang="scss" scoped>
+.slider-left-enter-active {
+  animation: slider-in 0.3s forwards linear;
+}
+.slider-left-leave-active {
+  animation: slider-in 0.3s reverse linear;
+}
+.logoutBtn {
+  background: transparent;
+  width: 220px;
+}
+@keyframes slider-in {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+.slider-con {
+  position: relative;
+}
 .back-box {
-  margin-bottom: 15px;
+  position: absolute;
+  right: 15px;
+  top: 15px;
   i {
-    font-size: 16px;
+    font-size: 18px;
   }
 }
 </style>

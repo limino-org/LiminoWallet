@@ -1,5 +1,6 @@
 <template>
-  <div class="page-box" id="page-box">
+  <div :class="`page-box container ${pageType}`" id="page-box">
+
     <div class="container" id="container">
       <div v-if="route.meta.keepAlive">
         <router-view v-slot="{ Component }">
@@ -16,7 +17,7 @@
 </template>
 <script lang="ts">
 import { provide as appProvide } from "@/popup/provides/app";
-import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import {  useRoute, useRouter } from "vue-router";
 import {
   Ref,
   ref,
@@ -25,13 +26,16 @@ import {
   onActivated,
   onMounted,
   computed,
-  provide
+  provide,
+  nextTick
 } from "vue";
 import { useStore, mapActions } from "vuex";
-import { Button } from "vant";
+import { Button, Loading } from "vant";
 import { utils } from "ethers";
 import { useWallet } from "@/popup/hooks/useWallet";
 import { useI18n } from "vue-i18n";
+import eventBus from "@/popup/utils/bus";
+
 import { getWallet } from "./store/modules/account";
 import { version } from "@/popup/enum/version";
 import { useEvent } from "@/popup/hooks/useEvent";
@@ -39,7 +43,8 @@ import CommonModal from "@/popup/components/commonModal/index.vue";
 import { addressMask, transactionStatus } from "./utils/filters";
 import { guid } from '@/popup/utils/utils'
 import { useBroadCast } from '@/popup/utils/broadCost'
-
+import localforage from 'localforage'
+import { getAccountAddr } from "@/popup/http/modules/common";
 export default {
   components: {
     [Button.name]: Button,
@@ -48,43 +53,66 @@ export default {
   setup() {
     const { t } = useI18n();
     const route = useRoute();
-    const { commit, dispatch, state, getters } = useStore();
+    const store = useStore();
+    const { commit, dispatch, state, getters } = store
     const { initWallet } = useWallet();
     const currentNetwork = computed(() => state.account.currentNetwork);
+    // @ts-ignore
+    const pageType = ref( window ? window.pageType : '')
     provide("appProvide", appProvide());
-    onMounted(()=>{
-      // update browser session window id
+    onMounted(async()=>{
+      console.log('this', this)
+     // update browser session window id
      dispatch('system/setConversationid', guid())
-           // Listen to the broadcast of the same source window
+     // Listen to the broadcast of the same source window
       const { broad } = useBroadCast()
-      broad.onmessage = (e) => {
+      broad.onmessage = async(e) => {
         const { data }: any = e
         const { action, id } = data
         if(data && action) {
           // If the same-origin window updates the account
           if(action == 'wromHoles-update' && id != state.system.conversationId) {
-            window.location.reload()
+           window.location.reload()
           }
         }
       }
+      window.onload = () => {
+        // @ts-ignore
+        chrome.storage.local.set({comfirm_password: ''})
+        let time = setTimeout(() => {
+          document.getElementById('loading-page-box').style.display = 'none'
+          document.getElementById('app').style.display = 'block'
+          clearTimeout(time)
+        },200)
+        
+      }
 
-      // let time = setTimeout(function() {
-      //   commit("account/UPDATE_WORMHOLES_URL", {
-      //   URL: "https://api.wormholes.com",
-      //   browser: "https://www.wormholesscan.com/#/",
-      //   id: 'wormholes-network-1'
-      // });
-      // clearTimeout(time)
-      // }, 1000)
+            // move mnemonic to indexDB
+            (function () {
+        let time = setTimeout(async () => {
+          const mnemonic = await localforage.getItem("mnemonic");
+          if (!state.mnemonic.keyStore && mnemonic) {
+            commit("mnemonic/UPDATE_MNEMONIC", mnemonic);
+          }
+          clearTimeout(time);
+        }, 5000);
+      })();
     })
     // Initialize wallet instance
     onBeforeMount(async () => {
       initWallet();
       dispatch("account/getContractAddress");
+      dispatch("configuration/getConfiguration");
+
       useEvent();
     });
-
+    
+    eventBus.on('walletReady',newwallet => {
+      dispatch('system/getChainVersion', newwallet);
+ 
+    })
     const animation = ref("slide");
+    
     return {
       t,
       route,
@@ -92,55 +120,52 @@ export default {
       currentNetwork,
       transactionStatus,
       animation,
+      pageType
     };
   },
 };
 </script>
 <style lang="scss">
 .page-container {
-  // scrollbar-width: none;
   position: relative;
   box-sizing: border-box;
   padding-bottom: 30px;
-  &::-webkit-scrollbar {
-    display: none;
-    /* Chrome Safari */
-  }
+  // &::-webkit-scrollbar {
+  //   display: none;
+  //   /* Chrome Safari */
+  // }
 }
-// .slider-box {
-//   position: fixed;
-//   left: 0;
-//   top: 0;
-//   right: 0;
-//   bottom: 0;
-//   &-container {
-//     position: relative;
-//     height: 100vh;
-//     z-index: -1;
-//   }
-// }
 :deep(.van-popup) {
   position: absolute;
 }
+:deep(.van-overlay) {
+  background: rgba(0, 0, 0, 0.5000);
+}
 .page-box {
   min-height: 100vh;
-  transition: transform 0.35s, opacity 0.35s;
+  transition: ease .3s;
   position: relative;
-  max-width: 750px;
   margin: 0 auto;
   overflow-y: hidden;
   background: #fff;
   box-sizing: border-box;
-  &::-webkit-scrollbar {
-    width: 0 !important;
-    display: none;
+  // box-shadow: 0 1px 2px #f4f5f7;
+  &:hover {
+    box-shadow: 0 2px 10px #ebedf0;
   }
   :deep(.van-toast) {
     word-break: keep-all !important;
   }
+  & > .loading-box {
+    height: 100vh;
+  }
+  &.Popup {
+    width: 375PX;
+    min-height: 601PX;
+  }
 }
 
-// 交易弹窗样式
+//Trade popover style
 .receipt-box {
   .step-box {
     padding: 0 50px;
@@ -148,24 +173,24 @@ export default {
       transition: ease 0.3s;
     }
     .num1 {
-      background: #037cd6;
-      border: 1PX solid #037cd6;
+      background: #9F54BA;
+      border: 1PX solid #9F54BA;
       color: #fff;
     }
     &.receive {
       .line1::after,
       .line2::after {
-        border-color: #037cd6 !important;
+        border-color: #9F54BA !important;
       }
       .num3 {
-        background: #037cd6;
-        border: 1PX solid #037cd6;
+        background: #9F54BA;
+        border: 1PX solid #9F54BA;
         color: #fff;
       }
     }
     .num2 {
-      background: #037cd6;
-      border: 1PX solid #037cd6;
+      background: #9F54BA;
+      border: 1PX solid #9F54BA;
       color: #fff;
     }
     &.pending {
@@ -188,7 +213,7 @@ export default {
     }
     &.pending {
       .send {
-        color: #037cd6;
+        color: #9F54BA;
       }
       .con {
         color: #68b1e6;
@@ -197,11 +222,11 @@ export default {
     &.receive {
       .send,
       .done {
-        color: #037cd6;
+        color: #9F54BA;
       }
     }
     .con {
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .num {
@@ -252,31 +277,4 @@ export default {
   }
 }
 
-.slide-right-enter-active,
-.slide-right-leave-active,
-.slide-left-enter-active,
-.slide-left-leave-active {
-  width: 100%;
-  height: 100%;
-  will-change: transform;
-  transition: all 500ms cubic-bezier(0.55, 0, 0.1, 1);
-  position: absolute;
-  backface-visibility: hidden;
-}
-.slide-right-enter-active {
-  opacity: 0;
-  transform: translate3d(-100%, 0, 0);
-}
-.slide-right-leave-active {
-  opacity: 0;
-  transform: translate3d(100%, 0, 0);
-}
-.slide-left-enter-active {
-  opacity: 0;
-  transform: translate3d(100%, 0, 0);
-}
-.slide-left-leave-active {
-  opacity: 0;
-  transform: translate3d(-100%, 0, 0);
-}
 </style>

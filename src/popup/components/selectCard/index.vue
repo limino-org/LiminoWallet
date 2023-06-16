@@ -63,13 +63,13 @@ export default defineComponent({
   height: 62px;
   transition: ease 0.3s;
   &:hover {
-    background: rgb(244, 247, 250);
+    background: #F8F3F9;
   }
   .net-status {
     width: 20px;
     color: #ccc;
     i {
-      color: #057ed6;
+      color: #9F54BA;
       font-size: 16px;
     }
     i.icon-xuanzhong1 {

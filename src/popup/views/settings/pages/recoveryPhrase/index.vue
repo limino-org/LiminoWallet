@@ -1,10 +1,6 @@
 <template>
   <van-sticky>
-    <NavHeader title="Close" :hasRight="true">
-      <template v-slot:title>
-        <div class="flex center title">{{ t("sidebar.recoveryPhrase") }}</div>
-      </template>
-    </NavHeader>
+    <NavHeader :title="t('sidebar.recoveryPhrase')" :hasRight="true"></NavHeader>
   </van-sticky>
   <div class="content">
     <div class="bg-box pt-22 pb-22 pl-20 pr-20">
@@ -53,20 +49,16 @@
             ></qrcode-vue>
           </div>
         </div>
-<!--        <div class="load-btn flex center h-30 hover f-12" @click="download">-->
-<!--          <span>{{ t("exportprivatekey.saveQRcode") }}</span>-->
-<!--          <i class="iconfont icon-xiazai1"></i>-->
-<!--        </div>-->
       </div>
       <div class="btn-groups">
       <div class="container pl-28 pr-28">
-        <van-button   @click="toCopy" v-show="tabVal.value == 1"  block>{{t('transferNft.copy')}}</van-button>
-        <van-button style="border: 1px solid rgba(2, 135, 219, 1);color: rgba(2, 135, 219, 1)" icon="iconfont icon-xiazai1"  @click="download" v-show="tabVal.value == 2"  block>{{t('transferNft.downQR')}}</van-button>
+        <van-button   @click="toCopy" v-show="tabVal.value == 1" icon="iconfont icon-fuzhi2" block><i class="iconfont icon-fuzhi2 "></i> {{t('transferNft.copy')}}</van-button>
+        <van-button  @click="download" v-show="tabVal.value == 2"  block><i class="iconfont icon-xiazai "></i> {{t('transferNft.downQR')}}</van-button>
       </div>
         </div>
     </div>
     <div v-else>
-      <div class="pwd-tit lh-30 f-12">{{t('createAccountpage.password')}}</div>
+      <div class="pwd-tit lh-20 mb-4 f-12 text-bold">{{t('createAccountpage.password')}}</div>
       <div :class="`ipt ${pwdErr ? 'error' : ''}`">
         <van-field
           v-model="password"
@@ -75,6 +67,7 @@
           @keydown.enter="unlock"
         />
       </div>
+      <div v-if="pwdErr" class="ipt-message">{{pwdErrMsg}}</div>
       <div class="btn-groups">
         <div class="container pl-28 pr-28">
           <van-button @click="unlock" type="primary" block>{{t('transferNft.confirm')}}</van-button>
@@ -89,7 +82,6 @@ import {
   CreateWalletByJsonParams,
   CreateWalletByMnemonicParams,
 } from "@/popup/utils/ether";
-import { setCookies, getCookies } from "@/popup/utils/jsCookie";
 import { ref, Ref, computed, toRaw, SetupContext, onMounted } from "vue";
 import {
   Icon,
@@ -127,6 +119,7 @@ export default {
     const router = useRouter();
     const store = useStore();
     const route = useRoute();
+    const { $toast } = useToast()
     const btnList = ref([
       {
         name: t("exportprivatekey.copytext"),
@@ -161,7 +154,7 @@ export default {
     const toCopy = async () => {
       try {
         await toClipboard(mnemonic.value);
-        Toast.success(t("copy.titlekyc"));
+        $toast.success(t("copy.copySuccess"));
       } catch (e) {
         console.error(e);
       }
@@ -169,25 +162,33 @@ export default {
     const download = () => {
       downloadBase64Img();
     };
+    const pwdErrMsg = ref('')
     const checkFlag = ref(false);
     const password = ref("");
     // Selected tab
     const tabVal = computed(() => btnList.value.find((item) => item.select));
     const pwdErr = ref(false)
-    const { $toast } = useToast();
     const  unlock = async () => {
       pwdErr.value = false
+      if(!password.value) {
+        pwdErr.value = true
+        pwdErrMsg.value = t('loginwithpassword.pleaseinput')
+        return false
+      }
       try {
         // Unlock the keystore file of the current account through the password
-          parseMnemonic(password.value).then(res => {
+          parseMnemonic(password.value,store.state.mnemonic.keyStore).then(res => {
              mnemonic.value = res;
-             pwdErr.value = true
              checkFlag.value = true;
-
+          }).catch(err => {
+            pwdErr.value = true
+        // $toast.fail(err.toString());
+        pwdErrMsg.value = err.toString()
           });
       } catch (err) {
-        // pwdErr.value = true
-        $toast.fail(err.toString());
+        pwdErr.value = true
+        // $toast.fail(err.toString());
+        pwdErrMsg.value = err.toString()
       }
     };
     return {
@@ -202,6 +203,7 @@ export default {
       download,
       checkFlag,
       unlock,
+      pwdErrMsg,
       pwdErr
     };
   },
@@ -210,17 +212,27 @@ export default {
 
 <style lang="scss" scoped>
 .pwd-tit {
-  padding: 0 26px 0;
+  padding: 0 14px 0;
+}
+.ipt-message {
+  color: #D73A49;
+  margin: 8px 15px 0;
 }
 .ipt {
-  height: 44px;
+  min-height: 44px;
   background: #ffffff;
-  margin: 0 26px 10px;
+  margin: 0 15px 0;
   border-radius: 5px;
-  padding: 10px;
-  //border: 1px solid #bbc0c5;
+  //border: 1px solid #B3B3B3;
   &.error {
-    border-color: #d73a49;
+    :deep(){
+      .van-field {
+        .van-field__body {
+    border: 1px solid #D73A49;
+    background: #FBF2F3;
+  }
+      }
+    }
   }
   .van-field {
     padding: 0;
@@ -229,20 +241,20 @@ export default {
 .tab-box {
   .flex-1.active {
     i {
-      color: #037cd6;
+      color: #9F54BA;
     }
-    color: #037cd6;
+    color: #9F54BA;
   }
   i {
     font-size: 32px;
   }
 }
 .bg-box {
-  background: #f4faff;
+  background: #F8F3F9;
   margin: 15px 15px 25px;
   border-radius: 7.5px;
   .icon-box {
-    color: #037cd6;
+    color: #9F54BA;
     i {
       font-size: 16px;
     }
@@ -258,7 +270,7 @@ export default {
       font-size: 42px;
     }
     .flex-1.active {
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
 }
@@ -267,15 +279,15 @@ export default {
   padding: 15px;
   box-sizing: border-box;
   word-break: break-all;
-  background: #f4faff;
+  background: #F8F3F9;
   position: relative;
   border-radius: 5px;
-  border: 1px solid #bbc0c5;
+  border: 1px solid #B3B3B3;
   color: #848484;
   i {
     position: absolute;
     right: 10px;
-    color: #037cd6;
+    color: #9F54BA;
     bottom: 10px;
   }
 }
@@ -291,15 +303,15 @@ export default {
 }
 .load-btn {
   width: 250px;
-  background: #f4faff;
+  background: #F8F3F9;
   border-radius: 30px;
   margin: 15px auto 0;
-  color: #037cd6;
+  color: #9F54BA;
   i {
     font-size: 12px;
   }
   &:hover {
-    background: #dcecf9;
+    background: #F8F3F9;
   }
 }
 </style>

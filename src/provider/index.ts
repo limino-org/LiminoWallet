@@ -1,23 +1,6 @@
 
 
-interface RequestArguments {
-    readonly method: string;
-    readonly params?: readonly unknown[] | object;
-}
-
-
-interface ProviderMessage {
-    readonly type: string;
-    readonly data: unknown;
-  }
-
-interface ProviderRpcError extends Error {
-    code: number;
-    data?: unknown;
-}
-
-
-const errorCode = {
+export const errorCode = {
     "4001": {
         reason: "User Rejected Request",
         message: "The user rejected the request. "
@@ -46,44 +29,5 @@ export enum EventInfo {
     chainChanged = "chainChanged",
     accountsChanged = "accountsChanged",
     message = "message"
-}
-
-export interface BaseProviderState {
-    accounts: null | string[];
-    isConnected: boolean;
-    isUnlocked: boolean;
-    // initialized: boolean;
-    // isPermanentlyDisconnected: boolean;
-  }
-
-// Provider.request(args: RequestArguments): Promise<unknown>;
-export class BaseProvider {
-    protected _state: BaseProviderState;
-    public chainId: string | null;
-    constructor(){
-        this._state = {
-            accounts:[],
-            isConnected: false,
-            isUnlocked: false
-           }
-    }
-    public enable = () => {
-
-    }
-    public request = (arg: RequestArguments) => {
-
-    }
-    public message = (arg: ProviderMessage) => {
-
-    }
-    public on = (event:EventInfo) => {
-
-    }
-    private handleChainChanged = () => {
-
-    }
-    private handleAccountsChanged = () => {
-
-    }
 }
 

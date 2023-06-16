@@ -6,7 +6,7 @@ console.warn('ethers', ethers)
 // @ts-ignore
 window.ethers = ethers
 /**
- * BIP44路径
+ * BIP44 Path
  * m / purpose' / coin' / account' / change / address_index
  * m Is fixed, and the purpose is also fixed. The value is 44 (or 0x8000002c)
  * This represents currency, 0 represents bitcoin, 1 represents bitcoin test chain, and 60 represents the complete currency list address of Ethereum：https://github.com/satoshilabs/slips/blob/master/slip-0044.md
@@ -74,6 +74,8 @@ export function createWalletByMnemonic(params: CreateWalletByMnemonicParams) {
     if (pathIndex != '-1') {
         path = getPath(pathIndex);
     }
+    console.warn('phrase', phrase, pathIndex)
+
     // Creating wallets with mnemonics
     try {
         return Promise.resolve(ethers.Wallet.fromMnemonic(phrase, path))
@@ -82,7 +84,20 @@ export function createWalletByMnemonic(params: CreateWalletByMnemonicParams) {
         return Promise.reject(err)
     }
 }
-
+// export function createWalletByMnemonic(params: CreateWalletByMnemonicParams) {
+//     const { phrase, pathIndex } = params
+//     let path: string = ''
+//     if (pathIndex != '-1') {
+//         path = getPath(pathIndex);
+//     }
+//     // Create a wallet with mnemonics
+//     try {
+//         return Promise.resolve(ethers.Wallet.fromMnemonic(phrase, path))
+//     } catch (err) {
+//         console.error(err)
+//         return Promise.reject(err)
+//     }
+// }
 
 export interface PrivateKeyParams {
     privatekey: string

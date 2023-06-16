@@ -5,7 +5,8 @@ export enum TradeStatus {
     pendding = 'pendding',
     approve = 'approve',
     success = 'success',
-    fail = 'fail'
+    fail = 'fail',
+    warn = 'warn'
 }
 export type TradeConfirmOpt = {
     status: TradeStatus
@@ -13,6 +14,7 @@ export type TradeConfirmOpt = {
     approveMessage?: string
     successMessage?: string
     wattingMessage?: string
+    wattingTitle?: string,
     failMessage?: string
 }
 export default {
@@ -25,7 +27,7 @@ export default {
             },
             update:(opt: TradeConfirmOpt) => {
                 render(vnode, document.body)
-                vnode.component?.exposed?.open(opt)
+                vnode.component?.exposed?.update(opt)
             },
             hide:() =>vnode.component?.exposed?.hide()
         }

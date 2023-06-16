@@ -1,6 +1,7 @@
 <template>
       <van-dialog
         v-model:show="showModal"
+        class="guideBackupModal"
         teleport="#page-box"
         :showConfirmButton="false"
         :showCancelButton="false"
@@ -11,7 +12,7 @@
           {{t('backup.safetyTips')}}
         </div>
         <div class="flex center icon-box m-20">
-          <i class="iconfont icon-hourglass"></i>
+          <i class="iconfont icon-yk_gantanhao_fill" style="color: #eccb1d"></i>
         </div>
         <div class="small-tit text-center text-bold f-24">{{t('backup.warn')}}</div>
         <div class="tip f-12 lh-16 text-center pl-24 pr-24 mt-12 mb-12">
@@ -68,13 +69,15 @@ export default defineComponent({
     
     const backUp = () => {
       dispatch("system/showDialog", props.type);
+      dispatch("system/closeGuide");
+      // showModal.value = false
       router.push({name:'mnemonic'})
     };
     
     const remindLater = () => {
       dispatch("system/showDialog", props.type);
+      dispatch("system/closeGuide");
     }
-    
     return {
       t,
       showModal,
@@ -90,7 +93,7 @@ export default defineComponent({
   color: #000;
   font-size: 15px;
   line-height: 62px;
-  background: #f8fcff;
+  background: #F8F3F9;
   font-weight: bold;
 
 }
@@ -102,19 +105,19 @@ export default defineComponent({
 }
 .savebtn {
   width: 250px;
-  background: #f4faff;
+  background: #F8F3F9;
   border-radius: 30px;
-  color: #037cd6;
+  color: #9F54BA;
   i {
     font-size: 12px;
   }
   &:hover {
-    background: #dcecf9;
+    background: #F8F3F9;
   }
 }
 .icon-box i {
   font-size: 36px;
-  color: #037cd6;
+  color: #9F54BA;
 }
 .remindLater {
   line-height: 12px;

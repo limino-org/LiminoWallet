@@ -5,10 +5,9 @@
         <span>{{$t('closeexchange.closeexchange')}}</span>
       </div>
       <div class="flex center miners-icons">
-        <van-icon size="41" color="#037CD6" name="warning" />
+        <van-icon size="41" color="#9F54BA" name="warning" />
       </div>
       <div class="flex center">
-        <!-- <span class="text-s">Are you sure you want to shut it down?You will be refunded the ${{Number(toUsd(100)).toFixed(2)}} pledge.</span> -->
         <span class="text-s">{{$t('closeexchange.shutitdown',{ data: screenBancle(exchangeStatus.exchanger_balance)})}}</span>
       </div>
       <div class="container-btn flex center">
@@ -31,7 +30,7 @@ import { Button, Overlay, Field, Icon } from 'vant'
 import { ref, SetupContext, computed, ComputedRef } from 'vue'
 import { useExchanges } from '@/popup/hooks/useExchanges'
 import { useI18n } from 'vue-i18n'
-import { formatEther, toUsd, scientificToNumber } from '@/popup/utils/filters'
+import { scientificToNumber } from '@/popup/utils/filters'
 import { ExchangeStatus } from '@/popup/store/modules/account'
 import { useStore, mapState } from 'vuex'
 import { ethers, utils } from 'ethers'
@@ -45,7 +44,6 @@ export default {
     [Icon.name]: Icon
   },
   props: {
-    // 控制显示
     show: {
       type: Boolean,
       default: false
@@ -101,7 +99,6 @@ export default {
       isTimeOut,
       submit,
       isLoading,
-      toUsd,
       screenBancle,
       exchangeStatus
     }
@@ -137,7 +134,7 @@ export default {
       line-height: 62px;
       text-align: center;
       font-weight: bold;
-      background: #f8fcff;
+      background: #F8F3F9;
       font-size: 14px;
       color: #0f0f0f;
     }

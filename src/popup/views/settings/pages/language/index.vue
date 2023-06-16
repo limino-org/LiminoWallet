@@ -1,10 +1,6 @@
 <template>
   <van-sticky>
-    <NavHeader title="Close" :hasRight="true" :backUrl="backUrl">
-      <template v-slot:title>
-        <div class="flex center title">{{t('sidebar.settings')}}</div>
-      </template>
-    </NavHeader>
+    <NavHeader :title="t('sidebar.settings')" :hasRight="true" :backUrl="backUrl"></NavHeader>
   </van-sticky>
   <div class="language">
     <div class="list flex between">
@@ -73,13 +69,13 @@ export default {
     box-sizing: border-box;
     transition: ease 0.2s;
     &:hover {
-      color: #1989fa;
+      color: #9F54BA;
     }
     &.active {
-      border: 1PX solid #1989fa;
+      border: 1PX solid #9F54BA;
     }
     .tit {
-      font-size: 10px;
+      font-size: 12px;
       line-height: 14px;
     }
     .tit2 {

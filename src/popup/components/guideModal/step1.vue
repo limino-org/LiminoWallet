@@ -12,7 +12,7 @@
     <div class="dialog-box" v-if="show1">
       <div class="serial-number">
         <span class="left">1</span>
-        <span>/</span> 13
+        <span>/</span> 12
       </div>
       <div class="title">{{t('bootstrapwindow.accout')}}</div>
       <div class="small-tit pl-30 pr-30 mt-20">{{t('bootstrapwindow.accountMessage')}}</div>
@@ -95,7 +95,7 @@ export default defineComponent({
     padding-right: 14px;
     font-size: 12px;
     .left {
-      color: #037cd6;
+      color: #9F54BA;
     }
   }
   .tip2 {
@@ -112,7 +112,7 @@ export default defineComponent({
   }
   .small-tit {
     text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
     font-size: 12px;
     color: #848484;
   }

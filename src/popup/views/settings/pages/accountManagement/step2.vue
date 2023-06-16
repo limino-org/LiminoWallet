@@ -1,19 +1,14 @@
 <template>
   <van-sticky>
-    <NavHeader title="Close" :hasRight="false">
-      <template v-slot:title>
-        <div class="flex center title">
-          {{ t("setting.accountManagement") }}
-        </div>
-      </template>
+    <NavHeader :title="t('setting.accountManagement')" :hasRight="false">
     </NavHeader>
   </van-sticky>
   <div class="modif-name-modal pl-14 mt-24 pr-14">
-    <van-form @submit="onSubmit">
-      <div class="label text-bold">Account Name ({{ name.length }} / 12)</div>
+    <van-form @submit="onSubmit" :title="address">
+      <div class="label text-bold">{{t('account.accountname')}} ({{ name.length }} / 25)</div>
       <van-field
         v-model="name"
-        maxlength="12"
+        maxlength="25"
         :placeholder="t('account.placeholder')"
         right-icon="cross"
         @click-right-icon="clickRight"
@@ -56,7 +51,9 @@ export default {
     const showModal: Ref<boolean> = ref(false);
     const { t } = useI18n();
     const { dispatch } = useStore();
-    const name = ref(query.name);
+    const {name: newName, address: newAddress} = query
+    const name = ref(newName.toString());
+    const address = ref(newAddress.toString());
     // Listen to the broadcast of the same source window
     const { handleUpdate } = useBroadCast()
 
@@ -78,6 +75,7 @@ export default {
     };
     return {
       showModal,
+      address,
       name,
       cancel,
       onSubmit,
@@ -89,10 +87,10 @@ export default {
 </script>
 <style lang="scss" scoped>
 .title {
-  // background: #f8fcff;
+  // background: #F8F3F9;
 }
 :deep(.van-field__right-icon) {
-  color: #1989fa;
+  color: #9F54BA;
 }
 .label {
   font-size: 12px;
@@ -124,7 +122,7 @@ export default {
   border-radius: 5px;
   transition: ease 0.3s;
   &:hover {
-    border: 1PX solid #1989fa;
+    border: 1PX solid #9F54BA;
   }
 }
 </style>

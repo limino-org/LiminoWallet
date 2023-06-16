@@ -1,12 +1,6 @@
 <template>
   <div class="miners">
-    <van-sticky>
-      <NavHeader :hasLeft="true" :hasRight="false" backUrl="wallet" cancelRouteName="autoExchange">
-        <template v-slot:title>
-          <div class="flex center title">{{t('wallet.autoNFTexchange')}}</div>
-        </template>
-      </NavHeader>
-    </van-sticky>
+    <NavHeader :hasLeft="true" :hasRight="false" backUrl="wallet" cancelRouteName="autoExchange" :title="t('wallet.autoNFTexchange')"></NavHeader>
     <div class="miners-container">
       <div>
         <span class="text">{{$t('minerspledge.please')}}</span>
@@ -38,7 +32,6 @@ import { useRouter } from 'vue-router'
 import { ref, nextTick } from 'vue'
 import AffirmDialog from './components/affirmDialog.vue'
 import NextDialog from './components/next.vue'
-import IndexDialog from './components/index.vue'
 import SuccessDialog from './components/success.vue'
 import LoadingView from '@/popup/components/minerpledge/loading.vue'
 import AgreementView from '@/popup/components/minerpledge/agreement.vue'
@@ -58,7 +51,6 @@ export default {
     AffirmDialog,
     NextDialog,
     SuccessDialog,
-    IndexDialog,
     LoadingView,
     AgreementView
   },
@@ -175,7 +167,7 @@ export default {
 .miners {
   .cancel {
     font-size: 12px;
-    color: #1989fa;
+    color: #9F54BA;
     i {
       font-size: 20px;
     }

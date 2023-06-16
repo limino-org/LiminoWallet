@@ -93,7 +93,7 @@ export default {
                     margin-right: 40px;
                 }
                 &:last-child {
-                    background-color: #037cd6;
+                    background-color: #9F54BA;
                 }
             }
             }
@@ -111,7 +111,7 @@ export default {
                 }
                 &:last-child {
                     color: #fff;
-                    background-color: #037cd6;
+                    background-color: #9F54BA;
                 }
             }
             }

@@ -12,11 +12,11 @@ export const useBroadCast = () => {
     }catch(err){
         console.error(err)
     }
-    // 广播
+    // broadcast
     const postMessage = (params: any) => {
         broad.postMessage(params)
     }
-    // 钱包更新事件
+    // Wallet update event
     const handleUpdate = () => {
         // @ts-ignore
         postMessage({action:'wromHoles-update',id: store.state.system.conversationId})

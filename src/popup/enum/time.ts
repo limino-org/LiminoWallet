@@ -3,5 +3,6 @@
 export const mnemonicExpires = 86400000
 
 
-// Password Expiration time ms
-export const passwordExpires = 43200000
+// Password expiration Time 
+// export const passwordExpires = 43200
+export const passwordExpires = 43200

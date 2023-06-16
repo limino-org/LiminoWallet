@@ -1,24 +1,6 @@
 <template>
   <div class="importAccount-page">
-    <div class="importAccount-bg pl-12 pr-12 pt-16 pb-16">
-      <div class="flex between">
-        <div class="left flex center mr-8">
-          <van-icon name="warning" />
-        </div>
-        <i18n-t
-          tag="div"
-          keypath="import.hint"
-          class="f-12 lh-16 text-box text-left"
-        >
-          <template v-slot:a>
-            <a href="http://" target="_blank" rel="noopener noreferrer">{{
-              t("import.hintatag")
-            }}</a>
-          </template>
-        </i18n-t>
-        <!-- <div class="f-12 lh-16 mr-30 text-box text-left">{{t('import.hint')}}</div> -->
-      </div>
-    </div>
+    <Tip :message="t('import.hint')"/>
     <div class="flex between btn-box mt-22">
       <div
         style="cursor: no-drop"
@@ -37,19 +19,23 @@
     </div>
     <div v-show="tabVal.value == 1">
       <div class="import operate">
-        <van-form @submit="onSubmit">
-          <van-cell-group inset class="text">
+        <van-form>
+          <van-cell-group inset :class="`${errReason ? 'error' : ''} text`">
             <van-field
               v-model="privatekey"
               autosize
               type="textarea"
-              class="content"
-              :placeholder="$t('import.forexample')"
+              :class="` content`"
+              :placeholder="t('import.forexample')"
             />
           </van-cell-group>
+          <div class="error mt-6" v-show="errReason">
+            <div @click="toCopy" class="hover" v-if="errAddress">{{errAddress}}</div>
+            <div>{{errReason}}</div>
+          </div>
           <div class="btn-group">
             <div class="container pl-28 pr-28">
-              <van-button round block type="primary" native-type="submit">{{
+              <van-button round block type="primary" :loading="loading" @click="onSubmit">{{
                 t("import.import")
               }}</van-button>
             </div>
@@ -59,19 +45,20 @@
     </div>
     <div v-show="tabVal.value == 2">
       <div class="import operate">
-        <van-form @submit="onSubmit">
+        <van-form>
           <van-cell-group inset class="text">
             <van-field
               v-model="privatekey"
               autosize
               type="textarea"
               class="content"
-              :placeholder="$t('import.forexample')"
+              :placeholder="t('import.forexample')"
             />
           </van-cell-group>
+
           <div class="btn-group">
             <div class="container pl-28 pr-28"></div>
-            <van-button round block type="primary" native-type="submit">{{
+            <van-button round block type="primary" :loading="loading" @click="onSubmit">{{
               t("import.import")
             }}</van-button>
           </div>
@@ -79,7 +66,9 @@
       </div>
     </div>
   </div>
+
 </template>
+
 <script lang="ts">
 import { encryptPrivateKey, EncryptPrivateKeyParams } from "@/popup/utils/web3";
 import { ref, SetupContext, Ref, computed } from "vue";
@@ -102,6 +91,8 @@ import { useStore } from "vuex";
 import { useBroadCast } from "@/popup/utils/broadCost";
 import { useToast } from "@/popup/plugins/toast";
 import { useDialog } from "@/popup/plugins/dialog";
+import Tip from "@/popup/components/tip/index.vue";
+import useClipboard from 'vue-clipboard3'
 
 export default {
   name: "importAccount-step1",
@@ -115,7 +106,8 @@ export default {
     [Tab.name]: Tab,
     [Tabs.name]: Tabs,
     [Dialog.Component.name]: Dialog.Component,
-  },
+    Tip
+},
   setup() {
     const active = ref(0);
     const { t } = useI18n();
@@ -127,8 +119,14 @@ export default {
     const { handleUpdate } = useBroadCast();
     const { $dialog } = useDialog();
     const { $toast } = useToast();
+    const loading = ref(false)
+    const errAddress = ref()
+    const errReason = ref()
     // Import account using private key
     const onSubmit = (values: string) => {
+      loading.value = true
+      errAddress.value = ''
+      errReason.value = ''
       console.log("submit", values);
       console.log(
         "privatekey.value",
@@ -139,7 +137,7 @@ export default {
       dispatch("account/importPrivateKey", privatekey.value.trim())
         .then(async (wallet) => {
           const { privateKey, mnemonic, address } = wallet;
-          const password = getCookies("password") || "";
+          const password = await getCookies("password") || "";
           if (!password) {
             router.replace({ name: "loginAccount-step1" });
             return false;
@@ -160,11 +158,18 @@ export default {
           handleUpdate();
           router.push({ name: "wallet" });
         })
-        .catch(({ reason }) => {
+        .catch(({ reason, address }) => {
           // Login failed status
           privatekey.value = "";
-          console.log("$dialog", $dialog);
-          $dialog.success(reason || t("importerror.cannotenter"));
+          errAddress.value = address
+          errReason.value = reason
+          // $dialog.open({
+          //   type:'warn',
+          //   message:!address ? reason || t("importerror.cannotenter") : null,
+          //   element: address ? document.getElementById('errInnerElement') : null
+          // });
+        }).finally(() => {
+          loading.value = false
         });
     };
     const btnList = ref([
@@ -181,14 +186,30 @@ export default {
     const handleClick = (item: any) => {
       Toast(t("importerror.inputofprivatekey"));
     };
+
+        // Copy user address
+    const { toClipboard } = useClipboard()
+    const toCopy = async () => {
+      try {
+        await toClipboard(`${errAddress.value}`)
+        // console.log(accountInfo.value.address)
+        $toast.success(t('copy.title'))
+      } catch (e) {
+        console.error(e)
+      }
+    }
     return {
       t,
+      toCopy,
       privatekey,
       onSubmit,
       tabVal,
+      loading,
       active,
       btnList,
       handleClick,
+      errAddress,
+      errReason
     };
   },
 };
@@ -202,33 +223,27 @@ export default {
     font-size: 42px;
   }
   .flex-1.active {
-    color: #037cd6;
+    color: #9F54BA;
   }
 }
-.importAccount-page {
-  width: 100%;
-}
+
 .btn-group {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 25px;
 }
-.importAccount-bg {
-  background: #f4faff;
-  border-radius: 7.5px;
-  margin: 15px;
-}
+
 .left {
   width: 20px;
   i {
     font-size: 16px;
-    color: #037cd6;
+    color: #9F54BA;
   }
 }
 a {
   text-decoration: underline;
-  color: #037cd6;
+  color: #9F54BA;
 }
 .operate {
   padding: 0 20px;
@@ -257,5 +272,15 @@ a {
       border: none;
     }
   }
+  .van-cell-group.error {
+    background: #FBF2F3;
+    border-color: #D73A49;
+    .van-field {
+      background: none;
+    }
+  }
+}
+.error {
+  color: #D73A49;
 }
 </style>
