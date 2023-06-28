@@ -466,7 +466,7 @@ export default {
           } catch (err) {
             console.error(err);
           }
-          
+          const total = sendList.length
           $tradeConfirm.open({
             disabled: [TradeStatus.pendding],
             callBack(){
@@ -474,6 +474,7 @@ export default {
             },
             approveMessage: t('sendSNFT.approveMessage',{total: sendList.length})
           })
+          const receiptList = []
           try {
             for await (let item of sendList) {
               let { MergeLevel, nft_address } = item
@@ -491,18 +492,40 @@ export default {
                 to: toAddress.value,
                 nft_address,
               };
-              await dispatch("nft/send", tx);
+              const txData = await dispatch("nft/send", tx);
+              
+              receiptList.push(txData)
+            }
+            $tradeConfirm.update({status:"approve"})
+            const successList = []
+            for await (const iterator of receiptList) {
+              const re = await iterator.wait()
+              successList.push(re)
             }
             $tradeConfirm.update({
               status:'approve'
             })
             await dispatch('account/waitTxQueueResponse')
+            if(successList.length == sendList.length) {
+              $tradeConfirm.update({status:"success"})
+            } else {
+              $tradeConfirm.update({
+              status:"fail",
+              failMessage: t('sendSNFT.failMessage',{total: sendList.length - successList.length}),
+})
+            }
+
             // showSendSuccessModal.value = true;
             $tradeConfirm.update({
               status:'success'
             })
           } catch (err) {
             Toast(err.reason);
+            $tradeConfirm.update({
+              status:"fail",
+              failMessage: t('sendSNFT.failMessage2'),
+})
+
           } finally {
             loading.value = false;
           }

@@ -487,7 +487,13 @@
 		"moreInfo": "More Info",
 		"loading": "Loading...",
 		"loadchip": "Data is being prepared, please wait",
-		"collTit": "Collection"
+		"collTit": "Collection",
+        "approveMessage":"{total}SNFT are in the process of sending transaction requests, you can also view the details of the request through the transaction history",
+        "successMessage":"{total}transactions have been successfully sent, please see the details in the transaction history page",
+        "wattingMessage":"The SNFT is being transferred for you, which may take more than ten seconds",
+        "failMessage":"{total}SNFT transfers failed, you can check the transaction history to see the specific information of the transaction",
+        "failMessage2":"SNFT transfer failed, you can go to the transaction history to see the details of the transaction"
+
 	},
 	"importToken": {
 		"search": "Search",

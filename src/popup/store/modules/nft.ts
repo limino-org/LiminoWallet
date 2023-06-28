@@ -57,7 +57,6 @@ export default {
       store.dispatch('account/waitTxQueueResponse')
       return receipt
     },
-    // Personal casting NFT
    // Personal casting NFT
    async nftCreate({ commit, state }: any, nft_data: any) {
     const wallet = await getWallet();

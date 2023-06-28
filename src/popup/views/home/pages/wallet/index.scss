@@ -319,6 +319,7 @@ i {
   .van-tabs .van-sticky--fixed {
     background: none;
     border-bottom: 1px solid #cbe0f0;
+    z-index: 1000;
   }
   .van-tab {
     font-size: 12px;
