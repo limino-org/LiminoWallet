@@ -168,9 +168,12 @@ export default {
   font-size: 12px;
   color: #0287db;
 }
-::v-deep .van-button {
+:deep(){
+  .van-button {
   width: 104px;
 }
+}
+
 .container-btn {
   width: 240px;
   margin: 0 auto;

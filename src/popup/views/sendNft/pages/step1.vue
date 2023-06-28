@@ -1,25 +1,35 @@
 <template>
   <div class="nft-detail">
-    <div class="quanping">
-      <i
-        class="iconfont icon-fangda hover"
-        color="#FDFDFD"
-        @click="showImg"
-      ></i>
+    <div class="quanping"  v-if="!isAiNft">
+      <van-icon name="expand-o" class="hover"  @click="showImg" />
     </div>
-    <div class="code flex center" @click="showImg">
+    <div class="code flex center" >
       <van-image
-        :src="nftInfo.info.meta_url"
+       @click="showImg"
+        v-if="!isAiNft"
+        :src="nftInfo.meta_url"
         width="6.8rem"
         height="6.8rem"
       ></van-image>
+      <div :class="`nft-ai ${nftInfo.category == 2 ? 'fail' : 'success'}`" v-else>
+          <div class="flex center">
+            <div>
+              <img src="@/popup/assets/ai-default.png" v-if="nftInfo.category == 2" />
+              <img src="@/popup/assets/ai-success.png" v-else/>
+            </div>
+          </div>
+          <div class="flex center">
+            <div class="nft-ai-text" v-if="nftInfo.category == 2">{{ t('generateNFT.noPic') }} <br> {{ t('generateNFT.noPic2') }}</div>
+            <div class="nft-ai-text success" v-else>{{ t('generateNFT.okPic') }} <br> {{ t('generateNFT.okPic2') }}</div>
+          </div>
+        </div>
     </div>
 
     <!-- NFT information -->
     <div class="form van-hairline--surround">
-      <div class="content van-hairline--bottom">
-        <div class="form-titie">{{ t("sendNFT.name") }}</div>
-        <div class="form-content name">{{ nftInfo.info.name }}</div>
+      <div class="content van-hairline--bottom" v-if="isAiNft">
+        <div class="form-titie">{{ t("generateNFT.aiPromptTit") }}</div>
+        <div class="form-content name">{{ nftInfo.info.prompt }}</div>
       </div>
       <div class="content van-hairline--bottom">
         <div class="form-titie">{{ t("sendNFT.address") }}</div>
@@ -37,27 +47,23 @@
     </div>
     <!-- function -->
     <div class="flex evenly">
-      <van-sticky position="bottom" :offset-bottom="30">
         <div class="actions-btn" @click="toSend">
           <div class="action-icon flex center">
             <i class="iconfont icon-teshujiantouzuoxiantiao-copy"></i>
           </div>
           <div class="send-action text-center">{{ t("sendNFT.send") }}</div>
         </div>
-      </van-sticky>
-      <van-sticky position="bottom" :offset-bottom="30">
         <div class="actions-btn" @click="tomore">
           <div class="action-icon flex center">
-            <i class="iconfont icon-wendang"></i>
+            <van-icon name="description" />
           </div>
           <div class="send-action text-center">{{ t("sendNFT.more") }}</div>
         </div>
-      </van-sticky>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { showSlider, show } from "@/popup/components/navHeader/hooks/slider";
+
 import {
   Tab,
   Tabs,
@@ -85,7 +91,7 @@ import NavHeader from "@/popup/components/navHeader/index.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { addressMask, decimal } from "@/popup/utils/filters";
-import { web3 } from "@/popup/utils/web3";
+
 
 export default {
   components: {
@@ -98,10 +104,13 @@ export default {
     const { t } = useI18n();
     const router = useRouter();
     const route = useRoute();
+    // @ts-ignore
     const nftInfo = ref(JSON.parse(sessionStorage.getItem("nftInfo")));
+
     const { address, info } = nftInfo;
     const pageData = reactive({ data: nftInfo });
-
+    pageData.data.info = JSON.parse(pageData.data.info)
+    const isAiNft = ref(pageData.data.info.meta_url ? false : true)
     const handleLeft = () => {
       router.back();
     };
@@ -117,13 +126,14 @@ export default {
       Toast(t("sendNFT.tomore"));
     };
     const showImg = () => {
-      ImagePreview({ images: [nftInfo.value.info.meta_url], closeable: true });
+      ImagePreview({ images: [nftInfo.value.meta_url], closeable: true });
     };
 
     return {
       t,
       handleLeft,
       pageData,
+      isAiNft,
       toSend,
       addressMask,
       nftInfo,
@@ -135,6 +145,36 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+  .nft-ai {
+    background: #F3F3F3;
+    padding: 5px 0;
+    width: 256px;
+    height: 256px;
+    position: relative;
+
+    &.success {
+      background: #FCF5FF;
+    }
+    &.fail {
+      background: #F3F3F3;
+    }
+    img {
+      display: block;
+      margin: 70px auto 0;
+      height: 80px;
+    }
+    &-text {
+      width: 160px;
+      margin-top: 5px;
+      text-align: center;
+      font-size: 12px;
+      color: #D9D5D5;
+      word-break: keep-all;
+      &.success {
+        color: #D5B4E0;
+      }
+    }
+  }
   .quanping {
     display: flex;
     justify-content: flex-end;
@@ -158,7 +198,6 @@ export default {
     width: 256px;
     height: 256px;
     margin: 25px auto 15px;
-    border: 1px solid #ccc;
     border-radius: 7px;
     overflow: hidden;
 
@@ -213,7 +252,7 @@ export default {
       .name {
         width: 100%;
         overflow: hidden;
-        white-space: nowrap;
+        word-wrap:break-word;
       }
     }
     .line {

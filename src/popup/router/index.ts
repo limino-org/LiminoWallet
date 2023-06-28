@@ -23,7 +23,7 @@ import signPage from '@/popup/views/sign-page/route'
 import { getCookies } from "../utils/jsCookie";
 import store from "@/popup/store";
 import connect from '@/popup/views/connect/route'
-
+import generateNFT from '@/popup/views/generateNFT/route'
 
 const routes: Array<RouteRecordRaw> = [
   // Transactions
@@ -212,7 +212,8 @@ const routes: Array<RouteRecordRaw> = [
   // Purchase module
   // autograph
   signPage,
-  connect
+  connect,
+  generateNFT
 
 ];
 

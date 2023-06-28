@@ -32,36 +32,34 @@
       </div>
     </Transition>
     <Transition name="slider">
-      <div v-if="!isSelect2" class="exchange-con">
+      <div v-if="active == 'b'" class="exchange-con">
         <div class="pl-20 pr-20">
           <div
             class="wallet-suspension hover"
             @mouseover="showExchange = true"
             @mouseout="showExchange = false"
-            @click="toAutoExchange"
+            @click="toCreate"
           >
   
             <GuideModal9 />
 
-            <i class="iconfont icon-university-full"></i>
+            <van-icon name="plus" />
           </div>
           <Transition name="slider2">
             <div
               v-if="showExchange"
               :class="[
                 'wallet-hint pt-10 pb-10 pl-10 pr-10 flex center',
-                isExchanger_flag ? 'wallet-hint-h' : '',
+                isExchangerFlag ? 'wallet-hint-h' : '',
               ]"
             >
-              <span v-if="!isExchanger_flag">{{
-                t("wallet.openexchange")
-              }}</span>
-              <span v-else>{{ t("sidebar.exchangemanagement") }}</span>
+              <span >{{ t("createNft.createNFTs") }}</span>
             </div>
           </Transition>
         </div>
-      </div>
+        </div>
     </Transition>
+
   </div>
 </template>
 <script lang="ts">
@@ -81,17 +79,19 @@ import {
   onMounted,
   onActivated,
 } from "vue";
-import { Button, Sticky, Toast } from "vant";
+import { Button, Sticky, Toast, Icon } from "vant";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { decode } from "js-base64";
+import { useToast } from "@/popup/plugins/toast";
 
 export default defineComponent({
   name: "exchange-btn",
   components: {
     [Button.name]: Button,
     [Sticky.name]: Sticky,
+    [Icon.name]: Icon,
     GuideModal9,
     GuideModal13,
   },
@@ -100,6 +100,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    active: {
+      type: String,
+      default: 'a'
+    }
   },
   setup(props: any, context: SetupContext) {
     const store = useStore();
@@ -110,6 +114,8 @@ export default defineComponent({
     const eschangeBtnStatus = computed(
       () => store.state.system.exchangeBtnStatus
     );
+    const {$toast} = useToast()
+    const accountInfo = computed(() => store.state.account.accountInfo)
     const currentNetwork = computed(() => store.state.account.currentNetwork);
     // One-click exchange open status
     const exchangeStatus = computed(() => store.state.account.exchangeStatus);
@@ -119,13 +125,13 @@ export default defineComponent({
     const hideFlag = ref(false);
     const showHelp = ref(false);
 
+
     const changeStatus = () => {
       //debugger;
       dispatch("system/toggleExchangeBtnStatus");
       slideFlag.value = eschangeBtnStatus.value;
     };
 
-    const active = ref(0);
 
     const onBeforeEnter = () => {
       hideFlag.value = false;
@@ -140,24 +146,9 @@ export default defineComponent({
     const toHelp = () => {
       window.open(decode('aHR0cHM6Ly93d3cud29ybWhvbGVzLmNvbS8=') + "docs/wallet/");
     };
-    const getStatus = async () => {
-      Toast.loading({
-        message: t("userexchange.loading"),
-        forbidClick: true,
-        loadingType: "spinner",
-      });
-      return dispatch("account/getExchangeStatus").finally(() => Toast.clear())
-    };
-    const toAutoExchange = async() => {
-      const {exchanger_flag,status} = await getStatus();
-      if(exchanger_flag) {
-        router.push({ name: "exchange-management" });
-      } else {
-         router.push({ name: "bourse" });
-      }
-    };
-    const isExchanger_flag = computed(
-      () => store.state.account.exchangeStatus.exchanger_flag
+
+    const isExchangerFlag = computed(
+      () => store.state.account.exchangeStatus.ExchangerFlag
     );
     const isSelect2 = ref(false);
     watch(
@@ -173,6 +164,13 @@ export default defineComponent({
         deep: true,
       }
     );
+    const toCreate = () => {
+      if (Number(accountInfo.value.amount) == 0) {
+        $toast.warn(t("wallet.haveNoMoney"));
+        return false;
+      }
+      router.push({ name: "generateNFT" });
+      };
     onMounted(async () => {
       await dispatch("system/toggleExchangeBtnStatus", false);
       if (!slideFlag.value) {
@@ -199,13 +197,12 @@ export default defineComponent({
       onAfterEnter,
       slideFlag,
       onAfterLeave,
-      toAutoExchange,
       isSelect2,
+      isExchangerFlag,
       exchangeStatus,
       currentNetwork,
       showHelp,
-      isExchanger_flag,
-      active,
+      toCreate,
       toHelp,
     };
   },

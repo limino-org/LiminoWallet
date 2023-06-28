@@ -23,5 +23,12 @@ export const regRoyalty :RegExp=/^\d{1,10}$/
 // 4 to 120 characters, Chinese. English. numeral. underline  
  export const collectibleRules:RegExp= /^([\u4E00-\uFA29]|[\uE7C7-\uE7F3]|[a-zA-Z0-9_]){4,120}$/
 
+ export const regAa = /^[a-z_A-Z0-9*\s-\.!@#\$%\\\^&\*\)\(\+=\{\}\[\]\/",'<>~\·`\?:;|]{3,70}$/
+
+ // email
+export const regEmail = /^\w{3,}(\.\w+)*@[A-z0-9]+(\.[A-z]{2,5}){1,2}$/;
+
+
+
 // CN/EN/Number
 export const regExchangeName: RegExp =  /^([\u4E00-\uFA29]|[\uE7C7-\uE7F3]|[a-zA-Z0-9_]){4,60}$/

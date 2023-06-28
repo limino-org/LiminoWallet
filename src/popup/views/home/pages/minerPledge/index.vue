@@ -188,19 +188,21 @@ export default {
       margin-bottom: 15px;
       font-size: 14px;
     }
-    ::v-deep .van-cell {
+    :deep(){
+      .van-cell {
       padding: 0;
     }
-    ::v-deep .van-button--block {
+    .van-button--block {
       width: 160px;
     }
-    ::v-deep .van-cell__value {
+    .van-cell__value {
       width: 329px;
       height: 39px;
       line-height: 39px;
       padding-left: 15px;
       border-radius: 4px 4px 4px 4px;
       border: 1PX solid #68717b;
+    }
     }
   }
 }

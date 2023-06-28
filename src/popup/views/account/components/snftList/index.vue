@@ -716,8 +716,9 @@ export default defineComponent({
 
 .nfttransfer-box {
   background: #f1f3f4;
-  height: 30px;
+  height: 36px;
   .tit {
+    color: #848484;
     i {
       font-size: 12px;
     }

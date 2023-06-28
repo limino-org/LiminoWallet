@@ -1,9 +1,11 @@
 <template>
-  <div class="token-card flex between van-hairline--bottom " @click="toTokenHome">
+  <div class="token-card flex between van-hairline--bottom " @mouseover="isMouse = true" @mouseout="isMouse = false" @click="toTokenHome">
     <div class="token-card-left flex between">
       <div class="token-icon flex center">
         <div class="icon-box flex center">
-          <img src="@/assets/icon_black.svg" />
+          <img src="@/assets/icon_black.svg" v-show="!isMouse" />
+          <img src="@/assets/token/logowallet.png" v-show="isMouse" />
+          
         </div>
       </div>
       <div class="token-info flex center f-12">{{ data.name }}</div>
@@ -50,6 +52,7 @@ export default defineComponent({
     }
   },
   setup(props: any, context: SetupContext) {
+    const isMouse = ref(false)
     const store = useStore()
     const { commit } = store
     const currentNetwork = computed(() => store.state.account.currentNetwork)
@@ -70,7 +73,8 @@ export default defineComponent({
       toTokenHome,
       decimal,
       currentNetwork,
-      amountType
+      amountType,
+      isMouse
     }
   }
 })

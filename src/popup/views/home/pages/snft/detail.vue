@@ -298,7 +298,7 @@ export default {
         address,
         "latest",
       ]);
-      const { NFTPledgedBlockNumber } = res;
+      const { NFTPledgedBlockNumber } = res.Nft;
       if (network.value.chainId === 51888) {
         if (NFTPledgedBlockNumber && blockNumber - NFTPledgedBlockNumber > 72) {
           canRedeem.value = true;
@@ -325,7 +325,7 @@ export default {
     getNft256(params);
     const { MergeLevel, nft_address: nft_addr, children } = pageData.value;
     const nftAddr = MergeLevel === 2 ? nft_addr.replaceAll('m','0') : children[0].nft_address.replaceAll('m','0')
-    getAddressInfo(nftAddr);
+    // getAddressInfo(nftAddr);
     const hancleClick = (e, i) => {
       console.log(e, i);
       swipe.value?.swipeTo(i);
@@ -354,8 +354,8 @@ export default {
         //   snftAddress = children[e].nft_address;
         // }
 
-    const nftAddr = MergeLevel === 2 ? nft_address.replaceAll('m','0') : snftAddress.replaceAll('m','0')
-        getAddressInfo(nftAddr);
+    // const nftAddr = MergeLevel === 2 ? nft_address.replaceAll('m','0') : snftAddress.replaceAll('m','0')
+    //     getAddressInfo(nftAddr);
     };
 
     const showImg = () => {

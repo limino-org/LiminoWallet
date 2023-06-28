@@ -1,7 +1,7 @@
 
 
 import { httpGet,httpPost } from '../request'
-import { scanApi,snftUrl4 } from '@/popup/http/httpUrl'
+import { scanApi,snftUrl4,aiApi } from '@/popup/http/httpUrl'
 
 
 // Get NFT according to owner
@@ -142,3 +142,57 @@ export const getAccount = (address: string) => {
     return httpGet(`${scanApi}/account/${address}`)
 }
 
+
+
+export const getOwnerNftList = (params = {}) => {
+  return httpGet(`${scanApi}/nft/page`,params)
+}
+export interface GetDrawInfoParams {
+    useraddr: string
+    index: string
+    count: string
+  }
+  export const getDrawInfoByUser = (params: GetDrawInfoParams) => {
+    return httpPost(`${aiApi}/v1/getDrawInfoByUser`, params)
+  
+  }
+  
+  export interface EmailParams {
+    useraddr: string
+  }
+  export const getEmailByUser = (params: EmailParams) => {
+    return httpPost(`${aiApi}/v1/getEmailByUser`, params)
+  
+  }
+  
+  
+  export interface DrawListParams {
+    nftaddrs: string
+  }
+  export const getDrawInfoByNftaddrs = (params: DrawListParams) => {
+    return httpPost(`${aiApi}/v1/getDrawInfoByNftaddrs`, params)
+  
+  }
+  
+  
+  
+  
+  export const getPaintFee = () => {
+    return httpPost(`${aiApi}/v1/getPaintFee`, {})
+  }
+  export interface DrawImageParams {
+    useraddr: string
+    nftaddr: string
+    email: string
+    drawflag: string
+  }
+  export const drawImage = (params: DrawImageParams) => {
+    return httpPost(`${aiApi}/v1/drawImage`, params)
+  }
+  
+  
+  export const getAiServerAddr = () => {
+    return httpPost(`${aiApi}/v1/getAiServerAddr`, {})
+    
+  }
+  

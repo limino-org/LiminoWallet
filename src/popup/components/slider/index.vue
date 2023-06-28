@@ -197,7 +197,6 @@
 
             <div
             :class="`setting-btn flex between center-v clickActive ${pageType}`"
-              v-if="currentNetwork.isMain"
               @click="minerpledge"
             >
               <div class="flex center">
@@ -210,7 +209,6 @@
             <!-- One-click exchange -->
             <div
             :class="`setting-btn flex between center-v clickActive ${pageType}`"
-              v-if="currentNetwork.isMain"
               @click="oneClick"
             >
               <div class="flex center">
@@ -220,6 +218,18 @@
                     ? t("sidebar.exchangemanagement")
                     : t("wallet.openexchange")
                 }}
+              </div>
+              <van-icon name="arrow" />
+            </div>
+            <div
+              class="setting-btn flex between center-v clickActive "
+              @click="toGenerate"
+            >
+            <div class="flex center">
+            <van-icon name="photo-o" />
+              <span>{{
+                t("castingnft.createNFT")
+              }}</span>
               </div>
               <van-icon name="arrow" />
             </div>
@@ -388,13 +398,13 @@ export default defineComponent({
     const { t } = useI18n();
     const { dispatch } = store;
     // Main network account details
-    const ethAccountInfo = computed(() => store.state.system.ethAccountInfo);
+    const ethAccountInfo = computed(() => store.state.account.ethAccountInfo);
     const creatorStatus = computed(() => store.state.account.creatorStatus)
 
     // Exchange status
     const hasExchange = computed(() => {
-      const { exchanger_flag, status } = store.state.account.exchangeStatus;
-      return exchanger_flag;
+      const { ExchangerFlag, status } = store.state.account.exchangeStatus;
+      return ExchangerFlag;
     });
     // Account details
     const accountInfo = computed(() => store.state.account.accountInfo);
@@ -505,7 +515,7 @@ export default defineComponent({
       showSlider.value = false;
       const exchangeStatus = await dispatch("account/getExchangeStatus");
       Toast.clear();
-      if (exchangeStatus.exchanger_flag) {
+      if (exchangeStatus.ExchangerFlag) {
         router.push({
           name: "exchange-management",
         });
@@ -530,7 +540,7 @@ export default defineComponent({
         wallet.address,
         "latest",
       ]);
-      if (ethAccountInfo.PledgedBalance) {
+      if (ethAccountInfo.Worm.PledgedBalance) {
         router.push({ name: "minersDeal" });
         return;
       }
@@ -632,10 +642,15 @@ export default defineComponent({
         showPopover3.value = false;
       }
     };
-    
+    const toGenerate = () => {
+      router.push({
+        name:"generateNFT-ai"
+      })
+    }
 
 
     return {
+      toGenerate,
       expresionClass,
       showPopoverText,
       showPopoverText2,

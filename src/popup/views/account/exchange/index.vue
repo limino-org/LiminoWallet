@@ -101,15 +101,7 @@ export default {
     const store = useStore()
     const exchangeStatus: any = computed(() => store.state.account.exchangeStatus)
     const { emit }: any = context
-    onBeforeMount(async () => {
-      if (exchangeStatus.exchanger_flag) {
-        const wallet = await getWallet()
-        const { address } = wallet
-        const data = await wallet.provider.send('eth_getAccountInfo', [address, 'latest'])
-        console.log(data)
-        console.log('==================')
-      }
-    })
+
 
     let name = ref('')
     let moneyMin = ref(0)
@@ -363,9 +355,12 @@ export default {
             color: #3aae55;
           }
         }
-        ::v-deep .van-cell {
+        :deep(){
+          .van-cell {
           padding-left: 0px;
         }
+        }
+
       }
       .container-btn {
         margin-bottom: 30px;
@@ -399,11 +394,14 @@ export default {
           margin: 0 5px 0 10px;
         }
       }
-      ::v-deep .van-cell {
+      :deep(){
+        .van-cell {
         &:after {
           display: none;
         }
       }
+      }
+
     }
   }
 }

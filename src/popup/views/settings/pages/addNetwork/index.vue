@@ -182,6 +182,7 @@ export default {
         if (!data) {
           try {
             let provider = ethers.getDefaultProvider(URL.value);
+            console.log('url', URL.value)
             const { chainId } = await provider.getNetwork();
             console.log(chainId);
             ID.value = chainId;
@@ -328,10 +329,9 @@ export default {
     const getChainId = async () => {
       try {
         const url = URL.value;
-        const wallet = await getWallet();
+        console.log('url', url)
         const provider = ethers.getDefaultProvider(url);
-        const newwallet = wallet.connect(provider);
-        const network = await newwallet.provider.getNetwork();
+        const network = await provider.getNetwork();
         urlError.value = false;
         debugger
         chainId.value = network.chainId;

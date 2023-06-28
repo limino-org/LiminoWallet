@@ -223,45 +223,69 @@ export function transactionStatus(txData: any){
 
 
   export const handleTxType = (item: any) => {
-    const { to, from, contractAddress, sendStatus , txType, input} = item
+    const { to, from, contractAddress, sendStatus, txType, input } = item
     const myAddr = store.state.account.accountInfo.address.toUpperCase()
-    if(txType === 'wormholes') {
-       const data = getInput(input)
-       if(data){
-        console.warn('data', data)
-        if(data.type == 6) {
-          const { nft_address } = data
-          const level = getSNFTLevel(nft_address)
-          return `SNFT(${level}) ` + i18n.global.t('common.conver')
-        }
-        if(data.type == 1) {
-          const { nft_address } = data
-          const level = getSNFTLevel(nft_address)
-          if(to.toUpperCase() == myAddr) {
-            return `SNFT(${level}) ` + i18n.global.t('transactiondetails.recive')
-          } else {
-            return `SNFT(${level}) ` + i18n.global.t('transationHistory.send')
-          }
-        }
-        if(txTypes.includes(data.type)) {
-          return i18n.global.t('transationHistory.send')
-        }
-       }
-    }
-    if(sendStatus && sendStatus === 'pendding') {
-      if(txType === 'contract') {
-        return i18n.global.t('transationHistory.contract')
-      }
+    if (sendStatus && sendStatus === 'pendding') {
+      // if (txType === 'contract') {
+      //   return i18n.global.t('transationHistory.contract')
+      // }
       return i18n.global.t('transationHistory.send')
     }
+    if (txType === 'wormholes') {
+      const data = getInput(input)
+      if (data) {
+          console.warn('data', data)
+          if (data.type == 6) {
+            const { nft_address } = data
+            const level = getSNFTLevel(nft_address)
+            return `SNFT(${level}) ` + i18n.global.t('common.conver')
+          }
+          if (data.type == 1) {
+            const { nft_address } = data
+            const level = getSNFTLevel(nft_address)
+            let txType = ''
+            let nftType = ''
+            if (to.toUpperCase() == myAddr) {
+              txType = i18n.global.t('transactiondetails.recive')
+            } else {
+              txType = i18n.global.t('transationHistory.send')
+            }
+            if(nft_address.substr(0,3) == '0x8') {
+              nftType = `SNFT(${level}) `
+            }
+            if(nft_address.substr(0,3) == '0x0') {
+              nftType = 'NFT '
+            }
+            return `${nftType}${txType}`
+          }
+          if (data.type == 0) {
+            if (to.toUpperCase() == myAddr) {
+              return `NFT ` + i18n.global.t('transactiondetails.recive')
+            } else {
+              return `NFT ` + i18n.global.t('transationHistory.send')
+            }
+          }
+        if (txTypes.includes(data.type)) {
+          return i18n.global.t('transationHistory.send')
+        }
+      }
+    } else {
+      if(txType == 'contract') {
+        return i18n.global.t('transationHistory.contract')
+      } else {
+        return i18n.global.t('transationHistory.send')
+      }
+    }
   
-    if(txType === 'contract') return i18n.global.t('transationHistory.contract')
+  
+    if (txType === 'contract') return i18n.global.t('transationHistory.contract')
     const bigTo = to.toUpperCase()
     const bigFrom = from.toUpperCase()
-    if(bigTo === bigFrom)return i18n.global.t('transationHistory.send')
-    if(bigTo === bigFrom || myAddr === bigTo) return i18n.global.t('transactiondetails.recive')
-    if(bigTo !== bigFrom) return i18n.global.t('transationHistory.send')
-    }
+    if (bigTo === bigFrom) return i18n.global.t('transationHistory.send')
+    if (bigTo === bigFrom || myAddr === bigTo) return i18n.global.t('transactiondetails.recive')
+    if (bigTo !== bigFrom) return i18n.global.t('transationHistory.send')
+  }
+  
     function getSNFTLevel (nft_addr: string) {
       const len = nft_addr.length
       let levels = 'L0'

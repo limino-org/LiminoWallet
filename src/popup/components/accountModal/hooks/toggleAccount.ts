@@ -68,7 +68,7 @@ export const useToggleAccount = () => {
       dispatch("account/updateTokensBalances");
       const wallet = await dispatch("account/getProviderWallet");
       dispatch("account/getExchangeStatus").then(res => {
-        if(res.status == 2 && res.exchanger_flag){
+        if(res.status == 2 && res.ExchangerFlag){
           initExchangeData()
         }
       })
@@ -134,7 +134,7 @@ export const useToggleAccount = () => {
             imported: false,
           })
           dispatch("account/getExchangeStatus").then(res => {
-            if(res.status == 2 && res.exchanger_flag){
+            if(res.status == 2 && res.ExchangerFlag){
               initExchangeData()
             }
           })

@@ -22,7 +22,7 @@ import { getRandomIcon } from "@/popup/utils/index";
 import { toRaw } from "vue";
 import { TransactionData, TransactionParams } from "./index";
 import { ETH, Token } from "@/popup/utils/token";
-import { checkAuth, getAccountAddr, getCreator, getPeriodById } from "@/popup/http/modules/common";
+import { getAccountAddr, getCreator, getPeriodById } from "@/popup/http/modules/common";
 import { useStore } from "vuex";
 import {
   NetWorkData,
@@ -89,7 +89,7 @@ export type ContactInfo = {
 };
 export type ExchangeStatus = {
   status: number;
-  exchanger_flag: boolean;
+  ExchangerFlag: boolean;
 };
 export interface AddressBalance {
   address: string;
@@ -302,7 +302,7 @@ export default {
     // Status of opening an exchange status 2 the second successful exchange_ Flag true first success
     exchangeStatus: {
       status: 0,
-      exchanger_flag: false,
+      ExchangerFlag: false,
     },
     // Address list
     contacts: [],
@@ -335,7 +335,7 @@ export default {
       if (!state.exchangeStatus) {
         return false
       }
-      return state.exchangeStatus.exchanger_flag == true ? true : false;
+      return state.exchangeStatus.ExchangerFlag == true ? true : false;
     },
     // Top transaction of current transaction queue
     transactionPendingData(state: State) {
@@ -764,13 +764,13 @@ export default {
         // get ethAccountInfo
         async getEthAccountInfo({ commit, state }: any) {
           const wall = await getWallet()
-          console.log('get ---', wall.address, state.accountInfo.address)
           return wall.provider.send(
             "eth_getAccountInfo",
             [state.accountInfo.address, "latest"]
           ).then((res: any) => {
-            commit('UPDATE_ETHACCOUNTINFO', res)
-            return res
+            const data = {...res, ...res.Worm, status: 0}
+            commit('UPDATE_ETHACCOUNTINFO', data)
+            return data
           });
         },
     async getCreatorStatus({commit, state}, address: string) {
@@ -1127,7 +1127,7 @@ export default {
       { state, commit, dispatch }: any,
       params: SendTransactionParams
     ) {
-      const { to, value, gasPrice, gasLimit, data, transitionType, nft_address, checkTxQueue, nonce: sendNonce, type: newType, maxPriorityFeePerGas, maxFeePerGas } = { checkTxQueue: true, ...params };
+      const { to, value, gasPrice, gasLimit, data, transitionType, nft_address, checkTxQueue, nonce: sendNonce, type: newType, maxPriorityFeePerGas, maxFeePerGas } = { checkTxQueue: false, ...params };
       // Determine whether there are transactions in the current trading pool that have not returned transaction receipts, and if so, do not allow them to be sent
       if (checkTxQueue && await dispatch('hasPendingTransactions')) {
         return Promise.reject({ reason: i18n.global.t('common.sendTipPendding'), code: 500 })
@@ -1423,11 +1423,11 @@ export default {
     async getExchangeStatus({ commit, state }: any, call: Function = () => { }) {
       const wallet = await getWallet();
       const { address } = wallet;
-      return checkAuth(address).then((res: any) => {
-        commit("UPDATE_EXCHANGERSTATUS", clone(res.data));
-        call(res.data);
-        return res.data;
-      });
+      const res = await wallet.provider.send('eth_getAccountInfo',[address, 'latest'])
+      const data = {...res,...res.Worm,status:0}
+      commit("UPDATE_EXCHANGERSTATUS", data);
+      call(data);
+      return data
     },
     // Update current network, current address, current token list balance
     async updateTokensBalances({ commit, state, dispatch }: any) {
@@ -1666,7 +1666,8 @@ export default {
                   "eth_getAccountInfo",
                   [nft_address, web3.utils.toHex((data1.blockNumber - 1).toString())]
                 );
-                const { MergeLevel, MergeNumber } = nftAccountInfo
+                const { MergeLevel, MergeNumber } = nftAccountInfo.Nft
+
                 //  @ts-ignore
                 const { t0, t1, t2, t3 } = store.state.configuration.setting.conversion
 

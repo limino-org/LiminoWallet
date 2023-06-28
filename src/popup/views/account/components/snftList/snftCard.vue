@@ -133,17 +133,18 @@ export default defineComponent({
     const { t } = useI18n();
     console.log('props.data------', props.data)
     const compData:Ref<any> = ref({ select: false, children: [] });
-
-
-
+    const store = useStore()
+    const currentNetwork = computed(() => store.state.account.currentNetwork);
+    const accountInfo = computed(() => store.state.account.accountInfo);
+    
     const collIdStr = "0x80000000000000000000000000000000000";
-    const { id, FullNFTs, select , MergeLevel, ownaddr} = props.data;
+    const { id, FullNFTs, select , MergeLevel} = props.data;
     if(props.data.MergeLevel !== 2) {
 
       FullNFTs.forEach((item: any) => {
         item.select = select ? true : false;
         item.address = item.nft_address.substr(0, 40);
-        const { MergeLevel, exchange, snfts } = item;
+        const { MergeLevel, exchange, snfts, ownaddr } = item;
         if ((!snfts.length && MergeLevel == 0) || (MergeLevel > 1 && ownaddr.toUpperCase() != accountInfo.value.address.toUpperCase()) || exchange === 1) {
             item.disabled = true;
           } else {
@@ -166,10 +167,7 @@ export default defineComponent({
       ...props.data,
     };
 
-    const store = useStore();
-    const currentNetwork = computed(() => store.state.account.currentNetwork);
-    const accountInfo = computed(() => store.state.account.accountInfo);
-    
+
     const layoutType = computed(() => {
       return props.type ? props.type : store.state.system.layoutType;
     });

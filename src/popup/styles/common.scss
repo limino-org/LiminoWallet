@@ -237,9 +237,7 @@ width: 420px;
   line-height: 14px;
 }
 
-// .van-popover {
-//   background-color: rgba($color: #fff, $alpha: 0.7);
-// }
+
 .appendto1,
 .appendto2 {
   &.van-popover {
@@ -581,7 +579,7 @@ width: 420px;
       top: 315px !important;
 
       .van-popover__arrow {
-        left: 75px;
+        left: 40px;
       }
     }
 
@@ -597,7 +595,7 @@ width: 420px;
       top: 315px !important;
 
       .van-popover__arrow {
-        right: 65px;
+        right: 30px;
       }
     }
 
@@ -653,7 +651,7 @@ width: 420px;
 
 @media  screen and (min-width: 750px) and (max-width: 1281px){
   html {
-    font-size: 40PX !important; // ignored
+    font-size: 44PX !important; // ignored
   }
   .container {
     max-width: 800px;
@@ -668,6 +666,7 @@ width: 420px;
       // max-width: 90%;
     }
   }
+
 }
 
 @media screen and (min-width: 1281px) {
@@ -676,6 +675,9 @@ width: 420px;
   }
   .container {
     max-width: 800px;
+  }
+  .van-popover {
+    max-width: 250px;
   }
   .popover-btn-tip,
   .el-popper {

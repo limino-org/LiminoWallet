@@ -16,10 +16,10 @@
         <div class="add">{{ addressMask(data.address) }}</div>
       </div>
     </div>
-    <!-- <div class="amount flex center-v" v-if="layoutType == 'list' && amountType != 'mask'">
+    <div class="amount flex center-v" v-if="layoutType == 'list' && amountType != 'mask'">
       <div class="val">{{ data.info.royalty }} {{ currentNetwork.currencySymbol }}</div>
-
-    </div> -->
+      <!-- <div class="usd">≈ ${{ data.to_doller }}</div> -->
+    </div>
     <div class="flex right center-v f-12" v-if="amountType == 'mask' && layoutType =='list'">********</div>
   </div>
 </template>
@@ -48,8 +48,8 @@ export default defineComponent({
     const currentNetwork = computed(() => store.state.account.currentNetwork)
     const layoutType = computed(() => store.state.system.layoutType)
     const router = useRouter()
-    const datab = getCurrentInstance()
-    const nftname = value => {
+    const datab: any = getCurrentInstance()
+    const nftname = (value: string) => {
       web3.utils.hexToUtf8('0x' + value)
     }
     async function getdata() {

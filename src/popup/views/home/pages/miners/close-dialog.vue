@@ -196,7 +196,7 @@ export default {
         "latest",
       ]);
       //debugger
-      select.value = ethAccountInfo.RewardFlag;
+      select.value = ethAccountInfo.value.Worm.RewardFlag;
            }finally{
             Toast.clear()
       }

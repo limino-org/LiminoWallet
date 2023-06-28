@@ -1,6 +1,6 @@
 <template>
   <div class="bourse">
-    <NavHeader :title="!isExchanger_flag ? t('createExchange.headerTitle') : t('sidebar.exchangemanagement')">
+    <NavHeader :title="!isExchangerFlag ? t('createExchange.headerTitle') : t('sidebar.exchangemanagement')">
       <template v-slot:left>
         <span class="back" @click="back">{{ t("common.back") }}</span>
       </template>
@@ -27,7 +27,7 @@
         <van-form @submit="onSubmit" ref="formDom">
           <div v-if="false">
             <van-field
-              :disabled="isExchanger_flag"
+              :disabled="isExchangerFlag"
               maxlength="20"
               validate-trigger="onSubmit"
               v-model="name"
@@ -64,7 +64,7 @@
         {{ money / 10 }}%
       </div>
 
-      <div v-if="isExchanger_flag" class="bourse-container-name  pt-10 ">
+      <div v-if="isExchangerFlag" class="bourse-container-name  pt-10 ">
         <span class="mt-8">{{ t("bourse.stakingFee") }}</span>
         <el-tooltip
           popper-class="tooltip4"
@@ -77,7 +77,7 @@
           <van-icon class="ml-6" name="question" color="#9A9A9A" />
         </el-tooltip>
       </div>
-      <div v-if="isExchanger_flag" class="f-14 text-bold mt-8">
+      <div v-if="isExchangerFlag" class="f-14 text-bold mt-8">
         {{ exchangerBalance }} ERB
       </div>
     
@@ -118,7 +118,7 @@
         />
       </div>
    
-      <div class="bourse-container-meaning" v-if="!isExchanger_flag">
+      <div class="bourse-container-meaning" v-if="!isExchangerFlag">
         <span>{{ t("bourse.stakingFee") }}</span>
         <el-tooltip
           popper-class="tooltip2"
@@ -131,12 +131,12 @@
           <van-icon name="question" class="ml-4" color="#9A9A9A" />
         </el-tooltip>
       </div>
-      <div class="t3" v-if="!isExchanger_flag">
+      <div class="t3" v-if="!isExchangerFlag">
         700ERB 
       </div>
 
      <!--
-       // <div class="bourse-container-meaning bt mt-14" v-if="isExchanger_flag">
+       // <div class="bourse-container-meaning bt mt-14" v-if="isExchangerFlag">
       //   <span>{{ t("createExchange.addPl") }} </span>
       //   <el-tooltip
       //     popper-class="tooltip3"
@@ -164,7 +164,7 @@
       //   </div>
       // </div>
     
-      // <div class="bourse-container-meaning bt mt-14" v-if="!isExchanger_flag">
+      // <div class="bourse-container-meaning bt mt-14" v-if="!isExchangerFlag">
       //   <span>{{ t("bourse.marketServer") }} </span>
       //   <el-tooltip
       //     popper-class="tooltip3"
@@ -177,20 +177,20 @@
       //     <van-icon name="question" class="ml-4" color="#9A9A9A" />
       //   </el-tooltip>
       // </div>
-      // <p v-show="insufficientMoney && !isExchanger_flag" class="insufficientMoney-tip">{{ insufficientMoney ? t('createExchange.insufficientMoney', {value: addBalance}) : '' }}</p>
+      // <p v-show="insufficientMoney && !isExchangerFlag" class="insufficientMoney-tip">{{ insufficientMoney ? t('createExchange.insufficientMoney', {value: addBalance}) : '' }}</p>
  
       // <div
-      //   v-if="!isExchanger_flag"
+      //   v-if="!isExchangerFlag"
       //   :class="[
       //     'bourse-container-server',
-      //     isExchanger_flag ? 'bourse-container-server-b' : '',
+      //     isExchangerFlag ? 'bourse-container-server-b' : '',
       //   ]"
       // >
       //   <van-popover
       //     v-model:show="visible1"
       //     placement="bottom-start"
       //     :class="`${isExchangeStatusStatus ? 'appendtobear' : 'appendto1'}`"
-      //     v-if="!isExchanger_flag"
+      //     v-if="!isExchangerFlag"
       //   >
       //     <div>
       //       {{ t("bourse.tip13") }}
@@ -265,7 +265,7 @@
       // </div>
        -->
 
-      <div :class="!isExchanger_flag ? 'bourse-container-btns' : 'btn-groups'">
+      <div :class="!isExchangerFlag ? 'bourse-container-btns' : 'btn-groups'">
         <div class="pwd-tip mb-24">
         <i18n-t keypath="createAccountpage.pwdTip2" tag="div" class="text-center mt-20 lh-16">
           <template v-slot:br><br></template>
@@ -274,14 +274,14 @@
       </div>
         <div class="container flex between pl-12 pr-12 btn-box">
           <van-button
-            v-if="!isExchanger_flag"
+            v-if="!isExchangerFlag"
             @click="onSubmit"
             block
             type="primary"
             >{{ t("common.confirm") }}</van-button
           >
           <template v-else>
-            <template v-if="isExchanger_flag">
+            <template v-if="isExchangerFlag">
               <van-popover
                 v-model:show="showClose"
                 v-if="!isTimeQualified"
@@ -316,7 +316,7 @@
               >
 
               <van-button
-                v-if="!isExchanger_flag"
+                v-if="!isExchangerFlag"
                 class="b1"
                 @click="onSubmit"
                 block
@@ -544,13 +544,13 @@ export default defineComponent({
         console.log(blockNumber.value - accountInfoBlockNumber.value);
         console.log("blockNumber.value - accountInfoBlockNumber.value");
         await dispatch("account/getExchangeStatus");
-        ethAccountInfo.value = accountInfo;
-        accountInfoBlockNumber.value = accountInfo.BlockNumber;
+        ethAccountInfo.value = accountInfo.Worm;
+        accountInfoBlockNumber.value = accountInfo.Worm.BlockNumber;
         console.log(blockNumber.value - accountInfoBlockNumber.value);
         
-        if (exchangeStatus.value.exchanger_flag) {
+        if (exchangeStatus.value.ExchangerFlag) {
           const { ExchangerBalance, ExchangerName, ExchangerURL, FeeRate } =
-            accountInfo;
+            accountInfo.Worm;
           let formatValue;
           money.value = new BigNumber(FeeRate).div(10).toNumber();
           if (ExchangerBalance.toString().indexOf("e") !== -1) {
@@ -614,7 +614,7 @@ export default defineComponent({
     const toCreate = async (name: string, amount: number) => {
       const fee_rate = money.value;
       try {
-        if (exchangeStatus.value.exchanger_flag) {
+        if (exchangeStatus.value.ExchangerFlag) {
           await modifExchangeBalance(name);
         } else {
           console.warn("name", name);
@@ -654,11 +654,11 @@ export default defineComponent({
       if(value && insufficientMoney.value) {
         return
       }
-      if (exchangeStatus.value.exchanger_flag) {
+      if (exchangeStatus.value.ExchangerFlag) {
         return;
       }
       if (
-        !exchangeStatus.value.exchanger_flag ||
+        !exchangeStatus.value.ExchangerFlag ||
         exchangeStatus.value.status != 2
       ) {
         serverIndex.value = value;
@@ -692,7 +692,7 @@ export default defineComponent({
     const open = async () => {
       const fee_rate = money.value;
       try {
-        if (exchangeStatus.value.exchanger_flag) {
+        if (exchangeStatus.value.ExchangerFlag) {
           await modifExchangeBalance(name.value);
         } else {
           const callBack = () =>
@@ -742,12 +742,12 @@ export default defineComponent({
         console.warn('serverIndex.value---', serverIndex.value)
       }
     });
-    const isExchanger_flag = computed(
-      () => store.state.account.exchangeStatus.exchanger_flag
+    const isExchangerFlag = computed(
+      () => store.state.account.exchangeStatus.ExchangerFlag
     );
     const isExchangeStatusStatus = computed(
       () =>
-        store.state.account.exchangeStatus.exchanger_flag &&
+        store.state.account.exchangeStatus.ExchangerFlag &&
         store.state.account.exchangeStatus.status == 2
     );
 
@@ -766,11 +766,11 @@ export default defineComponent({
     };
     const isAffirmDialog = ref(false);
     const onSubmit = async () => {
-      const { exchanger_flag, status } = store.state.account.exchangeStatus;
+      const { ExchangerFlag, status } = store.state.account.exchangeStatus;
       const am = new BigNumber(accountInfo.value.amount);
 
       // Did not open
-      if (!exchanger_flag && status != 2) {
+      if (!ExchangerFlag && status != 2) {
         if (am.lt(701)) {
           $toast.warn(t("createExchange.isPoor"));
           return;
@@ -955,7 +955,7 @@ export default defineComponent({
       isCloseHome,
       isCloseAffirm,
       isCloseDialog,
-      isExchanger_flag,
+      isExchangerFlag,
       gradientColor,
       isAffirmDialog,
       isClose,

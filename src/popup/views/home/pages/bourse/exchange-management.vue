@@ -128,7 +128,7 @@ export default {
     const exchangeStatus = computed(() => state.account.exchangeStatus);
     const hasExchange = computed(
       () =>
-        exchangeStatus.value.exchanger_flag && exchangeStatus.value.status == 2
+        exchangeStatus.value.ExchangerFlag && exchangeStatus.value.status == 2
     );
     const {getContract} = useExchanges()
     const back = () => {
@@ -178,9 +178,9 @@ export default {
     const initData = async () => {
       loading.value = true;
       await dispatch('account/getExchangeStatus')
-            const {exchanger_flag,status} = exchangeStatus.value
+            const {ExchangerFlag,status} = exchangeStatus.value
             //debugger
-      if (!state.account.exchangeGuidance && exchanger_flag) {
+      if (!state.account.exchangeGuidance && ExchangerFlag) {
         showGuide.value = true;
         // commit("account/UPDATE_EXCHANGEGUIDANCE", true);
       }
@@ -196,7 +196,7 @@ export default {
           address,
           "latest",
         ]);
-        exchangeName.value = decode(accountInfo.ExchangerName);
+        exchangeName.value = accountInfo.Worm.ExchangerName;
       } finally {
         loading.value = false;
       }

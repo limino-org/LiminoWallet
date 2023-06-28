@@ -128,7 +128,6 @@
       <div class="flex center btn-group">
         <van-button
           type="primary"
-          :loading="loading"
           @click="gonext"
           block
           >{{ t("sendSNFT.send") }}</van-button
@@ -458,6 +457,7 @@ export default {
 
     const handleComfirm = async() => {
       loading.value = true;
+      showSendModal.value = false
         try {
           // Snft data to be sent
           let sendList = [];
@@ -469,8 +469,10 @@ export default {
           
           $tradeConfirm.open({
             disabled: [TradeStatus.pendding],
-            approveMessage: t('sendSNFT.approveMessage')
-     
+            callBack(){
+              router.replace({ name: "wallet" });
+            },
+            approveMessage: t('sendSNFT.approveMessage',{total: sendList.length})
           })
           try {
             for await (let item of sendList) {
@@ -491,8 +493,14 @@ export default {
               };
               await dispatch("nft/send", tx);
             }
+            $tradeConfirm.update({
+              status:'approve'
+            })
             await dispatch('account/waitTxQueueResponse')
             // showSendSuccessModal.value = true;
+            $tradeConfirm.update({
+              status:'success'
+            })
           } catch (err) {
             Toast(err.reason);
           } finally {

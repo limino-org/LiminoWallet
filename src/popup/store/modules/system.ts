@@ -236,8 +236,8 @@ export default {
       const wall = await getWallet()
       const { address } = wall
       wall.provider.send('eth_getAccountInfo',[address, "latest"]).then((res:any)=>{
-        sessionStorage.setItem('eth_addountInfo', JSON.stringify(res))
-        commit('UPDATA_ACCOUNTINFO', res)
+        const data = {...res, ...res.Worm, status: 0}
+        commit('UPDATA_ACCOUNTINFO', data)
       })
     },
     setConversationid({commit, state}: any, id: string) {

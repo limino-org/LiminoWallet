@@ -2,7 +2,7 @@
   <div class="flex center no-list pt-30">
     <i class="iconfont icon-inbox"></i>
   </div>
-  <div class="flex center msg f-12 mt-10">
+  <div class="flex center msg f-12 mt-10" v-if="hasText">
       {{t('common.no_data')}}
   </div>
 </template>
@@ -16,6 +16,10 @@ export default defineComponent({
       text: {
           type: String,
           default:'no-data'
+      },
+      hasText: {
+        type: Boolean,
+        default: true
       }
   },
   setup() {

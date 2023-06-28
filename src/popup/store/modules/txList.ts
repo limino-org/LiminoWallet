@@ -335,17 +335,38 @@ export default {
 
 
 export function getInput(input) {
-    if (input) {
+    console.log('input', input)
+    if (input && input != '0x') {
         try {
+            debugger
             const wormStr = web3.utils.toAscii(input)
+            console.log('wormStr',wormStr)
             const [nullstr, jsonstr] = wormStr.split('wormholes:')
             let jsonData = null
-            if (jsonstr) {
+            const txType = wormStr.startsWith('wormholes:')
+            if (jsonstr && txType) {
                 jsonData = JSON.parse(jsonstr)
+            } else {
+                jsonData = JSON.parse(wormStr)
+            }
+  
+            console.warn('jsonData', jsonData)
+            if(txType) {
+                jsonData.txType = 'wormholes'
+            } else {
+                if(jsonData) {
+                    if(jsonData.nft_address && jsonData.owner) {
+                        jsonData.txType = 'normal'
+                    } else {
+                        jsonData.txType = 'contract'
+
+                    }
+                }
+                return jsonData
             }
             return jsonData
         } catch (err) {
-            console.error('err', err)
+            console.log('err', err)
             return null
         }
     }
@@ -400,7 +421,9 @@ export async function getConverAmount(wallet, data) {
                     "eth_getAccountInfo",
                     [nft_address, web3.utils.toHex((blockNumber - 1).toString())]
                 );
-                const { MergeLevel, MergeNumber } = nftAccountInfo
+                console.log('nftAccountInfo', nftAccountInfo)
+                const { MergeLevel, MergeNumber } = nftAccountInfo.Nft
+
                 //  @ts-ignore
                 const { t0, t1, t2, t3 } = store.state.configuration.setting.conversion
     

@@ -15,7 +15,7 @@ var events = [
   // 'data'
 ]
 function Provider() {
-  const _this = this
+  var _this = this
   this._state = {
     accounts: [],
     isConnected: false,
@@ -32,7 +32,7 @@ function Provider() {
   this.onEventMainCallId = 'OnMainEvent'
   this.init = () => {
     // Registers a custom signature callback event
-    const event = document.createEvent('Event');
+    var event = document.createEvent('Event');
     event.initEvent('wormHoles-callback-event', true, true);
 
     // Listen for callback events
@@ -40,7 +40,7 @@ function Provider() {
       // accepting of data
       let { type, data, sendId } = res.detail;
       if (type == "wormholes-callback") {
-        const { method, response } = data
+        var { method, response } = data
         if (!events.includes(method)) {
           if (method && sendId && response) {
             // ethereum.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })
@@ -55,7 +55,7 @@ function Provider() {
         }
       }
     });
-    const callId = this.onEventMainCallId
+    var callId = this.onEventMainCallId
     this.on('chainChanged', (chainId) => {
       this._state.chainId = chainId
     }, callId)
@@ -82,10 +82,10 @@ function Provider() {
 
   }
   this.postMsg = function (data, callback = function () { }) {
-    const target = 'wormholes-inpage';
-    const { method, params } = data
+    var target = 'wormholes-inpage';
+    var { method, params } = data
     if (method && method !== 'message') {
-      const id = generateRandom()
+      var id = generateRandom()
       this.addSendCallBackById(method, id, callback)
       window.postMessage({ target, data: { ...data, sendId: id } }, '*');
     }
@@ -94,15 +94,15 @@ function Provider() {
   // issue a request
   this.request = function (params) {
     var _this = this
-    const { method } = params
+    var { method } = params
     // if(!this._state.isConnected && (method !== 'wallet_requestPermissions' || method !== 'eth_requestAccounts')){
     //   return Promise.reject('Request denied')
     // }
     if (((method === 'wallet_requestPermissions' || method == 'eth_requestAccounts') && this._state.isConnected)) {
       return new Promise((resolve, reject) => {
-        const newParams = { ...params, method: 'eth_accounts' }
+        var newParams = { ...params, method: 'eth_accounts' }
         _this.postMsg(newParams, res => {
-          const { code, message, response, sendId } = res
+          var { code, message, response, sendId } = res
           try {
             _this.handleUpdateState(res, newParams)
             if (code == 200) {
@@ -120,7 +120,7 @@ function Provider() {
     return new Promise(function (resolve, reject) {
       _this.postMsg({ ...params }, (res) => {
         if (res) {
-          const { code, message, response, sendId } = res
+          var { code, message, response, sendId } = res
           try {
             _this.handleUpdateState(res, params)
             if (code && code == 200) {
@@ -141,9 +141,9 @@ function Provider() {
   }
 
   this.handleUpdateState = function (res, params) {
-    const { code, data } = res
+    var { code, data } = res
     if (code == 200) {
-      const { method } = params
+      var { method } = params
       switch (method) {
         case 'wallet_requestPermissions':
         case 'eth_requestAccounts':
@@ -207,9 +207,9 @@ function Provider() {
 
 Provider.prototype = {
   handleUpdateState(res, params) {
-    const { code, data } = res
+    var { code, data } = res
     if (code == 200) {
-      const { method } = params
+      var { method } = params
       switch (method) {
         case 'wallet_requestPermissions':
         case 'eth_requestAccounts':
@@ -262,7 +262,7 @@ Provider.prototype = {
    */
   on(type, callback = () => { }, callId = null) {
     if (type && events.includes(type)) {
-      const childCallId = generateRandom()
+      var childCallId = generateRandom()
       this.handleAddEventCall(type, callId || childCallId, callback)
     }
     return this
@@ -353,7 +353,7 @@ Provider.prototype = {
 }
 
 // const ethereum = new Provider()
-const wormholes = new Provider()
+var wormholes = new Provider()
 // window.ethereum = ethereum
 window.wormholes = wormholes
 // ethereum.init()
@@ -366,7 +366,7 @@ document.addEventListener('wormHoles-callback-event', (res) => {
   let { type, data, sendId } = res.detail;
 
   if (type == "wormholes-callback") {
-    const { method, response } = data
+    var { method, response } = data
     if (!events.includes(method)) {
       if (method && sendId && response) {
         // ethereum.runCallBackByIdWithMethod(method, sendId, { ...response, sendId })

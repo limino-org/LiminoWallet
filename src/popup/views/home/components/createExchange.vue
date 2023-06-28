@@ -181,8 +181,8 @@ export default defineComponent({
       (n) => {
         if (n) {
           dispatch("account/getExchangeStatus", (data: any) => {
-            const { status, exchanger_flag } = data;
-            if (!exchanger_flag) {
+            const { status, ExchangerFlag } = data;
+            if (!ExchangerFlag) {
               showExchange.value = n;
               createExchanges(props.name, props.amount, props.amount2,1);
             } else {

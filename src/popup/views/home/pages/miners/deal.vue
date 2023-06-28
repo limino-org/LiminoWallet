@@ -638,14 +638,14 @@ export default defineComponent({
         const blockn = web3.utils.toHex(blockNumber.value.toString());
         // Amount of the first pledge/total amount of the pledge *36 (start time of the second cancellation of the pledge calculation)+ Amount of the second pledge/total amount *72=54 = (time when the second cancellation of the pledge can be revoked)
         showCloseBtn.value = new BigNumber(blockNumber.value)
-          .minus(ethAccountInfo.value.PledgedBlockNumber)
+          .minus(ethAccountInfo.value.Worm.PledgedBlockNumber)
           .gt(network.value.chainId == 51888 ? 72 : 6307200);
         const pledgeList = await wallet.provider.send("eth_getValidator", [
           `${blockn}`,
         ]);
         console.log("pledgeList", pledgeList);
 
-        if (!ethAccountInfo.value.PledgedBalance) {
+        if (!ethAccountInfo.value.Worm.PledgedBalance) {
           isModif.value = false;
           // $wdialog.open({title:t('minerspledge.beValidator'),message:t("minerspledge.warn"),type:'warn'});
         } else {
@@ -670,7 +670,7 @@ export default defineComponent({
             console.error(err);
           }
         }
-        accountInfoBlockNumber.value = ethAccountInfo.value.BlockNumber;
+        accountInfoBlockNumber.value = ethAccountInfo.value.Worm.BlockNumber;
         console.log(blockNumber.value - accountInfoBlockNumber.value);
         console.log("blockNumber.value - accountInfoBlockNumber.value");
       } finally {
@@ -727,7 +727,7 @@ export default defineComponent({
     const sliderDisabled = computed(() => {
       // You can slide the slider only if you don't hand in both
       if (
-        exchangeStatus.value.exchanger_flag == false &&
+        exchangeStatus.value.ExchangerFlag == false &&
         exchangeStatus.value.status != 2
       ) {
         return false;
@@ -740,7 +740,7 @@ export default defineComponent({
       const v = parseFloat(store.state.account.accountInfo.amount);
       // @ts-ignore
       if (
-        exchangeStatus.value.exchanger_flag == true &&
+        exchangeStatus.value.ExchangerFlag == true &&
         exchangeStatus.value.status != 2
       ) {
         // The first fee was paid and the second one was not paid
@@ -753,7 +753,7 @@ export default defineComponent({
       // I didn't pay the first and I didn't pay the second
       // @ts-ignore
       if (
-        exchangeStatus.value.exchanger_flag == false &&
+        exchangeStatus.value.ExchangerFlag == false &&
         exchangeStatus.value.status != 2
       ) {
         if (v < 301) {
@@ -887,13 +887,13 @@ export default defineComponent({
     };
     const changeServerIndex = (value: number) => {
       if (
-        !exchangeStatus.value.exchanger_flag &&
+        !exchangeStatus.value.ExchangerFlag &&
         exchangeStatus.value.status == 2
       ) {
         return;
       }
       if (
-        !exchangeStatus.value.exchanger_flag ||
+        !exchangeStatus.value.ExchangerFlag ||
         exchangeStatus.value.status != 2
       ) {
         serverIndex.value = value;
@@ -966,8 +966,8 @@ export default defineComponent({
         address,
         "latest",
       ]);
-      ethAccountInfo.value = data;
-      const { PledgedBalance } = data;
+      ethAccountInfo.value = data.Worm;
+      const { PledgedBalance } = data.Worm;
       let formatValue;
 
       const toPledge = (PledgedBalance - 0).toLocaleString();
@@ -993,8 +993,8 @@ export default defineComponent({
         isFirst.value = true;
       }
     };
-    const isExchanger_flag = computed(
-      () => store.state.account.exchangeStatus.exchanger_flag
+    const isExchangerFlag = computed(
+      () => store.state.account.exchangeStatus.ExchangerFlag
     );
 
     const Coefficient = computed(() => {
@@ -1006,7 +1006,7 @@ export default defineComponent({
       if (num >= 40 && num <= 50) return "neutral";
       if (num > 50) return "smile";
     });
-    console.log(isExchanger_flag);
+    console.log(isExchangerFlag);
     console.log("===============================11111111111==========");
 
     let cancelClick = () => {
@@ -1307,7 +1307,7 @@ export default defineComponent({
       accountList,
       isCloseDialog,
       isOpen,
-      isExchanger_flag,
+      isExchangerFlag,
       gradientColor,
       isAffirmDialog,
       isClose,
@@ -1786,9 +1786,12 @@ export default defineComponent({
           color: #3aae55;
         }
       }
-      ::v-deep .van-cell {
-        padding-left: 0px;
-      }
+      :deep(){
+          .van-cell {
+          padding-left: 0px;
+        }
+        }
+
     }
     .container-btn {
       margin-bottom: 30px;
@@ -1821,12 +1824,13 @@ export default defineComponent({
       .text {
         margin: 0 5px 0 10px;
       }
-    }
-    ::v-deep .van-cell {
-      &:after {
-        display: none;
-      }
-    }
+    }        
+    :deep(){
+          .van-cell {
+          padding-left: 0px;
+        }
+        }
+
   }
 }
 :deep(.el-input__inner) {

@@ -23,13 +23,13 @@ export const useEvent = () => {
         const net = await wallet.provider.getNetwork()
         const chainId = web3.utils.toHex(net.chainId)
         sendBackground({method:eventsEmitter.chainChanged, response:{code:"200",data:chainId}})
-        dispatch("system/getEthAccountInfo");
+        dispatch("account/getEthAccountInfo");
         handleUpdate()
     })
     // account Change
     eventBus.on(eventHandler.changeAccount, (address: string) => {
         sendBackground({method:eventsEmitter.accountsChanged, response:{code:'200',data:[address]}})
-        dispatch("system/getEthAccountInfo");
+        dispatch("account/getEthAccountInfo");
         dispatch('account/getCreatorStatus', address)
         handleUpdate()
     })

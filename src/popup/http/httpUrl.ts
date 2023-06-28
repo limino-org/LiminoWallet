@@ -15,3 +15,5 @@ export const snftUrl3 = 'https://hub.wormholes.com'
 // export const snftUrl4 = isProduct ? snftUrl3 :`http://192.168.1.235:9006/${exchantest}`
 export const snftUrl4 = isProduct ? snftUrl3 :`http://192.168.1.235:9006/${exchantest}`
 // export const snftUrl4 = `http://192.168.1.235:9006/${exchantest}`
+
+export const aiApi = 'http://192.168.1.235:18081'

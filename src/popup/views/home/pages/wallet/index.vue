@@ -363,7 +363,7 @@
       <!-- sidebar -->
       <slider v-model="showSlider" />
       <!-- One touch exchange button -->
-      <ExchangeBtn :isSelect="isSelect" />
+      <ExchangeBtn :isSelect="isSelect" :active="active" />
 
       <!-- Guide the user to operate the pop-up window -->
       <GuideModal v-model="showGuideModal" />
@@ -508,7 +508,7 @@ export default {
     const currentNetwork = computed(() => store.state.account.currentNetwork);
     const layoutList = computed(() => store.state.system.layoutList);
     const layoutType = computed(() => store.state.system.layoutType);
-    const ethAccountInfo = computed(() => store.state.system.ethAccountInfo);
+    const ethAccountInfo = computed(() => store.state.account.ethAccountInfo);
     const creatorStatus = computed(() => store.state.account.creatorStatus)
     // @ts-ignore
     const pageType = ref(window.pageType);
@@ -619,19 +619,15 @@ export default {
       console.warn('onMounted')
       eventBus.on("changeAccount", () => {
         console.warn('changeAccount....')
-        dispatch('account/getEthAccountInfo').then(() => {
-          setTimeout(() => {
-            console.warn('ethAccountInfo', ethAccountInfo.value)
-          },3000)
-        })
+        dispatch('account/getEthAccountInfo')
         dispatch("account/updateBalance");
         showModal.value = false;
       });
       dispatch('account/getCreatorStatus', accountInfo.value.address)
-      dispatch("system/getEthAccountInfo");
+      dispatch("account/getEthAccountInfo");
       dispatch("account/getExchangeStatus").then((res) => {
         console.warn(111);
-        if (res.status == 2 && res.exchanger_flag) {
+        if (res.status == 2 && res.ExchangerFlag) {
           initExchangeData();
         }
       });
@@ -724,8 +720,8 @@ export default {
       return dispatch("account/getExchangeStatus").finally(() => Toast.clear());
     };
     const toExchange = async () => {
-      const { exchanger_flag, status } = await getStatus();
-      if (exchanger_flag) {
+      const { ExchangerFlag, status } = await getStatus();
+      if (ExchangerFlag) {
         router.push({ name: "exchange-management" });
       } else {
         router.push({ name: "bourse" });

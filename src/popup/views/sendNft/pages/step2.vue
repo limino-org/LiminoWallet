@@ -371,14 +371,47 @@ export default {
     }
     const gonext = async () => {
           // @ts-ignore
+      const nftInfo = JSON.parse(sessionStorage.getItem('nftInfo'))
       try {
         await checkAddress();
-        showSendConfirm.value = true
-
-       
+        showSendConfirm.value = false
+        $tradeConfirm.open({
+        disabled: [TradeStatus.pendding],
+      })
+        console.warn(accountInfo.value)
+        try {
+          loading.value = true;
+          const tx = {
+            to: toAddress.value,
+            nft_address: nftInfo.address,
+          };
+          const data = await dispatch("nft/send", tx);
+          $tradeConfirm.update({ status: "approve" });
+          const receipt = await data.wait()
+          if(receipt.status == 1) {
+          $tradeConfirm.update({ status: "success", hash:data.hash,callBack});
+          
+        } else {
+          $tradeConfirm.update({ status: "fail", hash:data.hash,callBack });
+        }
+          // showSendSuccessModal.value = true;
+        } catch (err: any) {
+          if (err.toString().indexOf("timeout") > -1) {
+          $tradeConfirm.update({
+              status: "warn",
+              failMessage: t("error.timeout"),
+            });
+        } else {
+          $tradeConfirm.update({
+            status: "fail",
+            failMessage: err.reason,
+          });
+        }
+        } finally {
+          loading.value = false;
+        }
       } catch (err) {}
     };
-
 
     const handleSend = async() => {
       $tradeConfirm.open({

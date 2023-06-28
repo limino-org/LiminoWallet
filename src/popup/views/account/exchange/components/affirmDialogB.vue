@@ -215,14 +215,17 @@ export default {
       }
     }
   }
-  ::v-deep .van-button {
+  :deep(){
+    .van-button {
     width: 104px !important;
     height: 45px;
   }
-  ::v-deep .van-button {
+  .van-button {
     &:first-child {
       margin-right: 15px;
     }
   }
+  }
+
 }
 </style>
