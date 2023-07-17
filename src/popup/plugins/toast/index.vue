@@ -58,7 +58,7 @@ const open = (_opt: ToastOpt) => {
 
 const show = () => {
   if (isShow.value) {
-    return;
+    clearTimeout(time)
   }
   isShow.value = true;
 };

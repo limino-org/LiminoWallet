@@ -133,5 +133,13 @@ export default {
     //     auth: true,
     //   },
     // },
+    {
+      path: '/home/staker',
+      name: 'staker',
+      component: () => import('@/popup/views/home/pages/staker/staker.vue'),
+      meta: {
+        auth: true
+      }
+    },
   ],
 };

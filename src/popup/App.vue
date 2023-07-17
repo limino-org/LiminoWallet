@@ -130,10 +130,10 @@ export default {
   position: relative;
   box-sizing: border-box;
   padding-bottom: 30px;
-  // &::-webkit-scrollbar {
-  //   display: none;
-  //   /* Chrome Safari */
-  // }
+  &::-webkit-scrollbar {
+    display: none;
+    /* Chrome Safari */
+  }
 }
 :deep(.van-popup) {
   position: absolute;
@@ -161,7 +161,7 @@ export default {
   }
   &.Popup {
     width: 375PX;
-    min-height: 601PX;
+    /* min-height: 601PX; */
   }
 }
 

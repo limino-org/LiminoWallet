@@ -135,17 +135,6 @@
                             }}</span>
                           </template>
                         </i18n-t>
-
-                        <!-- {{ t("minerspledge.right_and_interests") }} -->
-                        <!-- <div v-if="expresionClass == 'smile'">
-                 {{ t("minerspledge.smileTip", { value: Coefficient }) }}
-               </div>
-               <div v-if="expresionClass == 'sad'">
-                 {{ t("minerspledge.sadTip", { value: Coefficient }) }}
-               </div>
-               <div v-if="expresionClass == 'neutral'">
-                 {{ t("minerspledge.neutralTip", { value: Coefficient }) }}
-               </div> -->
                       </div>
                       <template #reference>
                         <div
@@ -185,7 +174,7 @@
                           class="tag-user type3 position relative ml-8 hover"
                           @mouseover="showPopover2 = true"
                           @mouseleave="handleMouseLeave2"
-                          @click="toExchange"
+                          @click="minerpledge"
                           v-show="hasExchange"
                         >
                           <span class="user flex center">
@@ -237,9 +226,6 @@
                   } hover`"
                   @click="changeType"
                 ></i>
-                <!-- <div class="flex column bottom dollar ml-6">
-                  <i class="iconfont icon-meiyuan"></i>
-                </div> -->
                 <GuideModal4></GuideModal4>
                 <div
                   :class="`flex amount-box van-ellipsis ${amountClass} ${
@@ -260,26 +246,6 @@
             </div>
             <div class="action-name text-center">{{ t("wallet.recive") }}</div>
           </div>
-          <!-- <div
-            class="actions-btn"
-            @click="handleToBuy"
-            v-if="currentNetwork.id == 'wormholes-network-1'"
-          >
-            <div class="action-icon flex center">
-              <i class="iconfont icon-qianbao2"></i>
-            </div>
-            <div class="action-name text-center">{{ t("wallet.buy") }}</div>
-          </div> -->
-          <!-- <div
-            class="actions-btn"
-            v-if="currentNetwork.id == 'wormholes-network-1'"
-            @click="tofaucet"
-          >
-            <div class="action-icon flex center">
-              <i class="iconfont icon-shuilongtou"></i>
-            </div>
-            <div class="action-name text-center">{{ t("wallet.faucet") }}</div>
-          </div> -->
           <div class="actions-btn" @click="toSend">
             <div class="action-icon flex center">
               <i class="iconfont icon-teshujiantouzuoxiantiao-copy"></i>
@@ -304,9 +270,6 @@
             v-else
           ></i>
         </div>
-        <!-- <div class="listType" v-show="active == 'c'">
-          <i class="iconfont icon-fenlei2" @click="handleSetListType"></i>
-        </div> -->
         <div class="flex between pl-20 pr-20 mt-40 guide-tabs-box">
           <div class="flex1">
             <GuideModal6></GuideModal6>
@@ -729,7 +692,7 @@ export default {
     };
 
     const minerpledge = () => {
-      router.push({ name: "minersDeal" });
+      router.push({ name: "staker" });
     };
 
     const showPopoverText = ref(false);
@@ -802,7 +765,7 @@ export default {
     });
 
     const toCreator = () => {
-      router.push({ name: "snft-creator" });
+      router.push({ name: "staker" });
     };
     return {
       Coefficient,

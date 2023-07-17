@@ -514,8 +514,8 @@ export default {
     cursor: pointer;
   }
   .list {
-    height: calc(100vh - 48px - 16px);
-    overflow-y: scroll;
+    overflow: hidden;
+
   }
   .search-box {
     border: 1px solid #B3B3B3;

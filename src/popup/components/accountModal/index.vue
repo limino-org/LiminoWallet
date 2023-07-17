@@ -12,7 +12,7 @@
       <div class="title text-center bold van-hairline--bottom">
         {{ t("account.account") }}
       </div>
-      <div class="account-list" ref="listDom" id="listDom">
+      <div class="account-list scrollBar" ref="listDom" id="listDom">
         <!-- Imported accounts -->
         <div v-if="importList.length" class="f-12 lh-16 accountList-tit">
           {{ t("account.importaccount") }}

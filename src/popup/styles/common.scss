@@ -96,9 +96,44 @@ img {
 }
 
 *::-webkit-scrollbar {
-  width: 0 !important;
+  width: 0;
   display: none;
 }
+.scrollBar {
+  &::-webkit-scrollbar {
+    display: inherit;
+  }
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    width: 3px;
+    background: rgba(#101F1C, 0.1);
+    -webkit-border-radius: 1em;
+    -moz-border-radius: 1em;
+    border-radius: 1em;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(144,147,153,.4);
+    background-clip: padding-box;
+    min-height: 28px;
+    -webkit-border-radius: 1em;
+    -moz-border-radius: 1em;
+    border-radius: 1em;
+    transition: background-color .3s;
+    cursor: pointer;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(144,147,153,.8);
+  }
+  
+}
+
+
 
 .clickActive:hover {
   cursor: pointer;
@@ -145,7 +180,7 @@ img {
 
 
 .van-dialog {
-  overflow: scroll;
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 width: 420px;
@@ -508,7 +543,9 @@ width: 420px;
 
 }
 
-
+.el-popper {
+  z-index: 9999 !important;
+}
 // When the width is less than 750, control the pop-up window width to guide the user to operate
 @media screen and (max-width: 750px) {
   .minus-miner-stack-dialog {
@@ -516,6 +553,7 @@ width: 420px;
   }
   .van-dialog {
     width: 90vw;
+    overflow: hidden;
     &.van-popup--center{
       margin-left: -45vw;
       top: 40px;
@@ -643,6 +681,7 @@ width: 420px;
       }
     }
   }
+
 }
 .serial-number {
   font-size: 14px;
@@ -651,13 +690,16 @@ width: 420px;
 
 @media  screen and (min-width: 750px) and (max-width: 1281px){
   html {
-    font-size: 44PX !important; // ignored
+    font-size: 48PX !important; // ignored
   }
   .container {
-    max-width: 800px;
+    max-width: 700px;
   }
+
   .van-dialog {
-    width:360px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width:370px;
     &.van-popup--center{
       margin-left: -180px;
       top: 60px;
@@ -666,7 +708,12 @@ width: 420px;
       // max-width: 90%;
     }
   }
-
+  .popover-btn-tip,
+  .el-popper,
+  .van-popover {
+    max-width: 200px;
+    z-index: 9999;
+  }
 }
 
 @media screen and (min-width: 1281px) {
@@ -674,7 +721,7 @@ width: 420px;
     font-size: 52PX !important; // ignored
   }
   .container {
-    max-width: 800px;
+    max-width: 750px;
   }
   .van-popover {
     max-width: 250px;
@@ -822,32 +869,15 @@ width: 420px;
   }
 
   .van-dialog {
-    width:340px;
+    width:390px;
     &.van-popup--center{
       margin-left: -160px;
       top: 40px;
     }
   }
-  .minerAdditionalModal {
+  .minerAdditionalModal,.minus-miner-stack-dialog {
     top: 20px !important;
   }
 }
 
 
-.slider-enter-active {
-  animation: slider-in 0.3s ease-in-out;
-}
-
-.slider-leave-active {
-  animation: slider-in 0.3s reverse ease-in-out;
-}
-
-@keyframes slider-in {
-  0% {
-    transform: translateY(90px);
-  }
-
-  100% {
-    transform: translateY(0);
-  }
-}

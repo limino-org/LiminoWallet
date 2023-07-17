@@ -1,5 +1,8 @@
 function generateRandom() {
-  return Math.random().toString(16).slice(2);
+  function randomHex(){
+    return Math.random().toString(16).slice(2)
+  }
+  return randomHex() + randomHex();
 }
 
 var events = [

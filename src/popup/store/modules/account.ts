@@ -78,7 +78,7 @@ export interface State {
   minerTotalProfit: number
   netStatus: NetStatus
   creatorStatus: Object | null,
-    ethAccountInfo: Object,
+  ethAccountInfo: Object,
 
 }
 export type ContactInfo = {
@@ -134,10 +134,10 @@ export interface SendTransactionParams {
   nft_address?: string
   checkTxQueue?: boolean
   nonce?: number
-  maxFeePerGas? :string
-  maxPriorityFeePerGas? :string
-  type? :string
-  
+  maxFeePerGas?: string
+  maxPriorityFeePerGas?: string
+  type?: string
+
 
 }
 
@@ -348,10 +348,10 @@ export default {
     },
   },
   mutations: {
-        // Update EthAccountInfo
-        UPDATE_ETHACCOUNTINFO(state: State, info: any) {
-          state.ethAccountInfo = info
-        },
+    // Update EthAccountInfo
+    UPDATE_ETHACCOUNTINFO(state: State, info: any) {
+      state.ethAccountInfo = info
+    },
     UPDATE_CREATORSTATUS(state: State, val: any) {
       state.creatorStatus = val
     },
@@ -761,31 +761,32 @@ export default {
     },
   },
   actions: {
-        // get ethAccountInfo
-        async getEthAccountInfo({ commit, state }: any) {
-          const wall = await getWallet()
-          return wall.provider.send(
-            "eth_getAccountInfo",
-            [state.accountInfo.address, "latest"]
-          ).then((res: any) => {
-            const data = {...res, ...res.Worm, status: 0}
-            commit('UPDATE_ETHACCOUNTINFO', data)
-            return data
-          });
-        },
-    async getCreatorStatus({commit, state}, address: string) {
+    // get ethAccountInfo
+    async getEthAccountInfo({ commit, state }: any) {
+      const wall = await getWallet()
+      return wall.provider.send(
+        "eth_getAccountInfo",
+        [state.accountInfo.address, "latest"]
+      ).then((res: any) => {
+        console.warn('eth_getAccountInfo', res)
+        const data = { ...res, ...res.Worm, status: 0 }
+        commit('UPDATE_ETHACCOUNTINFO', data)
+        return data
+      });
+    },
+    async getCreatorStatus({ commit, state }, address: string) {
       try {
-       const data = await getCreator(address)
-       const res = await getAccountAddr(address)
-       const provider = ethers.getDefaultProvider(state.currentNetwork.URL)
-       const block = await provider.getBlockNumber()
-       const weight = new BigNumber(block - data.lastNumber).multipliedBy(utils.formatEther(res.snftValue)).toString()
-       const rewardEth = utils.formatEther(data.reward)
-       const profitStr = utils.formatEther(data.profit)
-       const stateData = {...data, account: res, weight, rewardEth, profitStr}
-       console.warn('state', stateData)
-       commit('UPDATE_CREATORSTATUS', stateData)
-      }catch(err) {
+        const data = await getCreator(address)
+        const res = await getAccountAddr(address)
+        const provider = ethers.getDefaultProvider(state.currentNetwork.URL)
+        const block = await provider.getBlockNumber()
+        const weight = new BigNumber(block - data.lastNumber).multipliedBy(utils.formatEther(res.snftValue)).toString()
+        const rewardEth = utils.formatEther(data.reward)
+        const profitStr = utils.formatEther(data.profit)
+        const stateData = { ...data, account: res, weight, rewardEth, profitStr }
+        console.warn('state', stateData)
+        commit('UPDATE_CREATORSTATUS', stateData)
+      } catch (err) {
         commit('UPDATE_CREATORSTATUS', null)
       }
     },
@@ -852,7 +853,7 @@ export default {
       const vuex = await localforage.getItem('vuex')
       // @ts-ignore
       const localAccountList = vuex.account.accountList
-      if(localAccountList.find(item => address.toUpperCase() ==item.address.toUpperCase())){
+      if (localAccountList.find(item => address.toUpperCase() == item.address.toUpperCase())) {
         return Promise.reject('The address is exist!')
       }
 
@@ -1055,7 +1056,7 @@ export default {
     async getProviderWallet({ commit, state, dispatch }: any) {
       let provider = null
       const { URL } = state.currentNetwork;
-      if(wallet && wallet.provider && (wallet.provider.connection.url == URL)){
+      if (wallet && wallet.provider && (wallet.provider.connection.url == URL)) {
         return wallet
       }
       if (!wallet || !wallet.provider || (wallet.provider.connection.url != URL)) {
@@ -1107,7 +1108,7 @@ export default {
         // if(JSON.stringify(err).indexOf('could not detect network') > -1) {
         //   Notify({ type: 'danger', message: i18n.global.t('error.netErr'),duration: 5000 })
         // }
-        Notify({ type: 'danger', message: i18n.global.t('error.netErr'),duration: 5000, position: 'bottom' })
+        Notify({ type: 'danger', message: i18n.global.t('error.netErr'), duration: 5000, position: 'bottom' })
         commit('UPDATE_NETSTATUS', NetStatus.fail)
         return Promise.reject(err);
       }
@@ -1158,10 +1159,10 @@ export default {
         // if(newType){
         //   tx.gasPrice = tx.gasPrice = ethers.utils.parseEther('0.000000053')
         // }
-        if(maxPriorityFeePerGas){
+        if (maxPriorityFeePerGas) {
           tx.maxPriorityFeePerGas = maxPriorityFeePerGas
         }
-        if(maxFeePerGas){
+        if (maxFeePerGas) {
           tx.maxFeePerGas = maxFeePerGas
         }
         // Update recent contacts
@@ -1423,8 +1424,8 @@ export default {
     async getExchangeStatus({ commit, state }: any, call: Function = () => { }) {
       const wallet = await getWallet();
       const { address } = wallet;
-      const res = await wallet.provider.send('eth_getAccountInfo',[address, 'latest'])
-      const data = {...res,...res.Worm,status:0}
+      const res = await wallet.provider.send('eth_getAccountInfo', [address, 'latest'])
+      const data = { ...res, ...res.Worm, status: 0 }
       commit("UPDATE_EXCHANGERSTATUS", data);
       call(data);
       return data
@@ -1577,7 +1578,7 @@ export default {
       const queuekey = `txQueue-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
       const list: Array<any> = await localforage.getItem(queuekey)
       let hasExits = false
-      if(list && list.length) {
+      if (list && list.length) {
         hasExits = list.find((item) => item.hash.toUpperCase() === hash.toUpperCase())
       }
       return Promise.resolve(hasExits)
@@ -1589,11 +1590,11 @@ export default {
     // }
     //  Stop polling
     //  Stop polling
-    clearWaitTime(){
+    clearWaitTime() {
       clearTimeout(waitTime)
       waitTime = null
-      if(wallet && wallet.provider) {
-         wallet.provider.removeAllListeners()
+      if (wallet && wallet.provider) {
+        wallet.provider.removeAllListeners()
       }
     },
     // The result of polling the transaction queue
@@ -1610,9 +1611,9 @@ export default {
       // @ts-ignore
       const queuekey = `txQueue-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
       let txkey = ''
-      if(id === 'wormholes-network-1') {
+      if (id === 'wormholes-network-1') {
         txkey = `async-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
-      }else {
+      } else {
         txkey = `txlist-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
       }
       let data1 = null
@@ -1630,9 +1631,9 @@ export default {
               let { hash, transitionType, nft_address, blockNumber, network, txType, txId, amount, isCancel, sendData, date, value, nonce } = iterator
               const txInfo: any = await localforage.getItem(txkey)
               let txList: any = []
-              if(id === 'wormholes-network-1') {
+              if (id === 'wormholes-network-1') {
                 txList = txInfo && txInfo.list ? txInfo.list : []
-              }else {
+              } else {
                 txList = txInfo || []
               }
               const sameNonceTx = txList.find((item: any) => item.nonce === nonce)
@@ -1692,12 +1693,12 @@ export default {
                 date,
                 value
               }
-              if(id === 'wormholes-network-1') {
+              if (id === 'wormholes-network-1') {
                 await UPDATE_TRANSACTION(newtx)
-              }else {
-                await PUSH_TRANSACTION({...newtx, txId: guid()})
+              } else {
+                await PUSH_TRANSACTION({ ...newtx, txId: guid() })
               }
-              
+
             }
             eventBus.emit('waitTxEnd')
             resolve(receiptList)
@@ -1712,12 +1713,12 @@ export default {
       })
     },
     // Indicates that the current transaction exists in the transaction queue
-    async checkIsTxHash({commit, state}: any, hash: string) {
+    async checkIsTxHash({ commit, state }: any, hash: string) {
       const { id } = state.currentNetwork
       const from = state.accountInfo.address
       const queuekey = `txQueue-${id}-${state.ethNetwork.chainId}-${from.toUpperCase()}`
       const list: any = await localforage.getItem(queuekey)
-      if(!list || !list.length) {
+      if (!list || !list.length) {
         return false
       }
       return list.some((item: any) => item.hash.toUpperCase() == hash.toUpperCase())
@@ -2072,11 +2073,11 @@ export const UPDATE_TRANSACTION = async (da: any) => {
   return newReceipt
 }
 
-export function waitForTransactions(hashs: Array<any>, time: number | null = null):Promise<TransactionReceipt>{
+export function waitForTransactions(hashs: Array<any>, time: number | null = null): Promise<TransactionReceipt> {
   return new Promise((resolve, reject) => {
-    if(hashs.length) {
+    if (hashs.length) {
       hashs.forEach((hash) => {
-        if(time != null) {
+        if (time != null) {
           wallet.provider.waitForTransaction(hash, null, time).then((res: TransactionReceipt) => {
             resolve(res)
             wallet.provider.removeAllListeners()

@@ -18,9 +18,11 @@
           <div class="card-val gasFee">{{data.gasFee}} ERB</div>
         </div>
       </div>
-      <Tip
+      <div class="mt-14 mb-14">
+        <Tip
         :message="t('minerspledge.resetSendTip')"
       />
+      </div>
       <div class="flex evenly btn-box">
         <van-button plain @click="handleCancel">{{
           t("common.cancel")

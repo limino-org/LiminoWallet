@@ -13,7 +13,7 @@
         {{ t("wallet.account") }}
       </div>
       <div class="account-container">
-        <div class="account-list" ref="listDom" id="listDom">
+        <div class="account-list scrollBar" ref="listDom" id="listDom">
           <div
             v-for="(item, index) in options"
             :key="item.value"
@@ -231,7 +231,7 @@
   </script>
   <style lang="scss" scoped>
   .account-list {
-    max-height: 350px;
+    max-height: 300px;
     overflow-y: scroll;
   }
   .btn-box {

@@ -287,32 +287,32 @@ export default {
         });
     };
     const canRedeem = ref(false);
-    const getAddressInfo = async (address) => {
-      console.warn('getAddressInfo', address)
-      await updateNetwork();
-      console.log("getAddressInfo--", address);
-      canRedeem.value = false;
-      const wallet = await getWallet();
-      const blockNumber = await wallet.provider.getBlockNumber();
-      const res = await wallet.provider.send("eth_getAccountInfo", [
-        address,
-        "latest",
-      ]);
-      const { NFTPledgedBlockNumber } = res.Nft;
-      if (network.value.chainId === 51888) {
-        if (NFTPledgedBlockNumber && blockNumber - NFTPledgedBlockNumber > 72) {
-          canRedeem.value = true;
-        }
-      } else {
-        if (
-          NFTPledgedBlockNumber &&
-          blockNumber - NFTPledgedBlockNumber > 6307200
-        ) {
-          canRedeem.value = true;
-        }
-      }
-      console.warn("res", res, blockNumber);
-    };
+    // const getAddressInfo = async (address) => {
+    //   console.warn('getAddressInfo', address)
+    //   await updateNetwork();
+    //   console.log("getAddressInfo--", address);
+    //   canRedeem.value = false;
+    //   const wallet = await getWallet();
+    //   const blockNumber = await wallet.provider.getBlockNumber();
+    //   const res = await wallet.provider.send("eth_getAccountInfo", [
+    //     address,
+    //     "latest",
+    //   ]);
+    //   const { NFTPledgedBlockNumber } = res.Nft;
+    //   if (network.value.chainId === 51888) {
+    //     if (NFTPledgedBlockNumber && blockNumber - NFTPledgedBlockNumber > 72) {
+    //       canRedeem.value = true;
+    //     }
+    //   } else {
+    //     if (
+    //       NFTPledgedBlockNumber &&
+    //       blockNumber - NFTPledgedBlockNumber > 6307200
+    //     ) {
+    //       canRedeem.value = true;
+    //     }
+    //   }
+    //   console.warn("res", res, blockNumber);
+    // };
 
     const { nft_token_id, nft_contract_addr } = route.query;
     // First query

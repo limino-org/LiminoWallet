@@ -12,7 +12,7 @@
         <span>{{ t("createExchange.pledgeRed") }}</span>
       </div>
       <div class="miners-container flex column between">
-        <div class="miners-container-item">
+        <div class="miners-container-item scrollBar">
           <div class="bourse-container-meaning bt">
             <span class="c1"> {{ t("minerspledge.address") }} </span>
             <el-tooltip
@@ -85,7 +85,7 @@
             >
               <van-icon name="question" color="#9A9A9A" />
             </el-tooltip>
-            <div class="exchange">≈{{ myprofit }} ERB</div>
+            <div class="exchange">≈{{ addprofit }} ERB</div>
           </div>
 
           <div class="">
@@ -153,6 +153,7 @@ import { useTradeConfirm } from "@/popup/plugins/tradeConfirmationsModal";
 import { useRouter } from "vue-router";
 import { web3 } from "@/popup/utils/web3";
 import { clone } from 'pouchdb-utils';
+import { getAccountAddr } from '@/popup/http/modules/common';
 
 export default {
   name: "minus-stack-dialog",
@@ -164,14 +165,12 @@ export default {
     [Icon.name]: Icon,
     [Dialog.Component.name]:Dialog.Component
   },
-  props: ["show", "minusNumber", "amount"],
+  props: ["show", "minusNumber", "amount", "to"],
+  emits: ['error'],
   setup(props: any, context: SetupContext) {
     const { t } = useI18n();
     const store = useStore();
-    const router = useRouter();
-    const { dispatch, state, commit } = store;
     const currentNetwork = computed(() => store.state.account.currentNetwork);
-    const { $tradeConfirm } = useTradeConfirm();
     const { emit }: any = context;
     const str = `wormholes:{"type":10,"version":"v0.0.1"}`;
     let dislogShow = computed({
@@ -179,45 +178,7 @@ export default {
       set: (v) => emit("update:show", v),
     });
     const submit = async () => {
-      dislogShow.value = false;
-      $tradeConfirm.open({
-        approveMessage: t("minerspledge.minus_approve"),
-        successMessage: t("minerspledge.minus_waiting"),
-        wattingMessage: t("minerspledge.minus_success"),
-        failMessage: t("minerspledge.minus_wrong"),
-        callBack: () => {
-          router.replace({ name: "wallet" });
-        },
-        failBack: () => {
-          router.replace({ name: "wallet" });
-        },
-      });
-      try {
-        const network =  clone(store.state.account.currentNetwork)
-        const amount = props.minusNumber;
-        const wallet = await getWallet();
-        const { address } = wallet;
-        const data = toHex(str);
-        const tx1 = {
-          from: address,
-          to: address,
-          value: amount + "",
-          data: `0x${data}`,
-        };
-        const data1 = await dispatch("account/transaction", tx1)
-        $tradeConfirm.update({ status: "approve" });
-        const receipt1 = await wallet.provider.waitForTransaction(data1.hash);
-        if (receipt1.status == 1) {
-          $tradeConfirm.update({ status: "success" });
-        } else {
-          $tradeConfirm.update({ status: "fail" });
-        }
-        dispatch("account/updateAllBalance");
-        await store.dispatch('account/waitTxQueueResponse')
-        // commit("account/PUSH_TRANSACTION", rep);
-      } catch (err) {
-        $tradeConfirm.update({ status: "fail" });
-      }
+      emit('confirm')
     };
 
     let Time = ref(3);
@@ -239,7 +200,7 @@ export default {
         if (n) {
           const data3 = toHex(str);
           const tx1 = {
-            to: accountInfo.value.address,
+            to: props.to,
             value: ethers.utils.parseEther(props.minusNumber + ""),
             data: `0x${data3}`,
           };
@@ -247,6 +208,7 @@ export default {
             gasFee.value = await getGasFee(tx1)
           } catch (err: any) {
             console.error(err);
+            emit('error', err)
           }
           calcProfit();
         }
@@ -255,28 +217,59 @@ export default {
 
     const myprofit = ref("");
     const historyProfit = ref("");
+    const addprofit = ref("")
     const calcProfit = async () => {
+      console.warn('calc', props.minusNumber, props.amount)
+      const { t0, t1, t2, t3 } = store.state.configuration.setting.conversion
+      //snft rewards require an average conversion rate
+      const average =  (t0 + t1 + t2 + t3)/4
+      const totalPledge = new BigNumber(props.minusNumber).plus(props.amount)
+      const isValidator = totalPledge.gte(70000)
+      // Two algorithms
+      // 1：The miner calculates the total amount pledged by the miner
+      // 2：staker is calculated according to the total staker pledge
       const wallet = await getWallet();
       const blockNumber = await wallet.provider.getBlockNumber();
-
+      const addressInfo = await getAccountAddr(wallet.address)
+      const { rewardCoinCount, rewardSNFTCount } = addressInfo
+      // minusNumber + If the pledged amount is greater than or equal to 70,000, use erb reward, and less than 70,000, use snft reward
       const blockn = web3.utils.toHex(blockNumber.toString());
-      const data = await wallet.provider.send("eth_getValidator", [blockn]);
-      // const data2 = await getAccount(accountInfo.value.address)
-      let total = new BigNumber(0);
-      data.Validators.forEach((item: any) => {
-        total = total.plus(item.Balance);
+      if(isValidator) {
+        historyProfit.value = new BigNumber(rewardCoinCount).multipliedBy(0.16).toString()
+        const {Validators} = await wallet.provider.send("eth_getValidator", [blockn]);
+        let total = new BigNumber(0);
+        // @ts-ignore
+        Validators.forEach((item: any) => {
+        total = total.plus(new BigNumber(item.Balance).div(1000000000000000000));
       });
       // Total amount of pledge
-      const totalStr = total.div(1000000000000000000).toFixed(6);
-      // total revenue
+      const totalStr = total.toFixed(6);
+      // Total revenue one year
       const totalprofit = store.state.account.minerTotalProfit;
-      const totalPledge = new BigNumber(props.minusNumber);
-      myprofit.value = new BigNumber(totalprofit)
-        .multipliedBy(totalPledge.div(totalStr))
+      myprofit.value = totalPledge.div(totalStr)
+        .multipliedBy(totalprofit)
         .toFixed(6);
-      historyProfit.value = new BigNumber(totalprofit)
-        .multipliedBy(new BigNumber(props.amount).div(totalStr))
+        addprofit.value = new BigNumber(props.minusNumber).div(totalStr)
+          .multipliedBy(totalprofit).toFixed(6)
+      } else {
+        historyProfit.value = new BigNumber(rewardSNFTCount).multipliedBy(average).toString()
+        const {Stakers} = await wallet.provider.send("eth_getAllStakers", []);
+        // const data2 = await getAccount(accountInfo.value.address)
+      let total = new BigNumber(0);
+        // @ts-ignore
+        Stakers.forEach((item: any) => {
+        total = total.plus(new BigNumber(item.Balance).div(1000000000000000000)); 
+      })
+      // Total amount of pledge
+      const totalStr = total.toFixed(6);
+      // Total revenue one year
+      const totalprofit = store.state.account.exchangeTotalProfit;
+      myprofit.value = totalPledge.div(totalStr)
+        .multipliedBy(totalprofit)
         .toFixed(6);
+        addprofit.value = new BigNumber(props.minusNumber).div(totalStr)
+          .multipliedBy(totalprofit).toFixed(6)
+      }
     };
     return {
       t,
@@ -288,6 +281,7 @@ export default {
       currentNetwork,
       accountInfo,
       gasFee,
+      addprofit
     };
   },
 };
@@ -311,6 +305,7 @@ export default {
     background: #fff;
     margin: auto;
     border-radius: 8px;
+    width: 100%;
     overflow: hidden;
     .miners-header {
       height: 62px;
@@ -486,6 +481,8 @@ export default {
   font-size: 12px;
   border-radius: 4px;
   border: 1px solid #e4e7e8;
+  max-height: 300px;
+  overflow-y: scroll;
 }
 .c1 {
   color: #8f8f8f;

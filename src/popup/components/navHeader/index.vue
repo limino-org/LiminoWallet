@@ -180,6 +180,9 @@ export default defineComponent({
     const closeModal = ref(false)
     const filterNames = ['sendSnft-step2','send', 'createNft-step2','sendNft-step2', 'modifAutoExchange', 'createAutoExchange']
     const clickRight = () => {
+      if(!props.hasRight){
+        return
+      }
       if (
         filterNames.includes(route.name.toString())
       ) {

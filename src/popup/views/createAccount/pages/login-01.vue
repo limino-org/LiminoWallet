@@ -36,7 +36,7 @@
           <van-field
             v-model="password"
             name="password"
-            :autofocus="autofocus"
+            ref="iptRef"
             :class="`text ${pwdErr ? 'error' : ''}`"
             :type="`${switchPassType ? 'text' : 'password'}`"
             @click-right-icon="switchPassType = !switchPassType"
@@ -70,14 +70,6 @@
           </template>
         </i18n-t>
       </div>
-      <!-- <div class="text-center f-12">
-        <div class="tit-small lh-20 mb-20">
-          {{ t("createAccountpage.cantLogin") }}
-        </div>
-        <div class="lh-20 tool hover" @click="reset">
-          {{ t("createAccountpage.resentWallet") }}
-        </div>
-      </div> -->
     </div>
     <Resetpopup
       v-model="resetmodule"
@@ -141,8 +133,8 @@ export default {
     const { dispatch, commit, state } = useStore();
     const router = useRouter();
     const route = useRoute();
-    const autofocus = ref(false)
     const accountInfo = state.account.accountInfo;
+    const iptRef = ref(null)
     const { keyStore } = accountInfo;
     const onSubmit = async (value: object) => {
       loading.value = true;
@@ -220,14 +212,11 @@ export default {
     const getConfirmPwd = async () => {
       // @ts-ignore
       const pwd = await chrome.storage.local.get("comfirm_password");
-      console.warn("***********************", pwd);
-
       return pwd && pwd.comfirm_password ? pwd.comfirm_password : "";
     };
     // Verifying login status
     const checkConfirmPwd = async () => {
       const pwd = await getConfirmPwd();
-      console.warn("=============================", pwd);
       // @ts-ignore
       await chrome.storage.local.set({ comfirm_password: "" });
       if (!pwd) {
@@ -246,9 +235,15 @@ export default {
       }
     };
 
-    onMounted(async () => {
+    onMounted(() => {
       checkConfirmPwd();
-      autofocus.value = true
+      let time = setTimeout(() => {
+        const ipt = document.querySelector('input')
+        ipt.focus()
+        console.warn('get focus...',ipt.focus)
+        clearTimeout(time)
+      },300)
+
     });
 
     const reset_flag = ref(true);
@@ -258,7 +253,6 @@ export default {
       handleComfirm,
       asynPwd,
       cancel,
-      autofocus,
       reset_flag,
       loading,
       password,
@@ -269,6 +263,7 @@ export default {
       pwdErr,
       reset,
       resetmodule,
+      iptRef
     };
   },
 };

@@ -3,10 +3,10 @@
     position: relative;
     box-sizing: border-box;
     padding-bottom: 30px;
-    &::-webkit-scrollbar {
-      display: none;
-      /* Chrome Safari */
-    }
+    // &::-webkit-scrollbar {
+    //   display: none;
+    //   /* Chrome Safari */
+    // }
   }
   :deep(.van-popup) {
     position: absolute;
@@ -19,10 +19,10 @@
     margin: 0 auto;
     background: #fff;
     box-sizing: border-box;
-    &::-webkit-scrollbar {
-      width: 0 !important;
-      display: none;
-    }
+    // &::-webkit-scrollbar {
+    //   width: 0 !important;
+    //   display: none;
+    // }
     :deep(.van-toast) {
       word-break: keep-all !important;
     }

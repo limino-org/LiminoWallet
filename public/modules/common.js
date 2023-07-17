@@ -133,16 +133,12 @@ export async function addSenderByAddr(sender, addr) {
     connectList.unshift({ ...sender, accountList:[addr] })
   } else {
     const addrs = connectList[idx].accountList
-    console.log('before', addrs)
     const i = addrs.findIndex(add => add == addr)
     if(i === -1) {
-      console.log('splic', addr, i)
       addrs.unshift(addr)
     }
-    console.log('end', addrs)
     connectList[idx].accountList = addrs
   }
-  console.log('add---', connectList)
   return chrome.storage.local.set({ connectList: connectList })
 }
 
@@ -158,8 +154,6 @@ export async function delSenderByAddr(sender, addr) {
     }
     connectList[idx].accountList = addrs
   }
-  console.log('del---', connectList)
-
   return chrome.storage.local.set({ connectList: connectList })
 }
 
@@ -586,7 +580,6 @@ export async function openPopup(
   // if (status && status != 'close') {
   //   return
   // }
-  console.log('openPopup 3', method, url)
   senderParams.status = 'pendding'
   await chrome.storage.local.set({ [method]: senderParams })
   return new Promise(async (resolve) => {
@@ -597,11 +590,9 @@ export async function openPopup(
           type: 'popup',
           left: e.width - 355,
           top: -10,
-          width: 428,
-          height: 700,
+          width: 390,
+          height: 610,
         }, async (e) => {
-          console.log('open', e)
-   
           // await chrome.storage.local.set({ ['tab-params' +e.id]: {...senderParams,method} })
           await chrome.storage.local.set({
             [method]: {

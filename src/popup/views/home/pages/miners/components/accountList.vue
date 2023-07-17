@@ -1,14 +1,13 @@
 <template>
   <van-dialog
     v-model:show="showModal"
-    show-cancel-button
     :showConfirmButton="false"
     :showCancelButton="false"
     teleport="#page-box"
     closeOnClickOverlay
   >
     <div class="title">{{ t("wallet.account") }}</div>
-    <div class="account-list">
+    <div class="account-list scrollBar">
       <div
         :class="`card flex between hover ${
           item.address.toUpperCase() == selectAccount.address.toUpperCase()

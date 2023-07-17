@@ -33,7 +33,6 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
 .wormholes-tip {
-    margin: 15px;
     border-radius: 5px;
     &.primary {
       background: #F8F3F9;

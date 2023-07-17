@@ -190,17 +190,14 @@ export default {
         Toast.loading({duration:0})
            try {
              const wallet = await getWallet();
-      const { address } = wallet;
-      const ethAccountInfo = await wallet.provider.send("eth_getAccountInfo", [
-        address,
-        "latest",
-      ]);
+             const { address } = wallet;
+             const ethAccountInfo = await wallet.provider.send("eth_getAccountInfo", [address,"latest"]);
       //debugger
-      select.value = ethAccountInfo.value.Worm.RewardFlag;
+            select.value = ethAccountInfo.value.Worm.RewardFlag;
            }finally{
             Toast.clear()
-      }
-      }
+            }
+          }
     },{
       immediate: true,
       deep: true

@@ -61,7 +61,6 @@
                 >
                   <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"                         @mouseover="showPopoverText = true"
                         @mouseleave="handleMouseLeavetext1">
-                    <!-- {{ t("common.right_and_interests") }} -->
                     <i18n-t
                       tag="div"
                       v-if="expresionClass == 'smile'"
@@ -69,7 +68,7 @@
                     >
                       <template v-slot:value>{{ Coefficient }}</template>
                       <template v-slot:btn>
-                        <span class="gotIt" @click="minerpledge">{{
+                        <span class="gotIt" @click="toStaker">{{
                           t("minerspledge.gotIt")
                         }}</span>
                       </template>
@@ -79,9 +78,8 @@
                       v-if="expresionClass == 'sad'"
                       keypath="minerspledge.homeTip"
                     >
-                      <!-- <template v-slot:value>{{Coefficient}}</template> -->
                       <template v-slot:btn>
-                        <span class="gotIt" @click="minerpledge">{{
+                        <span class="gotIt" @click="toStaker">{{
                           t("minerspledge.gotIt")
                         }}</span>
                       </template>
@@ -91,9 +89,8 @@
                       v-if="expresionClass == 'neutral'"
                       keypath="minerspledge.homeTip"
                     >
-                      <!-- <template v-slot:value>{{Coefficient}}</template> -->
                       <template v-slot:btn>
-                        <span class="gotIt" @click="minerpledge">{{
+                        <span class="gotIt" @click="toStaker">{{
                           t("minerspledge.gotIt")
                         }}</span>
                       </template>
@@ -104,7 +101,7 @@
                       class="tag-user type2 position relative hover ml-8"
                       @mouseover="showPopover = true"
                       @mouseleave="handleMouseLeave1"
-                      @click="minerpledge"
+                      @click="toStaker"
                       v-show="
                         ethAccountInfo
                           ? ethAccountInfo.PledgedBalance > 0
@@ -115,7 +112,6 @@
                     >
                       <span class="user flex center">
                         <i class="iconfont icon-chuiziicon"></i>
-                        <!-- <img src="@/popup/views/home/imgs/wakuang.png" alt /> -->
                       </span>
                       <div class="tag-label flex center-v">
                         <span class="van-ellipsis">{{ t("common.validator") }}</span>
@@ -138,7 +134,7 @@
                       class="tag-user type3 position relative ml-8 hover"
                       @mouseover="showPopover2 = true"
                       @mouseleave="handleMouseLeave2"
-                      @click="oneClick"
+                      @click="toStaker"
                       v-show="hasExchange
                       "
                     >
@@ -194,29 +190,14 @@
 
               <van-icon name="arrow" />
             </div>
-
             <div
             :class="`setting-btn flex between center-v clickActive ${pageType}`"
-              @click="minerpledge"
+              @click="toStaker"
             >
               <div class="flex center">
                 <i class="iconfont icon-chuiziicon"></i>
-                {{ $t("sidebar.minerspledge") }}
-              </div>
-              <van-icon name="arrow" />
-            </div>
-
-            <!-- One-click exchange -->
-            <div
-            :class="`setting-btn flex between center-v clickActive ${pageType}`"
-              @click="oneClick"
-            >
-              <div class="flex center">
-                <i class="iconfont icon-fangwujianzhuwugoujianbeifen"></i>
                 {{
-                  hasExchange
-                    ? t("sidebar.exchangemanagement")
-                    : t("wallet.openexchange")
+                 t('validator.pageTit')
                 }}
               </div>
               <van-icon name="arrow" />
@@ -533,35 +514,6 @@ export default defineComponent({
     };
 
     const { $dialog } = useDialog();
-    const minerpledge = async () => {
-      showSlider.value = false;
-      const wallet = await getWallet();
-      const ethAccountInfo = await wallet.provider.send("eth_getAccountInfo", [
-        wallet.address,
-        "latest",
-      ]);
-      if (ethAccountInfo.Worm.PledgedBalance) {
-        router.push({ name: "minersDeal" });
-        return;
-      }
-      let accountAmount = new BigNumber(accountInfo.value.amount);
-
-      if (accountAmount.gte(70001)) {
-        showSlider.value = false;
-        // router.push({ name: 'minersPledge' })
-        router.push({ name: "minersDeal" });
-      } else {
-        $dialog.open({
-          type: "warn",
-          theme: "dark",
-          hasCancelBtn: false,
-          message: t("send.sendMessage"),
-        });
-        // isWarnings.value = true;
-        return;
-      }
-    };
-
     const toHelp = () => {
       // $toast.warn(t('common.commingsoon'))
       window.open(decode('aHR0cHM6Ly93d3cud29ybWhvbGVzLmNvbS8=') + "docs/wallet/");
@@ -648,8 +600,12 @@ export default defineComponent({
       })
     }
 
+    const toStaker = () => {
+      router.push({name:"staker"})
+    }
 
     return {
+      toStaker,
       toGenerate,
       expresionClass,
       showPopoverText,
@@ -702,7 +658,6 @@ export default defineComponent({
       ethAccountInfo,
       hasExchange,
       t,
-      minerpledge,
       pageType
     };
   },

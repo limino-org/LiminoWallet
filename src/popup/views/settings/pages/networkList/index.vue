@@ -30,7 +30,7 @@
         />
       </div>
 
-      <div class="other-list-box" v-if="netWorkList.length">
+      <div class="other-list-box scrollBar" v-if="netWorkList.length">
         <NetWorkCard
           v-for="item in netWorkList"
           :select="item.select"

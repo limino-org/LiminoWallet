@@ -34,15 +34,15 @@ export default {
 }
 .page-container {
   min-height: calc(100vh - 48px);
-  scrollbar-width: none;
+  // scrollbar-width: none;
   overflow-y: scroll;
   position: relative;
   box-sizing: border-box;
   padding-bottom: 30px;
-  &::-webkit-scrollbar {
-    display: none;
-    /* Chrome Safari */
-  }
+  // &::-webkit-scrollbar {
+  //   display: none;
+  //   /* Chrome Safari */
+  // }
 }
 :deep(.van-popup) {
   position: absolute;
