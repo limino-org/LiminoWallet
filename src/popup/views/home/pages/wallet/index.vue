@@ -1,23 +1,14 @@
 <template>
   <NavHeader :hasNet="true">
     <template v-slot:left>
-      <div
-        :class="`flex center icon-box ${hasExchange ? 'hasExchange' : ''}`"
-        @click="handleLeft"
-      >
+      <div :class="`flex center icon-box ${hasExchange ? 'hasExchange' : ''}`" @click="handleLeft">
         <GuideModal11 />
         <i class="iconfont icon-gengduo2"></i>
       </div>
     </template>
     <template v-slot:right>
       <div>
-        <i
-          v-if="pageType == 'Popup'"
-          class="iconfont icon-zhankai"
-          :title="t('common.expandView')"
-          @click="extendView"
-          :style="{ color: hasExchange ? '#fff' : '#9F54BA' }"
-        ></i>
+        <i v-if="pageType == 'Popup'" class="iconfont icon-zhankai" :title="t('common.expandView')" @click="extendView" :style="{ color: hasExchange ? '#fff' : '#9F54BA' }"></i>
       </div>
     </template>
   </NavHeader>
@@ -36,86 +27,44 @@
               <div class="account-r ml-10">
                 <!-- Name, balance, label -->
                 <div class="flex between at center-v">
-                  <span
-                    @click="showaccount"
-                    class="clickActive f-12 accName flex center-v"
-                    id="guide-step1"
-                    :title="accountInfo.name"
-                  >
+                  <span @click="showaccount" class="clickActive f-12 accName flex center-v" id="guide-step1" :title="accountInfo.name">
                     <GuideModal1></GuideModal1>
                     <span class="accNameSpan van-ellipsis">{{
                       accountInfo.name
                     }}</span>
-                    <i
-                      :class="`iconfont ml-4 f-14 ${
-                        showModal ? 'icon-shangjiantou' : 'icon-xiajiantou'
-                      }`"
-                    ></i>
+                    <i :class="`iconfont ml-4 f-14 ${showModal ? 'icon-shangjiantou' : 'icon-xiajiantou'
+                        }`"></i>
                   </span>
                   <!-- Account list Popup-->
                   <AccountModal v-model="showModal" />
                   <!-- <SnftDetails v-model="showModal" /> -->
                   <GuideModal10></GuideModal10>
                   <div class="tag-list flex" id="tagList">
-                    <van-popover
-                      v-model:show="showPopover3"
-                      trigger="manual"
-                      class="account-pop"
-                      placement="bottom-end"
-                    >
-                      <div
-                        class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"
-                        @mouseover="showPopoverText3 = true"
-                        @mouseleave="handleMouseLeavetext3"
-                      >
-                      <div> {{ t("creatorSnft.labelPeriod") }}: {{ creatorStatus.count }}</div>
-                      <div>{{ t("creatorSnft.labelProfit") }}: {{ creatorStatus.profitStr }} ERB</div>
-                      <div>{{ t("creatorSnft.labelTimes") }}: {{ creatorStatus.count }}</div>
-                      <div>{{ t("creatorSnft.labelAward") }}: {{ creatorStatus.rewardEth }} ERB</div>
-                      <div>{{ t("creatorSnft.labelWeight") }}: {{ creatorStatus.weight }}</div>
+                    <van-popover v-model:show="showPopover3" trigger="manual" class="account-pop" placement="bottom-end">
+                      <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12" @mouseover="showPopoverText3 = true" @mouseleave="handleMouseLeavetext3">
+                        <div> {{ t("creatorSnft.labelPeriod") }}: {{ creatorStatus.count }}</div>
+                        <div>{{ t("creatorSnft.labelProfit") }}: {{ creatorStatus.profitStr }} ERB</div>
+                        <div>{{ t("creatorSnft.labelTimes") }}: {{ creatorStatus.count }}</div>
+                        <div>{{ t("creatorSnft.labelAward") }}: {{ creatorStatus.rewardEth }} ERB</div>
+                        <div>{{ t("creatorSnft.labelWeight") }}: {{ creatorStatus.weight }}</div>
                       </div>
                       <template #reference>
-                        <div
-                          class="tag-user type1 position relative hover"
-                          @mouseover="showPopover3 = true"
-                          @mouseleave="handleMouseLeave3"
-                          @click="toCreator"
-                          v-if="creatorStatus"
-                        >
+                        <div class="tag-user type1 position relative hover" @mouseover="showPopover3 = true" @mouseleave="handleMouseLeave3" @click="toCreator" v-if="creatorStatus">
                           <span class="user flex center">
                             <i class="iconfont icon-Add"></i>
                           </span>
                         </div>
                       </template>
                     </van-popover>
-                    <van-popover
-                      v-model:show="showPopover"
-                      trigger="manual"
-                      class="account-pop"
-                      placement="bottom-end"
-                    >
-                      <div
-                        class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"
-                        @mouseover="showPopoverText = true"
-                        @mouseleave="handleMouseLeavetext1"
-                      >
-                        <i18n-t
-                          tag="div"
-                          v-if="expresionClass == 'smile'"
-                          keypath="minerspledge.smileTip"
-                        >
+                    <van-popover v-model:show="showPopover" trigger="manual" class="account-pop" placement="bottom-end">
+                      <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12" @mouseover="showPopoverText = true" @mouseleave="handleMouseLeavetext1">
+                        <i18n-t tag="div" v-if="expresionClass == 'smile'" keypath="minerspledge.smileTip">
                           <template v-slot:value>{{ Coefficient }}</template>
                           <template v-slot:btn>
-                            <span class="gotIt" @click="minerpledge">{{
-                              t("minerspledge.gotIt")
-                            }}</span>
+                            
                           </template>
                         </i18n-t>
-                        <i18n-t
-                          tag="div"
-                          v-if="expresionClass == 'sad'"
-                          keypath="minerspledge.homeTip"
-                        >
+                        <i18n-t tag="div" v-if="expresionClass == 'sad'" keypath="minerspledge.homeTip">
                           <!-- <template v-slot:value>{{Coefficient}}</template> -->
                           <template v-slot:btn>
                             <span class="gotIt" @click="minerpledge">{{
@@ -123,11 +72,7 @@
                             }}</span>
                           </template>
                         </i18n-t>
-                        <i18n-t
-                          tag="div"
-                          v-if="expresionClass == 'neutral'"
-                          keypath="minerspledge.homeTip"
-                        >
+                        <i18n-t tag="div" v-if="expresionClass == 'neutral'" keypath="minerspledge.homeTip">
                           <!-- <template v-slot:value>{{Coefficient}}</template> -->
                           <template v-slot:btn>
                             <span class="gotIt" @click="minerpledge">{{
@@ -137,50 +82,21 @@
                         </i18n-t>
                       </div>
                       <template #reference>
-                        <div
-                          class="tag-user type2 position relative hover ml-8"
-                          @mouseover="showPopover = true"
-                          @mouseleave="handleMouseLeave1"
-                          @click="minerpledge"
-                          v-show="
-                            ethAccountInfo
-                              ? ethAccountInfo.PledgedBalance > 0
-                                ? true
-                                : false
-                              : false
-                          "
-                        >
+                        <div class="tag-user type2 position relative hover ml-8" @mouseover="showPopover = true" @mouseleave="handleMouseLeave1" @click="minerpledge" v-show="isValidator">
                           <span class="user flex center">
                             <i class="iconfont icon-chuiziicon"></i>
                           </span>
                         </div>
                       </template>
                     </van-popover>
-                    <van-popover
-                      v-model:show="showPopover2"
-                      trigger="manual"
-                      class="account-pop"
-                      placement="bottom-end"
-                    >
-                      <div
-                        class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"
-                        @mouseover="showPopoverText2 = true"
-                        @mouseleave="handleMouseLeavetext2"
-                      >
+                    <van-popover v-model:show="showPopover2" trigger="manual" class="account-pop" placement="bottom-end">
+                      <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12" @mouseover="showPopoverText2 = true" @mouseleave="handleMouseLeavetext2">
                         {{ t("common.exchange_pledge") }}
                       </div>
                       <template #reference>
-                        <div
-                          class="tag-user type3 position relative ml-8 hover"
-                          @mouseover="showPopover2 = true"
-                          @mouseleave="handleMouseLeave2"
-                          @click="minerpledge"
-                          v-show="hasExchange"
-                        >
+                        <div class="tag-user type3 position relative ml-8 hover" @mouseover="showPopover2 = true" @mouseleave="handleMouseLeave2" @click="minerpledge" v-show="isStaker">
                           <span class="user flex center">
-                            <i
-                              class="iconfont icon-fangwujianzhuwugoujianbeifen"
-                            ></i>
+                            <i class="iconfont icon-fangwujianzhuwugoujianbeifen"></i>
                           </span>
                         </div>
                       </template>
@@ -193,45 +109,27 @@
                     {{ addressMask(accountInfo.address) }}
                     <GuideModal2></GuideModal2>
                   </div>
-                  <i
-                    class="iconfont icon-fuzhi2 ml-6 hover"
-                    :title="t('bootstrapwindow.addressMessage')"
-                    @click="toCopy"
-                  ></i>
+                  <i class="iconfont icon-fuzhi2 ml-6 hover" :title="t('bootstrapwindow.addressMessage')" @click="toCopy"></i>
                   <div class="shuxian ml-8 mr-8"></div>
                   <div class="flex center">
                     <GuideModal3></GuideModal3>
 
-                    <i
-                      class="iconfont icon-erweima1 hover flex center"
-                      :title="t('bootstrapwindow.assetsMessage')"
-                      @click="handleShowCode"
-                    ></i>
+                    <i class="iconfont icon-erweima1 hover flex center" :title="t('bootstrapwindow.assetsMessage')" @click="handleShowCode"></i>
                   </div>
 
                   <!-- QR code Modal -->
-                  <AddressQRModal
-                    v-model="showCode"
-                    :data="accountInfo.address"
-                  />
+                  <AddressQRModal v-model="showCode" :data="accountInfo.address" />
                 </div>
               </div>
             </div>
             <!-- amount of money -->
             <div class="card-bottom flex right center-v pr-16 pl-16">
               <div class="flex right">
-                <i
-                  :class="`iconfont  mr-6 ${
-                    amountType == 'mask' ? 'icon-yanjing' : 'icon-yanjing1'
-                  } hover`"
-                  @click="changeType"
-                ></i>
+                <i :class="`iconfont  mr-6 ${amountType == 'mask' ? 'icon-yanjing' : 'icon-yanjing1'
+                  } hover`" @click="changeType"></i>
                 <GuideModal4></GuideModal4>
-                <div
-                  :class="`flex amount-box van-ellipsis ${amountClass} ${
-                    amountType == 'mask' ? 'pt-6' : ''
-                  }`"
-                >
+                <div :class="`flex amount-box van-ellipsis ${amountClass} ${amountType == 'mask' ? 'pt-6' : ''
+                  }`">
                   {{ amountStr }}
                 </div>
               </div>
@@ -259,16 +157,8 @@
       </div>
       <van-tabs v-model:active="active" sticky :offset-top="48">
         <div class="listType" v-show="active == 'b'">
-          <i
-            class="iconfont icon-fenlei2"
-            @click="handleSetListType1(1)"
-            v-if="layoutType == 'list'"
-          ></i>
-          <i
-            class="iconfont icon-liebiao"
-            @click="handleSetListType1(2)"
-            v-else
-          ></i>
+          <i class="iconfont icon-fenlei2" @click="handleSetListType1(1)" v-if="layoutType == 'list'"></i>
+          <i class="iconfont icon-liebiao" @click="handleSetListType1(2)" v-else></i>
         </div>
         <div class="flex between pl-20 pr-20 mt-40 guide-tabs-box">
           <div class="flex1">
@@ -290,23 +180,12 @@
                 <span class="f-12 text-bold label">{{
                   t("wallet.importToken")
                 }}</span>
-                <span class="add flex center" :title="t('wallet.importToken')" @click="toCreate"
-                  ><van-icon name="plus"
-                /></span>
+                <span class="add flex center" :title="t('wallet.importToken')" @click="toCreate"><van-icon name="plus" /></span>
               </div>
             </van-sticky>
             <!-- The first default token of the current network -->
-            <TokenCard
-              :data="myToken"
-              :networkIcon="false"
-              toName="transactionDetails-step1"
-            />
-            <TokenCard
-              v-for="(item, idx) in accountTokens"
-              :key="idx"
-              :data="item"
-              toName="transactionDetails-step1"
-            />
+            <TokenCard :data="myToken" :networkIcon="false" toName="transactionDetails-step1" />
+            <TokenCard v-for="(item, idx) in accountTokens" :key="idx" :data="item" toName="transactionDetails-step1" />
           </template>
         </van-tab>
         <van-tab name="b">
@@ -461,7 +340,7 @@ export default {
     const { t } = useI18n();
     const router = useRouter();
     const route = useRoute();
-    const active: Ref<string> = ref("a");
+    const active: Ref<string> = ref("c");
     const { generateSign, initExchangeData } = useExchanges();
     const store = useStore();
     const showSlider = ref(false);
@@ -514,7 +393,7 @@ export default {
         "http://faucet.wormholesscan.com/?address=" + accountInfo.value.address
       );
     };
-    const tobuy = () => {};
+    const tobuy = () => { };
     // Transaction details data
     let transactionData: any = reactive({ data: {} });
     const showTransactionModal: Ref<boolean> = ref(false);
@@ -546,8 +425,7 @@ export default {
 
     // Has the exchange been opened? Has the exchange changed color
     const hasExchange = computed(() => {
-      const flag = store.getters["account/hasExchange"];
-      if (route.name == "wallet" && flag) {
+      if (route.name == "wallet" && isStaker.value) {
         return true;
       }
       return false;
@@ -597,7 +475,7 @@ export default {
       dispatch("transfer/clearTx");
       handleLoopBalance();
       dispatch("account/updateBalance");
-      
+
       dispatch("account/waitTxQueueResponse");
     });
 
@@ -666,7 +544,7 @@ export default {
       router.push({ name: "tokens-import" });
     };
     const handleChangeIsselect = (v: boolean) => {
-      console.warn('handleChangeIsselect',v)
+      console.warn('handleChangeIsselect', v)
       isSelect.value = v;
     };
 
@@ -694,6 +572,13 @@ export default {
     const minerpledge = () => {
       router.push({ name: "staker" });
     };
+
+    const isValidator = computed(() => {
+      return new BigNumber(ethAccountInfo.value.PledgedBalance || 0).div(1000000000000000000).gte(70000)
+    })
+    const isStaker = computed(() => {
+      return new BigNumber(ethAccountInfo.value.PledgedBalance || 0).div(1000000000000000000).gte(700)
+    })
 
     const showPopoverText = ref(false);
     const showPopoverText2 = ref(false);
@@ -772,6 +657,8 @@ export default {
       toCreator,
       expresionClass,
       showPopoverText2,
+      isValidator,
+      isStaker,
       showPopoverText3,
       showPopover3,
       handleMouseLeavetext1,

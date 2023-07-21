@@ -125,9 +125,7 @@ const scrollList = (e: any) => {
     const cHeight = e.target.clientHeight
     const sTop = e.target.scrollTop
     const sHeight = e.target.scrollHeight
-    console.log('scroll.', cHeight, sTop, sHeight, loading.value, finished.value)
-    if(((cHeight + sTop + 10) > sHeight) && !loading.value && !finished.value) {
-        console.warn('scroll bottom...')
+    if(((cHeight + sTop + 20) > sHeight) && !loading.value && !finished.value) {
         getList()
     }
 }

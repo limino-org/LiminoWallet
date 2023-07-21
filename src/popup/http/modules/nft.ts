@@ -1,7 +1,7 @@
 
 
 import { httpGet,httpPost } from '../request'
-import { scanApi,snftUrl4,aiApi } from '@/popup/http/httpUrl'
+import { scanApi,snftUrl4,nftmintApi } from '@/popup/http/httpUrl'
 
 
 // Get NFT according to owner
@@ -135,8 +135,35 @@ export const getSnftList = (params = {}) => {
 
 export const queryArraySnft = (params = {}) => {
     return httpPost(`${snftUrl4}/v2/queryArraySnft`,params)
-   
-  }
+}
+
+interface Response {
+  code: string
+  data: any
+}
+
+interface  QueryAllSnftByStageParams  {
+  stage_addr: string
+  start_index: string
+  count:string
+  snfttype: "chip" | "snft" | "collect"
+}
+
+export const queryAllSnftByStage = (params: QueryAllSnftByStageParams): Promise<Response>  => {
+  return httpPost(`${snftUrl4}/v2/queryAllSnftByStage`, params)
+}
+
+interface  QueryOwnerStageParams  {
+  owner_addr: string
+  start_index: string
+  count:string
+}
+export const queryOwnerStage = (params: QueryOwnerStageParams): Promise<Response> => {
+  return httpPost(`${snftUrl4}/v2/queryOwnerStage`, params)
+}
+
+
+
   // Query the account information about the specified address
 export const getAccount = (address: string) => {
     return httpGet(`${scanApi}/account/${address}`)
@@ -153,7 +180,7 @@ export interface GetDrawInfoParams {
     count: string
   }
   export const getDrawInfoByUser = (params: GetDrawInfoParams) => {
-    return httpPost(`${aiApi}/v1/getDrawInfoByUser`, params)
+    return httpPost(`${nftmintApi}/v1/getDrawInfoByUser`, params)
   
   }
   
@@ -161,7 +188,7 @@ export interface GetDrawInfoParams {
     useraddr: string
   }
   export const getEmailByUser = (params: EmailParams) => {
-    return httpPost(`${aiApi}/v1/getEmailByUser`, params)
+    return httpPost(`${nftmintApi}/v1/getEmailByUser`, params)
   
   }
   
@@ -170,7 +197,7 @@ export interface GetDrawInfoParams {
     nftaddrs: string
   }
   export const getDrawInfoByNftaddrs = (params: DrawListParams) => {
-    return httpPost(`${aiApi}/v1/getDrawInfoByNftaddrs`, params)
+    return httpPost(`${nftmintApi}/v1/getDrawInfoByNftaddrs`, params)
   
   }
   
@@ -178,7 +205,7 @@ export interface GetDrawInfoParams {
   
   
   export const getPaintFee = () => {
-    return httpPost(`${aiApi}/v1/getPaintFee`, {})
+    return httpPost(`${nftmintApi}/v1/getPaintFee`, {})
   }
   export interface DrawImageParams {
     useraddr: string
@@ -187,12 +214,11 @@ export interface GetDrawInfoParams {
     drawflag: string
   }
   export const drawImage = (params: DrawImageParams) => {
-    return httpPost(`${aiApi}/v1/drawImage`, params)
+    return httpPost(`${nftmintApi}/v1/drawImage`, params)
   }
   
   
   export const getAiServerAddr = () => {
-    return httpPost(`${aiApi}/v1/getAiServerAddr`, {})
-    
+    return httpPost(`${nftmintApi}/v1/getAiServerAddr`, {})
   }
   

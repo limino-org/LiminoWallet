@@ -138,10 +138,10 @@ export default defineComponent({
     const accountInfo = computed(() => store.state.account.accountInfo);
     
     const collIdStr = "0x80000000000000000000000000000000000";
-    const { id, FullNFTs, select , MergeLevel} = props.data;
+    const { id, children, select , MergeLevel} = props.data;
     if(props.data.MergeLevel !== 2) {
 
-      FullNFTs.forEach((item: any) => {
+      children.forEach((item: any) => {
         item.select = select ? true : false;
         item.address = item.nft_address.substr(0, 40);
         const { MergeLevel, exchange, snfts, ownaddr } = item;
@@ -160,7 +160,7 @@ export default defineComponent({
     const coll_address = collIdStr + id
     compData.value = {
       id,
-      children: toRaw(FullNFTs),
+      children: toRaw(children),
       select: false,
       address: coll_address,
       nft_address: coll_address,

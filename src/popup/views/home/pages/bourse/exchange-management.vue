@@ -16,26 +16,6 @@
     </div>
     <!-- <Tip v-else :message="t('createExchange.pageTip')" /> -->
     <div class="list">
-      <!-- <div class="card flex between" v-if="hasExchange" @click="toConsole">
-        <div class="info">
-          <div class="label">{{ t("createExchange.exchange") }}</div>
-          <div class="desc">{{ t("createExchange.exchangeDesc") }}</div>
-        </div>
-        <div class="flex center">
-          <van-icon name="arrow" />
-        </div>
-      </div> -->
-
-      <!-- <div class="card flex between" v-if="hasExchange" @click="toAdmin">
-        <div class="info">
-          <div class="label">{{ t("createExchange.console") }}</div>
-          <div class="desc">{{ t("createExchange.consoleDesc") }}</div>
-        </div>
-        <div class="flex center">
-          <van-icon name="arrow" />
-        </div>
-      </div> -->
-
       <div class="card flex between" @click="openExchange">
         <div class="info">
           <div class="label">{{ t("createExchange.staking") }}</div>
@@ -45,16 +25,6 @@
           <van-icon name="arrow" />
         </div>
       </div>
-
-      <!-- <div class="card flex between" @click="handleAddModel">
-        <div class="info">
-          <div class="label">{{ t("createExchange.server") }}</div>
-          <div class="desc">{{ t("createExchange.serverDesc",{days,hours}) }}</div>
-        </div>
-        <div class="flex center">
-          <van-icon name="arrow" />
-        </div>
-      </div> -->
     </div>
   </div>
   <div class="flex center loading-page" v-else>
@@ -72,15 +42,6 @@
           <div class="line-box"></div>
           <div class="line-circle"></div>
         </div>
-        <!-- <div class="guide-con-1 mask" v-if></div> -->
-        <!-- <div class="guide-con-2" v-if="showGuide">
-          <div class="guide-text">
-            {{ t("guidePopup.createExchangGuideTip2") }}
-          </div>
-          <div class="line-box"></div>
-          <div class="line-box"></div>
-          <div class="line-circle"></div>
-        </div> -->
       </div>
       <div class="guide-footer"></div>
       <div class="guide-card" v-if="(showGuide && !showServer)  || (showServer && !showGuide)"></div>
@@ -126,10 +87,6 @@ export default {
     const { t } = useI18n();
     const { state, commit, dispatch } = useStore();
     const exchangeStatus = computed(() => state.account.exchangeStatus);
-    const hasExchange = computed(
-      () =>
-        exchangeStatus.value.ExchangerFlag && exchangeStatus.value.status == 2
-    );
     const {getContract} = useExchanges()
     const back = () => {
       router.back();
@@ -249,7 +206,6 @@ export default {
       t,
       back,
       exchangeStatus,
-      hasExchange,
       toAdmin,
       toConsole,
       openExchange,

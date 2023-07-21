@@ -13,8 +13,8 @@
         <img class="expresion" src="@/assets/neutral.png" alt="" v-if="getIconClass == 'neutral'" />
       </div>
     </div>
-    <div class="flex valid-balance green">
-      <div class="flex column between">
+    <div class="flex valid-balance">
+      <div class="flex column between" :style="{color: percentColor}">
         <div class="lh-18 text-right">{{ props.data.Balance }} ERB</div>
         <div class="lh-18 text-right">{{props.data.percent}}%</div>
       </div>
@@ -38,6 +38,19 @@ const getIconClass = computed(() => {
       if (num < 40) return "sad";
       if (num >= 40 && num <= 50) return "neutral";
       if (num > 50) return "smile";
+})
+
+const percentColor = computed(() => {
+  const per = Number(props.data.percent)
+  if(per < 33) {
+    return '#3aae55'
+  }
+  if(per >= 33 && per < 66) {
+    return 'black'
+  }
+  if(per > 66) {
+    return '#9F54BA'
+  }
 })
 
 const handleClick = () => {

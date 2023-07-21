@@ -1,49 +1,29 @@
 <template>
   <!-- sidebar -->
   <transition name="slider-left">
-    <div
-      v-if="showSlider"
-      :style="{ width: '90%', height: '100%' }"
-      class="nav-header-slider-box"
-    >
+    <div v-if="showSlider" :style="{ width: '90%', height: '100%' }" class="nav-header-slider-box">
       <div class="slider-con">
-        <div :class="`slider-bg ${hasExchange ? 'blue' : ''}`">
+        <div :class="`slider-bg ${isStaker ? 'blue' : ''}`">
           <div class="flex back-box">
             <van-icon name="cross" class="hover" @click="showSlider = false" />
           </div>
 
           <div :class="`user-img `">
             <div class="user-img-circle flex center-v hover">
-              <AccountIcon
-                :data="accountInfo.icon"
-                @click="toAccountManagement"
-              />
+              <AccountIcon :data="accountInfo.icon" @click="toAccountManagement" />
               <!-- Label set -->
               <div class="tag-list flex slider">
-                <van-popover
-                  v-model:show="showPopover3"
-                  trigger="manual"
-                  class="account-pop"
-                  placement="bottom-start"
-                >
-                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"
-                        @mouseover="showPopoverText3 = true"
-                        @mouseleave="handleMouseLeavetext3">
-                        <div> {{ t("creatorSnft.labelPeriod") }}: {{ creatorStatus.count }}</div>
-                      <div>{{ t("creatorSnft.labelProfit") }}: {{ creatorStatus.profitStr }} ERB</div>
-                      <div>{{ t("creatorSnft.labelTimes") }}: {{ creatorStatus.count }}</div>
-                      <div>{{ t("creatorSnft.labelAward") }}: {{ creatorStatus.rewardEth }} ERB</div>
-                      <div>{{ t("creatorSnft.labelWeight") }}: {{ creatorStatus.weight }}</div>
+                <van-popover v-model:show="showPopover3" trigger="manual" class="account-pop" placement="bottom-start">
+                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12" @mouseover="showPopoverText3 = true" @mouseleave="handleMouseLeavetext3">
+                    <div> {{ t("creatorSnft.labelPeriod") }}: {{ creatorStatus.count }}</div>
+                    <div>{{ t("creatorSnft.labelProfit") }}: {{ creatorStatus.profitStr }} ERB</div>
+                    <div>{{ t("creatorSnft.labelTimes") }}: {{ creatorStatus.count }}</div>
+                    <div>{{ t("creatorSnft.labelAward") }}: {{ creatorStatus.rewardEth }} ERB</div>
+                    <div>{{ t("creatorSnft.labelWeight") }}: {{ creatorStatus.weight }}</div>
                   </div>
                   <template #reference>
-                    <div
-                      class="tag-user type1 position relative hover"
-                      @mouseover="showPopover3 = true"
-                      @mouseleave="handleMouseLeave3"
-                      v-show="
-                        creatorStatus
-                      "
-                    >
+                    <div class="tag-user type1 position relative hover" @mouseover="showPopover3 = true" @mouseleave="handleMouseLeave3" v-show="creatorStatus
+                      ">
                       <span class="user flex center" @click="toCreator">
                         <i class="iconfont icon-Add"></i>
                       </span>
@@ -53,42 +33,21 @@
                     </div>
                   </template>
                 </van-popover>
-                <van-popover
-                  v-model:show="showPopover"
-                  trigger="manual"
-                  class="account-pop MR-10"
-                  placement="bottom-start"
-                >
-                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"                         @mouseover="showPopoverText = true"
-                        @mouseleave="handleMouseLeavetext1">
-                    <i18n-t
-                      tag="div"
-                      v-if="expresionClass == 'smile'"
-                      keypath="minerspledge.smileTip"
-                    >
+                <van-popover v-model:show="showPopover" trigger="manual" class="account-pop MR-10" placement="bottom-start">
+                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12" @mouseover="showPopoverText = true" @mouseleave="handleMouseLeavetext1">
+                    <i18n-t tag="div" v-if="expresionClass == 'smile'" keypath="minerspledge.smileTip">
                       <template v-slot:value>{{ Coefficient }}</template>
                       <template v-slot:btn>
-                        <span class="gotIt" @click="toStaker">{{
-                          t("minerspledge.gotIt")
-                        }}</span>
                       </template>
                     </i18n-t>
-                    <i18n-t
-                      tag="div"
-                      v-if="expresionClass == 'sad'"
-                      keypath="minerspledge.homeTip"
-                    >
+                    <i18n-t tag="div" v-if="expresionClass == 'sad'" keypath="minerspledge.homeTip">
                       <template v-slot:btn>
                         <span class="gotIt" @click="toStaker">{{
                           t("minerspledge.gotIt")
                         }}</span>
                       </template>
                     </i18n-t>
-                    <i18n-t
-                      tag="div"
-                      v-if="expresionClass == 'neutral'"
-                      keypath="minerspledge.homeTip"
-                    >
+                    <i18n-t tag="div" v-if="expresionClass == 'neutral'" keypath="minerspledge.homeTip">
                       <template v-slot:btn>
                         <span class="gotIt" @click="toStaker">{{
                           t("minerspledge.gotIt")
@@ -97,19 +56,7 @@
                     </i18n-t>
                   </div>
                   <template #reference>
-                    <div
-                      class="tag-user type2 position relative hover ml-8"
-                      @mouseover="showPopover = true"
-                      @mouseleave="handleMouseLeave1"
-                      @click="toStaker"
-                      v-show="
-                        ethAccountInfo
-                          ? ethAccountInfo.PledgedBalance > 0
-                            ? true
-                            : false
-                          : false
-                      "
-                    >
+                    <div class="tag-user type2 position relative hover ml-8" @mouseover="showPopover = true" @mouseleave="handleMouseLeave1" @click="toStaker" v-show="isValidator">
                       <span class="user flex center">
                         <i class="iconfont icon-chuiziicon"></i>
                       </span>
@@ -119,29 +66,15 @@
                     </div>
                   </template>
                 </van-popover>
-                <van-popover
-                  v-model:show="showPopover2"
-                  trigger="manual"
-                  class="account-pop"
-                  placement="bottom-start"
-                >
-                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12"                         @mouseover="showPopoverText2 = true"
-                        @mouseleave="handleMouseLeavetext2">
+                <van-popover v-model:show="showPopover2" trigger="manual" class="account-pop" placement="bottom-start">
+                  <div class="lh-14 pt-8 pb-8 pl-10 pr-10 f-12" @mouseover="showPopoverText2 = true" @mouseleave="handleMouseLeavetext2">
                     {{ t("common.exchange_pledge") }}
                   </div>
                   <template #reference>
-                    <div
-                      class="tag-user type3 position relative ml-8 hover"
-                      @mouseover="showPopover2 = true"
-                      @mouseleave="handleMouseLeave2"
-                      @click="toStaker"
-                      v-show="hasExchange
-                      "
-                    >
+                    <div class="tag-user type3 position relative ml-8 hover" @mouseover="showPopover2 = true" @mouseleave="handleMouseLeave2" @click="toStaker" v-show="isStaker
+                      ">
                       <span class="user flex center">
-                        <i
-                          class="iconfont icon-fangwujianzhuwugoujianbeifen"
-                        ></i>
+                        <i class="iconfont icon-fangwujianzhuwugoujianbeifen"></i>
                       </span>
                       <div class="tag-label flex center-v">
                         <span class="van-ellipsis">{{ t("common.marketplace") }}</span>
@@ -152,20 +85,17 @@
               </div>
             </div>
             <!-- Switch account -->
-            <div :class="`account mt-6 ${pageType === 'Tab' ? 'mt-14' :''}`">
+            <div :class="`account mt-6 ${pageType === 'Tab' ? 'mt-14' : ''}`">
               <div class="flex center-v name" @click="toAccountManagement">
                 {{ accountInfo.name }}
-                <i
-                  :class="`iconfont ml-4 f-14 ${
-                    showAccount ? 'icon-shangjiantou' : 'icon-xiajiantou'
-                  }`"
-                ></i>
+                <i :class="`iconfont ml-4 f-14 ${showAccount ? 'icon-shangjiantou' : 'icon-xiajiantou'
+                  }`"></i>
               </div>
               <!-- Address, copy, QR code-->
-              <div :class="`address-card flex mt-6 ${pageType === 'Tab' ? 'mt-14' :''}`" @click="toCopy">
+              <div :class="`address-card flex mt-6 ${pageType === 'Tab' ? 'mt-14' : ''}`" @click="toCopy">
                 <div class="add">{{ accountInfo.address }}</div>
               </div>
-              <div :class="`amount mt-8 ${pageType === 'Tab' ? 'mt-14' :''}`">
+              <div :class="`amount mt-8 ${pageType === 'Tab' ? 'mt-14' : ''}`">
                 {{ amount }} {{ currentNetwork.currencySymbol }}
               </div>
             </div>
@@ -179,10 +109,7 @@
           <!-- Group of transaction information buttons -->
           <div class="setting-list">
             <!-- websize -->
-            <div
-              :class="`setting-btn flex between center-v clickActive ${pageType}`"
-              @click="toOfficiaWebsite"
-            >
+            <div :class="`setting-btn flex between center-v clickActive ${pageType}`" @click="toOfficiaWebsite">
               <div class="flex center">
                 <i class="iconfont icon-zailiulanqidakai"></i>
                 <span>{{ t("sidebar.aboutAs") }}</span>
@@ -190,35 +117,26 @@
 
               <van-icon name="arrow" />
             </div>
-            <div
-            :class="`setting-btn flex between center-v clickActive ${pageType}`"
-              @click="toStaker"
-            >
+            <div :class="`setting-btn flex between center-v clickActive ${pageType}`" @click="toStaker">
               <div class="flex center">
                 <i class="iconfont icon-chuiziicon"></i>
                 {{
-                 t('validator.pageTit')
+                  t('validator.pageTit')
                 }}
               </div>
               <van-icon name="arrow" />
             </div>
-            <div
-              class="setting-btn flex between center-v clickActive "
-              @click="toGenerate"
-            >
-            <div class="flex center">
-            <van-icon name="photo-o" />
-              <span>{{
-                t("castingnft.createNFT")
-              }}</span>
+            <div class="setting-btn flex between center-v clickActive " @click="toGenerate">
+              <div class="flex center">
+                <van-icon name="photo-o" />
+                <span>{{
+                  t("castingnft.createNFT")
+                }}</span>
               </div>
               <van-icon name="arrow" />
             </div>
 
-            <div
-            :class="`setting-btn flex between center-v clickActive ${pageType}`"
-              @click="tobrowser"
-            >
+            <div :class="`setting-btn flex between center-v clickActive ${pageType}`" @click="tobrowser">
               <div class="flex center">
                 <i class="iconfont icon-liulanqi"></i>
                 {{ t("sidebar.browser") }}
@@ -226,10 +144,7 @@
 
               <van-icon name="arrow" />
             </div>
-            <div
-            :class="`setting-btn flex between center-v clickActive ${pageType}`"
-              @click="routerTo('transaction-history')"
-            >
+            <div :class="`setting-btn flex between center-v clickActive ${pageType}`" @click="routerTo('transaction-history')">
               <div class="flex center">
                 <i class="iconfont icon-lishijilu"></i>
                 {{ t("sidebar.transationHistory") }}
@@ -237,31 +152,21 @@
               <van-icon name="arrow" />
             </div>
 
-            <div
-            :class="`setting-btn flex between center-v clickActive ${pageType}`"
-              @click="toHelp"
-            >
+            <div :class="`setting-btn flex between center-v clickActive ${pageType}`" @click="toHelp">
               <div class="flex center">
                 <i class="iconfont icon-bangzhuzhongxin31"></i>
                 <span>{{ t("sidebar.help") }}</span>
               </div>
               <van-icon name="arrow" />
             </div>
-            <div
-            :class="`setting-btn flex between center-v clickActive ${pageType}`"
-              @click="toCreator"
-              v-if="currentNetwork.isMain && creatorStatus"
-            >
+            <div :class="`setting-btn flex between center-v clickActive ${pageType}`" @click="toCreator" v-if="currentNetwork.isMain && creatorStatus">
               <div class="flex center">
                 <i class="iconfont icon-Add"></i>
                 <span>{{ t("sidebar.snftCreator") }}</span>
               </div>
               <van-icon name="arrow" />
             </div>
-            <div
-            :class="`setting-btn flex between center-v clickActive ${pageType}`"
-              @click="routerTo('settings')"
-            >
+            <div :class="`setting-btn flex between center-v clickActive ${pageType}`" @click="routerTo('settings')">
               <div class="flex center">
                 <i class="iconfont icon-shezhi"></i>
                 {{ t("sidebar.settings") }}
@@ -286,10 +191,7 @@
       </div>
 
       <!-- switching network -->
-      <SwitchNetwork
-        v-model:show="showModalNetwork"
-        @close="showModalNetwork = false"
-      />
+      <SwitchNetwork v-model:show="showModalNetwork" @close="showModalNetwork = false" />
     </div>
   </transition>
   <van-overlay :show="showSlider" :z-index="999" @click="showSlider = false" />
@@ -381,12 +283,12 @@ export default defineComponent({
     // Main network account details
     const ethAccountInfo = computed(() => store.state.account.ethAccountInfo);
     const creatorStatus = computed(() => store.state.account.creatorStatus)
-
-    // Exchange status
-    const hasExchange = computed(() => {
-      const { ExchangerFlag, status } = store.state.account.exchangeStatus;
-      return ExchangerFlag;
-    });
+    const isStaker = computed(() => {
+      return new BigNumber(ethAccountInfo.value.PledgedBalance || 0).div(1000000000000000000).gte(700)
+    })
+    const isValidator = computed(() => {
+      return new BigNumber(ethAccountInfo.value.PledgedBalance || 0).div(1000000000000000000).gte(70000)
+    })
     // Account details
     const accountInfo = computed(() => store.state.account.accountInfo);
     const { logout } = useLogin();
@@ -440,7 +342,7 @@ export default defineComponent({
       createAccount,
       createLoading,
       accountLoading,
-      
+
     } = useToggleAccount();
 
     const toAccountManagement = () => {
@@ -466,7 +368,7 @@ export default defineComponent({
         theme: "dark",
         confirmBtnText: t("common.no"),
         cancelBtnText: t("common.yes"),
-        callBack() {},
+        callBack() { },
         cancelBack() {
           showSlider.value = false;
           logout();
@@ -596,12 +498,12 @@ export default defineComponent({
     };
     const toGenerate = () => {
       router.push({
-        name:"generateNFT-ai"
+        name: "generateNFT-ai"
       })
     }
 
     const toStaker = () => {
-      router.push({name:"staker"})
+      router.push({ name: "staker" })
     }
 
     return {
@@ -656,9 +558,10 @@ export default defineComponent({
       decimal,
       version,
       ethAccountInfo,
-      hasExchange,
       t,
-      pageType
+      pageType,
+      isStaker,
+      isValidator
     };
   },
 });
@@ -667,28 +570,35 @@ export default defineComponent({
 .slider-left-enter-active {
   animation: slider-in 0.3s forwards linear;
 }
+
 .slider-left-leave-active {
   animation: slider-in 0.3s reverse linear;
 }
+
 .logoutBtn {
   background: transparent;
   width: 220px;
 }
+
 @keyframes slider-in {
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(0);
   }
 }
+
 .slider-con {
   position: relative;
 }
+
 .back-box {
   position: absolute;
   right: 15px;
   top: 15px;
+
   i {
     font-size: 18px;
   }

@@ -141,7 +141,7 @@ export default {
           try {
             gasFee.value = await getGasFee(tx1)
           } catch (err: any) {
-            console.error(err);
+            console.warn(err);
             emit('error', err)
           }
           calcProfit();

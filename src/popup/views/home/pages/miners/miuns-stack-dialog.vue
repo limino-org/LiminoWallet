@@ -207,7 +207,7 @@ export default {
           try {
             gasFee.value = await getGasFee(tx1)
           } catch (err: any) {
-            console.error(err);
+            console.warn(err);
             emit('error', err)
           }
           calcProfit();
@@ -300,7 +300,7 @@ export default {
   display: flex;
 
   .miners {
-    min-height: 560px;
+    min-height: 460px;
     padding-bottom: 30px;
     background: #fff;
     margin: auto;

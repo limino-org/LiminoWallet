@@ -4,24 +4,13 @@
     <Transition name="slider">
       <div class="help-center-box flex right" v-if="!isSelect">
         <div class="flex right pl-20 pr-20">
-          <div
-            class="help-btn flex center hover"
-   
-          >
-          <div class="btn-mask"
-
-          >
-          <div class="btn-mask-box flex center"
-          @click="toHelp"
-            @mouseover="showHelp = true"
-            @mouseout="showHelp = false"
-          >
-
-            <GuideModal13 />
-            <i class="iconfont icon-bangzhuzhongxin3"></i>
-          </div>
-        </div>
-
+          <div class="help-btn flex center hover">
+            <div class="btn-mask">
+              <div class="btn-mask-box flex center" @click="toHelp" @mouseover="showHelp = true" @mouseout="showHelp = false">
+                <GuideModal13 />
+                <i class="iconfont icon-bangzhuzhongxin3"></i>
+              </div>
+            </div>
           </div>
           <Transition name="slider2">
             <div class="hint pl-10 pr-10" v-if="showHelp">
@@ -34,30 +23,20 @@
     <Transition name="slider">
       <div v-if="active == 'b'" class="exchange-con">
         <div class="pl-20 pr-20">
-          <div
-            class="wallet-suspension hover"
-            @mouseover="showExchange = true"
-            @mouseout="showExchange = false"
-            @click="toCreate"
-          >
-  
+          <div class="wallet-suspension hover" @mouseover="showExchange = true" @mouseout="showExchange = false" @click="toCreate">
             <GuideModal9 />
-
             <van-icon name="plus" />
           </div>
           <Transition name="slider2">
-            <div
-              v-if="showExchange"
-              :class="[
-                'wallet-hint pt-10 pb-10 pl-10 pr-10 flex center',
-                isExchangerFlag ? 'wallet-hint-h' : '',
-              ]"
-            >
-              <span >{{ t("createNft.createNFTs") }}</span>
+            <div v-if="showExchange" :class="[
+              'wallet-hint pt-10 pb-10 pl-10 pr-10 flex center',
+              isExchangerFlag ? 'wallet-hint-h' : '',
+            ]">
+              <span>{{ t("createNft.createNFTs") }}</span>
             </div>
           </Transition>
         </div>
-        </div>
+      </div>
     </Transition>
 
   </div>
@@ -114,7 +93,7 @@ export default defineComponent({
     const eschangeBtnStatus = computed(
       () => store.state.system.exchangeBtnStatus
     );
-    const {$toast} = useToast()
+    const { $toast } = useToast()
     const accountInfo = computed(() => store.state.account.accountInfo)
     const currentNetwork = computed(() => store.state.account.currentNetwork);
     // One-click exchange open status
@@ -170,7 +149,7 @@ export default defineComponent({
         return false;
       }
       router.push({ name: "generateNFT" });
-      };
+    };
     onMounted(async () => {
       await dispatch("system/toggleExchangeBtnStatus", false);
       if (!slideFlag.value) {
@@ -209,19 +188,21 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
-  .btn-mask {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    &-box {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      z-index: 1000000;
-    }
+.btn-mask {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  &-box {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1000000;
   }
+}
+
 .wallet-hint-h {
   span {
     font-size: 12px;
@@ -229,6 +210,7 @@ export default defineComponent({
     word-break: keep-all;
   }
 }
+
 .wallet-hint {
   min-width: 80px;
   max-width: 170px;
@@ -240,11 +222,13 @@ export default defineComponent({
   border-radius: 5px;
   background: #9F54BA;
   box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.1);
+
   span {
     font-size: 12px;
     color: #fff;
-    white-space:nowrap;
+    white-space: nowrap;
   }
+
   &:after {
     content: " ";
     position: absolute;
@@ -258,12 +242,14 @@ export default defineComponent({
     height: 0;
   }
 }
+
 .help-center-box {
   position: fixed;
   min-width: 50px;
   bottom: 90px;
   right: 0px;
   z-index: 100;
+
   .help-btn {
     width: 50px;
     height: 50px;
@@ -272,11 +258,13 @@ export default defineComponent({
     box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.1),
       0px 0px 10px 0px rgba(0, 0, 0, 0.1);
     position: relative;
+
     i {
       font-size: 22px;
       color: #9F54BA;
     }
   }
+
   .hint {
     position: absolute;
     z-index: -1;
@@ -290,6 +278,7 @@ export default defineComponent({
     top: 10px;
     text-align: center;
     color: #9F54BA;
+
     &:after {
       content: " ";
       position: absolute;
@@ -304,6 +293,7 @@ export default defineComponent({
     }
   }
 }
+
 .wallet-suspension {
   width: 50px;
   height: 50px;
@@ -321,31 +311,38 @@ export default defineComponent({
     font-size: 18px;
   }
 }
+
 .ex-inner {
   width: 820px;
   margin: 0 auto;
   position: relative;
 }
+
 .exchange-box {
   max-width: 820px;
   box-sizing: border-box;
   margin: 0 auto;
 }
+
 .exchange-con {
   position: fixed;
   min-width: 50px;
   bottom: 30px;
   right: 0px;
   z-index: 100;
+
   button {
     transition: all 0.5s ease;
+
     &:hover {
       box-shadow: 0px 5px 7px 2px rgba(0, 0, 0, 0.2);
     }
   }
+
   &.extend {
     width: 100%;
   }
+
   .fixed-home {
     width: 50px;
     height: 50px;
@@ -357,10 +354,12 @@ export default defineComponent({
     position: absolute;
     right: 0px;
     top: -50px;
+
     &:hover {
       box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.2);
       transition: ease 0.3s;
     }
+
     i {
       font-size: 20px;
     }
@@ -370,12 +369,15 @@ export default defineComponent({
 .slider-enter-active {
   animation: slider-in 0.3s forwards ease;
 }
+
 .slider-leave-active {
   animation: slider-in 0.3s reverse ease;
 }
+
 .slider2-enter-active {
   animation: slider2-in 0.3s forwards ease;
 }
+
 .slider2-leave-active {
   animation: slider2-in 0.3s reverse ease;
 }
@@ -385,25 +387,28 @@ export default defineComponent({
     right: -50px;
     opacity: 0;
   }
+
   100% {
     right: 0;
   }
 }
+
 @keyframes slider2-in {
   0% {
     right: -200px;
     opacity: 0;
     transform: scale(0);
   }
+
   30% {
     right: 20px;
     transform: scale(0.1);
     opacity: 0.1;
   }
+
   100% {
     right: 83px;
     opacity: 1;
     transform: scale(1);
   }
-}
-</style>
+}</style>

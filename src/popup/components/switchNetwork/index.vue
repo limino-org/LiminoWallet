@@ -2,26 +2,19 @@
   <van-overlay class="switch-network-modal flex center" :show="showModalNetwork" @click="showModalNetwork = false">
     <div class="switch-net-con">
       <div class="title text-center text-bold">{{ t("internet.title") }}</div>
-    <div class="activited-net">
-      <div class="main-tit">{{t("common.mainNetwork")}}</div>
-      <NetWorkCard :data="mainNetwork" @handleClick="handleChooseComfirm(mainNetwork)" />
-    </div>
-    <div class="other-list" v-if="netWorkList.length">
-      <div class="other-list-tit">{{ t("internet.othertitle") }}</div>
-      <div class="other-list-box scrollBar">
-        <NetWorkCard
-          v-for="item in netWorkList"
-          :select="item.select"
-          :key="item.value"
-          :data="item"
-          @handleClick="handleChooseComfirm(item)"
-        />
+      <div class="activited-net">
+        <div class="main-tit">{{ t("common.mainNetwork") }}</div>
+        <NetWorkCard :data="mainNetwork" @handleClick="handleChooseComfirm(mainNetwork)" />
       </div>
-    </div>
-
-    <div class="flex center pt-24 pb-24 btn-box">
-      <van-button plain @click="emitClose">{{t('network.close')}}</van-button>
-    </div>
+      <div class="other-list" v-if="netWorkList.length">
+        <div class="other-list-tit">{{ t("internet.othertitle") }}</div>
+        <div class="other-list-box scrollBar">
+          <NetWorkCard v-for="item in netWorkList" :select="item.select" :key="item.value" :data="item" @handleClick="handleChooseComfirm(item)" />
+        </div>
+      </div>
+      <div class="flex center pt-24 pb-24 btn-box">
+        <van-button plain @click="emitClose">{{ t('network.close') }}</van-button>
+      </div>
     </div>
 
   </van-overlay>
@@ -31,7 +24,6 @@
 import { Dialog, Button, Overlay } from 'vant'
 import NetWorkCard from '../netWorkCard/index.vue'
 import { defineComponent, Ref, ref, watch, SetupContext } from 'vue'
-// @ts-ignore
 import { useNetWork } from '@/popup/components/navHeader/hooks/netWork'
 import { useI18n } from 'vue-i18n'
 export default defineComponent({
@@ -87,15 +79,16 @@ export default defineComponent({
 <style lang="scss" scoped>
 .switch-net-con {
   background: #fff;
-  width:320px;
-  max-height: 420px;
+  width: 320px;
+  max-height: 520px;
   border-radius: 12px;
   overflow: hidden;
 }
 
-  .title {
-    border-bottom: 1px solid #E4E7E8;
-  }
+.title {
+  border-bottom: 1px solid #E4E7E8;
+}
+
 .title {
   color: #000;
   font-size: 15px;
@@ -104,12 +97,14 @@ export default defineComponent({
   font-weight: bold;
 
 }
+
 .main-tit {
   font-size: 12px;
   padding: 0 18px;
   line-height: 40px;
   color: #8F8F8F;
 }
+
 :deep(.van-button) {
   width: 100px;
   margin: 2px 0 0;

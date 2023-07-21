@@ -15,9 +15,6 @@ $fontColor: #848484;
 
             i {
                 color: $fontColor;
-                position: absolute;
-                right: 10px;
-                top: 15px;
             }
         }
 
@@ -116,7 +113,7 @@ $fontColor: #848484;
     }
     .redeemBtn {
         line-height: 42px;
-        width: 100px;
+        width: 140px;
         &.disabled {
             cursor:not-allowed;
         }

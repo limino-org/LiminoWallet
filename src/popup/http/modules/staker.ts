@@ -1,6 +1,6 @@
 
 import { httpGet,httpPost } from '../request'
-import { scanApi,snftUrl4,aiApi } from '@/popup/http/httpUrl'
+import { scanApi,snftUrl4, nftmintApi } from '@/popup/http/httpUrl'
 
 
 export type ValidParams = {
@@ -8,14 +8,14 @@ export type ValidParams = {
     count: string
 }
 export const getValidatorInfo = (params: ValidParams) => {
-    return httpPost(`${aiApi}/v1/getValidatorInfo`, params)
+    return httpPost(`${nftmintApi}/v1/getValidatorInfo`, params)
 }
 
 export type GetCoefParams = {
     users: string
 }
 export const getUsersCoefficient = (params: GetCoefParams) => {
-    return httpPost(`${aiApi}/v1/getUsersCoefficient`, params)
+    return httpPost(`${nftmintApi}/v1/getUsersCoefficient`, params)
   
 }
 

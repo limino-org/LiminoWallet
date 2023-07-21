@@ -396,7 +396,7 @@ export default {
     },
     // Update URL of wormholes network
     // Update wormholes URL
-    UPDATE_WORMHOLES_URL(state: State, { URL, browser, chainId }: any) {
+    UPDATE_WORMHOLES_URL(state: State, { URL, browser, label }: any) {
       let flag = false
       if (state.currentNetwork.isMain) {
         if (state.currentNetwork.URL != URL || state.currentNetwork.browser != browser) {
@@ -404,30 +404,15 @@ export default {
         }
         state.currentNetwork.URL = URL;
         state.currentNetwork.browser = browser;
-        state.currentNetwork.id = 'wormholes-network-1'
+        state.currentNetwork.label = label;
       }
       state.netWorkList.forEach(item => {
         if (item.isMain) {
-          if (item.URL != URL || item.browser != browser) {
-            flag = true
-          }
           item.URL = URL;
           item.browser = browser;
-          item.id = 'wormholes-network-1'
+          item.label = label
         }
       })
-      if (flag) {
-        Toast.loading({
-          message: i18n.global.t('common.asyncData'),
-          duration: 0
-        })
-        setTimeout(() => {
-          if (flag) {
-            location.reload()
-          }
-        }, 1000)
-      }
-
 
     },
     // Update wormholes ChainId

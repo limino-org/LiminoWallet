@@ -75,6 +75,7 @@ import { useStore } from 'vuex'
 import { getWallet } from '@/popup/store/modules/account'
 import { useI18n } from 'vue-i18n'
 import GuideModal12 from '@/popup/components/guideModal/step12.vue'
+import BigNumber from 'bignumber.js'
 
 export default defineComponent({
   name: 'NavHeader',
@@ -145,10 +146,14 @@ export default defineComponent({
       }
     }
     const accountInfo = computed(() => store.state.account.accountInfo)
+    const ethAccountInfo = computed(() => store.state.account.ethAccountInfo)
+    const isStaker = computed(() => {
+      return new BigNumber(ethAccountInfo.value.PledgedBalance || 0).div(1000000000000000000).gte(700)
+    })
+
     // Whether open through the exchange open exchange discoloration
     const hasExchange = computed(() => {
-      const flag = store.getters['account/hasExchange']
-      if (route.name == 'wallet' && flag) {
+      if (route.name == 'wallet' && isStaker.value) {
         return true
       }
       return false

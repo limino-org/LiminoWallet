@@ -1,10 +1,10 @@
 // Generate random colors
 export const getRandomColor = () => {    
-    var r = Math.floor(Math.random() * (200 - 50 + 1)) + 50;
-    var g = Math.floor(Math.random() * (200 - 50 + 1)) + 50;
-    var b = Math.floor(Math.random() * (250 - 150 + 1)) + 150;
-    var color = '#'+r.toString(16)+g.toString(16)+b.toString(16);
-    return color
+    // var r = Math.floor(Math.random() * (200 - 50 + 1)) + 50;
+    // var g = Math.floor(Math.random() * (200 - 50 + 1)) + 50;
+    // var b = Math.floor(Math.random() * (250 - 150 + 1)) + 150;
+    // var color = '#'+r.toString(16)+g.toString(16)+b.toString(16);
+    return `#${Math.floor(Math.random() * 0xffffff).toString(16)}`
  }
 
 
