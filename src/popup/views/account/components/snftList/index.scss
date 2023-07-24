@@ -1,19 +1,46 @@
 .snft-card {
     padding: 11px 0;
     background: #F1F3F4;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
     border-radius: 5px;
+    position: relative;
+
     &-tit {
         font-size: 12px;
-        padding:0 9px;
+        padding: 0 9px;
+
         .tit {
             font-weight: bold;
+            font-size: 12px;
         }
+
         .more {
             color: #9F54BA;
+            cursor: pointer;
         }
     }
+    .select-all {
+        font-size: 12px;
+        line-height: 18px;
+        padding: 0 9px;
+        margin-top: 10px;
+        color: #848484;
+        img {
+            width: 24px;
+            height: 24px;
+        }
+        i {
+            width: 24px;
+        }
+        i.icon-check_line {
+            font-size: 20px;
+        }
+        i.icon-duihao2 {
+            font-size: 18px;
+            color: #9F54BA;
+        }
 
+    }
     &-list {
         flex-wrap: wrap;
         padding-top: 10px;
@@ -25,19 +52,33 @@
             width: 35px;
             height: 35px;
             border-radius: 5px;
-            background: #d0cccc;
+            background: #fff;
             margin-right: 6.8px;
             margin-bottom: 6.5px;
             position: relative;
+
+            &:hover {
+                .arrow-top {
+                    position: absolute;
+                    width: 0;
+                    height: 0;
+                    border-left: 8px solid transparent;
+                    border-right: 8px solid transparent;
+                    border-bottom: 8px solid #fff;
+                    bottom: -8px;
+                    left: 50%;
+                    margin-left: -4px;
+                }
+            }
 
             .check-icon-default {
                 position: absolute;
                 width: 23px;
                 height: 23px;
                 object-fit: contain;
-                left: 6px;
+                left: 7px;
                 top: 7px;
-                z-index: 100;
+                z-index: 1;
             }
 
             .check-icon {
@@ -49,7 +90,7 @@
                 top: 50%;
                 margin-left: -10px;
                 margin-top: -10px;
-                z-index: 11;
+                z-index: 1;
 
                 &::after {
                     content: "";
@@ -74,32 +115,238 @@
 
             img {
                 object-fit: cover;
-                width: 38px;
-                height: 38px;
+                width: 36px;
+                height: 36px;
                 font-size: 12px;
                 border-radius: 4px;
+                position: absolute;
+                left: 0px;
+                top: 0px;
+                right: 0px;
+                bottom: 0px;
             }
         }
+
+        .coll-card.shining {
+            img {
+                width: 36px;
+                height: 36px;
+                left: 3px;
+                right: 3px;
+                top: 3px;
+                bottom: 3px;
+            }
+        }
+
         .coll-card:nth-last-of-type(1) {
             margin-right: 0;
         }
     }
-}
-@media screen and (max-width: 750px) {
-    .snft-card {
-        &-list {
-            .coll-card:nth-of-type(8n + 0)  {
+
+    .snft-list-out {
+        padding-top: 7px;
+        background: transparent;
+        position: absolute;
+        z-index: 100;
+        left: 7px;
+        right: 7px;
+        top: 73px;
+
+        .snft-list {
+            flex-wrap: wrap;
+            padding: 10px;
+            // border: 1px solid #9F54BA;
+            border-radius: 5px;
+            min-height: 50px;
+            margin-bottom: 10px;
+            background: #fff;
+            transition: ease .3s;
+            box-shadow: 0 2px 12px rgba(50, 50, 51, .16);
+            &:hover {
+                box-shadow: 0 2px 12px rgba(50, 50, 51, .3); 
+            }
+            .snft-child {
+                width: 35px;
+                height: 35px;
+                display: inline-block;
+                margin-right: 8.2px;
+
+                img {
+                    width: 100%;
+                    border-radius: 5px;
+                }
+            }
+
+            .snft-child:nth-last-of-type(1) {
                 margin-right: 0;
             }
         }
     }
+
+    .process-bar {
+        padding: 6px 10px;
+        margin: 0 8px;
+        background: #fff;
+        border-radius: 5px;
+
+        .tit {
+            font-size: 12px;
+            color: #848484;
+        }
+
+        .animate-bar {
+            height: 10px;
+            margin-top: 8px;
+            border-radius: 5px;
+            background: #E4E7E8;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .animate-bar-track {
+            height: 10px;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+            width: 200px;
+            background: linear-gradient(90deg, #DDF2E2 0%, #85E19B 100%);
+            transition: ease .3s;
+        }
+
+        .animate-bar-scale {
+            height: 5px;
+            width: 1px;
+            background-color: #fff;
+            position: absolute;
+            top: 2.5px
+        }
+
+        .animate-bar-scale:nth-of-type(1) {
+            left: 10%;
+        }
+
+        .animate-bar-scale:nth-of-type(2) {
+            left: 20%;
+        }
+
+        .animate-bar-scale:nth-of-type(3) {
+            left: 30%;
+        }
+
+        .animate-bar-scale:nth-of-type(4) {
+            left: 40%;
+        }
+
+        .animate-bar-scale:nth-of-type(5) {
+            left: 50%;
+        }
+
+        .animate-bar-scale:nth-of-type(6) {
+            left: 60%;
+        }
+
+        .animate-bar-scale:nth-of-type(7) {
+            left: 70%;
+        }
+
+        .animate-bar-scale:nth-of-type(8) {
+            left: 80%;
+        }
+
+        .animate-bar-scale:nth-of-type(9) {
+            left: 90%;
+        }
+
+        .total-poss {
+            line-height: 18px;
+            margin-top: 6px;
+            padding: 0 9px;
+            color: #3AAE55;
+        }
+    }
+
 }
-@media screen and (min-width: 750px) {
+
+@media screen and (max-width: 750px) {
+    .snft-card {
+        &-list {
+            .coll-card:nth-of-type(8n + 0) {
+                margin-right: 0;
+            }
+
+            .coll-card {
+                &:hover {
+                    .arrow-top {
+                        margin-left: -6px;
+                    }
+                }
+            }
+        }
+
+        // .coll-card.shining {
+        //     img {
+        //         width: 31.6px;
+        //         height: 31.6px;
+        //     }
+        // }
+        .snft-list-out {
+            top: 69px;
+            .snft-list {
+                .snft-child {
+                    width: 33px;
+                    height: 33px;
+                    margin-right: 5.85px;
+                }
+            }
+            &.sec {
+                top: 110px;
+            }
+        }
+    }
+
+}
+
+
+@media screen and (min-width: 1281px) {
     .snft-card {
         &-list {
             .coll-card {
                 width: 37.6px;
                 height: 37.6px;
+
+                img {
+                    width: 37.6px;
+                    height: 37.6px;
+                }
+            }
+
+            .coll-card.shining {
+                img {
+                    width: 31.6px;
+                    height: 31.6px;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (min-width: 750px) and (max-width: 1281px) {
+    .snft-card {
+        &-list {
+            .coll-card {
+                width: 33px;
+                height: 33px;
+
+                img {
+                    width: 33px;
+                    height: 33px;
+                }
+            }
+
+            .coll-card.shining {
+                img {
+                    width: 27.6px;
+                    height: 27.6px;
+                }
             }
         }
     }
@@ -230,4 +477,47 @@
 
 .tip2.disabled {
     color: #b3b3b3 !important;
+}
+
+
+
+:root {
+    --shiningColor: orange;
+    --lineColor: rgba(102, 163, 224, .2);
+}
+
+.shining {
+    position: relative;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 3px solid gold;
+        animation: clippath 3s infinite linear;
+        border-radius: 5px;
+    }
+}
+
+@keyframes clippath {
+
+    0%,
+    100% {
+        clip-path: inset(0 0 95% 0);
+    }
+
+    25% {
+        clip-path: inset(0 95% 0 0);
+    }
+
+    50% {
+        clip-path: inset(95% 0 0 0);
+    }
+
+    75% {
+        clip-path: inset(0 0 0 95%);
+    }
 }

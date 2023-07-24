@@ -13,26 +13,49 @@
     </van-sticky>
     <div :class="`nft-list-box ${!loadNft && newList.length ? 'mb-90' : ''}`">
       <div :class="`nft-list ${layoutType} ${showConvert ? 'pb' : ''}`" v-show="newList.length">
-        <div class="snft-card" v-for="item in newList" :key="item.nft_address">
+
+        <div class="snft-card" v-for="(item, index) in newList" :key="item.nft_address">
           <div class="snft-card-tit flex between">
-            <span class="tit">{{ item.nft_address }}</span>
+            <span class="tit">{{ item.collections }}</span>
             <span class="more">{{ t("sendSNFT.more") }}</span>
           </div>
           <div class="snft-card-list flex">
-            <div class="coll-card hover" v-for="child in item.children" :key="child.nft_address">
-              <i class="iconfont icon-duihao2 check-icon" v-show="item.select"></i>
-              <!-- <img
-          src="./select-white.svg"
-          class="check-icon-default no-select"
-          alt=""
-          v-show="!getDisabled(item) && showIcon && compData.MergeLevel < 2 && !item.select"
-        /> -->
+            <div class="coll-card hover" v-for="(child, idx) in item.children" :key="child.nft_address" @mouseover="handleMouseOver({ index, item, child, idx })" @mouseleave="handleMouseOut({ index, item, child, idx })">
+              <i class="iconfont icon-duihao2 check-icon" v-if="child.checked && showConvert" @click="handleSelect({ index, item, child, idx, checked: false })"></i>
+              <img src="./select-white.svg" class="check-icon-default no-select" alt="" v-if="showConvert && !child.checked" @click="handleSelect({ index, item, child, idx, checked: true })" />
               <img loading="lazy" :src="`${metaDomain}${child.source_url}`" class="snft-img" />
+              <span class="arrow-top" v-if="child.children && child.children.length"></span>
             </div>
+          </div>
+          <Transition name="fade">
+            <div v-if="item.load && item.showDetails" :class="['snft-list-out', showSNFTIdx > 8 ? 'sec' : '']" @mousemove="handleSNFTSMouseOver" @mouseleave="handleSNFTSMouseLeave({ item, index })">
+              <div class="snft-list">
+                <div class="flex center" v-show="item.load == 'loading'">
+                  <van-loading size="28" color="#9F54BA"></van-loading>
+                </div>
+                <div v-for="sun in showSNFTList" class="snft-child" :key="sun.nft_address">
+                  <img loading="lazy" :src="`${metaDomain}${sun.source_url}`" class="snft-img" />
+                </div>
+              </div>
+            </div>
+
+          </Transition>
+          <div class="process-bar">
+            <div class="tit">Ratio(1:1.5)</div>
+            <div class="animate-bar">
+              <div class="animate-bar-scale" v-for="i in 9"></div>
+              <div class="animate-bar-track"></div>
+            </div>
+            <div class="flex right total-poss">
+              <div class="text-right">200/256</div>
+            </div>
+          </div>
+          <div class="select-all flex center-v" v-if="showConvert">
+            <i :class="`iconfont hover ${item.checked ? 'icon-duihao2' : 'icon-check_line'}`" @click="handleAllSelect({ index, item })"></i>
+             {{ t('common.all') }} {{ item.selectedStr }}
           </div>
         </div>
       </div>
-
       <!-- no data -->
       <div class="flex center no-list pt-30" v-show="!newList.length && !nftErr && finished">
         <i class="iconfont icon-inbox"></i>
@@ -63,16 +86,7 @@
     </i18n-t>
   </SliderBottom>
   <!-- nft snft -->
-  <!-- <TransferNFT
-    v-model="showConvert"
-    @handleConfirm="handleConfirmNFT"
-    @handleAll="handleAll"
-    :selectNumber="selectLength"
-    :selectTotal="selectTotal"
-    :type="chooseType.value"
-    :ratio="ratio"
-    :selectedText="selectedText"
-  /> -->
+  <TransferNFT v-model="showConvert" @handleConfirm="handleConfirmNFT" @handleAll="handleAll" :selectNumber="selectLength" :selectTotal="selectTotal" :ratio="ratio" :selectedText="selectedText" />
   <!-- nft snft Conversion of pop-ups -->
   <!-- <TransferNFTModal
     :selectNumber="selectedText"
@@ -126,6 +140,8 @@ import { useI18n } from "vue-i18n";
 import { VUE_APP_METAURL, VUE_APP_OFFICIAL_EXCHANGE } from "@/popup/enum/env";
 import SliderBottom from "@/popup/components/sliderBottom/index.vue";
 import { debounce } from "@/popup/utils/utils";
+import { useToast } from "@/popup/plugins/toast";
+
 export default defineComponent({
   name: "snft-list",
   components: {
@@ -139,7 +155,7 @@ export default defineComponent({
     [Button.name]: Button,
     [PullRefresh.name]: PullRefresh,
     SnftModal,
-    SliderBottom
+    SliderBottom,
   },
   emits: ["onLoad", "changeSwitch"],
   setup(props: any, context: SetupContext) {
@@ -177,8 +193,8 @@ export default defineComponent({
     }
 
     const stagesparams = {
-      start_index:'0',
-      count:'4'
+      start_index: '0',
+      count: '4'
     }
 
     const getStages = () => {
@@ -188,6 +204,176 @@ export default defineComponent({
         owner_addr,
         ...stagesparams
       })
+    }
+
+    const showSNFTList = ref([])
+    const showSNFTIdx = ref(null)
+
+    let timer: any = null
+    const handleMouseOut = ({ item, index, child, idx }) => {
+      timer = setTimeout(() => {
+        console.warn('handleMouseOut', index, idx)
+        const myEle = newList.value[index]
+        const currentCollection = newList.value[index].children[idx]
+        myEle.showDetails = false
+        showSNFTList.value = []
+        showSNFTIdx.value = null
+        clearTimeout(timer)
+      }, 10)
+    }
+    const handleMouseOver = ({ item, index, child, idx }) => {
+      if (timer) {
+        clearTimeout(timer)
+      }
+      const myEle = newList.value[index]
+      const currentCollection = newList.value[index].children[idx]
+      console.warn('handleMouseOver', index, idx, currentCollection.loaded)
+      if (newList.value[index].children[idx].children) {
+        showSNFTList.value = [...newList.value[index].children[idx].children]
+        showSNFTIdx.value = idx
+        let t = setTimeout(() => {
+          myEle.showDetails = true
+          clearTimeout(t)
+        })
+      }
+
+    }
+    const handleSNFTSMouseOver = () => {
+      if (timer) {
+        clearTimeout(timer)
+      }
+    }
+
+    const handleSNFTSMouseLeave = ({ index }) => {
+      const myEle = newList.value[index]
+      showSNFTList.value = []
+      myEle.showDetails = false
+    }
+
+    const handleSelect = async ({ item, index, child, idx, checked }) => {
+      console.log('get', item, child)
+      showSNFTIdx.value = idx
+      const currentCollection = newList.value[index].children[idx]
+      const parentEle = newList.value[index]
+      if (checked) {
+        item.showDetails = true
+        if (currentCollection.children) {
+          const allChild = [...currentCollection.children]
+          showSNFTList.value = [...allChild]
+          parentEle.load = "loaded"
+          currentCollection.checked = true
+          // newList.value[index].
+          nextTick(() => {
+            item.showDetails = true
+            //TODO:  
+            item.selectAssets = []
+            item.selectedStr = 0
+          })
+          return
+        }
+
+        currentCollection.checked = true
+        parentEle.load = 'loading'
+        const { collection_creator_addr, collections } = child
+
+        const owner_addr = accountInfo.value.address.toUpperCase()
+        // get collDetail
+        const params = {
+          createaddr: collection_creator_addr,
+          name: collections,
+          owner_addr
+        }
+        const res = await queryAllSnftByCollection(params)
+        console.log('res', res.data)
+        const { snftChips, snfts } = res.data
+        
+        currentCollection.children = [...snfts]
+        console.warn('snftChips', snftChips)
+        const chips = snftChips.filter(s => s.ownaddr.toUpperCase() == owner_addr).map(a => a.nft_address)
+        const mysnfts = snfts.filter(s => s.ownaddr.toUpperCase() == owner_addr).map(a => a.nft_address)
+        
+        currentCollection.snfts = chips
+        currentCollection.myOwnerAssets = [...chips, ...mysnfts]
+        parentEle.load = 'loaded'
+        showSNFTList.value = [...currentCollection.children]
+        let total = 0
+        currentCollection.myOwnerAssets.forEach(child => {
+          const {mergelevel, mergenumber} = child
+          if(mergelevel > 0) {
+            total += mergenumber
+          } else {
+            total += 1
+          }
+        })
+        nextTick(() => {
+          item.showDetails = true
+          item.myOwnerAssets && item.myOwnerAssets.length ? item.myOwnerAssets.push(...chips, ...mysnfts) : item.myOwnerAssets = [...chips, ...mysnfts]
+          item.selectedStr += total
+        })
+        console.warn('selected ', currentCollection.snfts)
+      } else {
+        currentCollection.checked = false
+        //TODO:  
+      }
+
+    }
+    const {$toast} = useToast()
+
+    const handleAllSelect = async ({ item, index }) => {
+      let toast = null
+      if (!newList.value[index].checked) {
+        let myOwnerAssets = []
+        try {
+          toast = Toast.loading({
+          duration: 0,
+          forbidClick: true,
+          message: t('common.loading'),
+        });
+        const owner_addr = accountInfo.value.address.toUpperCase()
+        // get my snft/ship/ of the collection
+        for await (const child of item.children) {
+          const { collection_creator_addr, collections } = child
+          // get collDetail
+          const params = {
+            createaddr: collection_creator_addr,
+            name: collections,
+            owner_addr
+          }
+          const res = await queryAllSnftByCollection(params)
+
+          const {snftChips,snfts} = res.data
+          const mychips = snftChips.filter((it: any) => it.ownaddr.toUpperCase() == owner_addr)
+          const mysnfts = snfts.filter((it: any) => it.ownaddr.toUpperCase() == owner_addr)
+          console.warn('get my mychips', mychips)
+          console.warn('get my mysnfts', mysnfts)
+          myOwnerAssets.push(...mychips,...mysnfts)
+        }
+        item.checked = true
+        item.children.forEach(child => child.checked = true)
+        console.warn('myOwnerAssets', myOwnerAssets)
+        item['selectAssets'] = myOwnerAssets
+        let total = 0
+        myOwnerAssets.forEach(child => {
+          const {mergelevel, mergenumber} = child
+          if(mergelevel > 0) {
+            total += mergenumber
+          } else {
+            total += 1
+          }
+
+        })
+        item['selectedStr'] = total
+        }catch(err){
+          $toast.fail(JSON.stringify(err))
+        }finally {
+          toast.clear()
+        }
+      } else {
+        item.checked = false
+        item.children.forEach(child => child.checked = false)
+        item['selectAssets'] = []
+        item['selectedStr'] = 0
+      }
     }
 
     // Classified data
@@ -214,10 +400,12 @@ export default defineComponent({
           console.warn('snfts', snfts)
           newList.value.push({
             ...item,
-            children: [...snfts]
+            load: false,
+            checked: false,
+            children: [...snfts].map(child => ({ ...child, checked: false }))
           })
         }
-        if(!stages || stages.length < 4) {
+        if (!stages || stages.length < 4) {
           finished.value = true
         }
         stagesparams.start_index = Number(stagesparams.count) + (Number(stagesparams.start_index)) + ''
@@ -299,6 +487,7 @@ export default defineComponent({
       //     });
       // });
       // return len;
+      return 0
     });
 
     // Select the amount of data
@@ -346,6 +535,7 @@ export default defineComponent({
       //   }
       // });
       // return add;
+      return 0
     });
     const getDisabled = (item: any) => {
       // const {
@@ -390,7 +580,7 @@ export default defineComponent({
       //   }
       // });
       // return `${totalColl}(L2)/${totalSnft}(L1)/${totalChip}(L0)`;
-
+      return ''
     });
     // List of selections
     const selectList = computed(() => {
@@ -533,7 +723,15 @@ export default defineComponent({
       VUE_APP_OFFICIAL_EXCHANGE,
       t,
       metaDomain,
-      newList
+      newList,
+      handleSelect,
+      handleMouseOut,
+      handleMouseOver,
+      showSNFTList,
+      handleSNFTSMouseOver,
+      handleSNFTSMouseLeave,
+      showSNFTIdx,
+      handleAllSelect
     };
   },
 });
